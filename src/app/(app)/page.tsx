@@ -203,14 +203,14 @@ async function PeopleStats({
 }) {
   const t = await getTranslations("home");
   return (
-    <div className="grid grid-cols-3 gap-2.5">
+    <div className={`grid gap-2.5 ${compact ? "grid-cols-3" : "grid-cols-[repeat(auto-fill,minmax(130px,1fr))]"}`}>
       {stats.map(({ person, count, late }) => (
         <div key={person.id} className={`flex flex-col border border-line bg-surf ${compact ? "gap-3 rounded-[10px] p-3.5" : "gap-3.5 rounded-lg p-4"}`}>
           <div className="flex min-w-0 items-center gap-2">
             <Avatar person={person} size={compact ? 26 : 24} />
             <span className={`truncate font-medium text-ink2 ${compact ? "text-[15px]" : "text-[14px]"}`}>{person.full_name.split(" ")[0]}</span>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1.5">
             <span className={`display ${compact ? "text-[28px]" : "text-[40px]"} leading-[0.9]`}>{count}</span>
             {!compact && <span className="whitespace-nowrap text-[13px] text-ink3">{late ? t("lateShort", { count: late }) : t("noLate")}</span>}
           </div>

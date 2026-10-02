@@ -28,7 +28,9 @@
     "content": "Content",
     "team": "Team",
     "adminGroup": "Admin",
-    "settings": "Settings"
+    "settings": "Settings",
+    "collapse": "Collapse menu",
+    "expand": "Expand menu"
   },
   "weekday": {
     "long": "{day, select, 0 {Monday} 1 {Tuesday} 2 {Wednesday} 3 {Thursday} 4 {Friday} 5 {Saturday} other {Sunday}}",
