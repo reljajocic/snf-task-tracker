@@ -20,9 +20,10 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Slate 'n' Frame", template: "%s · Slate 'n' Frame" },
+  // One name on every page (owner's choice), no per-page titles.
+  title: "SNF Dailies",
   description: "Internal task tracker for the Slate 'n' Frame team.",
-  appleWebApp: { capable: true, title: "SnF Tasks", statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: "SNF Dailies", statusBarStyle: "black-translucent" },
 };
 
 export const viewport: Viewport = {

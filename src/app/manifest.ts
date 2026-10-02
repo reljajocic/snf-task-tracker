@@ -3,8 +3,8 @@ import type { MetadataRoute } from "next";
 // Installable on phones ("Add to Home Screen"); opens without browser chrome.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Slate 'n' Frame Tasks",
-    short_name: "SnF Tasks",
+    name: "SNF Dailies",
+    short_name: "SNF Dailies",
     description: "Internal task tracker for the Slate 'n' Frame team.",
     start_url: "/",
     display: "standalone",

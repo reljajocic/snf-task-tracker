@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
@@ -10,11 +9,6 @@ import { Segmented } from "@/components/ui/Segmented";
 import { getTasks } from "@/lib/data";
 import { addDays, formatDate, formatShortDate, isoWeek, startOfWeek, today as getToday, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { PRIORITY_COLOR, byDue, type Task } from "@/lib/tasks";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("calendar");
-  return { title: t("title") };
-}
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { KanbanBoard } from "@/components/tasks/KanbanBoard";
@@ -6,11 +5,6 @@ import { Segmented } from "@/components/ui/Segmented";
 import { requireProfile } from "@/lib/auth";
 import { getLookups, getTasks } from "@/lib/data";
 import { addDays, today as getToday } from "@/lib/dates";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("kanban");
-  return { title: t("title") };
-}
 
 // Done column shows the last 14 days so it doesn't grow forever.
 const DONE_WINDOW_DAYS = 14;

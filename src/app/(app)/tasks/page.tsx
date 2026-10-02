@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
@@ -11,11 +10,6 @@ import { AvatarStack } from "@/components/ui/Avatar";
 import { getLookups, getTasks } from "@/lib/data";
 import { formatDate, today as getToday } from "@/lib/dates";
 import { byDue } from "@/lib/tasks";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("list");
-  return { title: t("title") };
-}
 
 const GRID =
   "grid grid-cols-[minmax(0,1fr)_130px_60px_100px_120px] gap-3.5 xl:grid-cols-[minmax(0,1fr)_140px_110px_80px_100px_130px_120px]";

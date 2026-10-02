@@ -1,7 +1,7 @@
 {
   "common": {
     "appName": "Slate 'n' Frame",
-    "appSection": "Tasks",
+    "appSection": "Dailies",
     "newTask": "+ New task",
     "save": "Save",
     "cancel": "Cancel",

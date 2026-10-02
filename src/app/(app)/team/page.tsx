@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
@@ -6,8 +5,6 @@ import { requireAdmin, type Profile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { InviteForm } from "./InviteForm";
 import { MemberControls } from "./MemberControls";
-
-export const metadata: Metadata = { title: "Team" };
 
 export default async function TeamPage() {
   const me = await requireAdmin();

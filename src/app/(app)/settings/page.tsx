@@ -1,12 +1,9 @@
-import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { requireProfile } from "@/lib/auth";
 import type { Preference } from "@/lib/notifications";
 import { createClient } from "@/lib/supabase/server";
 import { NotificationSettings, ProfileForm } from "./SettingsForms";
-
-export const metadata: Metadata = { title: "Settings" };
 
 export default async function SettingsPage() {
   const [me, t] = await Promise.all([requireProfile(), getTranslations("settings")]);

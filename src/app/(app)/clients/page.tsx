@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
@@ -8,11 +7,6 @@ import { CLIENT_STATUSES, CLIENT_STATUS_COLOR, clientInitials, getClients, type 
 import { getTasks } from "@/lib/data";
 import { formatDate, today as getToday } from "@/lib/dates";
 import { byDue, taskOverdue } from "@/lib/tasks";
-
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("clients");
-  return { title: t("title") };
-}
 
 const GRID =
   "grid grid-cols-[minmax(200px,1.2fr)_110px_minmax(0,1.3fr)_100px_minmax(0,1.4fr)] gap-4 xl:grid-cols-[minmax(210px,1.2fr)_120px_minmax(0,1.3fr)_110px_minmax(0,1.4fr)_110px]";

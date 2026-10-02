@@ -1,8 +1,5 @@
-import type { Metadata } from "next";
 import { getLookups } from "@/lib/data";
 import { ProjectForm } from "../../../forms";
-
-export const metadata: Metadata = { title: "New project" };
 
 export default async function NewProjectPage({ params }: PageProps<"/clients/[id]/projects/new">) {
   const [{ id }, lookups] = await Promise.all([params, getLookups()]);

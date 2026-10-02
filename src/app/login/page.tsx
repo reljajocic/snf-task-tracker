@@ -1,8 +1,5 @@
-import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { LoginForm } from "./LoginForm";
-
-export const metadata: Metadata = { title: "Sign in" };
 
 // 6e / 6f: always the dark brand look, independent of the user's theme.
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {

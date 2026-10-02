@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -12,12 +11,6 @@ import { getLookups, getTasks } from "@/lib/data";
 import { formatDate, today as getToday } from "@/lib/dates";
 import { byDue } from "@/lib/tasks";
 import { ClientTeam } from "./ClientTeam";
-
-export async function generateMetadata({ params }: PageProps<"/clients/[id]">): Promise<Metadata> {
-  const { id } = await params;
-  const data = await getClient(id);
-  return { title: data?.client.name ?? "Client" };
-}
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink" };
 
