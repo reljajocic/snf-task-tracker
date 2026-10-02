@@ -7,12 +7,12 @@ import { sendLoginLink, verifyLoginCode, type LoginResult } from "./actions";
 
 type Step = "email" | "sent";
 
-export function LoginForm({ linkExpired }: { linkExpired: boolean }) {
+export function LoginForm({ initialError }: { initialError: "linkExpired" | "inactive" | null }) {
   const t = useTranslations("login");
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [error, setError] = useState<string | null>(linkExpired ? t("linkExpired") : null);
+  const [error, setError] = useState<string | null>(initialError ? t(initialError) : null);
   const [resent, setResent] = useState(false);
   const [pending, startTransition] = useTransition();
 

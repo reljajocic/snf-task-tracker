@@ -27,7 +27,7 @@ export const requireProfile = cache(async (): Promise<Profile> => {
     .eq("id", userId)
     .single<Profile>();
 
-  if (!profile || !profile.is_active) redirect("/login?error=link");
+  if (!profile || !profile.is_active) redirect("/auth/signout?reason=inactive");
   return profile;
 });
 

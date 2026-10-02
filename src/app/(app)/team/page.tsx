@@ -5,6 +5,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { requireAdmin, type Profile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { InviteForm } from "./InviteForm";
+import { MemberControls } from "./MemberControls";
 
 export const metadata: Metadata = { title: "Team" };
 
@@ -34,9 +35,13 @@ export default async function TeamPage() {
                 <span className="truncate text-[13px] text-ink3">{p.email}</span>
               </div>
               {!p.is_active && <span className="text-[12px] text-ink3">{t("inactive")}</span>}
-              <span className="rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink2">
-                {p.role === "admin" ? t("roleAdmin") : t("roleUser")}
-              </span>
+              {p.id === me.id ? (
+                <span className="rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink2">
+                  {p.role === "admin" ? t("roleAdmin") : t("roleUser")}
+                </span>
+              ) : (
+                <MemberControls userId={p.id} role={p.role} active={p.is_active} />
+              )}
             </li>
           ))}
         </ul>

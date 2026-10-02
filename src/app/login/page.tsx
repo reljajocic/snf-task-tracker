@@ -37,7 +37,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           <img src="/brand/logo-off-white.png" alt="Slate 'n' Frame" className="h-[30px]" />
         </div>
         <div className="mt-auto w-full px-7 pb-11 lg:mt-0 lg:max-w-[400px] lg:p-0">
-          <LoginForm linkExpired={error === "link"} />
+          <LoginForm initialError={error === "link" ? "linkExpired" : error === "inactive" ? "inactive" : null} />
         </div>
       </div>
     </div>

@@ -65,7 +65,8 @@
     "resend": "Send again",
     "resent": "Sent again",
     "changeEmail": "Change email",
-    "linkExpired": "That sign-in link is invalid or has expired. Request a new one."
+    "linkExpired": "That sign-in link is invalid or has expired. Request a new one.",
+    "inactive": "Your access has been removed. Ask the admin if this is a mistake."
   },
   "home": {
     "title": "Home",
@@ -196,7 +197,9 @@
     "invited": "Invite sent to {email}.",
     "inviteFailed": "Couldn't send the invite: {message}",
     "inactive": "Inactive",
-    "you": "You"
+    "you": "You",
+    "deactivate": "Remove access",
+    "reactivate": "Restore access"
   },
   "status": {
     "todo": "To do",
