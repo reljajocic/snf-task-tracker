@@ -27,7 +27,8 @@
     "tasks": "Tasks",
     "content": "Content",
     "team": "Team",
-    "adminGroup": "Admin"
+    "adminGroup": "Admin",
+    "settings": "Settings"
   },
   "weekday": {
     "long": "{day, select, 0 {Monday} 1 {Tuesday} 2 {Wednesday} 3 {Thursday} 4 {Friday} 5 {Saturday} other {Sunday}}",
@@ -329,5 +330,39 @@
     "delete": "Delete project",
     "deleteConfirm": "Delete this project? Its tasks stay with the client, without a project.",
     "nameRequired": "Name is required."
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "name": "Full name",
+    "initials": "Initials",
+    "color": "Avatar color",
+    "saveProfile": "Save profile",
+    "saved": "Saved",
+    "notifications": "Notifications",
+    "notificationsLead": "Choose what we email you about. WhatsApp and Slack can be added as channels later.",
+    "email": "Email",
+    "events": {
+      "task_assigned": {
+        "title": "Assigned to me",
+        "hint": "Someone adds you to a task."
+      },
+      "task_commented": {
+        "title": "New comment",
+        "hint": "A comment on a task you're assigned to or created."
+      },
+      "task_status_changed": {
+        "title": "Status changed",
+        "hint": "A task you're on moves to another column."
+      },
+      "task_due_tomorrow": {
+        "title": "Due tomorrow",
+        "hint": "Morning reminder for your tasks due the next day."
+      },
+      "task_overdue": {
+        "title": "Overdue",
+        "hint": "Once, on the first day one of your tasks is late."
+      }
+    }
   }
 }

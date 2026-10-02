@@ -59,8 +59,10 @@ export function Sidebar({ profile, theme }: { profile: Profile; theme: Theme }) 
       <div className="mt-auto flex flex-col gap-3">
         <ThemeToggle initial={theme} />
         <div className="flex items-center gap-2.5 px-1">
-          <Avatar person={profile} size={28} />
-          <span className="min-w-0 flex-1 truncate text-[13px] text-ink2">{profile.full_name}</span>
+          <Link href="/settings" className="flex min-w-0 flex-1 items-center gap-2.5 rounded-md hover:text-ink" title={t("nav.settings")}>
+            <Avatar person={profile} size={28} />
+            <span className="min-w-0 flex-1 truncate text-[13px] text-ink2">{profile.full_name}</span>
+          </Link>
           <form action="/auth/signout" method="post">
             <button type="submit" className="cursor-pointer text-[12px] text-ink3 hover:text-ink">
               {t("common.signOut")}

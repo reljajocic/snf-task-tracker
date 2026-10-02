@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { requireProfile } from "@/lib/auth";
+import { notify } from "@/lib/notify";
 import { createClient } from "@/lib/supabase/server";
 import {
   PRIORITIES,
@@ -60,10 +62,27 @@ function refresh() {
   revalidatePath("/", "layout");
 }
 
+const STATUS_LABEL: Record<TaskStatus, string> = {
+  todo: "To do",
+  in_progress: "In progress",
+  waiting_client: "Waiting on client",
+  done: "Done",
+};
+
+/** Assignees + creator: the people who care about changes to a task. */
+async function watchers(taskId: string): Promise<string[]> {
+  const supabase = await createClient();
+  const [{ data: task }, { data: assignees }] = await Promise.all([
+    supabase.from("tasks").select("created_by").eq("id", taskId).maybeSingle(),
+    supabase.from("task_assignees").select("user_id").eq("task_id", taskId),
+  ]);
+  return [...(assignees ?? []).map((a) => a.user_id), ...(task?.created_by ? [task.created_by] : [])];
+}
+
 export async function createTask(
   input: TaskPatch & { title: string; assignee_ids: string[] },
 ): Promise<ActionResult<{ id: string }>> {
-  await requireProfile();
+  const me = await requireProfile();
   const fields = clean(input);
   if (!fields.title) return { ok: false, error: "Title is required." };
 
@@ -76,13 +95,14 @@ export async function createTask(
       .from("task_assignees")
       .insert(input.assignee_ids.map((user_id) => ({ task_id: data.id, user_id })));
     if (aErr) return { ok: false, error: aErr.message };
+    after(() => notify({ event: "task_assigned", taskId: data.id, recipientIds: input.assignee_ids, actorId: me.id }));
   }
   refresh();
   return { ok: true, data: { id: data.id } };
 }
 
 export async function updateTask(id: string, patch: TaskPatch): Promise<ActionResult> {
-  await requireProfile();
+  const me = await requireProfile();
   const fields = clean(patch);
   if (fields.title === "") return { ok: false, error: "Title is required." };
 
@@ -90,12 +110,17 @@ export async function updateTask(id: string, patch: TaskPatch): Promise<ActionRe
   const { data, error } = await supabase.from("tasks").update(fields).eq("id", id).select("id");
   if (error) return { ok: false, error: error.message };
   if (!data?.length) return { ok: false, error: "You can't edit this task." };
+  if (fields.status) {
+    const status = fields.status;
+    const recipients = await watchers(id);
+    after(() => notify({ event: "task_status_changed", taskId: id, recipientIds: recipients, actorId: me.id, extra: { status: STATUS_LABEL[status] } }));
+  }
   refresh();
   return { ok: true, data: null };
 }
 
 export async function setAssignees(id: string, userIds: string[]): Promise<ActionResult> {
-  await requireProfile();
+  const me = await requireProfile();
   const supabase = await createClient();
   const { data: current, error } = await supabase
     .from("task_assignees")
@@ -113,6 +138,7 @@ export async function setAssignees(id: string, userIds: string[]): Promise<Actio
       .from("task_assignees")
       .insert(add.map((user_id) => ({ task_id: id, user_id })));
     if (e) return { ok: false, error: e.message };
+    after(() => notify({ event: "task_assigned", taskId: id, recipientIds: add, actorId: me.id }));
   }
   if (remove.length) {
     const { error: e } = await supabase
@@ -209,6 +235,8 @@ export async function addComment(taskId: string, body: string): Promise<ActionRe
     .from("task_comments")
     .insert({ task_id: taskId, author_id: me.id, body: text });
   if (error) return { ok: false, error: error.message };
+  const recipients = await watchers(taskId);
+  after(() => notify({ event: "task_commented", taskId, recipientIds: recipients, actorId: me.id, extra: { body: text.slice(0, 280) } }));
   return { ok: true, data: null };
 }
 
