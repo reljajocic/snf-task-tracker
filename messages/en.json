@@ -88,7 +88,9 @@
     "noClientShort": "Personal",
     "noLate": "no overdue",
     "byClient": "By client",
-    "weekRange": "{from} – {to}"
+    "weekRange": "{from} – {to}",
+    "noDeadline": "No deadline",
+    "noDeadlineHint": "Open tasks nobody has set a date for"
   },
   "kanban": {
     "title": "Kanban",
@@ -280,7 +282,8 @@
     "commentPlaceholder": "Write a comment…",
     "commentSend": "Comment",
     "noComments": "No comments yet.",
-    "edited": "edited"
+    "edited": "edited",
+    "pickDate": "Pick a date"
   },
   "month": {
     "name": "{m, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} other {December}}"

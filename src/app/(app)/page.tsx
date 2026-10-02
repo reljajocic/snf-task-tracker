@@ -18,7 +18,9 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
     getTranslations(),
   ]);
   const today = getToday();
-  const mineOnly = scope !== "all";
+  // Admins and managers oversee others' work, so they land on "All"; members on "Mine".
+  const oversees = lookups.me.isAdmin || lookups.clients.some((c) => c.canManage);
+  const mineOnly = scope === "mine" || (scope !== "all" && !oversees);
   const scoped = mineOnly ? tasks.filter((x) => x.assignees.some((a) => a.id === me.id)) : tasks;
 
   const lateAndToday = scoped
@@ -40,6 +42,11 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
     }
     g.items.push(x);
   }
+
+  // Open tasks without a deadline would otherwise appear nowhere on Home.
+  const noDeadline = scoped
+    .filter((x) => x.status !== "waiting_client" && !x.due_date)
+    .sort((a, b) => a.created_at.localeCompare(b.created_at));
 
   const waiting = scoped
     .filter((x) => x.status === "waiting_client")
@@ -64,7 +71,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
   const maxCount = Math.max(1, ...clientStats.map((c) => c.count));
 
   const toggle = [
-    { key: "mine", label: t("home.mine"), href: "/", active: mineOnly },
+    { key: "mine", label: t("home.mine"), href: "/?scope=mine", active: mineOnly },
     { key: "all", label: t("home.all"), href: "/?scope=all", active: !mineOnly },
   ];
   const eyebrow = `${t("weekday.long", { day: String(weekdayIndex(today)) })}, ${formatDate(today)}`;
@@ -99,6 +106,15 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
               ))
             : empty(t("home.nothingWeek"))}
         </section>
+        {noDeadline.length > 0 && (
+          <section className="flex flex-col gap-3">
+            <div className="flex items-center gap-2.5">
+              {sectionTitle(t("home.noDeadline"))}
+              <span className="text-[13px] font-semibold text-ink3">{noDeadline.length}</span>
+            </div>
+            {noDeadline.map((x) => <TaskRowMobile key={x.id} task={x} />)}
+          </section>
+        )}
         <section className="flex flex-col gap-3">
           <div className="flex items-center gap-2.5">
             {sectionTitle(t("home.waiting"))}
@@ -153,6 +169,15 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
               empty(t("home.nothingWeek"))
             )}
           </section>
+          {noDeadline.length > 0 && (
+            <section className="flex flex-col gap-3.5">
+              <div className="flex items-baseline gap-3.5">
+                {sectionTitle(t("home.noDeadline"))}
+                <span className="whitespace-nowrap text-[13px] font-medium text-ink3">{t("home.noDeadlineHint")}</span>
+              </div>
+              <RowList>{noDeadline.map((x) => <TaskRow key={x.id} task={x} today={today} />)}</RowList>
+            </section>
+          )}
         </div>
 
         <div className="flex flex-col gap-10">

@@ -116,9 +116,21 @@ export function NewTaskModal({
                     {t(`quick.${q.key}`)}
                   </Pill>
                 ))}
-                <button type="button" onClick={() => setPickerOpen((o) => !o)} className="ml-2 cursor-pointer whitespace-nowrap text-[14px] font-semibold text-ink">
-                  {due ? formatDate(due) : t("noDue")} ▾
+                <button
+                  type="button"
+                  onClick={() => setPickerOpen((o) => !o)}
+                  aria-expanded={pickerOpen}
+                  className={`h-[38px] cursor-pointer whitespace-nowrap rounded-full border px-3.5 text-[14px] font-semibold ${
+                    due && !quickDates(today).some((q) => q.date === due) ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink"
+                  }`}
+                >
+                  {due ? formatDate(due) : t("pickDate")} ▾
                 </button>
+                {due && (
+                  <button type="button" onClick={() => setDue(null)} className="cursor-pointer px-2 text-[13px] text-ink3 hover:text-ink">
+                    {t("quick.clear")}
+                  </button>
+                )}
               </div>
               {pickerOpen && (
                 <div className="w-[300px] rounded-lg border border-line2 bg-surf p-3.5">
