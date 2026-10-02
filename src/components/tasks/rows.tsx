@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { AvatarStack } from "@/components/ui/Avatar";
 import { daysBetween, formatDate, type IsoDate } from "@/lib/dates";
 import type { Task } from "@/lib/tasks";
-import { DueChip, DueStack, PriorityMark, PrioritySquare, StatusDot, TaskMeta, dueTone, useDueText } from "./bits";
+import { DueStack, PriorityMark, PrioritySquare, StatusDot, TaskMeta, dueTone, useDueText } from "./bits";
 import { TaskLink } from "./links";
 import { taskDue } from "@/lib/tasks";
 
@@ -118,4 +118,3 @@ export function WaitingCard({ task, today, large = false }: { task: Task; today:
   );
 }
 
-export { DueChip };

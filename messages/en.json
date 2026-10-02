@@ -100,7 +100,10 @@
     "next": "Next",
     "more": "+{count} more",
     "nothingThatDay": "Nothing due this day.",
-    "weekShort": "W{n}"
+    "weekShort": "W{n}",
+    "eyebrow": "Tasks by deadline",
+    "noDeadlines": "No deadlines",
+    "weekRange": "{from} – {to}"
   },
   "list": {
     "title": "Task list",

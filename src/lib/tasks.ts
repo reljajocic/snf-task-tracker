@@ -43,7 +43,9 @@ export type Task = {
   drive_url: string | null;
   position: number;
   status_changed_at: string;
+  completed_at: string | null;
   created_at: string;
+  updated_at: string;
   created_by: string | null;
   client: { id: string; name: string } | null;
   project: { id: string; name: string } | null;
@@ -56,7 +58,7 @@ const PERSON_COLS = "id, full_name, initials, avatar_bg, avatar_fg";
 /** PostgREST select that returns rows shaped like `RawTask` (see `toTask`). */
 export const TASK_SELECT = `
   id, kind, title, description, status, priority, type, due_date, estimate_minutes, drive_url,
-  position, status_changed_at, created_at, created_by,
+  position, status_changed_at, completed_at, created_at, updated_at, created_by,
   client:clients(id, name),
   project:projects(id, name),
   parent:parent_id(id, title),
