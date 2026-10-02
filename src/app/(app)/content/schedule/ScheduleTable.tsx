@@ -174,9 +174,9 @@ export function ScheduleTable({ weeks, unscheduled, today }: { weeks: ScheduleWe
                       </button>
                       {isOpen && (
                         <div className="flex flex-col gap-4 bg-chip px-4 pb-5 pt-2 lg:pl-[170px]">
-                          {v.script.length ? (
+                          {v.script.some((sec) => sec.text.trim()) ? (
                             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                              {v.script.map((sec, j) => (
+                              {v.script.filter((sec) => sec.text.trim()).map((sec, j) => (
                                 <div key={j} className="flex flex-col gap-2">
                                   <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-accent">{sec.label}</span>
                                   <span className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink2">{sec.text}</span>
