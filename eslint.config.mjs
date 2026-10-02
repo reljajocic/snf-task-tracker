@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Design handoff (reference prototype, not app code).
     "docs/**",
+    // Stray local clone of this repo some checkouts have (git-ignored locally).
+    "snf-task-tracker/**",
   ]),
   {
     // Brand images are small static PNGs (logo, icons); next/image adds nothing there.

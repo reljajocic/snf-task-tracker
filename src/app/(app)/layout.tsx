@@ -1,31 +1,31 @@
 import { cookies } from "next/headers";
-import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { MobileNav } from "@/components/shell/MobileNav";
+import { MobileTopBar } from "@/components/shell/MobileTopBar";
 import { Sidebar } from "@/components/shell/Sidebar";
+import { NewTaskFab } from "@/components/tasks/links";
+import { TaskOverlays } from "@/components/tasks/TaskOverlays";
 import { requireProfile } from "@/lib/auth";
+import { getLookups } from "@/lib/data";
+import { today } from "@/lib/dates";
 import { THEME_COOKIE, parseTheme } from "@/lib/theme";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
-  const [profile, cookieStore, t] = await Promise.all([
-    requireProfile(),
-    cookies(),
-    getTranslations("common"),
-  ]);
+  const [profile, cookieStore, lookups] = await Promise.all([requireProfile(), cookies(), getLookups()]);
   const theme = parseTheme(cookieStore.get(THEME_COOKIE)?.value);
 
   return (
     <div className="flex min-h-dvh bg-bg text-ink">
       <Sidebar profile={profile} theme={theme} />
-      <main className="flex min-w-0 flex-1 flex-col pb-[84px] lg:pb-0">{children}</main>
+      <main className="flex min-w-0 flex-1 flex-col pb-[84px] lg:pb-0">
+        <MobileTopBar profile={profile} theme={theme} />
+        {children}
+      </main>
       <MobileNav />
-      {/* Mobile "new task" FAB: 64×64, 20px from the right, 100px from the bottom */}
-      <button
-        type="button"
-        aria-label={t("newTask")}
-        className="fixed bottom-[100px] right-5 z-30 flex size-16 cursor-pointer items-center justify-center rounded-full bg-accent text-[30px] font-light text-charcoal shadow-[0_10px_30px_rgba(0,0,0,0.35)] lg:hidden"
-      >
-        +
-      </button>
+      <Suspense>
+        <NewTaskFab />
+        <TaskOverlays lookups={lookups} today={today()} />
+      </Suspense>
     </div>
   );
 }

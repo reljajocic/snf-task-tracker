@@ -6,11 +6,14 @@
     "save": "Save",
     "cancel": "Cancel",
     "signOut": "Sign out",
-    "comingNext": "This screen is next in line."
+    "comingNext": "This screen is next in line.",
+    "menu": "Menu"
   },
   "theme": {
     "toLight": "Light theme",
-    "toDark": "Dark theme"
+    "toDark": "Dark theme",
+    "toLightShort": "Light",
+    "toDarkShort": "Dark"
   },
   "nav": {
     "home": "Home",
@@ -28,7 +31,8 @@
   },
   "weekday": {
     "long": "{day, select, 0 {Monday} 1 {Tuesday} 2 {Wednesday} 3 {Thursday} 4 {Friday} 5 {Saturday} other {Sunday}}",
-    "short": "{day, select, 0 {Mon} 1 {Tue} 2 {Wed} 3 {Thu} 4 {Fri} 5 {Sat} other {Sun}}"
+    "short": "{day, select, 0 {Mon} 1 {Tue} 2 {Wed} 3 {Thu} 4 {Fri} 5 {Sat} other {Sun}}",
+    "narrow": "{day, select, 0 {M} 1 {T} 2 {W} 3 {T} 4 {F} 5 {S} other {S}}"
   },
   "due": {
     "done": "Done",
@@ -63,16 +67,64 @@
     "linkExpired": "That sign-in link is invalid or has expired. Request a new one."
   },
   "home": {
-    "title": "Home"
+    "title": "Home",
+    "mine": "My tasks",
+    "all": "All tasks",
+    "todayLate": "Today and overdue",
+    "lateSummary": "{late} overdue · {today} today",
+    "thisWeek": "This week",
+    "open": "Open",
+    "wholeTeam": "Whole team",
+    "waiting": "Waiting on client",
+    "lateShort": "{count} late",
+    "nothingToday": "Nothing due today. Nice.",
+    "nothingWeek": "Nothing due in the next 7 days.",
+    "nothingWaiting": "Nothing is waiting on a client.",
+    "dueShort": "Due {date}",
+    "noClientShort": "Personal",
+    "noLate": "no overdue",
+    "byClient": "By client",
+    "weekRange": "{from} – {to}"
   },
   "kanban": {
-    "title": "Kanban"
+    "title": "Kanban",
+    "everyone": "Everyone",
+    "empty": "Nothing here"
   },
   "calendar": {
-    "title": "Calendar"
+    "title": "Calendar",
+    "month": "Month",
+    "week": "Week",
+    "today": "Today",
+    "prev": "Previous",
+    "next": "Next",
+    "more": "+{count} more",
+    "nothingThatDay": "Nothing due this day.",
+    "weekShort": "W{n}"
   },
   "list": {
-    "title": "Task list"
+    "title": "Task list",
+    "allPeople": "All people",
+    "allClients": "All clients",
+    "allStatuses": "All statuses",
+    "allPriorities": "All priorities",
+    "allTypes": "All types",
+    "reset": "Reset filters",
+    "showDone": "Show completed",
+    "sortAsc": "Deadline ↑",
+    "sortDesc": "Deadline ↓",
+    "empty": "No tasks match these filters.",
+    "filters": "Filters",
+    "filtersN": "Filters · {count}",
+    "everyone": "Everyone",
+    "col": {
+      "task": "Task",
+      "client": "Client",
+      "assigned": "Assigned",
+      "priority": "Priority",
+      "status": "Status",
+      "due": "Deadline"
+    }
   },
   "clients": {
     "title": "Clients"
@@ -94,5 +146,87 @@
     "inviteFailed": "Couldn't send the invite: {message}",
     "inactive": "Inactive",
     "you": "You"
+  },
+  "status": {
+    "todo": "To do",
+    "in_progress": "In progress",
+    "waiting_client": "Waiting on client",
+    "done": "Done"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "taskType": {
+    "script": "Script",
+    "shoot": "Shoot",
+    "edit": "Edit",
+    "revision": "Revision",
+    "publish": "Publish",
+    "meeting": "Meeting",
+    "admin": "Admin",
+    "other": "Other"
+  },
+  "task": {
+    "noClient": "Personal",
+    "noProject": "No project",
+    "noDue": "No deadline",
+    "waitingFor": "{days, plural, =0 {Waiting since today} one {Waiting # day} other {Waiting # days}}",
+    "dueOn": "Due {date}",
+    "count": "{count, plural, one {# task} other {# tasks}}",
+    "fields": {
+      "status": "Status",
+      "priority": "Priority",
+      "assignees": "Assigned",
+      "due": "Deadline",
+      "client": "Client",
+      "project": "Project",
+      "type": "Type",
+      "estimate": "Estimate",
+      "drive": "Google Drive",
+      "driveLink": "Google Drive link",
+      "description": "Description"
+    },
+    "titlePlaceholder": "Task title, e.g. Edit the TikTok video",
+    "descriptionPlaceholder": "What exactly needs to be done",
+    "drivePlaceholder": "Paste a link to a folder or file",
+    "estimatePlaceholder": "e.g. 2h, 90m",
+    "estimateHint": "How long the assignee expects it to take.",
+    "open": "Open ↗",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "close": "Close",
+    "delete": "Delete task",
+    "deleteConfirm": "Delete this task? This can't be undone.",
+    "createdBy": "Created by {name}, {date} · Changes save automatically",
+    "markDone": "Mark as done",
+    "reopen": "Move back to “In progress”",
+    "new": "New task",
+    "save": "Save task",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "defaultStatus": "Status is “To do”. Change it later from the details or the board.",
+    "quick": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "monday": "Monday",
+      "week": "In 7 days",
+      "clear": "No deadline"
+    },
+    "addPerson": "+ Team member",
+    "pickProject": "Pick a project — only managers can file tasks without one.",
+    "notFound": "This task doesn't exist or you don't have access to it.",
+    "saveFailed": "Couldn't save: {message}",
+    "subtaskOf": "↳ {title}",
+    "comments": "Comments",
+    "commentPlaceholder": "Write a comment…",
+    "commentSend": "Comment",
+    "noComments": "No comments yet.",
+    "edited": "edited"
+  },
+  "month": {
+    "name": "{m, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} other {December}}"
   }
 }
