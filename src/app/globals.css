@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+/* Slate 'n' Frame tokens — see docs/design/README.md ("Design tokeni").
+   Dark is the default theme; light is opt-in via <html data-theme="light">. */
+:root {
+  --bg: #2f2d2e;
+  --side: #1c1a1b;
+  --surf: #3b3839;
+  --surf2: #454142;
+  --line: rgba(244, 243, 237, 0.1);
+  --line2: rgba(244, 243, 237, 0.18);
+  --ink: #f4f3ed;
+  --ink2: rgba(244, 243, 237, 0.7);
+  --ink3: rgba(244, 243, 237, 0.48);
+  --chip: rgba(244, 243, 237, 0.07);
+  --red-bg: rgba(224, 71, 58, 0.18);
+  --red-ink: #f58a78;
+  --red-line: rgba(224, 71, 58, 0.55);
+  --rust-bg: rgba(234, 105, 58, 0.16);
+  --rust-ink: #f09a78;
+  --seg: #f4f3ed;
+  --seg-ink: #2f2d2e;
+  --logo-filter: none;
+  --btn-secondary-line: rgba(244, 243, 237, 0.36);
+
+  --accent: #ea693a;
+  --accent-hover: #ee8560;
+  --accent-active: #c6552c;
+  --overlay: rgba(28, 26, 27, 0.62);
+  --shadow-overlay: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --shadow-focus: 0 0 0 3px rgba(234, 105, 58, 0.35);
+
+  /* Semantic colors, identical in both themes */
+  --prio-low: #8f898a;
+  --prio-medium: #5b8ec2;
+  --prio-high: #ea693a;
+  --prio-urgent: #e0473a;
+  --status-todo: #a9a496;
+  --status-in-progress: #4fa3a5;
+  --status-waiting: #d6a93e;
+  --status-done: #6fae7b;
+  --client-active: #6fae7b;
+  --client-prospect: #ee8560;
+  --client-paused: #d6a93e;
+  --client-finished: #8f898a;
+
+  --dur-instant: 120ms;
+  --dur-fast: 200ms;
+  --dur-base: 360ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f3ed;
+  --side: #eae8de;
+  --surf: #fcfcf9;
+  --surf2: #ffffff;
+  --line: rgba(47, 45, 46, 0.1);
+  --line2: rgba(47, 45, 46, 0.2);
+  --ink: #2f2d2e;
+  --ink2: rgba(47, 45, 46, 0.72);
+  --ink3: rgba(47, 45, 46, 0.52);
+  --chip: rgba(47, 45, 46, 0.05);
+  --red-bg: rgba(224, 71, 58, 0.12);
+  --red-ink: #b3301f;
+  --red-line: rgba(179, 48, 31, 0.45);
+  --rust-bg: rgba(234, 105, 58, 0.14);
+  --rust-ink: #9e4021;
+  --seg: #2f2d2e;
+  --seg-ink: #f4f3ed;
+  --logo-filter: brightness(0.19);
+  --btn-secondary-line: rgba(47, 45, 46, 0.36);
+  --accent-hover: #c6552c;
+  --accent-active: #9e4021;
+
+  color-scheme: light;
+}
+
+@theme inline {
+  --font-display: var(--font-montserrat), "Archivo Black", system-ui, sans-serif;
+  --font-body: var(--font-dm-sans), system-ui, sans-serif;
+  --font-sans: var(--font-body);
+
+  --color-bg: var(--bg);
+  --color-side: var(--side);
+  --color-surf: var(--surf);
+  --color-surf2: var(--surf2);
+  --color-line: var(--line);
+  --color-line2: var(--line2);
+  --color-ink: var(--ink);
+  --color-ink2: var(--ink2);
+  --color-ink3: var(--ink3);
+  --color-chip: var(--chip);
+  --color-red-bg: var(--red-bg);
+  --color-red-ink: var(--red-ink);
+  --color-red-line: var(--red-line);
+  --color-rust-bg: var(--rust-bg);
+  --color-rust-ink: var(--rust-ink);
+  --color-seg: var(--seg);
+  --color-seg-ink: var(--seg-ink);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-charcoal: #2f2d2e;
+  --color-offwhite: #f4f3ed;
+  --color-ink-black: #1c1a1b;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Display headings: Montserrat Black, always uppercase */
+.display {
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.96;
+}
+
+.eyebrow {
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+@keyframes snf-spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes snf-pulse-scale {
+  0%, 100% { transform: scaleY(0.82); opacity: 0.82; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

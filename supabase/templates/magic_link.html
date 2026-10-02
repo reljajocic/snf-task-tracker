@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#1C1A1B">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#1C1A1B;padding:40px 16px">
+      <tr><td align="center">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#2F2D2E;border-radius:8px;padding:40px">
+          <tr><td style="font:700 12px/1 Arial,sans-serif;letter-spacing:3px;text-transform:uppercase;color:#EA693A">Slate 'n' Frame</td></tr>
+          <tr><td style="padding:20px 0 12px;font:900 30px/1 Arial Black,Arial,sans-serif;text-transform:uppercase;color:#F4F3ED">Your sign-in link</td></tr>
+          <tr><td style="font:400 16px/1.55 Arial,sans-serif;color:#C9C7C1">Tap the button to sign in to the Slate 'n' Frame task tracker. The link is valid for 15 minutes.</td></tr>
+          <tr><td style="padding:28px 0 0">
+            <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email" style="display:inline-block;background:#EA693A;color:#2F2D2E;font:600 14px/1 Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:16px 28px;border-radius:4px">Sign in</a>
+          </td></tr>
+          <tr><td style="padding:28px 0 0;font:400 14px/1.5 Arial,sans-serif;color:#A9A496">Or enter this code in the app:</td></tr>
+          <tr><td style="padding:8px 0 0;font:700 28px/1 'Courier New',monospace;letter-spacing:6px;color:#F4F3ED">{{ .Token }}</td></tr>
+          <tr><td style="padding:32px 0 0;font:400 13px/1.5 Arial,sans-serif;color:#8F898A">If you didn't ask for this, you can ignore this email.</td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>
