@@ -91,7 +91,7 @@ export function ListFilters({ people, clients }: { people: Person[]; clients: { 
       </div>
 
       <div className="flex flex-col gap-3 px-5 pb-3 lg:hidden">
-        <div className="flex gap-2 overflow-x-auto">
+        <div className="no-scrollbar flex gap-2 overflow-x-auto">
           {[{ id: "all", full_name: t("list.everyone") }, ...people].map((p) => {
             const selected = value("who") === p.id;
             return (

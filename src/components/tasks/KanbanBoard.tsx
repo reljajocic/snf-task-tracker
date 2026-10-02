@@ -77,7 +77,7 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
     <>
       {/* Mobile: status tabs */}
       <div className="flex flex-col lg:hidden">
-        <div className="flex flex-none gap-2 overflow-x-auto px-5 py-3.5">
+        <div className="no-scrollbar flex flex-none gap-2 overflow-x-auto px-5 py-3.5">
           {columns.map((c) => (
             <button
               key={c.status}

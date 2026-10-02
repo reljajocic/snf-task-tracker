@@ -73,7 +73,7 @@ export function LoginForm({ linkExpired }: { linkExpired: boolean }) {
             aria-label={t("emailLabel")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-14 rounded-lg border border-offwhite/36 bg-offwhite/6 px-4 text-[17px] text-offwhite outline-none focus:border-accent lg:h-[52px] lg:rounded-none lg:border-0 lg:border-b lg:border-accent lg:bg-transparent lg:px-0 lg:text-[18px] lg:focus:shadow-none"
+            className="h-14 rounded-lg border border-offwhite/36 bg-offwhite/6 px-4 text-[17px] text-offwhite outline-none focus:border-accent lg:h-[52px] lg:rounded-none lg:border-0 lg:border-b lg:border-accent lg:bg-transparent lg:px-0 lg:text-[18px] lg:focus-visible:shadow-none"
           />
         </label>
 

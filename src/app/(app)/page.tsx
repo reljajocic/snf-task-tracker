@@ -82,7 +82,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
         <Segmented items={toggle} full size="lg" />
         <PeopleStats stats={people} compact />
         <section className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
             {sectionTitle(t("home.todayLate"))}
             <span className="whitespace-nowrap text-[13px] font-semibold text-red-ink">{lateSummary}</span>
           </div>

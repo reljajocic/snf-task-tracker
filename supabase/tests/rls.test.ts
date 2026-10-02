@@ -172,6 +172,14 @@ describe("comments", () => {
 });
 
 describe("clients and projects", () => {
+  it("project members see the project's client without a client_members row", async () => {
+    const OTHER = "00000000-0000-0000-0000-00000000000e";
+    await db.query("insert into auth.users values ($1, 'pm@snf.test', '{}')", [OTHER]);
+    expect(await as(OTHER, "select name from public.clients")).toEqual([]);
+    await as(MANAGER, "insert into public.project_members (project_id, user_id) values ($1, $2)", [P1, OTHER]);
+    expect(await as(OTHER, "select name from public.clients")).toEqual([{ name: "C1" }]);
+  });
+
   it("only admins create clients; managers edit theirs", async () => {
     await expect(as(MANAGER, "insert into public.clients (name) values ('X')")).rejects.toThrow(/row-level security/);
     expect(await as(MANAGER, "update public.clients set city = 'Beograd' where id = $1 returning city", [C1])).toEqual([

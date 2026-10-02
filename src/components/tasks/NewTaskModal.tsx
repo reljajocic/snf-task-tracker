@@ -96,7 +96,7 @@ export function NewTaskModal({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder={t("titlePlaceholder")}
-            className="w-full border-0 border-b border-accent bg-transparent py-2 text-[20px] font-medium leading-tight text-ink outline-none placeholder:text-ink3 lg:text-[24px]"
+            className="focus-visible:shadow-none w-full border-0 border-b border-accent bg-transparent py-2 text-[20px] font-medium leading-tight text-ink outline-none placeholder:text-ink3 lg:text-[24px]"
           />
 
           <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">

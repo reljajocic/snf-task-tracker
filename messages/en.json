@@ -130,7 +130,54 @@
     }
   },
   "clients": {
-    "title": "Clients"
+    "title": "Clients",
+    "new": "+ New client",
+    "all": "All",
+    "tabs": {
+      "active": "Active",
+      "prospect": "Prospects",
+      "paused": "Paused",
+      "finished": "Finished"
+    },
+    "col": {
+      "client": "Client",
+      "status": "Status",
+      "services": "Services",
+      "open": "Open",
+      "next": "Next deadline",
+      "since": "Client since"
+    },
+    "late": "{count} late",
+    "empty": "No clients with this status.",
+    "none": "No clients yet.",
+    "back": "‹ Clients",
+    "edit": "Edit",
+    "tasks": "Tasks",
+    "openTab": "Open",
+    "doneTab": "Done",
+    "noTasks": "No tasks here.",
+    "projects": "Projects",
+    "newProject": "+ New project",
+    "noProjects": "No projects yet.",
+    "projectCounts": "{open} open · {done} done",
+    "contact": "Contact",
+    "email": "Email",
+    "instagram": "Instagram",
+    "city": "City",
+    "locations": "Locations",
+    "notes": "Notes",
+    "shortcuts": "Shortcuts",
+    "drive": "Google Drive folder ↗",
+    "noDrive": "No Drive folder linked.",
+    "team": "Team on this client",
+    "manager": "Manager",
+    "member": "Member",
+    "noTeam": "Nobody assigned yet.",
+    "addPerson": "Add person",
+    "remove": "Remove",
+    "makeManager": "Make manager",
+    "makeMember": "Make member",
+    "teamHint": "Managers see and manage everything for this client. Members only see projects they're on."
   },
   "team": {
     "title": "Team",
@@ -231,5 +278,56 @@
   },
   "month": {
     "name": "{m, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} other {December}}"
+  },
+  "clientStatus": {
+    "active": "Active",
+    "prospect": "Prospect",
+    "paused": "Paused",
+    "finished": "Finished"
+  },
+  "projectStatus": {
+    "active": "Active",
+    "on_hold": "On hold",
+    "completed": "Completed",
+    "archived": "Archived"
+  },
+  "clientForm": {
+    "newTitle": "New client",
+    "editTitle": "Edit client",
+    "name": "Client name",
+    "status": "Status",
+    "services": "Services",
+    "servicesHint": "Comma-separated, e.g. Social media, Video production",
+    "city": "City",
+    "since": "Client since",
+    "email": "Email",
+    "instagram": "Instagram",
+    "locations": "Locations",
+    "locationsHint": "Comma-separated (used for shoots)",
+    "drive": "Google Drive folder",
+    "notes": "Notes",
+    "save": "Save client",
+    "create": "Create client",
+    "cancel": "Cancel",
+    "delete": "Delete client",
+    "deleteConfirm": "Delete this client with all of its projects and tasks? This can't be undone.",
+    "nameRequired": "Name is required."
+  },
+  "projectForm": {
+    "newTitle": "New project",
+    "editTitle": "Edit project",
+    "name": "Project name",
+    "status": "Status",
+    "description": "Description",
+    "starts": "Starts",
+    "ends": "Ends",
+    "drive": "Google Drive folder",
+    "members": "People on this project",
+    "membersHint": "Members see every task in the project.",
+    "save": "Save project",
+    "cancel": "Cancel",
+    "delete": "Delete project",
+    "deleteConfirm": "Delete this project? Its tasks stay with the client, without a project.",
+    "nameRequired": "Name is required."
   }
 }

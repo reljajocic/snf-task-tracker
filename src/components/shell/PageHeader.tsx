@@ -19,7 +19,7 @@ export async function PageHeader({
   return (
     <header
       className={`flex flex-col gap-4 px-5 pb-5 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-6 lg:px-10 lg:pb-6 lg:pt-9 ${
-        border ? "border-b border-line" : ""
+        border ? "border-line lg:border-b" : ""
       }`}
     >
       <div className="flex min-w-0 flex-col gap-2.5">

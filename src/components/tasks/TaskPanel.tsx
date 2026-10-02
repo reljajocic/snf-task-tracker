@@ -190,7 +190,7 @@ function PanelBody({
           onChange={(e) => setTitle(e.target.value)}
           onBlur={() => title.trim() && title.trim() !== task.title && save({ title }, { title: title.trim() })}
           onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-          className="w-full border-0 border-b border-transparent bg-transparent py-1 text-[22px] font-medium leading-tight text-ink outline-none focus:border-accent lg:text-[26px]"
+          className="focus-visible:shadow-none w-full border-0 border-b border-transparent bg-transparent py-1 text-[22px] font-medium leading-tight text-ink outline-none focus:border-accent lg:text-[26px]"
         />
 
         <div className="flex flex-col">

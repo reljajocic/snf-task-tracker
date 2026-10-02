@@ -83,7 +83,7 @@ export default async function TaskListPage({ searchParams }: PageProps<"/tasks">
               <span className={`truncate text-[15px] font-medium leading-snug ${done ? "line-through" : ""}`}>{x.title}</span>
               <span className="truncate text-[14px] leading-tight text-ink2">{x.client?.name ?? t("task.noClient")}</span>
               <span className="hidden truncate text-[14px] leading-tight text-ink2 xl:block">{x.type ? t(`taskType.${x.type}`) : "—"}</span>
-              <AvatarStack people={x.assignees} size={26} />
+              <AvatarStack people={x.assignees} size={26} ring="var(--bg)" />
               <PriorityMark priority={x.priority} />
               <span className="hidden xl:block">
                 <StatusDot status={x.status} />

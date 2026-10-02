@@ -19,14 +19,14 @@ export function Avatar({ person, size = 28 }: { person: Person; size?: number })
   );
 }
 
-export function AvatarStack({ people, size = 28 }: { people: Person[]; size?: number }) {
+export function AvatarStack({ people, size = 28, ring = "var(--surf)" }: { people: Person[]; size?: number; ring?: string }) {
   return (
-    <span className="inline-flex">
+    <span className="inline-flex flex-none">
       {people.map((p, i) => (
         <span
           key={p.initials + i}
-          className="rounded-full ring-2 ring-[var(--bg)]"
-          style={{ marginLeft: i === 0 ? 0 : -8 }}
+          className="flex rounded-full"
+          style={{ marginLeft: i === 0 ? 0 : -8, boxShadow: `0 0 0 2px ${ring}` }}
         >
           <Avatar person={p} size={size} />
         </span>
