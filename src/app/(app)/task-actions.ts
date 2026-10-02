@@ -11,6 +11,8 @@ import {
   TASK_SELECT,
   TASK_TYPES,
   toTask,
+  type ScriptSection,
+  type ShotStatus,
   type RawTask,
   type Task,
   type TaskPriority,
@@ -35,6 +37,18 @@ export type TaskPatch = Partial<{
   client_id: string | null;
   project_id: string | null;
   position: number;
+  // Videos
+  kind: "task" | "video";
+  phase: number;
+  content_type: string | null;
+  on_camera: string | null;
+  location: string | null;
+  script: ScriptSection[];
+  reference_url: string | null;
+  note: string | null;
+  publish_date: string | null;
+  shoot_id: string | null;
+  shoot_time: string | null;
 }>;
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -55,6 +69,25 @@ function clean(patch: TaskPatch): TaskPatch {
   if (patch.client_id !== undefined) out.client_id = patch.client_id || null;
   if (patch.project_id !== undefined) out.project_id = patch.project_id || null;
   if (patch.position !== undefined && Number.isFinite(patch.position)) out.position = patch.position;
+  if (patch.kind !== undefined) out.kind = patch.kind === "video" ? "video" : "task";
+  if (patch.phase !== undefined && Number.isInteger(patch.phase) && patch.phase >= 0 && patch.phase <= 5) out.phase = patch.phase;
+  const textField = (k: "content_type" | "on_camera" | "location" | "reference_url" | "note") => {
+    if (patch[k] !== undefined) out[k] = patch[k]?.trim() || null;
+  };
+  textField("content_type");
+  textField("on_camera");
+  textField("location");
+  textField("reference_url");
+  textField("note");
+  if (patch.script !== undefined) {
+    out.script = (Array.isArray(patch.script) ? patch.script : [])
+      .map((x) => ({ label: String(x.label ?? "").trim().slice(0, 40), text: String(x.text ?? "") }))
+      .filter((x) => x.label || x.text.trim())
+      .slice(0, 20);
+  }
+  if (patch.publish_date !== undefined) out.publish_date = patch.publish_date && DATE_RE.test(patch.publish_date) ? patch.publish_date : null;
+  if (patch.shoot_id !== undefined) out.shoot_id = patch.shoot_id || null;
+  if (patch.shoot_time !== undefined) out.shoot_time = patch.shoot_time && /^\d{2}:\d{2}$/.test(patch.shoot_time) ? patch.shoot_time : null;
   return out;
 }
 
@@ -245,5 +278,45 @@ export async function deleteComment(commentId: string): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await supabase.from("task_comments").delete().eq("id", commentId);
   if (error) return { ok: false, error: error.message };
+  return { ok: true, data: null };
+}
+
+export async function addSubtask(
+  parentId: string,
+  input: { title: string; assignee_id: string | null; due_date: string | null },
+): Promise<ActionResult<{ id: string }>> {
+  const me = await requireProfile();
+  const title = input.title.trim();
+  if (!title) return { ok: false, error: "Title is required." };
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("tasks")
+    .insert({ title, parent_id: parentId, kind: "subtask", due_date: input.due_date && DATE_RE.test(input.due_date) ? input.due_date : null })
+    .select("id")
+    .single();
+  if (error) return { ok: false, error: error.message };
+  if (input.assignee_id) {
+    await supabase.from("task_assignees").insert({ task_id: data.id, user_id: input.assignee_id });
+    const assignee = input.assignee_id;
+    after(() => notify({ event: "task_assigned", taskId: data.id, recipientIds: [assignee], actorId: me.id }));
+  }
+  refresh();
+  return { ok: true, data: { id: data.id } };
+}
+
+export async function listSubtasks(parentId: string): Promise<Task[]> {
+  await requireProfile();
+  const supabase = await createClient();
+  const { data } = await supabase.from("tasks").select(TASK_SELECT).eq("parent_id", parentId).order("created_at").returns<RawTask[]>();
+  return (data ?? []).map(toTask);
+}
+
+/** On set: mark a video shot / not shot (crew can do this without full edit rights). */
+export async function setShotStatus(taskId: string, status: ShotStatus): Promise<ActionResult> {
+  await requireProfile();
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("mark_shot", { tid: taskId, new_status: status });
+  if (error) return { ok: false, error: error.message };
+  refresh();
   return { ok: true, data: null };
 }

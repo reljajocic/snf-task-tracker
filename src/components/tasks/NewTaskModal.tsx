@@ -7,7 +7,7 @@ import { createTask } from "@/app/(app)/task-actions";
 import { Button } from "@/components/ui/Button";
 import type { Lookups } from "@/lib/data";
 import { formatDate, type IsoDate } from "@/lib/dates";
-import { parseEstimate, type TaskPriority, type TaskStatus, type TaskType } from "@/lib/tasks";
+import { SCRIPT_SECTIONS, parseEstimate, type TaskPriority, type TaskStatus, type TaskType } from "@/lib/tasks";
 import { Pill } from "./bits";
 import { MonthGrid, quickDates } from "./DatePicker";
 import { ClientProjectSelects, PeoplePicker, PriorityPicker, StatusPicker, TypePicker, inputClass } from "./fields";
@@ -21,12 +21,17 @@ export function NewTaskModal({
 }: {
   lookups: Lookups;
   today: IsoDate;
-  defaults: { client_id?: string | null; project_id?: string | null; due_date?: string | null; status?: TaskStatus };
+  defaults: { client_id?: string | null; project_id?: string | null; due_date?: string | null; status?: TaskStatus; kind?: "task" | "video"; publish_date?: string | null };
   onClose: () => void;
 }) {
   const t = useTranslations("task");
+  const tv = useTranslations("video");
   const router = useRouter();
   const [title, setTitle] = useState("");
+  const [kind, setKind] = useState<"task" | "video">(defaults.kind ?? "task");
+  const [contentType, setContentType] = useState<string | null>(null);
+  const [onCamera, setOnCamera] = useState("");
+  const [location, setLocation] = useState("");
   const [where, setWhere] = useState({ client_id: defaults.client_id ?? null, project_id: defaults.project_id ?? null });
   const [assignees, setAssignees] = useState<string[]>([lookups.me.id]);
   const [due, setDue] = useState<IsoDate | null>(defaults.due_date ?? null);
@@ -54,12 +59,22 @@ export function NewTaskModal({
     startTransition(async () => {
       const res = await createTask({
         title,
+        kind,
+        ...(kind === "video"
+          ? {
+              content_type: contentType,
+              on_camera: onCamera,
+              location,
+              publish_date: defaults.publish_date ?? null,
+              script: SCRIPT_SECTIONS.map((label) => ({ label, text: "" })),
+            }
+          : {}),
         ...where,
         assignee_ids: assignees,
         due_date: due,
         status,
         priority,
-        type,
+        type: kind === "video" ? null : type,
         estimate_minutes: parseEstimate(estimate),
         drive_url: drive,
         description,
@@ -84,7 +99,22 @@ export function NewTaskModal({
         className="relative flex h-full w-full flex-col overflow-hidden bg-bg lg:h-auto lg:max-h-[calc(100dvh-48px)] lg:w-[760px] lg:rounded-[10px] lg:border lg:border-line2 lg:shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
       >
         <div className="flex items-center justify-between px-5 pt-6 lg:px-7 lg:pt-[22px]">
-          <h2 className="display whitespace-nowrap text-[22px] leading-tight">{t("new")}</h2>
+          <div className="flex items-center gap-4">
+            <h2 className="display whitespace-nowrap text-[22px] leading-tight">{t("new")}</h2>
+            <div className="inline-flex gap-0.5 rounded-[7px] border border-line2 p-[3px]">
+              {(["task", "video"] as const).map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  aria-pressed={kind === k}
+                  onClick={() => setKind(k)}
+                  className={`h-8 cursor-pointer rounded-[5px] px-3.5 text-[13px] font-medium ${kind === k ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
+                >
+                  {tv(k)}
+                </button>
+              ))}
+            </div>
+          </div>
           <button type="button" aria-label={t("cancel")} onClick={onClose} className="size-[34px] cursor-pointer rounded-md text-[22px] text-ink2 hover:text-ink">
             ×
           </button>
@@ -148,10 +178,36 @@ export function NewTaskModal({
               <PriorityPicker value={priority} onChange={setPriority} />
             </div>
 
-            <div className="flex flex-col gap-2 sm:col-span-2">
-              {label(t("fields.type"))}
-              <TypePicker value={type} onChange={setType} />
-            </div>
+            {kind === "video" ? (
+              <>
+                <div className="flex flex-col gap-2 sm:col-span-2">
+                  {label(tv("contentType"))}
+                  <div className="flex flex-wrap gap-1.5">
+                    {(client?.contentTypes.length ? client.contentTypes : ["FUN", "INFO", "GYM", "UGC", "PROMO"]).map((ct) => (
+                      <Pill key={ct} size="lg" selected={contentType === ct} onClick={() => setContentType(contentType === ct ? null : ct)}>
+                        {ct}
+                      </Pill>
+                    ))}
+                  </div>
+                </div>
+                <label className="flex flex-col gap-2">
+                  {label(tv("onCamera"))}
+                  <input value={onCamera} onChange={(e) => setOnCamera(e.target.value)} className={inputClass} />
+                </label>
+                <label className="flex flex-col gap-2">
+                  {label(tv("location"))}
+                  <input value={location} onChange={(e) => setLocation(e.target.value)} list="new-task-locations" className={inputClass} />
+                  <datalist id="new-task-locations">
+                    {client?.locations.map((l) => <option key={l} value={l} />)}
+                  </datalist>
+                </label>
+              </>
+            ) : (
+              <div className="flex flex-col gap-2 sm:col-span-2">
+                {label(t("fields.type"))}
+                <TypePicker value={type} onChange={setType} />
+              </div>
+            )}
 
             <label className="flex flex-col gap-2">
               {label(t("fields.estimate"))}

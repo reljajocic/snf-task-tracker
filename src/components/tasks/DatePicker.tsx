@@ -93,11 +93,13 @@ export function DatePicker({
   today,
   onChange,
   disabled,
+  emptyLabel,
 }: {
   value: IsoDate | null;
   today: IsoDate;
   onChange: (d: IsoDate | null) => void;
   disabled?: boolean;
+  emptyLabel?: string;
 }) {
   const t = useTranslations("task");
   const [open, setOpen] = useState(false);
@@ -130,7 +132,7 @@ export function DatePicker({
         onClick={() => setOpen((o) => !o)}
         className="h-[34px] cursor-pointer whitespace-nowrap rounded-md border border-line2 px-3 text-[14px] font-semibold text-ink disabled:cursor-default"
       >
-        {value ? formatDate(value) : t("noDue")} ▾
+        {value ? formatDate(value) : (emptyLabel ?? t("noDue"))} ▾
       </button>
       {open && (
         <div className="absolute left-0 top-[42px] z-20 flex w-[300px] flex-col gap-2.5 rounded-lg border border-line2 bg-surf p-3.5 shadow-[var(--shadow-overlay)]">

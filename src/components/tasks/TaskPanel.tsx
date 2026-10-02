@@ -21,6 +21,8 @@ import { dueTone, useDueText } from "./bits";
 import { DatePicker } from "./DatePicker";
 import { ClientProjectSelects, FieldRow, PeoplePicker, PriorityPicker, StatusPicker, TypePicker } from "./fields";
 import { dueLabel } from "@/lib/dates";
+import { VideoSection } from "./VideoSection";
+import { VideoTag } from "./video-bits";
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink2" };
 
@@ -64,7 +66,7 @@ export function TaskPanel({ id, lookups, today, onClose }: { id: string; lookups
       <section
         role="dialog"
         aria-modal="true"
-        className="absolute inset-y-0 right-0 flex w-full flex-col border-l border-line2 bg-bg shadow-[-20px_0_60px_rgba(0,0,0,0.35)] lg:w-[600px]"
+        className="absolute inset-y-0 right-0 flex w-full flex-col border-l border-line2 bg-bg shadow-[-20px_0_60px_rgba(0,0,0,0.35)] lg:w-[680px]"
       >
         {missing ? (
           <div className="flex flex-1 flex-col items-start gap-4 p-7">
@@ -168,7 +170,10 @@ function PanelBody({
   return (
     <>
       <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4 lg:px-7 lg:py-[18px]">
-        <span className="truncate text-[13px] font-medium text-ink3">{header}</span>
+        <span className="flex min-w-0 items-center gap-2.5">
+          {task.kind === "video" && <VideoTag contentType={task.content_type} size="md" />}
+          <span className="truncate text-[13px] font-medium text-ink3">{header}</span>
+        </span>
         <div className="flex items-center gap-1.5">
           <button type="button" onClick={copyLink} className="h-[34px] cursor-pointer whitespace-nowrap rounded-md border border-line2 px-3 text-[13px] font-medium text-ink2 hover:text-ink">
             {copied ? t("copied") : t("copyLink")}
@@ -192,6 +197,10 @@ function PanelBody({
           onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
           className="focus-visible:shadow-none w-full border-0 border-b border-transparent bg-transparent py-1 text-[22px] font-medium leading-tight text-ink outline-none focus:border-accent lg:text-[26px]"
         />
+
+        {task.kind === "video" && (
+          <VideoSection task={task} lookups={lookups} today={today} disabled={disabled} save={save} onChanged={onChanged} />
+        )}
 
         <div className="flex flex-col">
           <FieldRow label={t("fields.status")}>
@@ -238,11 +247,13 @@ function PanelBody({
               });
             }}
           />
-          <div className="border-b border-line">
-            <FieldRow label={t("fields.type")} top>
-              <TypePicker value={task.type} disabled={disabled} onChange={(type) => save({ type }, { type })} />
-            </FieldRow>
-          </div>
+          {task.kind !== "video" && (
+            <div className="border-b border-line">
+              <FieldRow label={t("fields.type")} top>
+                <TypePicker value={task.type} disabled={disabled} onChange={(type) => save({ type }, { type })} />
+              </FieldRow>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-2.5">

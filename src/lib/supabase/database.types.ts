@@ -53,6 +53,7 @@ export type Database = {
       clients: {
         Row: {
           city: string | null
+          content_types: string[]
           created_at: string
           created_by: string | null
           drive_url: string | null
@@ -62,6 +63,7 @@ export type Database = {
           locations: string[]
           name: string
           notes: string | null
+          posting_days: number[]
           services: string[]
           since: string | null
           status: Database["public"]["Enums"]["client_status"]
@@ -69,6 +71,7 @@ export type Database = {
         }
         Insert: {
           city?: string | null
+          content_types?: string[]
           created_at?: string
           created_by?: string | null
           drive_url?: string | null
@@ -78,6 +81,7 @@ export type Database = {
           locations?: string[]
           name: string
           notes?: string | null
+          posting_days?: number[]
           services?: string[]
           since?: string | null
           status?: Database["public"]["Enums"]["client_status"]
@@ -85,6 +89,7 @@ export type Database = {
         }
         Update: {
           city?: string | null
+          content_types?: string[]
           created_at?: string
           created_by?: string | null
           drive_url?: string | null
@@ -94,6 +99,7 @@ export type Database = {
           locations?: string[]
           name?: string
           notes?: string | null
+          posting_days?: number[]
           services?: string[]
           since?: string | null
           status?: Database["public"]["Enums"]["client_status"]
@@ -328,6 +334,87 @@ export type Database = {
           },
         ]
       }
+      shoot_crew: {
+        Row: {
+          shoot_id: string
+          user_id: string
+        }
+        Insert: {
+          shoot_id: string
+          user_id: string
+        }
+        Update: {
+          shoot_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shoot_crew_shoot_id_fkey"
+            columns: ["shoot_id"]
+            isOneToOne: false
+            referencedRelation: "shoot_days"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shoot_crew_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shoot_days: {
+        Row: {
+          client_id: string
+          created_at: string
+          created_by: string | null
+          date: string
+          ends_at: string | null
+          id: string
+          location: string | null
+          notes: string | null
+          starts_at: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          date: string
+          ends_at?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          starts_at?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          ends_at?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          starts_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shoot_days_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shoot_days_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_assignees: {
         Row: {
           created_at: string
@@ -407,6 +494,7 @@ export type Database = {
         Row: {
           client_id: string | null
           completed_at: string | null
+          content_type: string | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -415,10 +503,22 @@ export type Database = {
           estimate_minutes: number | null
           id: string
           kind: Database["public"]["Enums"]["task_kind"]
+          location: string | null
+          note: string | null
+          on_camera: string | null
           parent_id: string | null
+          phase: number | null
           position: number
           priority: Database["public"]["Enums"]["task_priority"]
           project_id: string | null
+          publish_date: string | null
+          published_at: string | null
+          reference_url: string | null
+          script: Json
+          shoot_id: string | null
+          shoot_order: number | null
+          shoot_time: string | null
+          shot_status: string | null
           status: Database["public"]["Enums"]["task_status"]
           status_changed_at: string
           title: string
@@ -428,6 +528,7 @@ export type Database = {
         Insert: {
           client_id?: string | null
           completed_at?: string | null
+          content_type?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -436,10 +537,22 @@ export type Database = {
           estimate_minutes?: number | null
           id?: string
           kind?: Database["public"]["Enums"]["task_kind"]
+          location?: string | null
+          note?: string | null
+          on_camera?: string | null
           parent_id?: string | null
+          phase?: number | null
           position?: number
           priority?: Database["public"]["Enums"]["task_priority"]
           project_id?: string | null
+          publish_date?: string | null
+          published_at?: string | null
+          reference_url?: string | null
+          script?: Json
+          shoot_id?: string | null
+          shoot_order?: number | null
+          shoot_time?: string | null
+          shot_status?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           status_changed_at?: string
           title: string
@@ -449,6 +562,7 @@ export type Database = {
         Update: {
           client_id?: string | null
           completed_at?: string | null
+          content_type?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -457,10 +571,22 @@ export type Database = {
           estimate_minutes?: number | null
           id?: string
           kind?: Database["public"]["Enums"]["task_kind"]
+          location?: string | null
+          note?: string | null
+          on_camera?: string | null
           parent_id?: string | null
+          phase?: number | null
           position?: number
           priority?: Database["public"]["Enums"]["task_priority"]
           project_id?: string | null
+          publish_date?: string | null
+          published_at?: string | null
+          reference_url?: string | null
+          script?: Json
+          shoot_id?: string | null
+          shoot_order?: number | null
+          shoot_time?: string | null
+          shot_status?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           status_changed_at?: string
           title?: string
@@ -496,6 +622,13 @@ export type Database = {
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tasks_shoot_id_fkey"
+            columns: ["shoot_id"]
+            isOneToOne: false
+            referencedRelation: "shoot_days"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -514,7 +647,12 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_client_manager: { Args: { cid: string }; Returns: boolean }
       is_project_member: { Args: { pid: string }; Returns: boolean }
+      is_shoot_crew: { Args: { sid: string }; Returns: boolean }
       is_task_assignee: { Args: { tid: string }; Returns: boolean }
+      mark_shot: {
+        Args: { new_status: string; tid: string }
+        Returns: undefined
+      }
       task_editable: {
         Args: { cid: string; creator: string; tid: string }
         Returns: boolean

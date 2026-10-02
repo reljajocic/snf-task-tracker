@@ -20,6 +20,9 @@ export type ClientOption = {
   status: string;
   /** Admin, or manager of this client: may file tasks without a project, create projects. */
   canManage: boolean;
+  contentTypes: string[];
+  locations: string[];
+  postingDays: number[];
   projects: { id: string; name: string; isMember: boolean }[];
 };
 
@@ -38,7 +41,7 @@ export const getLookups = cache(async (): Promise<Lookups> => {
       .eq("is_active", true)
       .order("full_name")
       .returns<Person[]>(),
-    supabase.from("clients").select("id, name, status").order("name"),
+    supabase.from("clients").select("id, name, status, content_types, locations, posting_days").order("name"),
     supabase.from("projects").select("id, name, client_id, status").neq("status", "archived").order("name"),
     supabase.from("client_members").select("client_id, role").eq("user_id", profile.id),
     supabase.from("project_members").select("project_id").eq("user_id", profile.id),
@@ -55,8 +58,13 @@ export const getLookups = cache(async (): Promise<Lookups> => {
     clients: (clients.data ?? []).map((c) => {
       const canManage = isAdmin || managerOf.has(c.id);
       return {
-        ...c,
+        id: c.id,
+        name: c.name,
+        status: c.status,
         canManage,
+        contentTypes: c.content_types ?? [],
+        locations: c.locations ?? [],
+        postingDays: c.posting_days ?? [0, 2, 4],
         projects: (projects.data ?? [])
           .filter((p) => p.client_id === c.id)
           .map((p) => ({ id: p.id, name: p.name, isMember: memberOf.has(p.id) })),

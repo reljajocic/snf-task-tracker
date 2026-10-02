@@ -9,6 +9,7 @@ import type { IsoDate } from "@/lib/dates";
 import { STATUSES, STATUS_COLOR, byDue, type Task, type TaskStatus } from "@/lib/tasks";
 import { DueChip, dueTone } from "./bits";
 import { TaskLink } from "./links";
+import { PhaseBar, VideoTag } from "./video-bits";
 
 function KanbanCard({ task, today, mobile = false }: { task: Task; today: IsoDate; mobile?: boolean }) {
   const t = useTranslations();
@@ -30,10 +31,15 @@ function KanbanCard({ task, today, mobile = false }: { task: Task; today: IsoDat
         <span className={`truncate font-semibold uppercase leading-tight tracking-[0.12em] text-ink3 ${mobile ? "text-[12px]" : "text-[11px]"}`}>
           {task.client?.name ?? t("task.noClient")}
         </span>
-        {task.type && <span className={`flex-none font-medium text-ink3 ${mobile ? "text-[13px]" : "text-[12px]"}`}>{t(`taskType.${task.type}`)}</span>}
+        {task.kind === "video" ? (
+          <VideoTag contentType={mobile ? task.content_type : null} />
+        ) : (
+          task.type && <span className={`flex-none font-medium text-ink3 ${mobile ? "text-[13px]" : "text-[12px]"}`}>{t(`taskType.${task.type}`)}</span>
+        )}
       </div>
       {task.parent && <span className="text-[12.5px] leading-tight text-ink3">{t("task.subtaskOf", { title: task.parent.title })}</span>}
       <span className={`font-medium leading-[1.35] ${mobile ? "text-[17px]" : "text-[15px]"} ${done ? "line-through" : ""}`}>{task.title}</span>
+      {task.kind === "video" && <PhaseBar task={task} />}
       <div className="flex items-center justify-between">
         <DueChip task={task} today={today} />
         <AvatarStack people={task.assignees} size={26} />

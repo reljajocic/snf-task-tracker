@@ -194,3 +194,59 @@ describe("clients and projects", () => {
     ).rejects.toThrow(/row-level security/);
   });
 });
+
+describe("content module", () => {
+  it("phase drives status for videos", async () => {
+    const [{ id }] = await as<{ id: string }>(
+      MANAGER,
+      "insert into public.tasks (title, kind, project_id) values ('Video A', 'video', $1) returning id",
+      [P1],
+    );
+    const row = async () =>
+      (await db.query<{ phase: number; status: string; published: boolean }>(
+        "select phase, status, published_at is not null as published from public.tasks where id = $1",
+        [id],
+      )).rows[0];
+    expect(await row()).toEqual({ phase: 0, status: "todo", published: false });
+    await as(MANAGER, "update public.tasks set phase = 3 where id = $1", [id]);
+    expect(await row()).toEqual({ phase: 3, status: "waiting_client", published: false });
+    await as(MANAGER, "update public.tasks set phase = 4 where id = $1", [id]);
+    expect(await row()).toEqual({ phase: 4, status: "in_progress", published: false });
+    await as(MANAGER, "update public.tasks set phase = 5 where id = $1", [id]);
+    expect(await row()).toEqual({ phase: 5, status: "done", published: true });
+    await as(MANAGER, "update public.tasks set phase = 2 where id = $1", [id]);
+    expect(await row()).toEqual({ phase: 2, status: "in_progress", published: false });
+  });
+
+  it("shoot crew sees and marks videos of their shoot day", async () => {
+    const CREW = "00000000-0000-0000-0000-00000000000f";
+    await db.query("insert into auth.users values ($1, 'crew@snf.test', '{}')", [CREW]);
+    const [{ id: shoot }] = await as<{ id: string }>(
+      MANAGER,
+      "insert into public.shoot_days (client_id, date) values ($1, '2026-10-02') returning id",
+      [C1],
+    );
+    const [{ id: video }] = await as<{ id: string }>(
+      MANAGER,
+      "insert into public.tasks (title, kind, client_id, shoot_id, shoot_time) values ('On set', 'video', $1, $2, '20:00') returning id",
+      [C1, shoot],
+    );
+    expect(await as(CREW, "select title from public.tasks where id = $1", [video])).toEqual([]);
+    await expect(as(CREW, "select public.mark_shot($1, 'shot')", [video])).rejects.toThrow(/Not allowed/);
+
+    await as(MANAGER, "insert into public.shoot_crew (shoot_id, user_id) values ($1, $2)", [shoot, CREW]);
+    expect(await as(CREW, "select title, phase from public.tasks where id = $1", [video])).toEqual([{ title: "On set", phase: 1 }]);
+    await as(CREW, "select public.mark_shot($1, 'shot')", [video]);
+    expect((await db.query("select shot_status, phase from public.tasks where id = $1", [video])).rows).toEqual([
+      { shot_status: "shot", phase: 2 },
+    ]);
+    // Crew can't otherwise edit the video.
+    expect(await as(CREW, "update public.tasks set title = 'x' where id = $1 returning id", [video])).toEqual([]);
+  });
+
+  it("members can't create shoot days; managers can", async () => {
+    await expect(
+      as(MEMBER, "insert into public.shoot_days (client_id, date) values ($1, '2026-10-05')", [C1]),
+    ).rejects.toThrow(/row-level security/);
+  });
+});
