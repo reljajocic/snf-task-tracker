@@ -42,7 +42,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       data-theme={theme}
       className={`${montserrat.variable} ${dmSans.variable} h-full`}
     >
-      <body className="min-h-full">
+      {/* Browser extensions (e.g. Grammarly) inject attributes on <body> before hydration. */}
+      <body className="min-h-full" suppressHydrationWarning>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>
