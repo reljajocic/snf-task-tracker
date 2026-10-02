@@ -1,0 +1,72 @@
+/* ==========================================================================
+   SLATE N' FRAME — TEXTURE, GRAIN & GRADIENT TOKENS
+   Gritty, cinematic surface treatment layered on top of the flat charcoal
+   field. Grain + subtle gradients replace what would otherwise be flat,
+   sterile UI backgrounds — think grade on 16mm, not a UI mockup.
+   ========================================================================== */
+
+:root {
+  /* ---- Grain ---- */
+  --grain-url: url('../assets/textures/grain.png'); /* @kind other */
+  --grain-opacity-subtle: 0.04; /* @kind other */
+  --grain-opacity-strong: 0.09; /* @kind other */
+  --grain-tile-size: 180px;
+
+  /* ---- Gradients — all derived from the 3 brand hues only.
+         Used behind hero/section content and on media scrims, never as a
+         loud decorative wash. ---- */
+  --gradient-hero: radial-gradient(120% 100% at 15% 0%, rgba(234,105,58,0.16) 0%, rgba(47,45,46,0) 55%),
+                    linear-gradient(180deg, var(--charcoal-900) 0%, var(--charcoal-950) 100%);
+  --gradient-glow-rust: radial-gradient(closest-side, rgba(234,105,58,0.35), rgba(234,105,58,0) 70%); /* @kind other */
+  --gradient-scrim-bottom: linear-gradient(180deg, rgba(28,26,27,0) 40%, rgba(28,26,27,0.9) 100%); /* @kind other */
+  --gradient-scrim-top: linear-gradient(0deg, rgba(28,26,27,0) 50%, rgba(28,26,27,0.7) 100%); /* @kind other */
+  --gradient-sheen: linear-gradient(115deg, rgba(244,243,237,0.10) 0%, rgba(244,243,237,0) 30%); /* @kind other */
+
+  /* ---- Liquid glass (frosted panel) — used sparingly: floating nav,
+         modal/lightbox chrome, badges over video. Never a full section
+         background — glass is a UI-chrome treatment, not a brand texture. ---- */
+  --glass-bg: rgba(244, 243, 237, 0.07);
+  --glass-bg-strong: rgba(244, 243, 237, 0.12);
+  --glass-border: rgba(244, 243, 237, 0.22);
+  --glass-blur: 18px;
+  --glass-saturate: 160%;
+  --glass-highlight: linear-gradient(135deg, rgba(244,243,237,0.20) 0%, rgba(244,243,237,0) 40%); /* @kind other */
+  --glass-shadow: 0 8px 32px rgba(0,0,0,0.35);
+}
+
+/* ---- Utility classes (opt-in — apply directly, or copy the pattern) ---- */
+
+.snf-grain {
+  position: relative;
+}
+.snf-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--grain-url);
+  background-size: var(--grain-tile-size) var(--grain-tile-size);
+  opacity: var(--grain-opacity-subtle);
+  mix-blend-mode: overlay;
+}
+.snf-grain-strong::after {
+  opacity: var(--grain-opacity-strong);
+}
+
+.snf-glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  isolation: isolate;
+}
+.snf-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass-highlight);
+  pointer-events: none;
+  z-index: -1;
+}

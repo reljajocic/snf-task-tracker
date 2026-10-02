@@ -1,0 +1,30 @@
+/* ==========================================================================
+   SLATE N' FRAME — RADII & ELEVATION
+   The brand mark is built from hard-edged rectangles + full circles (no
+   in-between radii in the logo) — the UI echoes that: mostly square corners,
+   with a small consistent radius on interactive controls, and full-round only
+   for pills/badges and the circular icon motifs.
+   ========================================================================== */
+
+:root {
+  --radius-none: 0px;
+  --radius-sm: 2px;    /* inputs, small chips */
+  --radius-md: 4px;    /* buttons, cards */
+  --radius-lg: 8px;    /* large media frames, modals */
+  --radius-pill: 999px; /* badges/tags, toggle */
+  --radius-circle: 50%; /* icon roundels */
+
+  /* Elevation — the brand is flat/matte (film-set lighting, not glassy UI).
+     Shadows are used sparingly: soft, warm-neutral, low-opacity, to lift a
+     card off the charcoal field — never a saturated or colored shadow. */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.32);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.40);
+  --shadow-focus: 0 0 0 3px rgba(234, 105, 58, 0.35); /* rust focus ring */
+
+  /* Grain — a very fine film-grain noise overlay is used across full-bleed
+     dark sections at low opacity to keep the flat charcoal from feeling
+     like a UI mockup. See guidelines/texture.card.html. */
+  --grain-opacity: 0.05; /* @kind other */
+}

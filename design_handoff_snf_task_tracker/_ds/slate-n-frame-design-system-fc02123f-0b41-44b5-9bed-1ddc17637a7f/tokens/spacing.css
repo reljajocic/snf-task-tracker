@@ -1,0 +1,40 @@
+/* ==========================================================================
+   SLATE N' FRAME — SPACING, GRID & BREAKPOINTS
+   Base unit 4px. Generous section rhythm for a cinematic, uncluttered feel.
+   ========================================================================== */
+
+:root {
+  --space-1: 0.25rem;   /* 4px  */
+  --space-2: 0.5rem;    /* 8px  */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.5rem;    /* 24px */
+  --space-6: 2rem;      /* 32px */
+  --space-7: 2.5rem;    /* 40px */
+  --space-8: 3rem;      /* 48px */
+  --space-9: 4rem;      /* 64px */
+  --space-10: 5rem;     /* 80px */
+  --space-11: 6.5rem;   /* 104px */
+  --space-12: 8rem;     /* 128px */
+  --space-13: 10rem;    /* 160px */
+
+  /* Semantic */
+  --gap-inline-xs: var(--space-2);
+  --gap-inline-sm: var(--space-4);
+  --gap-inline-md: var(--space-6);
+  --gap-card: var(--space-6);
+  --section-pad-y: clamp(4rem, 8vw, 8rem);   /* --space-9..12 responsive */
+  --section-pad-x: clamp(1.5rem, 5vw, 5rem);
+  --container-max: 1440px;
+  --container-narrow: 860px;
+
+  /* Grid */
+  --grid-columns: 12; /* @kind other */
+  --grid-gutter: var(--space-6);
+
+  /* Breakpoints (reference only — use in media queries as literals) */
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1440px;
+}

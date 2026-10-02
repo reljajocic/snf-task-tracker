@@ -1,0 +1,78 @@
+/* ==========================================================================
+   SLATE N' FRAME — COLOR TOKENS
+   Strictly derived from the 3 brand colors:
+   charcoal #2F2D2E · off-white #F4F3ED · rust orange #EA693A
+   ========================================================================== */
+
+:root {
+  /* ---- Base palette: CHARCOAL (backgrounds, ink) ---- */
+  --charcoal-950: #1C1A1B; /* deepest — page bg on long scroll, footers */
+  --charcoal-900: #2F2D2E; /* PRIMARY bg — brand charcoal, exact */
+  --charcoal-800: #3B3839; /* raised surface / card on charcoal */
+  --charcoal-700: #4A4647; /* hover surface */
+  --charcoal-600: #5C5758; /* borders on charcoal, disabled text */
+  --charcoal-500: #767071; /* muted icon / placeholder on charcoal */
+
+  /* ---- Base palette: OFF-WHITE (ink on dark, light bg) ---- */
+  --off-white-100: #FAFAF6; /* lightest — hero bg alt sections */
+  --off-white-90: #F4F3ED;  /* PRIMARY off-white — exact */
+  --off-white-80: #E7E5DA;  /* subtle panel on off-white bg */
+  --off-white-70: #D8D5C7;  /* borders / dividers on light bg */
+  --off-white-60: #C3BFAE;  /* muted text on light bg */
+
+  /* ---- Base palette: RUST ORANGE (accent only — never a background fill
+         larger than a control; reserved for focal, active, brand moments) ---- */
+  --rust-300: #F4A98D; /* tint — subtle accent wash, disabled accent */
+  --rust-400: #EE8560; /* tint — hover-lighten on dark */
+  --rust-500: #EA693A; /* PRIMARY rust — exact, default accent */
+  --rust-600: #C6552C; /* shade — hover/active on light bg, pressed state */
+  --rust-700: #9E4021; /* shade — deepest, text-on-off-white accent (AA) */
+
+  /* ---- Semantic: surfaces ---- */
+  --bg-page: var(--charcoal-900);          /* default site background */
+  --bg-page-alt: var(--off-white-90);      /* alternating light section */
+  --bg-surface: var(--charcoal-800);       /* card / panel on dark */
+  --bg-surface-alt: var(--off-white-100);  /* card / panel on light */
+  --bg-surface-hover: var(--charcoal-700);
+  --bg-inverse: var(--off-white-90);
+  --bg-scrim: rgba(28, 26, 27, 0.72);      /* video overlays, modals */
+
+  /* ---- Semantic: text ---- */
+  --text-on-dark: var(--off-white-90);
+  --text-on-dark-secondary: rgba(244, 243, 237, 0.68);
+  --text-on-dark-muted: rgba(244, 243, 237, 0.42);
+  --text-on-light: var(--charcoal-900);
+  --text-on-light-secondary: rgba(47, 45, 46, 0.66);
+  --text-on-light-muted: rgba(47, 45, 46, 0.40);
+  --text-accent: var(--rust-500);
+  --text-accent-on-light: var(--rust-700); /* meets AA on off-white */
+
+  /* ---- Semantic: accent / interactive ---- */
+  --accent: var(--rust-500);
+  --accent-hover: var(--rust-400);   /* lighten on hover (dark UI convention) */
+  --accent-active: var(--rust-600);  /* darken on press */
+  --accent-tint: var(--rust-300);
+  --accent-on-light-hover: var(--rust-600);
+  --accent-on-light-active: var(--rust-700);
+
+  /* ---- Semantic: borders ---- */
+  --border-on-dark-subtle: rgba(244, 243, 237, 0.10);
+  --border-on-dark: rgba(244, 243, 237, 0.20);
+  --border-on-dark-strong: rgba(244, 243, 237, 0.36);
+  --border-on-light-subtle: rgba(47, 45, 46, 0.08);
+  --border-on-light: rgba(47, 45, 46, 0.16);
+  --border-accent: var(--rust-500);
+
+  /* ---- Semantic: states (no colors outside the 3 brand hues —
+         success/error are communicated with rust + iconography/shape,
+         never a green/red, to stay on-system) ---- */
+  --state-focus-ring: var(--rust-500);
+  --state-error: var(--rust-500);
+  --state-error-bg: rgba(234, 105, 58, 0.12);
+  --state-success-border: var(--off-white-90);
+  --state-success-icon: var(--rust-500);
+  --state-disabled-bg-on-dark: rgba(244, 243, 237, 0.06);
+  --state-disabled-text-on-dark: rgba(244, 243, 237, 0.30);
+  --state-disabled-bg-on-light: rgba(47, 45, 46, 0.05);
+  --state-disabled-text-on-light: rgba(47, 45, 46, 0.30);
+}

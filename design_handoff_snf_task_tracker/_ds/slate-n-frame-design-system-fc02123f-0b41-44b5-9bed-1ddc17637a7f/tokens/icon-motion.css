@@ -1,0 +1,61 @@
+/* ==========================================================================
+   SLATE N' FRAME — ICON MOTION KEYFRAMES
+   Backing animations for <AnimatedIcon>. Every icon in the system is always
+   in motion — see AnimatedIcon.prompt.md for the full per-icon spec.
+   ========================================================================== */
+
+@keyframes snf-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes snf-spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes snf-breathe {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.045; }
+}
+
+@keyframes snf-drift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6%) rotate(3deg); }
+}
+
+@keyframes snf-pulse-scale {
+  0%, 100% { transform: scaleY(0.82); opacity: 0.82; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes snf-shutter {
+  0% { transform: rotate(0deg); }
+  8% { transform: rotate(52deg); }
+  16% { transform: rotate(45deg); }
+  100% { transform: rotate(405deg); }
+}
+
+/* Hover: every icon quickens + brightens slightly on hover — "focus-pull" */
+.snf-icon {
+  transition: filter var(--dur-fast) var(--ease-standard);
+}
+.snf-icon:hover > span, .snf-icon:hover > img {
+  animation-duration: var(--dur-icon-loop-fast) !important;
+  filter: drop-shadow(0 0 12px rgba(234, 105, 58, 0.35));
+}
+
+/* Scroll-reactive variant: paused until in view, then plays; JS toggles
+   [data-in-view] on the wrapper (see AnimatedIcon.prompt.md). */
+.snf-icon-scroll > span, .snf-icon-scroll > img {
+  animation-play-state: paused;
+}
+.snf-icon-scroll[data-in-view="true"] > span, .snf-icon-scroll[data-in-view="true"] > img {
+  animation-play-state: running;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snf-icon > span, .snf-icon > img {
+    animation: none !important;
+  }
+}

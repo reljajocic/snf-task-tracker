@@ -1,0 +1,27 @@
+/* ==========================================================================
+   SLATE N' FRAME — MOTION TOKENS
+   The whole site should feel like one continuous reel: nothing static,
+   everything subtle, premium, and slow enough to read as intentional.
+   ========================================================================== */
+
+:root {
+  /* Durations */
+  --dur-instant: 120ms; /* @kind other */
+  --dur-fast: 200ms; /* @kind other */
+  --dur-base: 360ms; /* @kind other */
+  --dur-slow: 600ms; /* @kind other */
+  --dur-reveal: 900ms; /* @kind other */
+  --dur-icon-loop-fast: 4s; /* @kind other */
+  --dur-icon-loop-base: 7s; /* @kind other */
+  --dur-icon-loop-slow: 12s; /* @kind other */
+
+  /* Easings */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* @kind other */
+  --ease-shutter: cubic-bezier(0.83, 0, 0.17, 1); /* @kind other */
+
+  /* Scroll reveal */
+  --reveal-distance: 28px; /* @kind spacing */
+  --reveal-stagger: 90ms; /* @kind other */
+}
