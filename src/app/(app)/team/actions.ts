@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { requireAdmin } from "@/lib/auth";
+import { env } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/server";
 import { AVATAR_COLORS } from "@/lib/team";
 
@@ -18,10 +18,6 @@ export async function inviteMember(_prev: InviteState, form: FormData): Promise<
   const role = form.get("role") === "admin" ? "admin" : "user";
   if (!email || !fullName) return { ok: false, message: "Name and email are required." };
 
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host");
-  const proto = h.get("x-forwarded-proto") ?? "https";
-
   const { error } = await createAdminClient().auth.admin.inviteUserByEmail(email, {
     data: {
       full_name: fullName,
@@ -30,7 +26,7 @@ export async function inviteMember(_prev: InviteState, form: FormData): Promise<
       avatar_fg: color.fg,
       role,
     },
-    redirectTo: `${proto}://${host}/auth/confirm`,
+    redirectTo: `${env.siteUrl}/auth/confirm`,
   });
 
   if (error) return { ok: false, message: error.message };

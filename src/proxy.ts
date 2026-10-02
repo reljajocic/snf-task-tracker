@@ -7,6 +7,15 @@ const PUBLIC_PATHS = ["/login", "/auth/", "/api/cron/"];
 
 /** Refreshes the Supabase session cookie and sends signed-out visitors to /login. */
 export async function proxy(request: NextRequest) {
+  // Send netlify.app hosts (incl. frozen per-deploy permalinks) to the canonical domain.
+  const canonical = new URL(env.siteUrl);
+  if (request.nextUrl.hostname.endsWith(".netlify.app") && canonical.hostname !== request.nextUrl.hostname) {
+    const url = request.nextUrl.clone();
+    url.protocol = canonical.protocol;
+    url.host = canonical.host;
+    return NextResponse.redirect(url, 308);
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(env.supabaseUrl, env.supabasePublishableKey, {

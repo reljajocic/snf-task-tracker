@@ -1,7 +1,7 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { env } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
 export type LoginResult =
@@ -10,12 +10,6 @@ export type LoginResult =
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-async function origin() {
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host");
-  const proto = h.get("x-forwarded-proto") ?? (host?.startsWith("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
-}
 
 export async function sendLoginLink(rawEmail: string): Promise<LoginResult> {
   const email = rawEmail.trim().toLowerCase();
@@ -27,7 +21,7 @@ export async function sendLoginLink(rawEmail: string): Promise<LoginResult> {
     options: {
       // Invite-only: unknown addresses never get an account.
       shouldCreateUser: false,
-      emailRedirectTo: `${await origin()}/auth/confirm`,
+      emailRedirectTo: `${env.siteUrl}/auth/confirm`,
     },
   });
 

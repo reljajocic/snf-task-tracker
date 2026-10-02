@@ -19,7 +19,9 @@ export const env = {
   supabaseSecretKey() {
     return required("SUPABASE_SECRET_KEY", process.env.SUPABASE_SECRET_KEY);
   },
+  /** Canonical app URL for links in emails. Never derived from request headers: on Netlify
+   *  those can be a per-deploy permalink (abc123--site.netlify.app) frozen on an old build. */
   get siteUrl() {
-    return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
   },
 };
