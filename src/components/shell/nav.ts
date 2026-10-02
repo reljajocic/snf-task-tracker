@@ -1,4 +1,4 @@
-// Single source for navigation. The "content" group (schedule, shoots) arrives in phase 2.
+// Single source for navigation.
 import type { NavIconName } from "./icons";
 
 export type NavItem = { href: string; key: string; icon: NavIconName; match?: string[] };
@@ -11,12 +11,19 @@ export const SIDEBAR_NAV: NavItem[] = [
   { href: "/clients", key: "clients", icon: "clients" },
 ];
 
+// "Content" group (design: SADRŽAJ): posting schedule and shoot days.
+export const CONTENT_NAV: NavItem[] = [
+  { href: "/content/schedule", key: "schedule", icon: "schedule" },
+  { href: "/content/shoots", key: "shoots", icon: "shoots" },
+];
+
 export const ADMIN_NAV: NavItem[] = [{ href: "/team", key: "team", icon: "team" }];
 
 // Mobile bottom bar: Kanban and list share the "Tasks" tab.
 export const MOBILE_NAV: NavItem[] = [
   { href: "/", key: "home", icon: "home" },
   { href: "/kanban", key: "tasks", icon: "kanban", match: ["/kanban", "/tasks"] },
+  { href: "/content/schedule", key: "content", icon: "schedule", match: ["/content"] },
   { href: "/calendar", key: "calendar", icon: "calendar" },
   { href: "/clients", key: "clients", icon: "clients" },
 ];

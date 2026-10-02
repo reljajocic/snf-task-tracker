@@ -100,6 +100,10 @@ export function ClientForm({ client, canDelete }: { client?: Client; canDelete?:
         <Field label={t("clientForm.locations")} hint={t("clientForm.locationsHint")} wide>
           <input name="locations" defaultValue={client?.locations.join(", ")} className={inputClass} />
         </Field>
+        <Field label={t("clientForm.contentTypes")} hint={t("clientForm.contentTypesHint")} wide>
+          <input name="content_types" defaultValue={(client?.content_types ?? ["FUN", "INFO", "GYM", "UGC", "PROMO"]).join(", ")} className={inputClass} />
+        </Field>
+        <PostingDays initial={client?.posting_days ?? [0, 2, 4]} label={t("clientForm.postingDays")} />
         <Field label={t("clientForm.notes")} wide>
           <textarea name="notes" rows={3} defaultValue={client?.notes ?? ""} className="resize-y rounded-md border border-line2 bg-transparent px-3 py-2.5 text-[14px] text-ink outline-none focus:border-accent" />
         </Field>
@@ -168,5 +172,32 @@ export function ProjectForm({ clientId, project, people }: { clientId: string; p
         </div>
       </FormShell>
     </form>
+  );
+}
+
+function PostingDays({ initial, label }: { initial: number[]; label: string }) {
+  const t = useTranslations("weekday");
+  const [days, setDays] = useState<number[]>(initial);
+  return (
+    <div className="flex flex-col gap-2 sm:col-span-2">
+      <span className="text-[13px] font-medium text-ink3">{label}</span>
+      {days.map((d) => <input key={d} type="hidden" name="posting_days" value={d} />)}
+      <div className="flex flex-wrap gap-1.5">
+        {[0, 1, 2, 3, 4, 5, 6].map((d) => {
+          const on = days.includes(d);
+          return (
+            <button
+              key={d}
+              type="button"
+              aria-pressed={on}
+              onClick={() => setDays(on ? days.filter((x) => x !== d) : [...days, d].sort())}
+              className={`h-[34px] cursor-pointer rounded-full border px-3 text-[13px] font-medium ${on ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"}`}
+            >
+              {t("short", { day: String(d) })}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 }

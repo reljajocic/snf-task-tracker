@@ -43,6 +43,11 @@ export async function saveClient(_prev: FormState, form: FormData): Promise<Form
     locations: list(form.get("locations")),
     drive_url: text(form.get("drive_url")),
     notes: text(form.get("notes")),
+    content_types: list(form.get("content_types")).map((x) => x.toUpperCase()),
+    posting_days: form
+      .getAll("posting_days")
+      .map(Number)
+      .filter((d) => Number.isInteger(d) && d >= 0 && d <= 6),
   };
   if (!fields.name) return { error: "Name is required." };
 

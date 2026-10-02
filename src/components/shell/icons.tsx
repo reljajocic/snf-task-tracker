@@ -61,6 +61,19 @@ export const NAV_ICONS = {
       <path d="M13.6 12.1c1.9.1 3.2 1.3 3.7 3.4" />
     </Icon>
   ),
+  schedule: (
+    <Icon>
+      <rect x="3" y="4.5" width="14" height="12" rx="1.5" />
+      <path d="M3 8.5h14M7 2.8v3.2M13 2.8v3.2" />
+      <path d="M8.3 11.2v3.2l2.9-1.6Z" fill="currentColor" stroke="none" />
+    </Icon>
+  ),
+  shoots: (
+    <Icon>
+      <rect x="3" y="8" width="14" height="8.5" rx="1" />
+      <path d="M3 8 15.6 4.4l.6 2.1L3.6 10.1M7.2 6.8l1.4 2.4M11.3 5.6l1.4 2.4" />
+    </Icon>
+  ),
   settings: (
     <Icon>
       <circle cx="10" cy="10" r="2.6" />
