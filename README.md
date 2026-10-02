@@ -49,6 +49,28 @@ Emails use the templates in `supabase/templates/` and land on `/auth/confirm`.
 The sign-in email also carries a one-time code, for the installed (PWA) app
 where opening a link would leave the app.
 
+## Notifications
+
+Event types (assigned, comment, status change, due tomorrow, overdue) are listed in
+`src/lib/notifications.ts`; each person switches them on/off in **Settings**. Events are
+written to the `notifications` table (outbox) and emailed through Resend (`src/lib/notify.ts`).
+Channels are pluggable — WhatsApp or Slack would be a new channel next to `email`.
+
+Daily reminders run from `.github/workflows/reminders.yml`, which calls
+`/api/cron/reminders` every morning. It needs two repository secrets: `APP_URL` and
+`CRON_SECRET` (the same value as the app's `CRON_SECRET` env var).
+
+## Deploying (Netlify)
+
+1. Netlify → *Add new project → Import from GitHub* → `snf-task-tracker`. Build settings come
+   from `netlify.toml`.
+2. Environment variables: everything in `.env.example`, with
+   `NEXT_PUBLIC_SITE_URL=https://app.slatenframe.com`.
+3. Domain: add `app.slatenframe.com` in Netlify, then a `CNAME app → <site>.netlify.app`
+   record in the DNS editor at unlimited.rs.
+4. Supabase → Authentication → URL Configuration: Site URL `https://app.slatenframe.com`,
+   and add `https://app.slatenframe.com/**` to Redirect URLs (keep the localhost one for dev).
+
 ## Conventions
 
 - UI copy lives in `messages/en.json` (next-intl). Adding a language = a new
