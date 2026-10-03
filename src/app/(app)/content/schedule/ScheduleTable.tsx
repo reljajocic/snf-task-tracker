@@ -20,7 +20,20 @@ export type ScheduleWeek = {
 const GRID = "grid grid-cols-[140px_minmax(0,1fr)_64px_150px_110px_140px_80px] gap-3.5";
 
 /** 2a: posting schedule as a table, grouped by week (desktop) / cards (mobile 2c). */
-export function ScheduleTable({ weeks, unscheduled, today, clientPicker }: { weeks: ScheduleWeek[]; unscheduled: Task[]; today: IsoDate; clientPicker: React.ReactNode }) {
+export function ScheduleTable({
+  weeks,
+  unscheduled,
+  today,
+  clientPicker,
+  profile = null,
+}: {
+  weeks: ScheduleWeek[];
+  unscheduled: Task[];
+  today: IsoDate;
+  clientPicker: React.ReactNode;
+  /** The profile being planned: a video without one gets it when it is put on a date. */
+  profile?: string | null;
+}) {
   const t = useTranslations();
   const router = useRouter();
   const [open, setOpen] = useState<string | null>(null);
@@ -40,7 +53,8 @@ export function ScheduleTable({ weeks, unscheduled, today, clientPicker }: { wee
 
   const assign = (videoId: string, date: IsoDate | null) =>
     startTransition(async () => {
-      await updateTask(videoId, { publish_date: date });
+      const claim = date && profile && !unscheduled.find((v) => v.id === videoId)?.profile;
+      await updateTask(videoId, claim ? { publish_date: date, profile } : { publish_date: date });
       router.refresh();
     });
 

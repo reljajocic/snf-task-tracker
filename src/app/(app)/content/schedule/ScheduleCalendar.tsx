@@ -15,12 +15,15 @@ export function ScheduleCalendar({
   unscheduled,
   postingDays,
   today,
+  profile = null,
 }: {
   month: IsoDate;
   videos: Task[];
   unscheduled: Task[];
   postingDays: number[];
   today: IsoDate;
+  /** The profile being planned: a video without one gets it when it is put on a date. */
+  profile?: string | null;
 }) {
   const t = useTranslations();
   const router = useRouter();
@@ -46,7 +49,8 @@ export function ScheduleCalendar({
     if (!id) return;
     startTransition(async () => {
       move({ id, date });
-      await updateTask(id, { publish_date: date });
+      const claim = date && profile && ![...videos, ...unscheduled].find((v) => v.id === id)?.profile;
+      await updateTask(id, claim ? { publish_date: date, profile } : { publish_date: date });
       router.refresh();
     });
   };

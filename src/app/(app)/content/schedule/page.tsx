@@ -57,7 +57,8 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
   // Table: two months. Calendar: one month (its grid shows whole weeks, so load a week either side).
   const periodEnd = addDays(shiftMonth(m, view === "table" ? 2 : 1), -1);
   const videos = (await getClientVideos(client.id, { posting: { from: addDays(startOfWeek(m), -7), to: addDays(periodEnd, 7) } })).filter(
-    (v) => !profile || v.profile === profile,
+    // Videos without a profile (e.g. meant for both) show in every profile until they're posted somewhere.
+    (v) => !profile || !v.profile || v.profile === profile,
   );
   const byDate = new Map<IsoDate, typeof videos>();
   for (const v of videos) if (v.publish_date) byDate.set(v.publish_date, [...(byDate.get(v.publish_date) ?? []), v]);
@@ -134,11 +135,11 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
         <p className="px-5 pb-3 text-[13px] font-medium text-red-ink lg:px-10">{t("schedule.notPublishedCount", { count: late })}</p>
       )}
       {view === "table" ? (
-        <ScheduleTable weeks={weeks} unscheduled={unscheduled} today={today} clientPicker={picker} />
+        <ScheduleTable weeks={weeks} unscheduled={unscheduled} today={today} clientPicker={picker} profile={profile} />
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-2.5 border-b border-line px-5 pb-[18px] lg:px-10">{picker}</div>
-          <ScheduleCalendar month={m} videos={videos} unscheduled={unscheduled} postingDays={client.postingDays} today={today} />
+          <ScheduleCalendar month={m} videos={videos} unscheduled={unscheduled} postingDays={client.postingDays} today={today} profile={profile} />
         </>
       )}
     </>
