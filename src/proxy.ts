@@ -7,10 +7,10 @@ const PUBLIC_PATHS = ["/login", "/auth/", "/api/cron/", "/p/"];
 
 /** Refreshes the Supabase session cookie and sends signed-out visitors to /login. */
 export async function proxy(request: NextRequest) {
-  // Send the host's own *.vercel.app / *.netlify.app addresses (incl. per-deploy URLs) to the canonical domain.
+  // Send the host's own *.vercel.app addresses (incl. per-deploy URLs) to the canonical domain.
   const canonical = new URL(env.siteUrl);
   const host = request.nextUrl.hostname;
-  if ((host.endsWith(".vercel.app") || host.endsWith(".netlify.app")) && canonical.hostname !== host) {
+  if (host.endsWith(".vercel.app") && canonical.hostname !== host) {
     const url = request.nextUrl.clone();
     url.protocol = canonical.protocol;
     url.host = canonical.host;
