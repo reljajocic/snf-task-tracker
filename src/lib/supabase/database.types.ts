@@ -686,13 +686,13 @@ export type Database = {
           id: string
           kind: Database["public"]["Enums"]["task_kind"]
           location: string | null
-          profile: string | null
           note: string | null
           on_camera: string | null
           parent_id: string | null
           phase: number | null
           position: number
           priority: Database["public"]["Enums"]["task_priority"]
+          profile: string | null
           project_id: string | null
           publish_date: string | null
           published_at: string | null
@@ -722,13 +722,13 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["task_kind"]
           location?: string | null
-          profile?: string | null
           note?: string | null
           on_camera?: string | null
           parent_id?: string | null
           phase?: number | null
           position?: number
           priority?: Database["public"]["Enums"]["task_priority"]
+          profile?: string | null
           project_id?: string | null
           publish_date?: string | null
           published_at?: string | null
@@ -758,13 +758,13 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["task_kind"]
           location?: string | null
-          profile?: string | null
           note?: string | null
           on_camera?: string | null
           parent_id?: string | null
           phase?: number | null
           position?: number
           priority?: Database["public"]["Enums"]["task_priority"]
+          profile?: string | null
           project_id?: string | null
           publish_date?: string | null
           published_at?: string | null
