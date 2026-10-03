@@ -116,7 +116,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
           </section>
         )}
         <section className="flex flex-col gap-3">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-baseline justify-between">
             {sectionTitle(t("home.waiting"))}
             <span className="text-[13px] font-semibold text-ink3">{waiting.length}</span>
           </div>
@@ -202,8 +202,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
             )}
           </section>
           <section className="flex flex-col gap-3.5">
-            <div className="flex items-center gap-3">
-              <img src="/brand/pulse-rust.png" alt="" className="size-7 animate-[snf-pulse-scale_2.4s_cubic-bezier(0.65,0,0.35,1)_infinite] object-contain" />
+            <div className="flex items-baseline justify-between">
               {sectionTitle(t("home.waiting"))}
               <span className="text-[13px] font-semibold text-ink3">{waiting.length}</span>
             </div>
