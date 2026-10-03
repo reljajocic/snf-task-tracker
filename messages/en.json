@@ -445,7 +445,8 @@
     "scriptHint": "Write it now or later — the client can approve it before the shoot.",
     "notesLabel": "Notes",
     "notesPlaceholder": "For the crew and editor: props, wardrobe, references, who must be in it…",
-    "laterHint": "Deadline, status and priority come in when the video moves to edit."
+    "laterHint": "Deadline, status and priority come in when the video moves to edit.",
+    "removeSection": "Remove section"
   },
   "schedule": {
     "title": "Posting schedule",

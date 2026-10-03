@@ -219,7 +219,16 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
       <span className="-mt-2 text-[12.5px] text-ink3">{tv("scriptHint")}</span>
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto">
         {script.map((s, i) => (
-          <div key={i} className="grid grid-cols-[88px_minmax(0,1fr)] gap-3 rounded-md border border-line px-3 py-2.5 focus-within:border-line2">
+          <div key={i} className="group relative grid grid-cols-[88px_minmax(0,1fr)] gap-3 rounded-md border border-line px-3 py-2.5 pr-8 focus-within:border-line2">
+            <button
+              type="button"
+              aria-label={tv("removeSection")}
+              title={tv("removeSection")}
+              onClick={() => setScript((cur) => cur.filter((_, j) => j !== i))}
+              className="absolute right-2 top-2 cursor-pointer text-[16px] leading-none text-ink3 opacity-60 hover:text-red-ink hover:opacity-100"
+            >
+              ×
+            </button>
             <input
               value={s.label}
               placeholder={tv("sectionLabel")}

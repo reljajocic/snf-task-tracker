@@ -354,7 +354,22 @@ function ScriptEditor({ task, disabled, save }: { task: Task; disabled: boolean;
       </div>
       <div className="flex flex-col gap-2">
         {sections.map((s, i) => (
-          <div key={i} className="group grid grid-cols-[88px_minmax(0,1fr)] gap-3 rounded-md border border-line px-3 py-2.5 focus-within:border-line2">
+          <div key={i} className="group relative grid grid-cols-[88px_minmax(0,1fr)] gap-3 rounded-md border border-line px-3 py-2.5 pr-8 focus-within:border-line2">
+            {!disabled && (
+              <button
+                type="button"
+                aria-label={t("removeSection")}
+                title={t("removeSection")}
+                onClick={() => {
+                  const next = sections.filter((_, j) => j !== i);
+                  setSections(next);
+                  commit(next);
+                }}
+                className="absolute right-2 top-2 cursor-pointer text-[16px] leading-none text-ink3 opacity-60 hover:text-red-ink hover:opacity-100"
+              >
+                ×
+              </button>
+            )}
             <input
               value={s.label}
               disabled={disabled}
