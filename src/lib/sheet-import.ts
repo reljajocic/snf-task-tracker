@@ -1,4 +1,4 @@
-import { textToSections } from "@/lib/script-text";
+import { splitReference, textToSections } from "@/lib/script-text";
 import type { ScriptSection, ShotStatus } from "@/lib/tasks";
 
 // Reads the team's shoot sheet (Google Sheets → CSV):
@@ -16,6 +16,7 @@ export type SheetVideo = {
   title: string;
   script: ScriptSection[];
   note: string;
+  reference: string | null;
 };
 
 export type ParsedShoot = { date: string | null; videos: SheetVideo[]; callTimes: { time: string; name: string; note: string }[] };
@@ -114,7 +115,10 @@ export function parseShootSheet(csv: string): ParsedShoot {
       type: get(r, col.type).toUpperCase(),
       title,
       script: textToSections(get(r, col.text)),
-      note: get(r, col.note),
+      ...(() => {
+        const { reference, rest } = splitReference(get(r, col.note));
+        return { note: rest, reference };
+      })(),
     });
   }
   return { date: findDate(rows), videos, callTimes };

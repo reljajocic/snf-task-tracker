@@ -29,7 +29,8 @@ describe("shoot sheet import", () => {
       ["not_shot", "21:10", "Anđela", "INFO", "Mlitave ruke"],
     ]);
     expect(shoot.videos[1].script.map((s) => s.label)).toEqual(["HOOK", "CTA 1", "BODY"]);
-    expect(shoot.videos[2].note).toBe("ceo link: https://vt.tiktok.com/x/");
+    expect(shoot.videos[2].reference).toBe("https://vt.tiktok.com/x/");
+    expect(shoot.videos[2].note).toBe("");
     expect(shoot.callTimes).toEqual([
       { time: "20:00", name: "Marko Rosandić", note: "" },
       { time: "21:10", name: "Anđela", note: "" },

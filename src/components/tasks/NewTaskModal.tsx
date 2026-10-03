@@ -53,6 +53,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const [location, setLocation] = useState("");
   const [script, setScript] = useState<ScriptSection[]>(SCRIPT_SECTIONS.map((label) => ({ label, text: "" })));
   const [note, setNote] = useState("");
+  const [reference, setReference] = useState("");
 
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -86,6 +87,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
               location,
               script: script.filter((s) => s.text.trim()),
               note,
+              reference_url: reference,
               drive_url: drive,
               publish_date: defaults.publish_date ?? null,
               shoot_id: defaults.shoot_id ?? null,
@@ -200,7 +202,11 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
         <input value={location} onChange={(e) => setLocation(e.target.value)} list="new-task-locations" className={inputClass} />
         <datalist id="new-task-locations">{client?.locations.map((l) => <option key={l} value={l} />)}</datalist>
       </label>
-      <label className="flex flex-col gap-2 sm:col-span-2">
+      <label className="flex flex-col gap-2">
+        {label(tv("referenceLabel"))}
+        <input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="https://tiktok.com/…" className={inputClass} />
+      </label>
+      <label className="flex flex-col gap-2">
         {label(t("fields.driveLink"))}
         <input value={drive} onChange={(e) => setDrive(e.target.value)} placeholder="drive.google.com/…" className={inputClass} />
       </label>

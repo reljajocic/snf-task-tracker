@@ -88,22 +88,6 @@ export async function removeFromShoot(videoId: string) {
   return { error: null };
 }
 
-/** Call sheet: who comes at what time. */
-export async function saveCallTimes(shootId: string, rows: { time: string; name: string; note: string }[]) {
-  await requireProfile();
-  const clean = rows
-    .map((r) => ({ time: String(r.time ?? "").trim(), name: String(r.name ?? "").trim().slice(0, 80), note: String(r.note ?? "").trim().slice(0, 200) }))
-    .filter((r) => /^\d{2}:\d{2}$/.test(r.time) && r.name)
-    .sort((a, b) => a.time.localeCompare(b.time))
-    .slice(0, 60);
-  const supabase = await createClient();
-  const { data, error } = await supabase.from("shoot_days").update({ call_times: clean }).eq("id", shootId).select("id");
-  if (error) return { error: error.message };
-  if (!data?.length) return { error: "You can't edit this shoot day." };
-  revalidatePath(`/content/shoots/${shootId}`);
-  return { error: null };
-}
-
 /**
  * Creates a shoot day with all its videos from the team's Google Sheet
  * (the sheet must be viewable by anyone with the link).
@@ -148,6 +132,7 @@ export async function importShootSheet(_prev: ShootFormState, form: FormData): P
       content_type: v.type || null,
       script: v.script,
       note: v.note || null,
+      reference_url: v.reference,
       shoot_id: shoot.id,
       shoot_time: v.time,
       shoot_order: v.order,

@@ -25,3 +25,35 @@ describe("script text", () => {
     expect(textToSections(sectionsToText(sections))).toEqual(sections);
   });
 });
+
+import { byShootTime, deriveCallTimes, splitReference } from "./script-text";
+
+describe("shoot helpers", () => {
+  it("sorts by time, untimed last", () => {
+    const rows = [
+      { id: "c", shoot_time: null, created_at: "1" },
+      { id: "b", shoot_time: "20:30", created_at: "2" },
+      { id: "a", shoot_time: "20:00", created_at: "3" },
+    ];
+    expect([...rows].sort(byShootTime).map((r) => r.id)).toEqual(["a", "b", "c"]);
+  });
+
+  it("derives call times from the rows", () => {
+    expect(
+      deriveCallTimes([
+        { shoot_time: "20:30", on_camera: "Draga" },
+        { shoot_time: "20:00", on_camera: "Marko" },
+        { shoot_time: "20:00", on_camera: "Marko" },
+        { shoot_time: "20:30", on_camera: "Anđela" },
+      ]),
+    ).toEqual([
+      { time: "20:00", name: "Marko" },
+      { time: "20:30", name: "Draga, Anđela" },
+    ]);
+  });
+
+  it("pulls the reference link out of a note", () => {
+    expect(splitReference("ceo link: https://vt.tiktok.com/x/")).toEqual({ reference: "https://vt.tiktok.com/x/", rest: "" });
+    expect(splitReference("Mora žensko da snima.")).toEqual({ reference: null, rest: "Mora žensko da snima." });
+  });
+});

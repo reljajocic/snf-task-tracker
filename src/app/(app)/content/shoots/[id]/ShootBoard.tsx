@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/Button";
 import type { ShootDay } from "@/lib/content";
 import { PHASES, type ShotStatus, type Task } from "@/lib/tasks";
 import { addVideosToShoot, removeFromShoot } from "../actions";
+import { byShootTime, deriveCallTimes } from "@/lib/script-text";
 import { CallTimes } from "./ShootTools";
 import { ShootSheet } from "./ShootSheet";
 
@@ -56,16 +57,17 @@ export function ShootBoard({
   const t = useTranslations();
   const router = useRouter();
   const [, startTransition] = useTransition();
-  const [items, mark] = useOptimistic(videos, (cur, { id, status }: { id: string; status: ShotStatus }) =>
+  const [unsorted, mark] = useOptimistic(videos, (cur, { id, status }: { id: string; status: ShotStatus }) =>
     cur.map((v) => (v.id === id ? { ...v, shot_status: status } : v)),
   );
+  const items = [...unsorted].sort(byShootTime);
   const [selected, setSelected] = useState<string | null>(videos[0]?.id ?? null);
   const [adding, setAdding] = useState(false);
   const [showDone, setShowDone] = useState(false);
 
   const slots = groupSlots(items).map((s) => {
-    const call = day.call_times.find((c) => c.time === s.time);
-    return call ? { ...s, onCamera: call.name } : s;
+    const names = [...new Set(s.items.map((v) => v.on_camera).filter(Boolean))].join(", ");
+    return names ? { ...s, onCamera: names } : s;
   });
   const shotVideos = items.filter((v) => v.shot_status === "shot");
   const shot = items.filter((v) => v.shot_status === "shot").length;
@@ -178,7 +180,7 @@ export function ShootBoard({
               </Link>
             )}
             <button type="button" onClick={() => setAdding((a) => !a)} className="cursor-pointer text-[14px] font-medium text-rust-ink">
-              {t("shoots.addVideos")}
+              {adding ? t("shoots.close") : t("shoots.addVideos")}
             </button>
           </span>
         )}
@@ -189,6 +191,7 @@ export function ShootBoard({
           shootId={day.id}
           clientId={day.client?.id ?? ""}
           candidates={candidates}
+          onClose={() => setAdding(false)}
           onDone={() => {
             setAdding(false);
             router.refresh();
@@ -199,7 +202,7 @@ export function ShootBoard({
 
       {/* Mobile: on set (2e) */}
       <div className="flex flex-col gap-[22px] px-5 pb-[120px] pt-5 lg:hidden">
-        <CallTimes shootId={day.id} initial={day.call_times} canManage={canManage} />
+        <CallTimes times={deriveCallTimes(items)} />
         {nowSlot && (
           <div className="flex flex-col gap-3 rounded-xl border border-accent bg-surf p-4">
             <div className="flex items-center gap-3">
@@ -279,7 +282,7 @@ export function ShootBoard({
       {desktopView === "sheet" && (
         <div className="hidden lg:block">
           <div className="px-10 pt-5">
-            <CallTimes shootId={day.id} initial={day.call_times} canManage={canManage} />
+            <CallTimes times={deriveCallTimes(items)} />
           </div>
           <ShootSheet shootId={day.id} clientId={day.client?.id ?? ""} videos={items} tags={tags} editable={canManage} />
         </div>
@@ -288,7 +291,7 @@ export function ShootBoard({
       {/* … or the on-set board (2d) */}
       <div className={`hidden min-h-0 flex-1 grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] ${desktopView === "onset" ? "lg:grid" : ""}`}>
         <div className="flex flex-col overflow-auto pb-10 pl-10 pr-8 pt-5">
-          <CallTimes shootId={day.id} initial={day.call_times} canManage={canManage} />
+          <CallTimes times={deriveCallTimes(items)} />
           {slots.map((s) => (
             <div key={s.time} className="flex flex-col gap-2 pt-5">
               <div className="flex items-center gap-3.5">
@@ -378,7 +381,7 @@ export function ShootBoard({
   );
 }
 
-function AddVideos({ shootId, clientId, candidates, onDone }: { shootId: string; clientId: string; candidates: Task[]; onDone: () => void }) {
+function AddVideos({ shootId, clientId, candidates, onDone, onClose }: { shootId: string; clientId: string; candidates: Task[]; onDone: () => void; onClose: () => void }) {
   const t = useTranslations("shoots");
   const tp = useTranslations("phase");
   const [picked, setPicked] = useState<Record<string, string>>({});
@@ -387,9 +390,14 @@ function AddVideos({ shootId, clientId, candidates, onDone }: { shootId: string;
 
   return (
     <div className="mx-5 mt-4 flex flex-col gap-3 rounded-lg border border-line2 bg-surf p-4 lg:mx-10">
-      <div className="flex flex-col gap-1">
-        <span className="display text-[15px]">{t("pickVideos")}</span>
-        <span className="text-[13px] text-ink3">{t("pickHint")}</span>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <span className="display text-[15px]">{t("pickVideos")}</span>
+          <span className="text-[13px] text-ink3">{t("pickHint")}</span>
+        </div>
+        <button type="button" aria-label={t("close")} title={t("close")} onClick={onClose} className="size-8 flex-none cursor-pointer rounded-md text-[20px] text-ink2 hover:bg-chip hover:text-ink">
+          ×
+        </button>
       </div>
       {candidates.length ? (
         <div className="flex flex-col">

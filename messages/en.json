@@ -450,7 +450,8 @@
     "notesLabel": "Notes",
     "notesPlaceholder": "For the crew and editor: props, wardrobe, references, who must be in it…",
     "laterHint": "Deadline, status and priority come in when the video moves to edit.",
-    "removeSection": "Remove section"
+    "removeSection": "Remove section",
+    "referenceLabel": "Reference"
   },
   "schedule": {
     "title": "Posting schedule",
@@ -560,7 +561,9 @@
       "import": "Import",
       "importing": "Importing…",
       "cancel": "Cancel"
-    }
+    },
+    "callTimesAuto": "From the table below.",
+    "close": "Close"
   },
   "portalSettings": {
     "title": "Client portal",
@@ -697,6 +700,13 @@
     "remove": "Remove from this shoot",
     "open": "Open video",
     "sheet": "Sheet",
-    "onSet": "On set"
+    "onSet": "On set",
+    "reference": "Reference",
+    "expand": "Show full text",
+    "collapse": "Hide",
+    "editText": "Edit text",
+    "openPanel": "Open video ↗",
+    "clickToEdit": "Click to edit",
+    "empty": "—"
   }
 }
