@@ -21,6 +21,7 @@ type Defaults = {
   kind?: "task" | "video";
   publish_date?: string | null;
   shoot_id?: string | null;
+  profile?: string | null;
 };
 
 /**
@@ -51,6 +52,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const [tagDraft, setTagDraft] = useState<string | null>(null);
   const [onCamera, setOnCamera] = useState("");
   const [location, setLocation] = useState("");
+  const [profile, setProfile] = useState(defaults.profile ?? "");
   const [script, setScript] = useState<ScriptSection[]>(SCRIPT_SECTIONS.map((label) => ({ label, text: "" })));
   const [note, setNote] = useState("");
   const [reference, setReference] = useState("");
@@ -85,6 +87,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
               content_type: contentType,
               on_camera: onCamera,
               location,
+              profile: client?.profiles.length ? profile || null : null,
               script: script.filter((s) => s.text.trim()),
               note,
               reference_url: reference,
@@ -202,6 +205,15 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
         <input value={location} onChange={(e) => setLocation(e.target.value)} list="new-task-locations" className={inputClass} />
         <datalist id="new-task-locations">{client?.locations.map((l) => <option key={l} value={l} />)}</datalist>
       </label>
+      {client && client.profiles.length > 0 && (
+        <label className="flex flex-col gap-2">
+          {label(tv("profile"))}
+          <select value={profile} onChange={(e) => setProfile(e.target.value)} className={`${inputClass} cursor-pointer`}>
+            <option value="">—</option>
+            {client.profiles.map((p) => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </label>
+      )}
       <label className="flex flex-col gap-2">
         {label(tv("referenceLabel"))}
         <input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="https://tiktok.com/…" className={inputClass} />

@@ -17,6 +17,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   const router = useRouter();
   const [type, setType] = useState<string | null>(null);
   const [location, setLocation] = useState<string | null>(null);
+  const [profile, setProfile] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
@@ -31,7 +32,10 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
 
   const types = [...new Set(videos.map((v) => v.content_type).filter(Boolean))] as string[];
   const locations = [...new Set(videos.map((v) => v.location).filter(Boolean))] as string[];
-  const shown = videos.filter((v) => (!type || v.content_type === type) && (!location || v.location === location));
+  const profiles = [...new Set(videos.map((v) => v.profile).filter(Boolean))] as string[];
+  const shown = videos.filter(
+    (v) => (!type || v.content_type === type) && (!location || v.location === location) && (!profile || v.profile === profile),
+  );
   const chip = (active: boolean) =>
     `h-8 cursor-pointer whitespace-nowrap rounded-full border px-3 text-[12.5px] font-semibold tracking-[0.04em] ${active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`;
   const action = "h-8 cursor-pointer whitespace-nowrap rounded-md border border-line2 bg-transparent px-2.5 text-[12.5px] font-medium text-ink2 hover:border-ink hover:text-ink disabled:opacity-50";
@@ -48,8 +52,18 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
 
   return (
     <div className="flex flex-col gap-4 px-5 pb-[120px] pt-5 lg:px-10 lg:pb-12">
-      {(types.length > 1 || locations.length > 1) && (
+      {(types.length > 1 || locations.length > 1 || profiles.length > 1) && (
         <div className="flex flex-wrap gap-1.5">
+          {profiles.length > 1 && (
+            <>
+              {profiles.map((x) => (
+                <button key={x} type="button" onClick={() => setProfile(profile === x ? null : x)} className={chip(profile === x)}>
+                  {x}
+                </button>
+              ))}
+              <span className="mx-1 h-8 w-px bg-line2" />
+            </>
+          )}
           {types.map((x) => (
             <button key={x} type="button" onClick={() => setType(type === x ? null : x)} className={chip(type === x)}>
               {x}
@@ -83,8 +97,8 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                     )}
                     <span className="min-w-0 truncate text-[15px] font-medium leading-snug text-ink">{v.title}</span>
                   </span>
-                  {(v.on_camera || v.location || m) && (
-                    <span className="truncate text-[12.5px] text-ink3">{[v.on_camera, v.location, m].filter(Boolean).join(" · ")}</span>
+                  {(v.profile || v.on_camera || v.location || m) && (
+                    <span className="truncate text-[12.5px] text-ink3">{[v.profile, v.on_camera, v.location, m].filter(Boolean).join(" · ")}</span>
                   )}
                   {first && (
                     <span className="line-clamp-2 max-w-[720px] text-[13px] leading-snug text-ink2">

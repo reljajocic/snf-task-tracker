@@ -128,6 +128,19 @@ export function VideoSection({
             onSave={(v) => save({ location: v }, { location: v || null })}
           />
         </Fact>
+        {client && client.profiles.length > 0 && (
+          <Fact label={t("video.profile")}>
+            <select
+              value={task.profile ?? ""}
+              disabled={disabled}
+              onChange={(e) => save({ profile: e.target.value || null }, { profile: e.target.value || null })}
+              className="-ml-1 cursor-pointer appearance-none bg-transparent px-1 text-[15px] font-medium text-ink outline-none disabled:cursor-default"
+            >
+              <option value="">—</option>
+              {client.profiles.map((p) => <option key={p} value={p}>{p}</option>)}
+            </select>
+          </Fact>
+        )}
         <Fact label={t("video.shoot")}>
           {task.shoot ? (
             <Link href={`/content/shoots/${task.shoot.id}`} className="text-[15px] font-medium hover:underline">

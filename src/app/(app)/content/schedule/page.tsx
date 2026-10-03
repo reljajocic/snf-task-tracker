@@ -20,7 +20,7 @@ function shiftMonth(d: IsoDate, delta: number): IsoDate {
   return new Date(Date.UTC(y, m - 1 + delta, 1)).toISOString().slice(0, 10);
 }
 
-// 2a / 2b / 2c. URL: ?client=<id>&m=YYYY-MM&view=table|calendar
+// 2a / 2b / 2c. URL: ?client=<id>&m=YYYY-MM&view=table|calendar&profile=<name>|all
 export default async function SchedulePage({ searchParams }: PageProps<"/content/schedule">) {
   const [params, lookups, t] = await Promise.all([searchParams, getLookups(), getTranslations()]);
   const today = getToday();
@@ -29,8 +29,18 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
   const client = clients.find((c) => c.id === params.client) ?? clients.find((c) => c.status === "active") ?? clients[0];
   const m = typeof params.m === "string" && /^\d{4}-\d{2}$/.test(params.m) ? `${params.m}-01` : monthStart(today);
 
+  // Clients posting to several profiles get a schedule per profile (first one by default).
+  const profiles = client?.profiles ?? [];
+  const profile = profiles.length ? (params.profile === "all" ? null : profiles.find((p) => p === params.profile) ?? profiles[0]) : null;
+
   const href = (patch: Record<string, string | null>) => {
-    const merged: Record<string, string | null> = { client: client?.id ?? null, m: m.slice(0, 7), view: view === "table" ? null : view, ...patch };
+    const merged: Record<string, string | null> = {
+      client: client?.id ?? null,
+      m: m.slice(0, 7),
+      view: view === "table" ? null : view,
+      profile: profiles.length ? (profile ?? "all") : null,
+      ...patch,
+    };
     const qs = new URLSearchParams(Object.entries(merged).filter(([, v]) => v) as [string, string][]).toString();
     return qs ? `/content/schedule?${qs}` : "/content/schedule";
   };
@@ -44,7 +54,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     );
   }
 
-  const videos = await getClientVideos(client.id);
+  const videos = (await getClientVideos(client.id)).filter((v) => !profile || v.profile === profile);
   // Table: two months. Calendar: one month.
   const periodEnd = addDays(shiftMonth(m, view === "table" ? 2 : 1), -1);
   const byDate = new Map<IsoDate, typeof videos>();
@@ -78,12 +88,22 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     view === "table"
       ? `${monthName(m).slice(0, 3)} – ${monthName(shiftMonth(m, 1)).slice(0, 3)} ${shiftMonth(m, 1).slice(0, 4)}`
       : `${monthName(m)} ${m.slice(0, 4)}`;
-  const addHref = `?new=1&kind=video&client=${client.id}`;
+  const addHref = `?new=1&kind=video&client=${client.id}${profile ? `&profile=${encodeURIComponent(profile)}` : ""}`;
 
   const picker = (
-    <Suspense>
-      <ClientPicker clients={clients.map((c) => ({ id: c.id, name: c.name }))} value={client.id} />
-    </Suspense>
+    <>
+      <Suspense>
+        <ClientPicker clients={clients.map((c) => ({ id: c.id, name: c.name }))} value={client.id} />
+      </Suspense>
+      {profiles.length > 0 && (
+        <Segmented
+          items={[
+            ...profiles.map((p) => ({ key: p, label: p, href: href({ profile: p }), active: profile === p })),
+            { key: "all", label: t("schedule.allProfiles"), href: href({ profile: "all" }), active: profile === null },
+          ]}
+        />
+      )}
+    </>
   );
 
   const controls = (
@@ -115,7 +135,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
         <ScheduleTable weeks={weeks} unscheduled={unscheduled} today={today} clientPicker={picker} />
       ) : (
         <>
-          <div className="border-b border-line px-5 pb-[18px] lg:px-10">{picker}</div>
+          <div className="flex flex-wrap items-center gap-2.5 border-b border-line px-5 pb-[18px] lg:px-10">{picker}</div>
           <ScheduleCalendar month={m} videos={videos} unscheduled={unscheduled} postingDays={client.postingDays} today={today} />
         </>
       )}

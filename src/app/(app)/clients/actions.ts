@@ -49,6 +49,7 @@ export async function saveClient(_prev: FormState, form: FormData): Promise<Form
       }
     })(),
     locations: list(form.get("locations")),
+    profiles: list(form.get("profiles")),
     drive_url: text(form.get("drive_url")),
     notes: text(form.get("notes")),
     content_types: list(form.get("content_types")).map((x) => x.toUpperCase()),

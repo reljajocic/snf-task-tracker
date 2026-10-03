@@ -160,6 +160,7 @@ export type Database = {
           name: string
           notes: string | null
           posting_days: number[]
+          profiles: string[]
           services: string[]
           since: string | null
           socials: Json
@@ -180,6 +181,7 @@ export type Database = {
           name: string
           notes?: string | null
           posting_days?: number[]
+          profiles?: string[]
           services?: string[]
           since?: string | null
           socials?: Json
@@ -200,6 +202,7 @@ export type Database = {
           name?: string
           notes?: string | null
           posting_days?: number[]
+          profiles?: string[]
           services?: string[]
           since?: string | null
           socials?: Json
@@ -683,6 +686,7 @@ export type Database = {
           id: string
           kind: Database["public"]["Enums"]["task_kind"]
           location: string | null
+          profile: string | null
           note: string | null
           on_camera: string | null
           parent_id: string | null
@@ -718,6 +722,7 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["task_kind"]
           location?: string | null
+          profile?: string | null
           note?: string | null
           on_camera?: string | null
           parent_id?: string | null
@@ -753,6 +758,7 @@ export type Database = {
           id?: string
           kind?: Database["public"]["Enums"]["task_kind"]
           location?: string | null
+          profile?: string | null
           note?: string | null
           on_camera?: string | null
           parent_id?: string | null

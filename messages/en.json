@@ -315,6 +315,8 @@
     "instagram": "Instagram",
     "locations": "Locations",
     "locationsHint": "Comma-separated (used for shoots)",
+    "profiles": "Profiles with their own schedule",
+    "profilesHint": "Only if you post to more than one profile for this client, e.g. Kymco Srbija, QJ Srbija. Each gets its own posting schedule.",
     "drive": "Google Drive folder",
     "notes": "Notes",
     "save": "Save client",
@@ -429,6 +431,7 @@
     "contentType": "Content type",
     "onCamera": "On camera",
     "location": "Location",
+    "profile": "Profile",
     "shoot": "Shoot",
     "publish": "Publish",
     "noShoot": "Not on a shoot day",
@@ -496,7 +499,8 @@
     "period": "{from} – {to}",
     "noVideos": "No unscheduled videos.",
     "more": "+{count}",
-    "markPublished": "✓ Mark published"
+    "markPublished": "✓ Mark published",
+    "allProfiles": "All profiles"
   },
   "shoots": {
     "title": "Shoots",

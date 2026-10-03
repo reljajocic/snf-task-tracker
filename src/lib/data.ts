@@ -35,6 +35,8 @@ export type ClientOption = {
   defaultEditorId: string | null;
   contentTypes: string[];
   locations: string[];
+  /** Social profiles with their own posting schedule (empty: just one). */
+  profiles: string[];
   postingDays: number[];
   /** Who is on the client's team (user ids): the people work can be assigned to. */
   team: string[];
@@ -57,7 +59,7 @@ export const getLookups = cache(async (): Promise<Lookups> => {
       .eq("is_active", true)
       .order("full_name")
       .returns<Person[]>(),
-    supabase.from("clients").select("id, name, status, content_types, locations, posting_days, default_editor_id").order("name"),
+    supabase.from("clients").select("id, name, status, content_types, locations, profiles, posting_days, default_editor_id").order("name"),
     supabase.from("projects").select("id, name, client_id, status").neq("status", "archived").order("name"),
     supabase.from("client_members").select("client_id, role").eq("user_id", userId),
     supabase.from("project_members").select("project_id").eq("user_id", userId),
@@ -85,6 +87,7 @@ export const getLookups = cache(async (): Promise<Lookups> => {
         defaultEditorId: c.default_editor_id ?? null,
         contentTypes: c.content_types ?? [],
         locations: c.locations ?? [],
+        profiles: c.profiles ?? [],
         postingDays: c.posting_days ?? [0, 2, 4],
         team: (teams.data ?? []).filter((m) => m.client_id === c.id).map((m) => m.user_id),
         projects: (projects.data ?? [])

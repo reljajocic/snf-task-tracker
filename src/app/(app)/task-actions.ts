@@ -45,6 +45,7 @@ export type TaskPatch = Partial<{
   content_type: string | null;
   on_camera: string | null;
   location: string | null;
+  profile: string | null;
   script: ScriptSection[];
   reference_url: string | null;
   note: string | null;
@@ -74,12 +75,13 @@ function clean(patch: TaskPatch): TaskPatch {
   if (patch.position !== undefined && Number.isFinite(patch.position)) out.position = patch.position;
   if (patch.kind !== undefined) out.kind = patch.kind === "video" ? "video" : "task";
   if (patch.phase !== undefined && Number.isInteger(patch.phase) && patch.phase >= 0 && patch.phase <= 5) out.phase = patch.phase;
-  const textField = (k: "content_type" | "on_camera" | "location" | "reference_url" | "note") => {
+  const textField = (k: "content_type" | "on_camera" | "location" | "profile" | "reference_url" | "note") => {
     if (patch[k] !== undefined) out[k] = patch[k]?.trim() || null;
   };
   textField("content_type");
   textField("on_camera");
   textField("location");
+  textField("profile");
   textField("reference_url");
   textField("note");
   if (patch.script !== undefined) {

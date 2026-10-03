@@ -100,6 +100,9 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
         <Field label={t("clientForm.locations")} hint={t("clientForm.locationsHint")} wide>
           <input name="locations" defaultValue={client?.locations.join(", ")} className={inputClass} />
         </Field>
+        <Field label={t("clientForm.profiles")} hint={t("clientForm.profilesHint")} wide>
+          <input name="profiles" placeholder="Kymco Srbija, QJ Srbija" defaultValue={(client?.profiles ?? []).join(", ")} className={inputClass} />
+        </Field>
         <Field label={t("clientForm.contentTypes")} hint={t("clientForm.contentTypesHint")} wide>
           <input name="content_types" defaultValue={(client?.content_types ?? []).join(", ")} className={inputClass} />
         </Field>

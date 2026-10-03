@@ -66,6 +66,7 @@ export type Task = {
   content_type: string | null;
   on_camera: string | null;
   location: string | null;
+  profile: string | null;
   script: ScriptSection[];
   reference_url: string | null;
   note: string | null;
@@ -90,7 +91,7 @@ export const TASK_SELECT = `
   project:projects(id, name),
   parent:parent_id(id, title),
   task_assignees(profile:profiles(${PERSON_COLS})),
-  phase, content_type, on_camera, location, script, reference_url, note,
+  phase, content_type, on_camera, location, profile, script, reference_url, note,
   publish_date, published_at, dropped_at, shoot_id, shoot_time, shot_status,
   shoot:shoot_days(id, date, location),
   subtasks:tasks!parent_id(status)
