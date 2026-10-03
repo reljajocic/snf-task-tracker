@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { updateTask } from "@/app/(app)/task-actions";
 import { TaskLink } from "@/components/tasks/links";
+import { AssignPicker } from "./AssignPicker";
 import { formatDate, formatShortDate, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { POSTING_STATUS_COLOR, postingStatus, type PostingStatus, type Task } from "@/lib/tasks";
 
@@ -58,20 +59,7 @@ export function ScheduleTable({ weeks, unscheduled, today, clientPicker }: { wee
   };
 
   const assignSelect = (date: IsoDate) =>
-    unscheduled.length > 0 && (
-      <select
-        value=""
-        onChange={(e) => e.target.value && assign(e.target.value, date)}
-        className="max-w-[220px] cursor-pointer appearance-none truncate border-0 bg-transparent text-right text-[13px] font-medium text-ink2 outline-none hover:text-ink"
-      >
-        <option value="">{t("schedule.assign")}</option>
-        {unscheduled.map((v) => (
-          <option key={v.id} value={v.id}>
-            {v.title}
-          </option>
-        ))}
-      </select>
-    );
+    unscheduled.length > 0 && <AssignPicker videos={unscheduled} onPick={(id) => assign(id, date)} />;
 
   return (
     <div className="flex flex-col pb-[120px] lg:pb-12">

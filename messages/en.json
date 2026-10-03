@@ -480,6 +480,7 @@
     },
     "freeSlot": "Free slot",
     "assign": "+ Assign video",
+    "pickAll": "All",
     "assignPick": "Pick a video…",
     "unscheduled": "Shot, no date",
     "unscheduledHint": "Drag onto a day, or assign from an empty slot.",
