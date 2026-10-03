@@ -7,6 +7,8 @@ export const NOTIFICATION_EVENTS = [
   "task_status_changed",
   "task_due_tomorrow",
   "task_overdue",
+  "client_approved",
+  "client_changes",
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 
@@ -20,6 +22,8 @@ export const DEFAULT_ENABLED: Record<NotificationEvent, boolean> = {
   task_status_changed: false,
   task_due_tomorrow: true,
   task_overdue: true,
+  client_approved: true,
+  client_changes: true,
 };
 
 export type Preference = { event_type: string; channel: string; enabled: boolean };

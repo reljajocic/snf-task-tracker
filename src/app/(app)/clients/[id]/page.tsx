@@ -197,6 +197,19 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
 
           <section className="flex flex-col gap-3.5">
             {h2(t("clients.shortcuts"))}
+            <div className="flex flex-col gap-2">
+              <Link href={`/content/schedule?client=${client.id}`} className="flex h-12 items-center rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
+                {t("nav.schedule")} →
+              </Link>
+              <Link href="/content/shoots" className="flex h-12 items-center rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
+                {t("nav.shoots")} →
+              </Link>
+              {canManage && (
+                <Link href={`/clients/${client.id}/portal`} className="flex h-12 items-center rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
+                  {t("portalSettings.title")} →
+                </Link>
+              )}
+            </div>
             {client.drive_url ? (
               <a href={client.drive_url} target="_blank" rel="noreferrer" className="flex h-12 items-center rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
                 {t("clients.drive")}

@@ -11,6 +11,7 @@ import { PHASES, PUBLISHED_PHASE, SCRIPT_SECTIONS, type ScriptSection, type Task
 import { Pill } from "./bits";
 import { DatePicker } from "./DatePicker";
 import { TaskLink } from "./links";
+import { ReviewSection } from "./ReviewSection";
 
 type Save = (patch: TaskPatch, optimistic?: Partial<Task>) => void;
 
@@ -139,6 +140,8 @@ export function VideoSection({
       </div>
 
       <Subtasks task={task} lookups={lookups} disabled={disabled} onChanged={onChanged} />
+
+      <ReviewSection task={task} disabled={disabled} onChanged={onChanged} />
 
       <ScriptEditor task={task} disabled={disabled} save={save} />
 

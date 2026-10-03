@@ -1,0 +1,38 @@
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { getPortal } from "@/lib/portal";
+import PortalNotFound from "./not-found";
+import { PortalNav } from "./PortalNav";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
+
+// 7a header: logo × client name, tabs (underlined active), same tabs at the bottom on mobile.
+export default async function PortalLayout({ children, params }: LayoutProps<"/p/[token]">) {
+  const { token } = await params;
+  const portal = await getPortal(token);
+  // Unknown or disabled link: a branded dead end (no hint whether the client exists).
+  if (!portal) return <PortalNotFound />;
+  const t = await getTranslations("portal.nav");
+  const base = `/p/${token}`;
+  const tabs = [
+    { href: base, label: t("home"), exact: true },
+    portal.show.schedule && { href: `${base}/schedule`, label: t("schedule") },
+    (portal.show.shoots || portal.show.scripts) && { href: `${base}/shoots`, label: t("shoots") },
+    portal.show.report && { href: `${base}/reports`, label: t("reports") },
+  ].filter(Boolean) as { href: string; label: string; exact?: boolean }[];
+
+  return (
+    <div className="flex min-h-dvh flex-col bg-bg text-ink">
+      <header className="flex h-16 items-center gap-10 border-b border-line px-5 lg:h-[72px] lg:px-12">
+        <div className="flex min-w-0 items-center gap-3.5">
+          <img src="/brand/logo-off-white.png" alt="Slate 'n' Frame" className="h-5 [filter:var(--logo-filter)] lg:h-6" />
+          <span className="text-[16px] text-ink3">×</span>
+          <span className="truncate text-[15px] font-semibold">{portal.clientName}</span>
+        </div>
+        <PortalNav tabs={tabs} variant="top" />
+      </header>
+      <main className="flex flex-1 flex-col pb-[84px] lg:pb-0">{children}</main>
+      <PortalNav tabs={tabs} variant="bottom" />
+    </div>
+  );
+}

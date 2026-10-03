@@ -378,6 +378,14 @@
       "task_overdue": {
         "title": "Overdue",
         "hint": "Once, on the first day one of your tasks is late."
+      },
+      "client_approved": {
+        "title": "Client approved",
+        "hint": "A client approves a video or script you're on."
+      },
+      "client_changes": {
+        "title": "Client requested changes",
+        "hint": "A client asks for changes on a video or script you're on."
       }
     }
   },
@@ -507,5 +515,124 @@
       "cancel": "Cancel"
     },
     "edit": "Edit"
+  },
+  "portalSettings": {
+    "title": "Client portal",
+    "open": "Open as client ↗",
+    "enabled": "Portal active",
+    "enabledHint": "Anyone with the link sees the portal, no login. When approving they type their name.",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "rotate": "Make a new link (the old one stops working)",
+    "rotateConfirm": "Make a new link? The current one stops working immediately.",
+    "visibility": "What the client sees",
+    "vis": {
+      "schedule": "Posting schedule",
+      "shoots": "Shoot days",
+      "scripts": "Scripts for approval",
+      "review": "Videos for review and approval",
+      "report": "Monthly report",
+      "internal": "Internal tasks and notes"
+    },
+    "alwaysHidden": "Always hidden",
+    "people": "People at the client",
+    "peopleHint": "Get an email only when you choose to notify them.",
+    "approves": "Approves",
+    "viewOnly": "View only",
+    "addPerson": "+ Add person",
+    "personLabel": "Role or name",
+    "personEmail": "Email",
+    "add": "Add",
+    "remove": "Remove",
+    "activity": "Recent activity",
+    "noActivity": "Nothing yet.",
+    "disabledNote": "The portal is off. Turn it on to share the link.",
+    "link": "Portal"
+  },
+  "versions": {
+    "title": "Versions for client review",
+    "add": "+ Add version",
+    "url": "Link to the cut (Google Drive, Vimeo…)",
+    "note": "What changed (the client sees this)",
+    "notify": "Email the client about it",
+    "save": "Add version",
+    "version": "Version {n}",
+    "pending": "Waiting for client",
+    "approved": "Approved by {name}",
+    "changes": "Changes requested by {name}",
+    "none": "No versions yet."
+  },
+  "scriptApproval": {
+    "approved": "Script approved by {name}",
+    "changes": "Script changes requested by {name}",
+    "pending": "Script not approved yet"
+  },
+  "portal": {
+    "nav": {
+      "home": "Home",
+      "schedule": "Schedule",
+      "shoots": "Shoots",
+      "reports": "Reports"
+    },
+    "yourContent": "Your content",
+    "awaiting": "Waiting for your approval",
+    "nothingAwaiting": "Nothing needs your approval right now.",
+    "videoVersion": "Video · version {n}",
+    "postOn": "Posting {date}",
+    "reviewCta": "Watch and approve →",
+    "scriptsFor": "Scripts for the shoot",
+    "shootOn": "Shoot {date}{location}",
+    "scriptsProgress": "{approved} of {total} approved{changes, plural, =0 {} other { · # with changes}}",
+    "reviewScripts": "Review all scripts →",
+    "nextPosts": "Next posts",
+    "fullSchedule": "Full schedule →",
+    "noPosts": "No posts scheduled yet.",
+    "nextShoot": "Next shoot",
+    "noShoot": "No shoot scheduled.",
+    "report": "Report for {month}",
+    "published": "Published",
+    "byType": "By type",
+    "noReport": "Nothing published this month yet.",
+    "status": {
+      "published": "Published",
+      "awaiting": "Waiting for your approval",
+      "ready": "Ready to publish",
+      "preparing": "In preparation"
+    },
+    "back": "‹ Back to home",
+    "review": "Review →",
+    "script": "Script",
+    "fromTeam": "{name}, Slate 'n' Frame",
+    "approve": "Approve",
+    "askChanges": "Request changes",
+    "changesPlaceholder": "What should change? You can mention the second, e.g. “at 0:12 …”",
+    "send": "Send",
+    "cancel": "Cancel",
+    "approvedBy": "Approved by {name}",
+    "changesBy": "Changes requested by {name}",
+    "sentToTeam": "Your comment was sent to the team. We'll get back with a new version.",
+    "undo": "Undo",
+    "yourName": "Your name",
+    "yourNameHint": "So the team knows who approved. Remembered on this device.",
+    "version": "Version {n} · {date}",
+    "openVideo": "Open video ↗",
+    "noVideo": "The video link isn't available yet.",
+    "scriptsTitle": "Scripts for approval",
+    "approveAll": "Approve all remaining ({count})",
+    "scriptStatus": {
+      "pending": "Waiting",
+      "approved": "Approved",
+      "changes": "Changes"
+    },
+    "changes": "Changes",
+    "noScripts": "No scripts for this shoot yet.",
+    "shootsTitle": "Shoots",
+    "noShoots": "No shoot days yet.",
+    "scriptsCount": "{count, plural, one {# video} other {# videos}}",
+    "reportsTitle": "Monthly report",
+    "postsThisMonth": "Posts this month",
+    "unavailable": "This page isn't available.",
+    "notFoundTitle": "Link not valid",
+    "notFoundText": "This portal link doesn't work any more. Ask Slate 'n' Frame for the current one."
   }
 }

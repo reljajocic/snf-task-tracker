@@ -19,7 +19,7 @@ function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 }
 
-function emailHtml(heading: string, lines: string[], link: string, linkLabel: string) {
+function emailHtml(heading: string, lines: string[], link: string, linkLabel: string, footer = "") {
   const body = lines.map((l) => `<p style="margin:0 0 10px;font:400 15px/1.55 Arial,sans-serif;color:#C9C7C1">${l}</p>`).join("");
   return `<!doctype html><html><body style="margin:0;background:#1C1A1B">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#1C1A1B;padding:32px 16px"><tr><td align="center">
@@ -28,7 +28,7 @@ function emailHtml(heading: string, lines: string[], link: string, linkLabel: st
 <tr><td style="padding:16px 0 14px;font:700 20px/1.3 Arial,sans-serif;color:#F4F3ED">${heading}</td></tr>
 <tr><td>${body}</td></tr>
 <tr><td style="padding-top:18px"><a href="${link}" style="display:inline-block;background:#EA693A;color:#2F2D2E;font:600 13px/1 Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:14px 22px;border-radius:4px">${linkLabel}</a></td></tr>
-<tr><td style="padding-top:26px;font:400 12px/1.5 Arial,sans-serif;color:#8F898A">You can turn these emails off in Settings → Notifications.</td></tr>
+${footer ? `<tr><td style="padding-top:26px;font:400 12px/1.5 Arial,sans-serif;color:#8F898A">${footer}</td></tr>` : ""}
 </table></td></tr></table></body></html>`;
 }
 
@@ -65,6 +65,18 @@ function describe(event: NotificationEvent, task: TaskInfo, actor: string | null
       return { subject: `Due tomorrow: ${task.title}`, heading: "Due tomorrow", lines: [`<b style="color:#F4F3ED">${title}</b>${where}`, due] };
     case "task_overdue":
       return { subject: `Overdue: ${task.title}`, heading: "This task is overdue", lines: [`<b style="color:#F4F3ED">${title}</b>${where}`, due] };
+    case "client_approved":
+      return {
+        subject: `Approved: ${task.title}`,
+        heading: `${escapeHtml(extra.by ?? "The client")} approved the ${extra.what ?? "video"}`,
+        lines: [`<b style="color:#F4F3ED">${title}</b>${where}`],
+      };
+    case "client_changes":
+      return {
+        subject: `Changes requested: ${task.title}`,
+        heading: `${escapeHtml(extra.by ?? "The client")} asked for changes to the ${extra.what ?? "video"}`,
+        lines: [`<b style="color:#F4F3ED">${title}</b>${where}`, `“${escapeHtml(extra.comment ?? "")}”`],
+      };
   }
 }
 
@@ -104,10 +116,35 @@ export async function notify(opts: {
         .select("id")
         .single();
       if (!isEnabled(mine, opts.event, "email")) continue;
-      const sent = await sendEmail(person.email, msg.subject, emailHtml(msg.heading, msg.lines, link, "Open task"));
+      const sent = await sendEmail(person.email, msg.subject, emailHtml(msg.heading, msg.lines, link, "Open task", "You can turn these emails off in Settings → Notifications."));
       if (sent && row) await admin.from("notifications").update({ delivered_at: new Date().toISOString() }).eq("id", row.id);
     }
   } catch (e) {
     console.error("[notify] failed", e);
+  }
+}
+
+/**
+ * Email the client's portal contacts who approve (only when a team member explicitly asks for it).
+ * Returns how many emails were sent.
+ */
+export async function emailClient(opts: { clientId: string; subject: string; heading: string; lines: string[]; path: string }) {
+  try {
+    const admin = createAdminClient();
+    const [{ data: portal }, { data: people }] = await Promise.all([
+      admin.from("client_portals").select("token, enabled").eq("client_id", opts.clientId).maybeSingle(),
+      admin.from("portal_people").select("email").eq("client_id", opts.clientId).eq("can_approve", true),
+    ]);
+    if (!portal?.enabled) return 0;
+    const link = `${siteUrl()}/p/${portal.token}${opts.path}`;
+    let sent = 0;
+    for (const p of people ?? []) {
+      if (!p.email) continue;
+      if (await sendEmail(p.email, opts.subject, emailHtml(escapeHtml(opts.heading), opts.lines.map(escapeHtml), link, "Open"))) sent++;
+    }
+    return sent;
+  } catch (e) {
+    console.error("[notify] emailClient failed", e);
+    return 0;
   }
 }

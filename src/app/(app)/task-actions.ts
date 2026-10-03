@@ -320,3 +320,72 @@ export async function setShotStatus(taskId: string, status: ShotStatus): Promise
   refresh();
   return { ok: true, data: null };
 }
+
+export type VersionInfo = {
+  id: string;
+  version: number;
+  url: string;
+  note: string | null;
+  created_at: string;
+  decision: { status: "approved" | "changes"; approver_name: string; comment: string | null } | null;
+};
+
+export type ReviewState = { versions: VersionInfo[]; script: { status: "approved" | "changes"; approver_name: string; comment: string | null } | null };
+
+/** Versions sent to the client, each with the client's latest decision; plus the script decision. */
+export async function loadReview(taskId: string): Promise<ReviewState> {
+  await requireProfile();
+  const supabase = await createClient();
+  const [{ data: versions }, { data: approvals }] = await Promise.all([
+    supabase.from("video_versions").select("id, version, url, note, created_at").eq("task_id", taskId).order("version", { ascending: false }),
+    supabase.from("approvals").select("kind, version_id, status, approver_name, comment, created_at").eq("task_id", taskId).order("created_at", { ascending: false }),
+  ]);
+  const latest = (pred: (a: NonNullable<typeof approvals>[number]) => boolean) => (approvals ?? []).find(pred) ?? null;
+  return {
+    versions: (versions ?? []).map((v) => {
+      const d = latest((a) => a.kind === "video" && a.version_id === v.id);
+      return { ...v, decision: d ? { status: d.status as "approved" | "changes", approver_name: d.approver_name, comment: d.comment } : null };
+    }),
+    script: (() => {
+      const d = latest((a) => a.kind === "script");
+      return d ? { status: d.status as "approved" | "changes", approver_name: d.approver_name, comment: d.comment } : null;
+    })(),
+  };
+}
+
+/** New cut for the client: version n+1, video moves to revision (waiting on client). */
+export async function addVersion(taskId: string, input: { url: string; note: string; notifyClient: boolean }): Promise<ActionResult> {
+  const me = await requireProfile();
+  const url = input.url.trim();
+  if (!url) return { ok: false, error: "Link is required." };
+  const supabase = await createClient();
+  const { data: last } = await supabase.from("video_versions").select("version").eq("task_id", taskId).order("version", { ascending: false }).limit(1).maybeSingle();
+  const version = (last?.version ?? 0) + 1;
+  const { error } = await supabase
+    .from("video_versions")
+    .insert({ task_id: taskId, version, url: url.startsWith("http") ? url : `https://${url}`, note: input.note.trim() || null, created_by: me.id });
+  if (error) return { ok: false, error: error.message };
+
+  const { data: task } = await supabase.from("tasks").select("title, phase, client_id").eq("id", taskId).single();
+  if (task && (task.phase ?? 0) < 3) await supabase.from("tasks").update({ phase: 3 }).eq("id", taskId);
+  if (task?.client_id) {
+    const clientId = task.client_id;
+    const title = task.title;
+    after(async () => {
+      const { createAdminClient } = await import("@/lib/supabase/server");
+      await createAdminClient().from("portal_activity").insert({ client_id: clientId, message: `Version ${version} of “${title}” sent for review` });
+      if (input.notifyClient) {
+        const { emailClient } = await import("@/lib/notify");
+        await emailClient({
+          clientId,
+          subject: `New video to review: ${title}`,
+          heading: `A new version of “${title}” is ready for your review`,
+          lines: input.note.trim() ? [input.note.trim()] : [],
+          path: `/video/${taskId}`,
+        });
+      }
+    });
+  }
+  refresh();
+  return { ok: true, data: null };
+}
