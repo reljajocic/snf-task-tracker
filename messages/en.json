@@ -578,7 +578,8 @@
       "cancel": "Cancel"
     },
     "callTimesAuto": "From the table below.",
-    "close": "Close"
+    "close": "Close",
+    "allClients": "All clients"
   },
   "portalSettings": {
     "title": "Client portal",

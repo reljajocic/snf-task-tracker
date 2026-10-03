@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { NAV_ICONS } from "./icons";
 import { MOBILE_NAV, isActive } from "./nav";
 
-/** Mobile bottom bar, 84px, orange 18×3 marker above the active label. */
+/** Mobile bottom bar, 84px: orange 18×3 marker, icon and label; the active tab is accented. */
 export function MobileNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
@@ -19,11 +20,12 @@ export function MobileNav() {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`flex flex-1 flex-col items-center justify-center gap-2 text-[12px] font-medium ${
+            className={`flex flex-1 flex-col items-center justify-center gap-1.5 text-[12px] font-medium ${
               active ? "text-ink" : "text-ink3"
             }`}
           >
             <span className={`h-[3px] w-[18px] rounded-[2px] ${active ? "bg-accent" : "bg-transparent"}`} />
+            <span className={active ? "text-accent" : ""}>{NAV_ICONS[item.icon]}</span>
             {t(item.key)}
           </Link>
         );

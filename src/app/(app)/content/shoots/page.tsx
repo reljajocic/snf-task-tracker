@@ -1,16 +1,22 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { AvatarStack } from "@/components/ui/Avatar";
 import { buttonClass } from "@/components/ui/Button";
 import { getShootDays, type ShootDay } from "@/lib/content";
 import { getLookups } from "@/lib/data";
 import { formatDate, today as getToday, weekdayIndex } from "@/lib/dates";
+import { ClientPicker } from "../schedule/ClientPicker";
 import { ImportSheet } from "./ImportSheet";
 
-export default async function ShootsPage() {
-  const [days, lookups, t] = await Promise.all([getShootDays(), getLookups(), getTranslations()]);
+// URL: ?client=<id> (default: all clients)
+export default async function ShootsPage({ searchParams }: PageProps<"/content/shoots">) {
+  const [params, all, lookups, t] = await Promise.all([searchParams, getShootDays(), getLookups(), getTranslations()]);
   const today = getToday();
+  const clientId = lookups.clients.some((c) => c.id === params.client) ? (params.client as string) : null;
+  const days = clientId ? all.filter((d) => d.client?.id === clientId) : all;
+  const withShoots = lookups.clients.filter((c) => all.some((d) => d.client?.id === c.id));
   const upcoming = days.filter((d) => d.date >= today);
   const past = days.filter((d) => d.date < today).reverse();
   const canCreate = lookups.clients.some((c) => c.isTeam);
@@ -60,6 +66,13 @@ export default async function ShootsPage() {
           ) : null
         }
       />
+      {withShoots.length > 1 && (
+        <div className="px-5 pb-6 lg:px-10">
+          <Suspense>
+            <ClientPicker clients={withShoots.map((c) => ({ id: c.id, name: c.name }))} value={clientId ?? "all"} allLabel={t("shoots.allClients")} />
+          </Suspense>
+        </div>
+      )}
       <div className="flex flex-col gap-9 px-5 pb-[120px] lg:px-10 lg:pb-12">
         <section className="flex flex-col gap-3.5">
           <h2 className="display text-[19px] lg:text-[20px]">{t("shoots.upcoming")}</h2>
