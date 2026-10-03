@@ -14,12 +14,19 @@ export type Profile = {
   is_active: boolean;
 };
 
-/** The signed-in team member, once per request. Redirects to /login when there is none. */
-export const requireProfile = cache(async (): Promise<Profile> => {
+/** Signed-in user's id from the session JWT (verified locally, no network round trip). */
+export const requireUserId = cache(async (): Promise<string> => {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
   if (!userId) redirect("/login");
+  return userId;
+});
+
+/** The signed-in team member, once per request. Redirects to /login when there is none. */
+export const requireProfile = cache(async (): Promise<Profile> => {
+  const userId = await requireUserId();
+  const supabase = await createClient();
 
   const { data: profile } = await supabase
     .from("profiles")

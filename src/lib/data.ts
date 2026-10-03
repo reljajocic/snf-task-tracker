@@ -1,6 +1,6 @@
 import "server-only";
 import { cache } from "react";
-import { requireProfile } from "@/lib/auth";
+import { requireProfile, requireUserId } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { TASK_SELECT, toTask, type Person, type RawTask, type Task } from "@/lib/tasks";
 
@@ -30,11 +30,12 @@ export type Lookups = { me: { id: string; isAdmin: boolean }; people: Person[]; 
 
 /** Options for task forms: people to assign, clients and projects the user can file under. */
 export const getLookups = cache(async (): Promise<Lookups> => {
-  const profile = await requireProfile();
+  // Everything in one parallel batch: the profile query runs alongside the rest.
+  const userId = await requireUserId();
   const supabase = await createClient();
-  const isAdmin = profile.role === "admin";
 
-  const [people, clients, projects, memberships, projectMemberships] = await Promise.all([
+  const [profile, people, clients, projects, memberships, projectMemberships] = await Promise.all([
+    requireProfile(),
     supabase
       .from("profiles")
       .select("id, full_name, initials, avatar_bg, avatar_fg")
@@ -43,9 +44,10 @@ export const getLookups = cache(async (): Promise<Lookups> => {
       .returns<Person[]>(),
     supabase.from("clients").select("id, name, status, content_types, locations, posting_days").order("name"),
     supabase.from("projects").select("id, name, client_id, status").neq("status", "archived").order("name"),
-    supabase.from("client_members").select("client_id, role").eq("user_id", profile.id),
-    supabase.from("project_members").select("project_id").eq("user_id", profile.id),
+    supabase.from("client_members").select("client_id, role").eq("user_id", userId),
+    supabase.from("project_members").select("project_id").eq("user_id", userId),
   ]);
+  const isAdmin = profile.role === "admin";
 
   const managerOf = new Set(
     (memberships.data ?? []).filter((m) => m.role === "manager").map((m) => m.client_id),
