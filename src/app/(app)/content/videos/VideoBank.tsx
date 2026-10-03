@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { addVideosToShoot, removeFromShoot } from "@/app/(app)/content/shoots/actions";
 import { updateTask } from "@/app/(app)/task-actions";
+import { DatePicker } from "@/components/tasks/DatePicker";
 import { TaskLink } from "@/components/tasks/links";
 import { formatDate, type IsoDate } from "@/lib/dates";
 import type { Task } from "@/lib/tasks";
@@ -82,7 +83,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
       {shown.length === 0 ? (
         <p className="rounded-lg border border-dashed border-line2 px-4 py-10 text-center text-[14px] text-ink3">{t(`empty.${tab}`)}</p>
       ) : (
-        <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-surf">
+        <div className="flex flex-col rounded-lg border border-line bg-surf">
           {shown.map((v) => {
             const first = v.script.find((s) => s.text.trim());
             const m = meta(v);
@@ -136,17 +137,14 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                     </button>
                   )}
                   {tab === "ready" && (
-                    <label className={`${action} relative flex items-center`}>
-                      {t("schedule")}
-                      <input
-                        type="date"
-                        min={today}
-                        disabled={disabled}
-                        aria-label={t("schedule")}
-                        onChange={(e) => e.target.value && run(v.id, () => updateTask(v.id, { publish_date: e.target.value }))}
-                        className="absolute inset-0 cursor-pointer opacity-0"
-                      />
-                    </label>
+                    <DatePicker
+                      value={null}
+                      today={today}
+                      disabled={disabled}
+                      align="right"
+                      emptyLabel={t("schedule")}
+                      onChange={(d) => d && run(v.id, () => updateTask(v.id, { publish_date: d }))}
+                    />
                   )}
                   {tab === "dropped" ? (
                     <button
