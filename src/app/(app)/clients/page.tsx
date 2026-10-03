@@ -13,7 +13,7 @@ const GRID =
 
 // 6a / 6c
 export default async function ClientsPage({ searchParams }: PageProps<"/clients">) {
-  const [{ status }, me, clients, tasks, t] = await Promise.all([
+  const [{ status }, , clients, tasks, t] = await Promise.all([
     searchParams,
     requireProfile(),
     getClients(),
@@ -42,12 +42,11 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
     return { client: c, open: open.length, late, next };
   });
 
-  const newButton =
-    me.role === "admin" ? (
-      <Link href="/clients/new" className={buttonClass({ size: "sm" })}>
-        {t("clients.new")}
-      </Link>
-    ) : null;
+  const newButton = (
+    <Link href="/clients/new" className={buttonClass({ size: "sm" })}>
+      {t("clients.new")}
+    </Link>
+  );
 
   return (
     <>

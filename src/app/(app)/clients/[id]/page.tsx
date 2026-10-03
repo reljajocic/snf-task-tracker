@@ -223,7 +223,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
             clientId={client.id}
             members={members.map((m) => ({ ...m.profile, role: m.role }))}
             people={lookups.people}
-            isAdmin={isAdmin}
+            canManage={canManage}
           />
         </aside>
       </div>

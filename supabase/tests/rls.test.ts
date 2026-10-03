@@ -200,8 +200,24 @@ describe("clients and projects", () => {
     expect(await as(OTHER, "select name from public.clients")).toEqual([{ name: "C1" }]);
   });
 
-  it("only admins create clients; managers edit theirs", async () => {
-    await expect(as(MANAGER, "insert into public.clients (name) values ('X')")).rejects.toThrow(/row-level security/);
+  it("anyone on the team opens a client and becomes its manager; managers run their client's team", async () => {
+    const X = "00000000-0000-0000-0000-0000000000c9";
+    await as(MEMBER, "insert into public.clients (id, name) values ($1, 'X')", [X]);
+    expect(await as(MEMBER, "select role from public.client_members where client_id = $1 and user_id = $2", [X, MEMBER])).toEqual([
+      { role: "manager" },
+    ]);
+    // Manager of X adds and removes people there…
+    await as(MEMBER, "insert into public.client_members (client_id, user_id, role) values ($1, $2, 'member')", [X, OUTSIDER]);
+    expect(await as(MEMBER, "delete from public.client_members where client_id = $1 and user_id = $2 returning user_id", [X, OUTSIDER])).toHaveLength(1);
+    // …but not on a client where they're only a member, and they can't delete clients.
+    await expect(
+      as(MEMBER, "insert into public.client_members (client_id, user_id, role) values ($1, $2, 'member')", [C1, OUTSIDER]),
+    ).rejects.toThrow(/row-level security/);
+    expect(await as(MEMBER, "delete from public.client_members where client_id = $1 and user_id = $2 returning user_id", [C1, MANAGER])).toEqual([]);
+    expect(await as(MEMBER, "delete from public.clients where id = $1 returning id", [X])).toEqual([]);
+  });
+
+  it("managers edit their clients, not others", async () => {
     expect(await as(MANAGER, "update public.clients set city = 'Beograd' where id = $1 returning city", [C1])).toEqual([
       { city: "Beograd" },
     ]);

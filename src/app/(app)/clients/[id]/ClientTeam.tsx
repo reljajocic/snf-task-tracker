@@ -9,7 +9,7 @@ import { setClientMember } from "../actions";
 type Member = Person & { role: "manager" | "member" };
 
 /** Who works on this client. Only admins change it (managers/members per client). */
-export function ClientTeam({ clientId, members, people, isAdmin }: { clientId: string; members: Member[]; people: Person[]; isAdmin: boolean }) {
+export function ClientTeam({ clientId, members, people, canManage }: { clientId: string; members: Member[]; people: Person[]; canManage: boolean }) {
   const t = useTranslations("clients");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +36,7 @@ export function ClientTeam({ clientId, members, people, isAdmin }: { clientId: s
             <span className={`rounded-[3px] border px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] ${m.role === "manager" ? "border-accent text-rust-ink" : "border-line2 text-ink2"}`}>
               {m.role === "manager" ? t("manager") : t("member")}
             </span>
-            {isAdmin && (
+            {canManage && (
               <span className="flex gap-2 text-[12px]">
                 <button type="button" disabled={pending} onClick={() => run(m.id, m.role === "manager" ? "member" : "manager")} className="cursor-pointer text-ink3 hover:text-ink">
                   {m.role === "manager" ? t("makeMember") : t("makeManager")}
@@ -50,7 +50,7 @@ export function ClientTeam({ clientId, members, people, isAdmin }: { clientId: s
         ))}
         {!members.length && <p className="py-3 text-[14px] text-ink3">{t("noTeam")}</p>}
       </div>
-      {isAdmin && available.length > 0 && (
+      {canManage && available.length > 0 && (
         <div className="flex gap-2">
           <select value={adding} onChange={(e) => setAdding(e.target.value)} className="h-9 min-w-0 flex-1 cursor-pointer rounded-md border border-line2 bg-transparent px-3 text-[14px] text-ink">
             <option value="">{t("addPerson")}…</option>

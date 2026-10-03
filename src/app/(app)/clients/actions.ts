@@ -74,9 +74,11 @@ export async function saveClient(_prev: FormState, form: FormData): Promise<Form
     if (error) return { error: error.message };
     if (!data?.length) return { error: "You can't edit this client." };
   } else {
-    const { data, error } = await supabase.from("clients").insert(fields).select("id").single();
+    // Id made here: the creator only gets to read the row once the insert trigger has made them
+    // its manager, so the insert can't return it.
+    clientId = crypto.randomUUID();
+    const { error } = await supabase.from("clients").insert({ id: clientId, ...fields });
     if (error) return { error: error.message };
-    clientId = data.id;
   }
   revalidatePath("/", "layout");
   redirect(`/clients/${clientId}`);
@@ -91,13 +93,15 @@ export async function deleteClient(id: string) {
   redirect("/clients");
 }
 
+/** Admins and the client's managers run its team (RLS decides). */
 export async function setClientMember(clientId: string, userId: string, role: "manager" | "member" | null) {
-  await requireAdmin();
+  await requireProfile();
   const supabase = await createClient();
-  const { error } = role
-    ? await supabase.from("client_members").upsert({ client_id: clientId, user_id: userId, role })
-    : await supabase.from("client_members").delete().eq("client_id", clientId).eq("user_id", userId);
+  const { data, error } = role
+    ? await supabase.from("client_members").upsert({ client_id: clientId, user_id: userId, role }).select("user_id")
+    : await supabase.from("client_members").delete().eq("client_id", clientId).eq("user_id", userId).select("user_id");
   if (error) return { error: error.message };
+  if (!data?.length) return { error: "Only this client's managers can change its team." };
   revalidatePath(`/clients/${clientId}`);
   revalidatePath("/", "layout");
   return { error: null };
