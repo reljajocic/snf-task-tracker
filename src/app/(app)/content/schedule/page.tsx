@@ -54,9 +54,11 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     );
   }
 
-  const videos = (await getClientVideos(client.id)).filter((v) => !profile || v.profile === profile);
-  // Table: two months. Calendar: one month.
+  // Table: two months. Calendar: one month (its grid shows whole weeks, so load a week either side).
   const periodEnd = addDays(shiftMonth(m, view === "table" ? 2 : 1), -1);
+  const videos = (await getClientVideos(client.id, { posting: { from: addDays(startOfWeek(m), -7), to: addDays(periodEnd, 7) } })).filter(
+    (v) => !profile || v.profile === profile,
+  );
   const byDate = new Map<IsoDate, typeof videos>();
   for (const v of videos) if (v.publish_date) byDate.set(v.publish_date, [...(byDate.get(v.publish_date) ?? []), v]);
 

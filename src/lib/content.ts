@@ -2,18 +2,54 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { TASK_SELECT, toTask, type Person, type RawTask, type Task } from "@/lib/tasks";
 
-/** Every video of a client the user can see (RLS), incl. published ones. */
-export async function getClientVideos(clientId: string): Promise<Task[]> {
+/**
+ * Which of a client's videos to load. A client's whole history is big (NoLimit: ~860 videos with
+ * scripts, ~1 MB), so every page asks only for what it shows.
+ *  - posting: posted in [from, to], plus open videos without a date (the "shot, no date" queue)
+ *  - bank: not dated and not finished (ideas, on a shoot, shot without a date)
+ *  - dropped: dropped videos
+ */
+export type VideoScope = { posting: { from: string; to: string } } | { bank: true } | { dropped: true };
+
+export async function getClientVideos(clientId: string, scope: VideoScope): Promise<Task[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("tasks")
-    .select(TASK_SELECT)
-    .eq("client_id", clientId)
-    .eq("kind", "video")
-    .order("publish_date", { nullsFirst: false })
-    .returns<RawTask[]>();
+  let query = supabase.from("tasks").select(TASK_SELECT).eq("client_id", clientId).eq("kind", "video");
+  if ("posting" in scope) {
+    const { from, to } = scope.posting;
+    query = query.or(`and(publish_date.gte.${from},publish_date.lte.${to}),and(publish_date.is.null,dropped_at.is.null,phase.lt.5)`);
+  } else if ("bank" in scope) {
+    query = query.is("publish_date", null).is("dropped_at", null).lt("phase", 5);
+  } else {
+    query = query.not("dropped_at", "is", null);
+  }
+  const { data, error } = await query.order("publish_date", { nullsFirst: false }).returns<RawTask[]>();
   if (error) throw error;
   return (data ?? []).map(toTask);
+}
+
+export async function countDropped(clientId: string): Promise<number> {
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("tasks")
+    .select("id", { count: "exact", head: true })
+    .eq("client_id", clientId)
+    .eq("kind", "video")
+    .not("dropped_at", "is", null);
+  return count ?? 0;
+}
+
+/** Date of the client's last shoot before `date` (its leftovers can go on the next one). */
+export async function previousShootDate(clientId: string, date: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("shoot_days")
+    .select("date")
+    .eq("client_id", clientId)
+    .lt("date", date)
+    .order("date", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data?.date ?? null;
 }
 
 export type CallTime = { time: string; name: string; note: string };

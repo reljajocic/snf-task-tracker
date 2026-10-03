@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { buttonClass } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/Segmented";
-import { getClientVideos, getShootDays } from "@/lib/content";
+import { countDropped, getClientVideos, getShootDays } from "@/lib/content";
 import { getLookups } from "@/lib/data";
 import { today as getToday } from "@/lib/dates";
 import type { Task } from "@/lib/tasks";
@@ -41,12 +41,19 @@ export default async function VideoBankPage({ searchParams }: PageProps<"/conten
     );
   }
 
-  const [videos, shoots] = await Promise.all([getClientVideos(client.id), getShootDays()]);
+  // The dropped shelf can be long (NoLimit: ~350), so it's loaded only when open; otherwise just counted.
+  const [videos, dropped, droppedCount, shoots] = await Promise.all([
+    getClientVideos(client.id, { bank: true }),
+    tab === "dropped" ? getClientVideos(client.id, { dropped: true }) : Promise.resolve([]),
+    countDropped(client.id),
+    getShootDays(),
+  ]);
   const groups = Object.fromEntries(TABS.map((k) => [k, [] as Task[]])) as Record<Tab, Task[]>;
-  for (const v of videos) {
+  for (const v of [...videos, ...dropped]) {
     const s = shelf(v);
     if (s) groups[s].push(v);
   }
+  const counts = { ...Object.fromEntries(TABS.map((k) => [k, groups[k].length])), dropped: droppedCount } as Record<Tab, number>;
   groups.ideas.sort((a, b) => b.created_at.localeCompare(a.created_at));
   groups.shoot.sort((a, b) => (b.shoot?.date ?? "").localeCompare(a.shoot?.date ?? ""));
   groups.ready.sort((a, b) => (b.shoot?.date ?? "").localeCompare(a.shoot?.date ?? ""));
@@ -58,7 +65,7 @@ export default async function VideoBankPage({ searchParams }: PageProps<"/conten
 
   const tabs = TABS.map((k) => ({
     key: k,
-    label: `${t(`bank.tab.${k}`)} · ${groups[k].length}`,
+    label: `${t(`bank.tab.${k}`)} · ${counts[k]}`,
     href: `/content/videos?client=${client.id}${k === "ideas" ? "" : `&tab=${k}`}`,
     active: k === tab,
   }));

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { getClientVideos, getShootDay } from "@/lib/content";
+import { getClientVideos, getShootDay, previousShootDate } from "@/lib/content";
 import { getLookups } from "@/lib/data";
 import { formatDate, today as getToday, weekdayIndex } from "@/lib/dates";
 import { TIME_ZONE } from "@/lib/config";
@@ -18,7 +18,10 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
   const { day, videos } = data;
   const client = data.day.client;
   const canManage = lookups.clients.some((c) => c.id === client.id && c.isTeam);
-  const candidates = canManage ? shootCandidates(await getClientVideos(client.id), day.id, day.date) : [];
+  const [open, previous] = canManage
+    ? await Promise.all([getClientVideos(client.id, { bank: true }), previousShootDate(client.id, day.date)])
+    : [[], null];
+  const candidates = shootCandidates(open, day.id, previous);
   const nowTime = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
 
   return (
@@ -78,12 +81,7 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
  * filmed on the previous shoot. Filmed, published or dropped videos, and leftovers from older
  * shoots (long forgotten), are left out.
  */
-function shootCandidates(videos: Task[], shootId: string, date: string) {
-  const previous = videos
-    .map((v) => v.shoot?.date)
-    .filter((d): d is string => !!d && d < date)
-    .sort()
-    .at(-1);
+function shootCandidates(videos: Task[], shootId: string, previous: string | null) {
   return videos
     .filter(
       (v) =>
