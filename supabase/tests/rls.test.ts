@@ -183,6 +183,15 @@ describe("comments", () => {
 });
 
 describe("clients and projects", () => {
+  it("the whole client team sees who is on the team; outsiders don't", async () => {
+    const team = (uid: string) => as(uid, "select user_id from public.client_members where client_id = $1 order by role", [C1]);
+    expect(await team(MEMBER)).toHaveLength(2);
+    expect(await team(OUTSIDER)).toEqual([]);
+    await expect(as(MEMBER, "insert into public.client_members (client_id, user_id, role) values ($1, $2, 'member')", [C1, OUTSIDER])).rejects.toThrow(
+      /row-level security/,
+    );
+  });
+
   it("project members see the project's client without a client_members row", async () => {
     const OTHER = "00000000-0000-0000-0000-00000000000e";
     await db.query("insert into auth.users values ($1, 'pm@snf.test', '{}')", [OTHER]);

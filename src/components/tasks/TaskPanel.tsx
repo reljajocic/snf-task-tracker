@@ -19,7 +19,7 @@ import { formatDate, type IsoDate } from "@/lib/dates";
 import { formatEstimate, parseEstimate, type Task } from "@/lib/tasks";
 import { dueTone, useDueText } from "./bits";
 import { DatePicker } from "./DatePicker";
-import { ClientProjectSelects, FieldRow, PeoplePicker, PriorityPicker, StatusPicker, TypePicker } from "./fields";
+import { ClientProjectSelects, FieldRow, PeoplePicker, assignablePeople, PriorityPicker, StatusPicker, TypePicker } from "./fields";
 import { dueLabel } from "@/lib/dates";
 import { VideoSection } from "./VideoSection";
 import { VideoTag } from "./video-bits";
@@ -216,7 +216,12 @@ function PanelBody({
             </>
           )}
           <FieldRow label={t("fields.assignees")}>
-            <PeoplePicker people={lookups.people} value={task.assignees.map((a) => a.id)} disabled={disabled} onChange={saveAssignees} />
+            <PeoplePicker
+              people={assignablePeople(lookups, task.client?.id, task.assignees.map((a) => a.id))}
+              value={task.assignees.map((a) => a.id)}
+              disabled={disabled}
+              onChange={saveAssignees}
+            />
           </FieldRow>
           {editStage && (
             <>

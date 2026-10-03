@@ -4,7 +4,7 @@
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Avatar } from "@/components/ui/Avatar";
-import type { ClientOption } from "@/lib/data";
+import type { ClientOption, Lookups } from "@/lib/data";
 import { PRIORITIES, PRIORITY_COLOR, STATUSES, STATUS_COLOR, TASK_TYPES, type Person, type TaskPriority, type TaskStatus, type TaskType } from "@/lib/tasks";
 import { Pill } from "./bits";
 
@@ -94,12 +94,29 @@ export function PeoplePicker({
             } ${selected ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`}
           >
             <Avatar person={p} size={size === "lg" ? 28 : 26} />
-            {p.full_name.split(" ")[0]}
+            {shortName(p, people)}
           </button>
         );
       })}
     </div>
   );
+}
+
+/** First name, plus the last name's initial when two people share it ("Marko", "Marko V."). */
+export function shortName(p: Person, among: Person[]) {
+  const [first, ...rest] = p.full_name.trim().split(/\s+/);
+  const clash = among.some((o) => o.id !== p.id && o.full_name.trim().split(/\s+/)[0] === first);
+  return clash && rest.length ? `${first} ${rest[rest.length - 1].charAt(0)}.` : first;
+}
+
+/**
+ * People work for a client can be assigned to: its team. Personal tasks (no client) can go to
+ * anyone. People already assigned stay listed so they can be removed.
+ */
+export function assignablePeople(lookups: Lookups, clientId: string | null | undefined, keep: string[] = []) {
+  const client = clientId ? lookups.clients.find((c) => c.id === clientId) : undefined;
+  if (!client) return lookups.people;
+  return lookups.people.filter((p) => client.team.includes(p.id) || keep.includes(p.id));
 }
 
 /** Projects a user may file under for a client (members: only their projects). */

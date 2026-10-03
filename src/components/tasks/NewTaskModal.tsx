@@ -11,7 +11,7 @@ import { formatDate, type IsoDate } from "@/lib/dates";
 import { SCRIPT_SECTIONS, parseEstimate, type ScriptSection, type TaskPriority, type TaskStatus, type TaskType } from "@/lib/tasks";
 import { Pill } from "./bits";
 import { MonthGrid, quickDates } from "./DatePicker";
-import { ClientProjectSelects, PeoplePicker, PriorityPicker, StatusPicker, TypePicker, inputClass } from "./fields";
+import { ClientProjectSelects, PeoplePicker, assignablePeople, PriorityPicker, StatusPicker, TypePicker, inputClass } from "./fields";
 
 type Defaults = {
   client_id?: string | null;
@@ -147,7 +147,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
       {needsProject && <p className="text-[13px] text-rust-ink sm:col-span-2">{t("pickProject")}</p>}
       <div className="flex flex-col gap-2 sm:col-span-2">
         {label(t("fields.assignees"))}
-        <PeoplePicker size="lg" people={lookups.people} value={assignees} onChange={setAssignees} />
+        <PeoplePicker size="lg" people={assignablePeople(lookups, where.client_id, assignees)} value={assignees} onChange={setAssignees} />
       </div>
     </>
   );

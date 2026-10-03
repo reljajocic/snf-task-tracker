@@ -26,6 +26,8 @@ export type ClientOption = {
   contentTypes: string[];
   locations: string[];
   postingDays: number[];
+  /** Who is on the client's team (user ids): the people work can be assigned to. */
+  team: string[];
   projects: { id: string; name: string; isMember: boolean }[];
 };
 
@@ -37,7 +39,7 @@ export const getLookups = cache(async (): Promise<Lookups> => {
   const userId = await requireUserId();
   const supabase = await createClient();
 
-  const [profile, people, clients, projects, memberships, projectMemberships] = await Promise.all([
+  const [profile, people, clients, projects, memberships, projectMemberships, teams] = await Promise.all([
     requireProfile(),
     supabase
       .from("profiles")
@@ -49,6 +51,7 @@ export const getLookups = cache(async (): Promise<Lookups> => {
     supabase.from("projects").select("id, name, client_id, status").neq("status", "archived").order("name"),
     supabase.from("client_members").select("client_id, role").eq("user_id", userId),
     supabase.from("project_members").select("project_id").eq("user_id", userId),
+    supabase.from("client_members").select("client_id, user_id"),
   ]);
   const isAdmin = profile.role === "admin";
 
@@ -73,6 +76,7 @@ export const getLookups = cache(async (): Promise<Lookups> => {
         contentTypes: c.content_types ?? [],
         locations: c.locations ?? [],
         postingDays: c.posting_days ?? [0, 2, 4],
+        team: (teams.data ?? []).filter((m) => m.client_id === c.id).map((m) => m.user_id),
         projects: (projects.data ?? [])
           .filter((p) => p.client_id === c.id)
           .map((p) => ({ id: p.id, name: p.name, isMember: memberOf.has(p.id) })),

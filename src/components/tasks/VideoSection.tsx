@@ -10,6 +10,7 @@ import { formatDate, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { PHASES, PUBLISHED_PHASE, SCRIPT_SECTIONS, type ScriptSection, type Task } from "@/lib/tasks";
 import { Pill } from "./bits";
 import { DatePicker } from "./DatePicker";
+import { assignablePeople } from "./fields";
 import { TaskLink } from "./links";
 import { ReviewSection } from "./ReviewSection";
 
@@ -343,7 +344,7 @@ function Subtasks({ task, lookups, disabled, onChanged }: { task: Task; lookups:
           <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("video.subtaskTitle")} className="h-9 min-w-[160px] flex-1 rounded-md border border-line2 bg-transparent px-3 text-[14px] text-ink outline-none focus:border-accent" />
           <select value={who} onChange={(e) => setWho(e.target.value)} className="h-9 rounded-md border border-line2 bg-transparent px-2 text-[14px] text-ink">
             <option value="">—</option>
-            {lookups.people.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
+            {assignablePeople(lookups, task.client?.id).map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
           </select>
           <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className="h-9 rounded-md border border-line2 bg-transparent px-2 text-[14px] text-ink" />
           <button type="submit" disabled={pending || !title.trim()} className="h-9 cursor-pointer rounded-md bg-accent px-3.5 text-[13px] font-semibold uppercase tracking-[0.1em] text-charcoal disabled:opacity-45">
