@@ -70,7 +70,7 @@ export async function addVideosToShoot(shootId: string, items: { id: string; tim
   for (const [i, item] of items.entries()) {
     const { error } = await supabase
       .from("tasks")
-      .update({ shoot_id: shootId, shoot_time: item.time && /^\d{2}:\d{2}$/.test(item.time) ? item.time : null, shoot_order: i })
+      .update({ shoot_id: shootId, shoot_time: item.time && /^\d{2}:\d{2}$/.test(item.time) ? item.time : null, shoot_order: i, shot_status: "to_shoot" })
       .eq("id", item.id);
     if (error) return { error: error.message };
   }

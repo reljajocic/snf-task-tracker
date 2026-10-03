@@ -491,10 +491,10 @@
     "addVideos": "+ Add videos",
     "back": "‹ Shoots",
     "pickVideos": "Videos to shoot",
-    "pickHint": "Videos for this client that aren't on a shoot day yet.",
+    "pickHint": "Unfinished videos for this client that aren't on this shoot day.",
     "time": "Time",
     "add": "Add to shoot",
-    "noCandidates": "No videos waiting for a shoot. Create one with + New task → Video.",
+    "noCandidates": "No other unfinished videos for this client.",
     "remove": "Remove from shoot",
     "selectVideo": "Select a video to see its script.",
     "reference": "Reference ↗",
@@ -514,7 +514,10 @@
       "deleteConfirm": "Delete this shoot day? Videos stay, just without a shoot.",
       "cancel": "Cancel"
     },
-    "edit": "Edit"
+    "edit": "Edit",
+    "empty": "No videos on this shoot yet. Use + Add videos.",
+    "newVideo": "+ New video for this shoot",
+    "onOtherShoot": "on {date}"
   },
   "portalSettings": {
     "title": "Client portal",

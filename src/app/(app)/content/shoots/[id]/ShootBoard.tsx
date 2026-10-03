@@ -2,13 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useOptimistic, useState, useTransition } from "react";
+import { formatDate } from "@/lib/dates";
 import { setShotStatus } from "@/app/(app)/task-actions";
 import { TaskLink } from "@/components/tasks/links";
 import { AvatarStack } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import type { ShootDay } from "@/lib/content";
-import type { ShotStatus, Task } from "@/lib/tasks";
+import { PHASES, type ShotStatus, type Task } from "@/lib/tasks";
 import { addVideosToShoot, removeFromShoot } from "../actions";
 
 type Slot = { time: string; onCamera: string; items: Task[] };
@@ -162,7 +164,17 @@ export function ShootBoard({
         )}
       </div>
 
-      {adding && <AddVideos shootId={day.id} candidates={candidates} onDone={() => { setAdding(false); router.refresh(); }} />}
+      {adding && (
+        <AddVideos
+          shootId={day.id}
+          clientId={day.client?.id ?? ""}
+          candidates={candidates}
+          onDone={() => {
+            setAdding(false);
+            router.refresh();
+          }}
+        />
+      )}
 
       {/* Mobile: on set (2e) */}
       <div className="flex flex-col gap-[22px] px-5 pb-[120px] pt-5 lg:hidden">
@@ -238,7 +250,7 @@ export function ShootBoard({
                 ))}
           </div>
         )}
-        {!items.length && <p className="text-[14px] text-ink3">{t("shoots.noCandidates")}</p>}
+        {!items.length && <p className="text-[14px] text-ink3">{t("shoots.empty")}</p>}
       </div>
 
       {/* Desktop (2d) */}
@@ -283,7 +295,7 @@ export function ShootBoard({
               </div>
             </div>
           ))}
-          {!items.length && <p className="pt-6 text-[14px] text-ink3">{t("shoots.noCandidates")}</p>}
+          {!items.length && <p className="pt-6 text-[14px] text-ink3">{t("shoots.empty")}</p>}
         </div>
 
         <aside className="flex flex-col gap-5 overflow-auto border-l border-line px-7 pb-10 pt-6">
@@ -333,8 +345,9 @@ export function ShootBoard({
   );
 }
 
-function AddVideos({ shootId, candidates, onDone }: { shootId: string; candidates: Task[]; onDone: () => void }) {
+function AddVideos({ shootId, clientId, candidates, onDone }: { shootId: string; clientId: string; candidates: Task[]; onDone: () => void }) {
   const t = useTranslations("shoots");
+  const tp = useTranslations("phase");
   const [picked, setPicked] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
   const ids = Object.keys(picked);
@@ -365,7 +378,16 @@ function AddVideos({ shootId, candidates, onDone }: { shootId: string; candidate
                   className="size-4 accent-[var(--accent)]"
                 />
                 <span className="min-w-0 flex-1 truncate text-[15px]">{v.title}</span>
-                <span className="hidden text-[13px] text-ink3 sm:inline">{[v.content_type, v.on_camera].filter(Boolean).join(" · ")}</span>
+                <span className="hidden text-[13px] text-ink3 sm:inline">
+                  {[
+                    tp(PHASES[Math.min(v.phase ?? 0, 4)]),
+                    v.content_type,
+                    v.on_camera,
+                    v.shoot ? t("onOtherShoot", { date: formatDate(v.shoot.date) }) : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </span>
                 {on && (
                   <input
                     type="time"
@@ -382,7 +404,10 @@ function AddVideos({ shootId, candidates, onDone }: { shootId: string; candidate
       ) : (
         <span className="text-[14px] text-ink3">{t("noCandidates")}</span>
       )}
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link href={`?new=1&kind=video&client=${clientId}&shoot=${shootId}`} scroll={false} className="text-[14px] font-medium text-rust-ink">
+          {t("newVideo")}
+        </Link>
         <Button
           size="sm"
           disabled={!ids.length || pending}

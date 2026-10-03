@@ -21,7 +21,7 @@ export function NewTaskModal({
 }: {
   lookups: Lookups;
   today: IsoDate;
-  defaults: { client_id?: string | null; project_id?: string | null; due_date?: string | null; status?: TaskStatus; kind?: "task" | "video"; publish_date?: string | null };
+  defaults: { client_id?: string | null; project_id?: string | null; due_date?: string | null; status?: TaskStatus; kind?: "task" | "video"; publish_date?: string | null; shoot_id?: string | null };
   onClose: () => void;
 }) {
   const t = useTranslations("task");
@@ -66,6 +66,7 @@ export function NewTaskModal({
               on_camera: onCamera,
               location,
               publish_date: defaults.publish_date ?? null,
+              shoot_id: defaults.shoot_id ?? null,
               script: SCRIPT_SECTIONS.map((label) => ({ label, text: "" })),
             }
           : {}),

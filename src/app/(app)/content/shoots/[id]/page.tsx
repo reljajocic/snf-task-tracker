@@ -16,7 +16,9 @@ export default async function ShootPage({ params }: PageProps<"/content/shoots/[
   const client = data.day.client;
   const canManage = lookups.clients.some((c) => c.id === client.id && c.canManage);
   const candidates = canManage
-    ? (await getClientVideos(client.id)).filter((v) => !v.shoot_id && (v.phase ?? 0) <= 1)
+    ? (await getClientVideos(client.id))
+        .filter((v) => v.shoot_id !== day.id && (v.phase ?? 0) < 5)
+        .sort((a, b) => (a.phase ?? 0) - (b.phase ?? 0))
     : [];
   const nowTime = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
 

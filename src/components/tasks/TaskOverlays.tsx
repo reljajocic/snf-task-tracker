@@ -21,7 +21,7 @@ export function TaskOverlays({ lookups, today }: { lookups: Lookups; today: IsoD
 
   const close = useCallback(() => {
     const next = new URLSearchParams(params);
-    for (const k of ["task", "new", "client", "project", "due", "status", "kind", "publish"]) next.delete(k);
+    for (const k of ["task", "new", "client", "project", "due", "status", "kind", "publish", "shoot"]) next.delete(k);
     const qs = next.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [params, pathname, router]);
@@ -43,6 +43,7 @@ export function TaskOverlays({ lookups, today }: { lookups: Lookups; today: IsoD
             status: STATUSES.includes(status as TaskStatus) ? (status as TaskStatus) : undefined,
             kind: params.get("kind") === "video" ? "video" : undefined,
             publish_date: params.get("publish"),
+            shoot_id: params.get("shoot"),
           }}
         />
       )}
