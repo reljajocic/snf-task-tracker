@@ -17,6 +17,7 @@ export type ShootInitial = {
   starts_at: string | null;
   ends_at: string | null;
   notes: string | null;
+  drive_url: string | null;
   crew: string[];
 };
 
@@ -59,6 +60,10 @@ export function ShootForm({ clients, people, shoot, defaultDate }: { clients: Cl
         <label className="flex flex-col gap-2">
           {label(t("to"))}
           <input name="ends_at" type="time" defaultValue={shoot?.ends_at ?? ""} className={inputClass} />
+        </label>
+        <label className="flex flex-col gap-2 sm:col-span-2">
+          {label(t("drive"))}
+          <input name="drive_url" placeholder="drive.google.com/…" defaultValue={shoot?.drive_url ?? ""} className={inputClass} />
         </label>
         <div className="flex flex-col gap-2 sm:col-span-2">
           {label(t("crew"))}

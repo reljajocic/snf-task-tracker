@@ -6,13 +6,14 @@ import { buttonClass } from "@/components/ui/Button";
 import { getShootDays, type ShootDay } from "@/lib/content";
 import { getLookups } from "@/lib/data";
 import { formatDate, today as getToday, weekdayIndex } from "@/lib/dates";
+import { ImportSheet } from "./ImportSheet";
 
 export default async function ShootsPage() {
   const [days, lookups, t] = await Promise.all([getShootDays(), getLookups(), getTranslations()]);
   const today = getToday();
   const upcoming = days.filter((d) => d.date >= today);
   const past = days.filter((d) => d.date < today).reverse();
-  const canCreate = lookups.clients.some((c) => c.canManage);
+  const canCreate = lookups.clients.some((c) => c.isTeam);
 
   const card = (d: ShootDay) => {
     const pct = d.total ? Math.round((d.shot / d.total) * 100) : 0;
@@ -50,7 +51,14 @@ export default async function ShootsPage() {
       <PageHeader
         title={t("shoots.title")}
         newTask={false}
-        actions={canCreate ? <Link href="/content/shoots/new" className={buttonClass({ size: "sm" })}>{t("shoots.new")}</Link> : null}
+        actions={
+          canCreate ? (
+            <div className="flex flex-wrap items-start gap-3">
+              <ImportSheet clients={lookups.clients.filter((c) => c.isTeam).map((c) => ({ id: c.id, name: c.name }))} />
+              <Link href="/content/shoots/new" className={buttonClass({ size: "sm" })}>{t("shoots.new")}</Link>
+            </div>
+          ) : null
+        }
       />
       <div className="flex flex-col gap-9 px-5 pb-[120px] lg:px-10 lg:pb-12">
         <section className="flex flex-col gap-3.5">

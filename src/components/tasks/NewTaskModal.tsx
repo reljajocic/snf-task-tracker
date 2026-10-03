@@ -58,7 +58,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const [pending, startTransition] = useTransition();
 
   const client = lookups.clients.find((c) => c.id === where.client_id);
-  const needsProject = Boolean(client && !client.canManage && !where.project_id);
+  const needsProject = Boolean(client && !client.isTeam && !where.project_id);
   const canSave = title.trim().length > 0 && !needsProject && !pending;
   const isVideo = kind === "video";
   const tags = [...(client?.contentTypes ?? []), ...extraTags.filter((x) => !client?.contentTypes.includes(x))];

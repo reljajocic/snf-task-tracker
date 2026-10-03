@@ -51,6 +51,7 @@ export async function saveClient(_prev: FormState, form: FormData): Promise<Form
     drive_url: text(form.get("drive_url")),
     notes: text(form.get("notes")),
     content_types: list(form.get("content_types")).map((x) => x.toUpperCase()),
+    default_editor_id: text(form.get("default_editor_id")),
     posting_days: form
       .getAll("posting_days")
       .map(Number)

@@ -20,6 +20,9 @@ export type ClientOption = {
   status: string;
   /** Admin, or manager of this client: may file tasks without a project, create projects. */
   canManage: boolean;
+  /** On the client's team (any role) or admin: may create and edit all of the client's work. */
+  isTeam: boolean;
+  defaultEditorId: string | null;
   contentTypes: string[];
   locations: string[];
   postingDays: number[];
@@ -42,13 +45,14 @@ export const getLookups = cache(async (): Promise<Lookups> => {
       .eq("is_active", true)
       .order("full_name")
       .returns<Person[]>(),
-    supabase.from("clients").select("id, name, status, content_types, locations, posting_days").order("name"),
+    supabase.from("clients").select("id, name, status, content_types, locations, posting_days, default_editor_id").order("name"),
     supabase.from("projects").select("id, name, client_id, status").neq("status", "archived").order("name"),
     supabase.from("client_members").select("client_id, role").eq("user_id", userId),
     supabase.from("project_members").select("project_id").eq("user_id", userId),
   ]);
   const isAdmin = profile.role === "admin";
 
+  const teamOf = new Set((memberships.data ?? []).map((m) => m.client_id));
   const managerOf = new Set(
     (memberships.data ?? []).filter((m) => m.role === "manager").map((m) => m.client_id),
   );
@@ -64,6 +68,8 @@ export const getLookups = cache(async (): Promise<Lookups> => {
         name: c.name,
         status: c.status,
         canManage,
+        isTeam: isAdmin || teamOf.has(c.id),
+        defaultEditorId: c.default_editor_id ?? null,
         contentTypes: c.content_types ?? [],
         locations: c.locations ?? [],
         postingDays: c.posting_days ?? [0, 2, 4],

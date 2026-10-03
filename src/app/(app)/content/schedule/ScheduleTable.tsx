@@ -193,9 +193,23 @@ export function ScheduleTable({ weeks, unscheduled, today, clientPicker }: { wee
                               {t("schedule.open")} ↗
                             </TaskLink>
                             {s !== "published" && (
-                              <button type="button" onClick={() => assign(v.id, null)} className="cursor-pointer text-ink3 hover:text-ink">
-                                {t("schedule.unschedule")}
-                              </button>
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    startTransition(async () => {
+                                      await updateTask(v.id, { phase: 5 });
+                                      router.refresh();
+                                    })
+                                  }
+                                  className="cursor-pointer text-[var(--status-done)] hover:underline"
+                                >
+                                  {t("schedule.markPublished")}
+                                </button>
+                                <button type="button" onClick={() => assign(v.id, null)} className="cursor-pointer text-ink3 hover:text-ink">
+                                  {t("schedule.unschedule")}
+                                </button>
+                              </>
                             )}
                           </div>
                         </div>

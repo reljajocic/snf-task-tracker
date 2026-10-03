@@ -183,7 +183,8 @@
     "remove": "Remove",
     "makeManager": "Make manager",
     "makeMember": "Make member",
-    "teamHint": "Managers see and manage everything for this client. Members only see projects they're on."
+    "teamHint": "Managers see and manage everything for this client. Members only see projects they're on.",
+    "editor": "Regular editor"
   },
   "team": {
     "title": "Team",
@@ -328,7 +329,10 @@
     "socialNetwork": "Network",
     "socialHandle": "@handle or profile link",
     "socialRemove": "Remove profile",
-    "socialAdd": "+ Add profile"
+    "socialAdd": "+ Add profile",
+    "defaultEditor": "Regular editor",
+    "defaultEditorHint": "Gets the edit task automatically when a video gets a posting date (deadline: the day before).",
+    "noEditor": "None"
   },
   "projectForm": {
     "newTitle": "New project",
@@ -479,7 +483,8 @@
     "unschedule": "Remove date",
     "period": "{from} – {to}",
     "noVideos": "No unscheduled videos.",
-    "more": "+{count}"
+    "more": "+{count}",
+    "markPublished": "✓ Mark published"
   },
   "shoots": {
     "title": "Shoots",
@@ -522,7 +527,8 @@
       "save": "Save shoot day",
       "delete": "Delete shoot day",
       "deleteConfirm": "Delete this shoot day? Videos stay, just without a shoot.",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "drive": "Google Drive folder (footage)"
     },
     "edit": "Edit",
     "empty": "No videos on this shoot yet. Use + Add videos.",
@@ -543,7 +549,18 @@
     "deadline": "Deadline",
     "priority": "Priority",
     "apply": "Move to edit",
-    "noEditor": "—"
+    "noEditor": "—",
+    "scheduleShot": "Schedule shot videos ({count}) →",
+    "footage": "Footage on Drive ↗",
+    "import": {
+      "button": "Import from Sheets",
+      "title": "Import a shoot from Google Sheets",
+      "hint": "Paste the link to the shoot tab (Share → Anyone with the link can view). Date, call times and every video with its status, person, type, title, text and note come over.",
+      "location": "Location (optional)",
+      "import": "Import",
+      "importing": "Importing…",
+      "cancel": "Cancel"
+    }
   },
   "portalSettings": {
     "title": "Client portal",
@@ -663,5 +680,23 @@
     "unavailable": "This page isn't available.",
     "notFoundTitle": "Link not valid",
     "notFoundText": "This portal link doesn't work any more. Ask Slate 'n' Frame for the current one."
+  },
+  "shootSheet": {
+    "status": "Status",
+    "time": "Time",
+    "person": "Person",
+    "type": "Type",
+    "title": "Title",
+    "text": "Text",
+    "note": "Note",
+    "toShoot": "To shoot",
+    "filmed": "Filmed",
+    "notFilmed": "Not filmed",
+    "addRow": "+ Row",
+    "untitled": "New video",
+    "remove": "Remove from this shoot",
+    "open": "Open video",
+    "sheet": "Sheet",
+    "onSet": "On set"
   }
 }

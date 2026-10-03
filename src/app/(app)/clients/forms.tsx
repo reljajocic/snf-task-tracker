@@ -42,7 +42,7 @@ function FormShell({
   );
 }
 
-export function ClientForm({ client, canDelete }: { client?: Client; canDelete?: boolean }) {
+export function ClientForm({ client, canDelete, people }: { client?: Client; canDelete?: boolean; people: Person[] }) {
   const t = useTranslations();
   const [state, action, pending] = useActionState<FormState, FormData>(saveClient, null);
   const [deleting, startDelete] = useTransition();
@@ -103,6 +103,12 @@ export function ClientForm({ client, canDelete }: { client?: Client; canDelete?:
           <input name="content_types" defaultValue={(client?.content_types ?? []).join(", ")} className={inputClass} />
         </Field>
         <PostingDays initial={client?.posting_days ?? [0, 2, 4]} label={t("clientForm.postingDays")} />
+        <Field label={t("clientForm.defaultEditor")} hint={t("clientForm.defaultEditorHint")} wide>
+          <select name="default_editor_id" defaultValue={client?.default_editor_id ?? ""} className={`${selectClass} h-[42px]`}>
+            <option value="">{t("clientForm.noEditor")}</option>
+            {people.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
+          </select>
+        </Field>
         <Field label={t("clientForm.notes")} wide>
           <textarea name="notes" rows={3} defaultValue={client?.notes ?? ""} className="resize-y rounded-md border border-line2 bg-transparent px-3 py-2.5 text-[14px] text-ink outline-none focus:border-accent" />
         </Field>

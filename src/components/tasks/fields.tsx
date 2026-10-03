@@ -105,7 +105,7 @@ export function PeoplePicker({
 /** Projects a user may file under for a client (members: only their projects). */
 export function allowedProjects(client: ClientOption | undefined) {
   if (!client) return [];
-  return client.canManage ? client.projects : client.projects.filter((p) => p.isMember);
+  return client.isTeam ? client.projects : client.projects.filter((p) => p.isMember);
 }
 
 export function ClientProjectSelects({
@@ -125,7 +125,7 @@ export function ClientProjectSelects({
 }) {
   const t = useTranslations("task");
   // A member who isn't on any project of a client can't file tasks there.
-  const selectable = clients.filter((c) => c.canManage || c.projects.some((p) => p.isMember) || c.id === clientId);
+  const selectable = clients.filter((c) => c.isTeam || c.projects.some((p) => p.isMember) || c.id === clientId);
   const client = clients.find((c) => c.id === clientId);
   const projects = allowedProjects(client);
   const currentProjectHidden = projectId && !projects.some((p) => p.id === projectId);
@@ -133,7 +133,7 @@ export function ClientProjectSelects({
   const pickClient = (id: string) => {
     const next = clients.find((c) => c.id === id);
     const options = allowedProjects(next);
-    onChange({ client_id: id || null, project_id: next && !next.canManage ? (options[0]?.id ?? null) : null });
+    onChange({ client_id: id || null, project_id: next && !next.isTeam ? (options[0]?.id ?? null) : null });
   };
 
   const clientSelect = (
@@ -154,7 +154,7 @@ export function ClientProjectSelects({
       onChange={(e) => onChange({ client_id: clientId, project_id: e.target.value || null })}
       className={`${selectClass} ${layout === "grid" ? "h-[42px] w-full" : ""}`}
     >
-      {(client?.canManage || !client) && <option value="">{t("noProject")}</option>}
+      {(client?.isTeam || !client) && <option value="">{t("noProject")}</option>}
       {currentProjectHidden && <option value={projectId}>…</option>}
       {projects.map((p) => (
         <option key={p.id} value={p.id}>

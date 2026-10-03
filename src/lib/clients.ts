@@ -20,6 +20,7 @@ export type Client = {
   notes: string | null;
   content_types: string[];
   posting_days: number[];
+  default_editor_id: string | null;
 };
 
 export type Project = {
@@ -34,7 +35,7 @@ export type Project = {
   members: string[];
 };
 
-const CLIENT_COLS = "id, name, status, services, city, since, email, socials, locations, drive_url, notes, content_types, posting_days";
+const CLIENT_COLS = "id, name, status, services, city, since, email, socials, locations, drive_url, notes, content_types, posting_days, default_editor_id";
 
 /** Clients the user can see (RLS), sorted by name. */
 export const getClients = cache(async (): Promise<Client[]> => {

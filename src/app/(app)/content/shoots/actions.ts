@@ -26,6 +26,7 @@ export async function saveShoot(_prev: ShootFormState, form: FormData): Promise<
     starts_at: time(form.get("starts_at")),
     ends_at: time(form.get("ends_at")),
     notes: text(form.get("notes")),
+    drive_url: text(form.get("drive_url")),
   };
   if (!fields.client_id) return { error: "Pick a client." };
   if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: "Pick a date." };
@@ -104,33 +105,64 @@ export async function saveCallTimes(shootId: string, rows: { time: string; name:
 }
 
 /**
- * After the shoot: turn the shot videos into edit work — assign the editor, set deadline and priority.
- * (Marking a video "shot" already moved it to the edit phase.)
+ * Creates a shoot day with all its videos from the team's Google Sheet
+ * (the sheet must be viewable by anyone with the link).
  */
-export async function planEdits(shootId: string, input: { videoIds: string[]; editorId: string | null; due: string | null; priority: string }) {
+export async function importShootSheet(_prev: ShootFormState, form: FormData): Promise<ShootFormState> {
   const me = await requireProfile();
+  const clientId = text(form.get("client_id"));
+  const link = text(form.get("url"));
+  if (!clientId) return { error: "Pick a client." };
+  const { csvExportUrl, parseShootSheet } = await import("@/lib/sheet-import");
+  const url = link ? csvExportUrl(link) : null;
+  if (!url) return { error: "Paste a Google Sheets link." };
+
+  const res = await fetch(url, { redirect: "follow", cache: "no-store" });
+  const type = res.headers.get("content-type") ?? "";
+  if (!res.ok || !type.includes("text/csv")) {
+    return { error: "Couldn't read the sheet. In Google Sheets: Share → General access → Anyone with the link (Viewer)." };
+  }
+  let parsed;
+  try {
+    parsed = parseShootSheet(await res.text());
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+  if (!parsed.videos.length) return { error: "No videos found in that sheet." };
+
   const supabase = await createClient();
-  const due = input.due && /^\d{4}-\d{2}-\d{2}$/.test(input.due) ? input.due : null;
-  const priority = ["low", "medium", "high", "urgent"].includes(input.priority) ? input.priority : "medium";
-  for (const id of input.videoIds) {
-    const { error } = await supabase
-      .from("tasks")
-      .update({ due_date: due, priority, phase: 2 })
-      .eq("id", id)
-      .eq("shoot_id", shootId);
-    if (error) return { error: error.message };
-    if (input.editorId) {
-      await supabase.from("task_assignees").upsert({ task_id: id, user_id: input.editorId }, { onConflict: "task_id,user_id", ignoreDuplicates: true });
-    }
-  }
-  if (input.editorId && input.editorId !== me.id) {
-    const editor = input.editorId;
-    const { after } = await import("next/server");
-    const { notify } = await import("@/lib/notify");
-    after(async () => {
-      for (const id of input.videoIds) await notify({ event: "task_assigned", taskId: id, recipientIds: [editor], actorId: me.id });
-    });
-  }
+  const { data: shoot, error } = await supabase
+    .from("shoot_days")
+    .insert({ client_id: clientId, date: parsed.date ?? new Date().toISOString().slice(0, 10), call_times: parsed.callTimes, location: text(form.get("location")) })
+    .select("id")
+    .single();
+  if (error) return { error: error.message };
+  await supabase.from("shoot_crew").insert({ shoot_id: shoot.id, user_id: me.id });
+
+  const { error: vErr } = await supabase.from("tasks").insert(
+    parsed.videos.map((v) => ({
+      kind: "video",
+      title: v.title,
+      client_id: clientId,
+      on_camera: v.person || null,
+      content_type: v.type || null,
+      script: v.script,
+      note: v.note || null,
+      shoot_id: shoot.id,
+      shoot_time: v.time,
+      shoot_order: v.order,
+      shot_status: v.status,
+      phase: v.status === "shot" ? 2 : 1,
+    })),
+  );
+  if (vErr) return { error: vErr.message };
+
+  // New tags from the sheet join the client's list.
+  const { data: client } = await supabase.from("clients").select("content_types").eq("id", clientId).single();
+  const known: string[] = client?.content_types ?? [];
+  const fresh = [...new Set(parsed.videos.map((v) => v.type).filter((x) => x && !known.includes(x)))];
+  if (fresh.length) await supabase.from("clients").update({ content_types: [...known, ...fresh] }).eq("id", clientId);
+
   revalidatePath("/", "layout");
-  return { error: null };
+  redirect(`/content/shoots/${shoot.id}`);
 }

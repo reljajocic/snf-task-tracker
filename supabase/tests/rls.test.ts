@@ -118,8 +118,8 @@ describe("task visibility", () => {
     expect(await titles(MANAGER)).toEqual(["T1 assigned", "T2 client only", "T4 unassigned"]);
   });
 
-  it("member sees their projects and own personal tasks", async () => {
-    expect(await titles(MEMBER)).toEqual(["T1 assigned", "T3 personal", "T4 unassigned"]);
+  it("client team members see all of the client's tasks and their own personal ones", async () => {
+    expect(await titles(MEMBER)).toEqual(["T1 assigned", "T2 client only", "T3 personal", "T4 unassigned"]);
   });
 
   it("outsider sees nothing", async () => {
@@ -128,23 +128,34 @@ describe("task visibility", () => {
 });
 
 describe("task changes", () => {
-  it("member can create tasks only inside their projects or personally", async () => {
+  it("client team members create tasks for their clients, not for others", async () => {
     expect(
       await as(MEMBER, "insert into public.tasks (title, project_id) values ('Mine in P1', $1) returning client_id", [P1]),
     ).toEqual([{ client_id: C1 }]);
-    await expect(
-      as(MEMBER, "insert into public.tasks (title, client_id) values ('x', $1)", [C1]),
-    ).rejects.toThrow(/row-level security/);
+    expect(await as(MEMBER, "insert into public.tasks (title, client_id) values ('Client work', $1) returning title", [C1])).toEqual([
+      { title: "Client work" },
+    ]);
     await expect(
       as(MEMBER, "insert into public.tasks (title, client_id) values ('x', $1)", [C2]),
     ).rejects.toThrow(/row-level security/);
   });
 
-  it("member edits assigned tasks but not others in the project", async () => {
+  it("client team members edit any of the client's tasks", async () => {
     expect(
       await as(MEMBER, "update public.tasks set status = 'done' where id = $1 returning completed_at is not null as done", [t1]),
     ).toEqual([{ done: true }]);
-    expect(await as(MEMBER, "update public.tasks set title = 'x' where id = $1 returning id", [t4])).toEqual([]);
+    expect(await as(MEMBER, "update public.tasks set priority = 'high' where id = $1 returning priority", [t4])).toEqual([
+      { priority: "high" },
+    ]);
+  });
+
+  it("project-only members (not on the client team) see the project but edit only their own tasks", async () => {
+    const PM = "00000000-0000-0000-0000-000000000099";
+    await db.query("insert into auth.users values ($1, 'pm2@snf.test', '{}')", [PM]);
+    await db.query("insert into public.project_members (project_id, user_id) values ($1, $2)", [P1, PM]);
+    expect(await as(PM, "select title from public.tasks where id = $1", [t4])).toEqual([{ title: "T4 unassigned" }]);
+    expect(await as(PM, "update public.tasks set title = 'x' where id = $1 returning id", [t4])).toEqual([]);
+    expect(await as(PM, "select title from public.tasks where title = 'T2 client only'")).toEqual([]);
   });
 
   it("member can't move a task to a client they don't belong to", async () => {
@@ -244,9 +255,10 @@ describe("content module", () => {
     expect(await as(CREW, "update public.tasks set title = 'x' where id = $1 returning id", [video])).toEqual([]);
   });
 
-  it("members can't create shoot days; managers can", async () => {
+  it("the client team creates shoot days; outsiders can't", async () => {
+    expect(await as(MEMBER, "insert into public.shoot_days (client_id, date) values ($1, '2026-10-05') returning date", [C1])).toHaveLength(1);
     await expect(
-      as(MEMBER, "insert into public.shoot_days (client_id, date) values ($1, '2026-10-05')", [C1]),
+      as(OUTSIDER, "insert into public.shoot_days (client_id, date) values ($1, '2026-10-05')", [C1]),
     ).rejects.toThrow(/row-level security/);
   });
 });

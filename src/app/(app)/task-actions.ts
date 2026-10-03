@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { requireProfile } from "@/lib/auth";
+import { addDays } from "@/lib/dates";
 import { notify } from "@/lib/notify";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -102,6 +103,25 @@ const STATUS_LABEL: Record<TaskStatus, string> = {
   done: "Done",
 };
 
+/**
+ * A video got a posting date: the client's regular editor gets the edit work (if not already on it),
+ * with a deadline the day before posting unless one is set.
+ */
+async function handOffToEditor(taskId: string, publishDate: string, actorId: string) {
+  const supabase = await createClient();
+  const { data: task } = await supabase
+    .from("tasks")
+    .select("kind, due_date, client:clients(default_editor_id), task_assignees(user_id)")
+    .eq("id", taskId)
+    .single<{ kind: string; due_date: string | null; client: { default_editor_id: string | null } | null; task_assignees: { user_id: string }[] }>();
+  const editor = task?.client?.default_editor_id;
+  if (!task || task.kind !== "video" || !editor) return;
+  if (!task.due_date) await supabase.from("tasks").update({ due_date: addDays(publishDate, -1) }).eq("id", taskId);
+  if (task.task_assignees.some((a) => a.user_id === editor)) return;
+  await supabase.from("task_assignees").insert({ task_id: taskId, user_id: editor });
+  after(() => notify({ event: "task_assigned", taskId, recipientIds: [editor], actorId }));
+}
+
 /** Assignees + creator: the people who care about changes to a task. */
 async function watchers(taskId: string): Promise<string[]> {
   const supabase = await createClient();
@@ -143,6 +163,7 @@ export async function updateTask(id: string, patch: TaskPatch): Promise<ActionRe
   const { data, error } = await supabase.from("tasks").update(fields).eq("id", id).select("id");
   if (error) return { ok: false, error: error.message };
   if (!data?.length) return { ok: false, error: "You can't edit this task." };
+  if (fields.publish_date) await handOffToEditor(id, fields.publish_date, me.id);
   if (fields.status) {
     const status = fields.status;
     const recipients = await watchers(id);

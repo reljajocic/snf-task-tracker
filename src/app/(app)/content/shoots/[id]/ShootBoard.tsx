@@ -10,16 +10,20 @@ import { TaskLink } from "@/components/tasks/links";
 import { AvatarStack } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import type { ShootDay } from "@/lib/content";
-import { PHASES, type Person, type ShotStatus, type Task } from "@/lib/tasks";
+import { PHASES, type ShotStatus, type Task } from "@/lib/tasks";
 import { addVideosToShoot, removeFromShoot } from "../actions";
-import { CallTimes, PlanEdits } from "./ShootTools";
+import { CallTimes } from "./ShootTools";
+import { ShootSheet } from "./ShootSheet";
 
 type Slot = { time: string; onCamera: string; items: Task[] };
 
 function groupSlots(videos: Task[]): Slot[] {
   const slots: Slot[] = [];
+  let last = "—";
   for (const v of videos) {
-    const time = v.shoot_time ?? "—";
+    // Like the sheet: a row without a time belongs to the time above it.
+    const time = v.shoot_time ?? last;
+    last = time;
     let s = slots.find((x) => x.time === time);
     if (!s) slots.push((s = { time, onCamera: v.on_camera ?? "", items: [] }));
     s.items.push(v);
@@ -37,9 +41,11 @@ export function ShootBoard({
   canManage,
   isToday,
   nowTime,
-  people,
+  desktopView,
+  tags,
 }: {
-  people: Person[];
+  desktopView: "sheet" | "onset";
+  tags: string[];
   day: ShootDay;
   videos: Task[];
   candidates: Task[];
@@ -55,7 +61,6 @@ export function ShootBoard({
   );
   const [selected, setSelected] = useState<string | null>(videos[0]?.id ?? null);
   const [adding, setAdding] = useState(false);
-  const [planning, setPlanning] = useState(false);
   const [showDone, setShowDone] = useState(false);
 
   const slots = groupSlots(items).map((s) => {
@@ -168,11 +173,11 @@ export function ShootBoard({
         {canManage && (
           <span className="ml-auto flex items-center gap-4">
             {shotVideos.length > 0 && (
-              <button type="button" onClick={() => { setPlanning((p) => !p); setAdding(false); }} className="cursor-pointer text-[14px] font-medium text-ink">
-                {t("shoots.planEdits", { count: shotVideos.length })}
-              </button>
+              <Link href={`/content/schedule?client=${day.client?.id ?? ""}&view=calendar`} className="text-[14px] font-medium text-ink">
+                {t("shoots.scheduleShot", { count: shotVideos.length })}
+              </Link>
             )}
-            <button type="button" onClick={() => { setAdding((a) => !a); setPlanning(false); }} className="cursor-pointer text-[14px] font-medium text-rust-ink">
+            <button type="button" onClick={() => setAdding((a) => !a)} className="cursor-pointer text-[14px] font-medium text-rust-ink">
               {t("shoots.addVideos")}
             </button>
           </span>
@@ -191,17 +196,6 @@ export function ShootBoard({
         />
       )}
 
-      {planning && (
-        <PlanEdits
-          shootId={day.id}
-          videos={shotVideos}
-          people={people}
-          onDone={() => {
-            setPlanning(false);
-            router.refresh();
-          }}
-        />
-      )}
 
       {/* Mobile: on set (2e) */}
       <div className="flex flex-col gap-[22px] px-5 pb-[120px] pt-5 lg:hidden">
@@ -281,8 +275,18 @@ export function ShootBoard({
         {!items.length && <p className="text-[14px] text-ink3">{t("shoots.empty")}</p>}
       </div>
 
-      {/* Desktop (2d) */}
-      <div className="hidden min-h-0 flex-1 grid-cols-[minmax(0,1fr)_400px] lg:grid xl:grid-cols-[minmax(0,1fr)_440px]">
+      {/* Desktop: the sheet (default) … */}
+      {desktopView === "sheet" && (
+        <div className="hidden lg:block">
+          <div className="px-10 pt-5">
+            <CallTimes shootId={day.id} initial={day.call_times} canManage={canManage} />
+          </div>
+          <ShootSheet shootId={day.id} clientId={day.client?.id ?? ""} videos={items} tags={tags} editable={canManage} />
+        </div>
+      )}
+
+      {/* … or the on-set board (2d) */}
+      <div className={`hidden min-h-0 flex-1 grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] ${desktopView === "onset" ? "lg:grid" : ""}`}>
         <div className="flex flex-col overflow-auto pb-10 pl-10 pr-8 pt-5">
           <CallTimes shootId={day.id} initial={day.call_times} canManage={canManage} />
           {slots.map((s) => (

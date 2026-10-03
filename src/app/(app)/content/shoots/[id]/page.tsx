@@ -5,16 +5,18 @@ import { getClientVideos, getShootDay } from "@/lib/content";
 import { getLookups } from "@/lib/data";
 import { formatDate, today as getToday, weekdayIndex } from "@/lib/dates";
 import { TIME_ZONE } from "@/lib/config";
+import { Segmented } from "@/components/ui/Segmented";
 import { ShootBoard } from "./ShootBoard";
 
 // 2d (desktop) / 2e (mobile, on set)
-export default async function ShootPage({ params }: PageProps<"/content/shoots/[id]">) {
-  const [{ id }, lookups, t] = await Promise.all([params, getLookups(), getTranslations()]);
+export default async function ShootPage({ params, searchParams }: PageProps<"/content/shoots/[id]">) {
+  const [{ id }, { view }, lookups, t] = await Promise.all([params, searchParams, getLookups(), getTranslations()]);
+  const desktopView = view === "onset" ? "onset" : "sheet";
   const data = await getShootDay(id);
   if (!data || !data.day.client) notFound();
   const { day, videos } = data;
   const client = data.day.client;
-  const canManage = lookups.clients.some((c) => c.id === client.id && c.canManage);
+  const canManage = lookups.clients.some((c) => c.id === client.id && c.isTeam);
   const candidates = canManage
     ? (await getClientVideos(client.id))
         .filter((v) => v.shoot_id !== day.id && (v.phase ?? 0) < 5)
@@ -39,6 +41,17 @@ export default async function ShootPage({ params }: PageProps<"/content/shoots/[
           <h1 className="display text-[32px] lg:text-[44px]">{t("video.shoot")}</h1>
         </div>
         <div className="hidden items-center gap-3.5 lg:flex">
+          <Segmented
+            items={[
+              { key: "sheet", label: t("shootSheet.sheet"), href: `/content/shoots/${id}`, active: desktopView === "sheet" },
+              { key: "onset", label: t("shootSheet.onSet"), href: `/content/shoots/${id}?view=onset`, active: desktopView === "onset" },
+            ]}
+          />
+          {day.drive_url && (
+            <a href={day.drive_url} target="_blank" rel="noreferrer" className="flex h-[42px] items-center rounded-[7px] border border-line2 px-3.5 text-[14px] font-medium">
+              {t("shoots.footage")}
+            </a>
+          )}
           <span className="flex h-[42px] items-center rounded-[7px] border border-line2 px-3.5 text-[14px] font-medium">
             {t("weekday.long", { day: String(weekdayIndex(day.date)) })}, {formatDate(day.date)}
           </span>
@@ -56,7 +69,8 @@ export default async function ShootPage({ params }: PageProps<"/content/shoots/[
         canManage={canManage}
         isToday={day.date === getToday()}
         nowTime={nowTime}
-        people={lookups.people}
+        desktopView={desktopView}
+        tags={lookups.clients.find((c) => c.id === client.id)?.contentTypes ?? []}
       />
     </div>
   );

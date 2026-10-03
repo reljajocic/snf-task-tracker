@@ -26,6 +26,7 @@ export type ShootDay = {
   starts_at: string | null;
   ends_at: string | null;
   notes: string | null;
+  drive_url: string | null;
   call_times: CallTime[];
   crew: Person[];
   total: number;
@@ -38,7 +39,7 @@ type RawShoot = Omit<ShootDay, "crew" | "total" | "shot"> & {
 };
 
 const SHOOT_SELECT = `
-  id, date, location, starts_at, ends_at, notes, call_times,
+  id, date, location, starts_at, ends_at, notes, drive_url, call_times,
   client:clients(id, name, locations),
   shoot_crew(profile:profiles(id, full_name, initials, avatar_bg, avatar_fg)),
   tasks(shot_status)
@@ -72,7 +73,6 @@ export async function getShootDay(id: string) {
       .from("tasks")
       .select(TASK_SELECT)
       .eq("shoot_id", id)
-      .order("shoot_time", { nullsFirst: false })
       .order("shoot_order", { nullsFirst: false })
       .order("created_at")
       .returns<RawTask[]>(),

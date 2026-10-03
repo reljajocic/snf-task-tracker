@@ -11,7 +11,7 @@ export default async function EditShootPage({ params }: PageProps<"/content/shoo
   const { day } = data;
   return (
     <ShootForm
-      clients={lookups.clients.filter((c) => c.canManage)}
+      clients={lookups.clients.filter((c) => c.isTeam)}
       people={lookups.people}
       defaultDate={today()}
       shoot={{
@@ -22,6 +22,7 @@ export default async function EditShootPage({ params }: PageProps<"/content/shoo
         starts_at: day.starts_at,
         ends_at: day.ends_at,
         notes: day.notes,
+        drive_url: day.drive_url,
         crew: day.crew.map((c) => c.id),
       }}
     />

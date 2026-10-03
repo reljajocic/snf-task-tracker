@@ -151,6 +151,7 @@ export type Database = {
           content_types: string[]
           created_at: string
           created_by: string | null
+          default_editor_id: string | null
           drive_url: string | null
           email: string | null
           id: string
@@ -169,6 +170,7 @@ export type Database = {
           content_types?: string[]
           created_at?: string
           created_by?: string | null
+          default_editor_id?: string | null
           drive_url?: string | null
           email?: string | null
           id?: string
@@ -187,6 +189,7 @@ export type Database = {
           content_types?: string[]
           created_at?: string
           created_by?: string | null
+          default_editor_id?: string | null
           drive_url?: string | null
           email?: string | null
           id?: string
@@ -204,6 +207,13 @@ export type Database = {
           {
             foreignKeyName: "clients_created_by_fkey"
             columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_default_editor_id_fkey"
+            columns: ["default_editor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -530,6 +540,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           date: string
+          drive_url: string | null
           ends_at: string | null
           id: string
           location: string | null
@@ -542,6 +553,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           date: string
+          drive_url?: string | null
           ends_at?: string | null
           id?: string
           location?: string | null
@@ -554,6 +566,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           date?: string
+          drive_url?: string | null
           ends_at?: string | null
           id?: string
           location?: string | null
@@ -853,6 +866,7 @@ export type Database = {
       can_view_task: { Args: { tid: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_client_manager: { Args: { cid: string }; Returns: boolean }
+      is_client_team: { Args: { cid: string }; Returns: boolean }
       is_project_member: { Args: { pid: string }; Returns: boolean }
       is_shoot_crew: { Args: { sid: string }; Returns: boolean }
       is_task_assignee: { Args: { tid: string }; Returns: boolean }
