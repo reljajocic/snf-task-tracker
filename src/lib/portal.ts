@@ -88,8 +88,16 @@ type RawVideo = Omit<PortalVideo, "versions" | "scriptDecision"> & {
   approvals: (Decision & { kind: string; version_id: string | null })[];
 };
 
-export const getPortalVideos = cache(async (clientId: string): Promise<PortalVideo[]> => {
-  const { data, error } = await createAdminClient()
+/**
+ * Which of the client's videos a portal page needs (a client's history can be ~1 MB):
+ *  - id: one video · shootId: one shoot day · from: posting on/after a date
+ *  - month: published that month (YYYY-MM) · open: not published yet, or posting from a date on
+ * Dropped videos never reach the portal.
+ */
+export type PortalScope = { id: string } | { shootId: string } | { from: IsoDate } | { month: string } | { open: IsoDate };
+
+export async function getPortalVideos(clientId: string, scope: PortalScope): Promise<PortalVideo[]> {
+  let query = createAdminClient()
     .from("tasks")
     .select(
       `id, title, content_type, on_camera, location, script, publish_date, phase, shot_status, shoot_time,
@@ -99,8 +107,13 @@ export const getPortalVideos = cache(async (clientId: string): Promise<PortalVid
     )
     .eq("client_id", clientId)
     .eq("kind", "video")
-    .order("publish_date", { nullsFirst: false })
-    .returns<RawVideo[]>();
+    .is("dropped_at", null);
+  if ("id" in scope) query = query.eq("id", scope.id);
+  else if ("shootId" in scope) query = query.eq("shoot_id", scope.shootId);
+  else if ("from" in scope) query = query.gte("publish_date", scope.from);
+  else if ("month" in scope) query = query.gte("publish_date", `${scope.month}-01`).lte("publish_date", `${scope.month}-31`).gte("phase", 5);
+  else query = query.or(`phase.lt.5,publish_date.gte.${scope.open}`);
+  const { data, error } = await query.order("publish_date", { nullsFirst: false }).returns<RawVideo[]>();
   if (error) throw error;
   return (data ?? []).map(({ video_versions, approvals, ...v }) => {
     const byNewest = [...approvals].sort((a, b) => b.created_at.localeCompare(a.created_at));
@@ -119,7 +132,29 @@ export const getPortalVideos = cache(async (clientId: string): Promise<PortalVid
       scriptDecision: scriptDecision ? pick(scriptDecision) : null,
     };
   });
-});
+}
+
+/** Script approval progress per shoot day (a light query: no scripts or versions). */
+export async function getPortalScriptProgress(clientId: string) {
+  const { data } = await createAdminClient()
+    .from("tasks")
+    .select("shoot_id, approvals(kind, status, created_at)")
+    .eq("client_id", clientId)
+    .eq("kind", "video")
+    .is("dropped_at", null)
+    .not("shoot_id", "is", null)
+    .returns<{ shoot_id: string; approvals: { kind: string; status: string; created_at: string }[] }[]>();
+  const out = new Map<string, { total: number; approved: number; changes: number }>();
+  for (const v of data ?? []) {
+    const p = out.get(v.shoot_id) ?? { total: 0, approved: 0, changes: 0 };
+    const latest = v.approvals.filter((a) => a.kind === "script").sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
+    p.total++;
+    if (latest?.status === "approved") p.approved++;
+    if (latest?.status === "changes") p.changes++;
+    out.set(v.shoot_id, p);
+  }
+  return out;
+}
 
 export type PortalShoot = { id: string; date: IsoDate; location: string | null; starts_at: string | null; ends_at: string | null };
 

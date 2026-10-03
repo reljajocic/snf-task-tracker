@@ -11,7 +11,7 @@ export default async function PortalShoot({ params }: PageProps<"/p/[token]/shoo
   const portal = (await getPortal(token))!;
   const shoot = (await getPortalShoots(portal.clientId)).find((s) => s.id === shootId);
   if (!shoot || (!portal.show.shoots && !portal.show.scripts)) notFound();
-  const [videos, t] = await Promise.all([getPortalVideos(portal.clientId), getTranslations()]);
+  const [videos, t] = await Promise.all([getPortalVideos(portal.clientId, { shootId }), getTranslations()]);
   const list = videos
     .filter((v) => v.shoot?.id === shootId)
     .sort((a, b) => (a.shoot_time ?? "").localeCompare(b.shoot_time ?? ""));

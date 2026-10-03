@@ -67,6 +67,15 @@ function describe(event: NotificationEvent, task: TaskInfo, actor: string | null
     case "task_overdue":
       return { subject: `Overdue: ${task.title}`, heading: "This task is overdue", lines: [`<b style="color:#F4F3ED">${title}</b>${where}`, due] };
     case "client_approved":
+      // "Approve all" on a shoot day: one email listing every script.
+      if (extra.titles) {
+        const titles = extra.titles.split("\n");
+        return {
+          subject: `Approved: ${titles.length} scripts${task.client ? ` · ${task.client.name}` : ""}`,
+          heading: `${escapeHtml(extra.by ?? "The client")} approved ${titles.length} scripts`,
+          lines: titles.map((x) => `• ${escapeHtml(x)}`),
+        };
+      }
       return {
         subject: `Approved: ${task.title}`,
         heading: `${escapeHtml(extra.by ?? "The client")} approved the ${extra.what ?? "video"}`,

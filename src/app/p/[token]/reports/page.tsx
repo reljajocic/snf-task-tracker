@@ -15,7 +15,7 @@ export default async function PortalReports({ params, searchParams }: PageProps<
   const portal = (await getPortal(token))!;
   if (!portal.show.report) notFound();
   const month = typeof m === "string" && /^\d{4}-\d{2}$/.test(m) ? m : getToday().slice(0, 7);
-  const videos = (await getPortalVideos(portal.clientId)).filter((v) => v.phase >= 5 && (v.publish_date ?? "").startsWith(month));
+  const videos = await getPortalVideos(portal.clientId, { month });
   const byType = new Map<string, number>();
   for (const v of videos) byType.set(v.content_type ?? "—", (byType.get(v.content_type ?? "—") ?? 0) + 1);
   const label = `${t("month.name", { m: String(Number(month.slice(5, 7))) })} ${month.slice(0, 4)}`;

@@ -10,9 +10,9 @@ export default async function PortalSchedule({ params }: PageProps<"/p/[token]/s
   const { token } = await params;
   const portal = (await getPortal(token))!;
   if (!portal.show.schedule) notFound();
-  const [videos, t] = await Promise.all([getPortalVideos(portal.clientId), getTranslations()]);
   const today = getToday();
   const from = addDays(startOfWeek(today), -14);
+  const [videos, t] = await Promise.all([getPortalVideos(portal.clientId, { from }), getTranslations()]);
   const dated = videos.filter((v) => v.publish_date && v.publish_date >= from);
 
   const weeks = new Map<string, typeof dated>();

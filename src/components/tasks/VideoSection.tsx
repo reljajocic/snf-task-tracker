@@ -13,6 +13,7 @@ import { DatePicker } from "./DatePicker";
 import { assignablePeople } from "./fields";
 import { TaskLink } from "./links";
 import { ReviewSection } from "./ReviewSection";
+import { ScriptDecisionBadge } from "./ScriptDecisionBadge";
 
 type Save = (patch: TaskPatch, optimistic?: Partial<Task>) => void;
 
@@ -383,8 +384,9 @@ function ScriptEditor({ task, disabled, save }: { task: Task; disabled: boolean;
 
   return (
     <div className="flex flex-col gap-2.5">
-      <div className="flex items-baseline">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
         <span className="eyebrow">{t("script")}</span>
+        <ScriptDecisionBadge decision={task.script_decision} />
         {!disabled && (
           <button type="button" onClick={() => setSections((cur) => [...cur, { label: "", text: "" }])} className="ml-auto cursor-pointer text-[13px] font-medium text-rust-ink">
             {t("addSection")}

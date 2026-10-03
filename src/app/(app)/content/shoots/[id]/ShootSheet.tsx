@@ -1,5 +1,6 @@
 "use client";
 
+import { ScriptDecisionBadge } from "@/components/tasks/ScriptDecisionBadge";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Fragment, useState, useTransition } from "react";
@@ -126,6 +127,11 @@ export function ShootSheet({
                     </td>
                     <td className="px-1 py-1">
                       <InputCell value={v.title} disabled={!editable} onSave={(x) => x.trim() && save(v.id, { title: x })} className="font-medium" />
+                      {v.script_decision && (
+                        <span className="block px-2 pb-1">
+                          <ScriptDecisionBadge decision={v.script_decision} />
+                        </span>
+                      )}
                     </td>
                     <td className="px-1 py-1">
                       <TextCell

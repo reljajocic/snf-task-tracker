@@ -12,7 +12,7 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
   const [{ token, taskId }, { v: versionParam }, t] = await Promise.all([params, searchParams, getTranslations()]);
   const portal = (await getPortal(token))!;
   if (!portal.show.review) notFound();
-  const video = (await getPortalVideos(portal.clientId)).find((x) => x.id === taskId);
+  const video = (await getPortalVideos(portal.clientId, { id: taskId }))[0];
   if (!video || !video.versions.length) notFound();
 
   const shown = video.versions.find((x) => String(x.version) === versionParam) ?? video.versions[0];

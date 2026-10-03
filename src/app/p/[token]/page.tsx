@@ -1,15 +1,22 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { formatDate, today as getToday, weekdayIndex } from "@/lib/dates";
-import { getPortal, getPortalShoots, getPortalVideos, portalStatus } from "@/lib/portal";
+import { getPortal, getPortalScriptProgress, getPortalShoots, getPortalVideos, portalStatus } from "@/lib/portal";
 import { Poster, PortalStatusLabel, TypeTag } from "./bits";
 
 // 7a (desktop) / 7e (mobile): portal home.
 export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
   const { token } = await params;
   const portal = (await getPortal(token))!;
-  const [videos, shoots, t] = await Promise.all([getPortalVideos(portal.clientId), getPortalShoots(portal.clientId), getTranslations()]);
   const today = getToday();
+  const month = today.slice(0, 7);
+  const [videos, publishedThisMonth, progress, shoots, t] = await Promise.all([
+    getPortalVideos(portal.clientId, { open: today }),
+    getPortalVideos(portal.clientId, { month }),
+    getPortalScriptProgress(portal.clientId),
+    getPortalShoots(portal.clientId),
+    getTranslations(),
+  ]);
   const base = `/p/${token}`;
   const day = (d: string) => t("weekday.short", { day: String(weekdayIndex(d)) });
 
@@ -17,23 +24,13 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
   const scriptPacks = portal.show.scripts
     ? shoots
         .filter((s) => s.date >= today)
-        .map((s) => {
-          const vs = videos.filter((v) => v.shoot?.id === s.id);
-          return {
-            shoot: s,
-            total: vs.length,
-            approved: vs.filter((v) => v.scriptDecision?.status === "approved").length,
-            changes: vs.filter((v) => v.scriptDecision?.status === "changes").length,
-          };
-        })
+        .map((s) => ({ shoot: s, ...(progress.get(s.id) ?? { total: 0, approved: 0, changes: 0 }) }))
         .filter((p) => p.total > 0 && p.approved + p.changes < p.total)
     : [];
   const queue = awaitingVideos.length + scriptPacks.length;
 
   const nextPosts = videos.filter((v) => v.publish_date && v.publish_date >= today).slice(0, 5);
   const nextShoot = shoots.find((s) => s.date >= today) ?? null;
-  const month = today.slice(0, 7);
-  const publishedThisMonth = videos.filter((v) => v.phase >= 5 && (v.publish_date ?? "").startsWith(month));
   const byType = new Map<string, number>();
   for (const v of publishedThisMonth) byType.set(v.content_type ?? "—", (byType.get(v.content_type ?? "—") ?? 0) + 1);
 

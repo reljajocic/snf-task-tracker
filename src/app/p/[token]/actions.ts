@@ -14,18 +14,23 @@ export type PortalResult = { ok: true; approvalId?: string } | { ok: false; erro
 async function context(token: string, taskId: string) {
   const portal = await getPortal(token);
   if (!portal) return null;
-  const video = (await getPortalVideos(portal.clientId)).find((v) => v.id === taskId);
+  const [video] = await getPortalVideos(portal.clientId, { id: taskId });
   if (!video) return null;
   return { portal, video };
 }
 
+/**
+ * Who hears about a client's decision: the client's managers (they run the relationship — ideas
+ * and scripts usually have nobody assigned yet), plus whoever is assigned to the video.
+ */
 async function teamOf(taskId: string) {
   const admin = createAdminClient();
-  const [{ data: task }, { data: assignees }] = await Promise.all([
-    admin.from("tasks").select("created_by").eq("id", taskId).single(),
+  const { data: task } = await admin.from("tasks").select("client_id").eq("id", taskId).single();
+  const [{ data: assignees }, { data: managers }] = await Promise.all([
     admin.from("task_assignees").select("user_id").eq("task_id", taskId),
+    admin.from("client_members").select("user_id").eq("client_id", task?.client_id ?? "").eq("role", "manager"),
   ]);
-  return [...(assignees ?? []).map((a) => a.user_id), ...(task?.created_by ? [task.created_by] : [])];
+  return [...new Set([...(managers ?? []), ...(assignees ?? [])].map((a) => a.user_id))];
 }
 
 function cleanName(name: string) {
@@ -114,19 +119,22 @@ export async function approveAllScripts(token: string, shootId: string, name: st
   if (!portal || !portal.show.scripts) return { ok: false, error: "Not available." };
   const approver = cleanName(name);
   if (!approver) return { ok: false, error: "Please enter your name." };
-  const videos = (await getPortalVideos(portal.clientId)).filter((v) => v.shoot?.id === shootId && !v.scriptDecision);
+  const videos = (await getPortalVideos(portal.clientId, { shootId })).filter((v) => !v.scriptDecision);
   if (!videos.length) return { ok: true };
   const admin = createAdminClient();
   const { error } = await admin
     .from("approvals")
     .insert(videos.map((v) => ({ task_id: v.id, kind: "script", status: "approved", approver_name: approver })));
   if (error) return { ok: false, error: error.message };
-  const recipientsByTask = await Promise.all(videos.map((v) => teamOf(v.id)));
+  const recipients = [...new Set((await Promise.all(videos.map((v) => teamOf(v.id)))).flat())];
   after(async () => {
     await admin.from("portal_activity").insert({ client_id: portal.clientId, message: `${approver} approved ${videos.length} scripts` });
-    for (const [i, v] of videos.entries()) {
-      await notify({ event: "client_approved", taskId: v.id, recipientIds: recipientsByTask[i], extra: { by: approver, what: "script" } });
-    }
+    await notify({
+      event: "client_approved",
+      taskId: videos[0].id,
+      recipientIds: recipients,
+      extra: { by: approver, what: "script", titles: videos.map((v) => v.title).join("\n") },
+    });
   });
   revalidatePath(`/p/${token}`, "layout");
   return { ok: true };

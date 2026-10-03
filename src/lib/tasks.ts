@@ -79,7 +79,11 @@ export type Task = {
   shoot: { id: string; date: IsoDate; location: string | null } | null;
   subtask_count: number;
   subtask_done: number;
+  /** The client's latest word on the script, from the portal. */
+  script_decision: ScriptDecision | null;
 };
+
+export type ScriptDecision = { status: "approved" | "changes"; approver_name: string; comment: string | null; created_at: string };
 
 const PERSON_COLS = "id, full_name, initials, avatar_bg, avatar_fg";
 
@@ -94,21 +98,27 @@ export const TASK_SELECT = `
   phase, content_type, on_camera, location, profile, script, reference_url, note,
   publish_date, published_at, dropped_at, shoot_id, shoot_time, shot_status,
   shoot:shoot_days(id, date, location),
-  subtasks:tasks!parent_id(status)
+  subtasks:tasks!parent_id(status),
+  approvals(kind, status, approver_name, comment, created_at)
 `;
 
-export type RawTask = Omit<Task, "assignees" | "subtask_count" | "subtask_done"> & {
+export type RawTask = Omit<Task, "assignees" | "subtask_count" | "subtask_done" | "script_decision"> & {
   task_assignees: { profile: Person | null }[];
   subtasks: { status: TaskStatus }[] | null;
+  approvals?: (ScriptDecision & { kind: string })[] | null;
 };
 
 export function toTask(raw: RawTask): Task {
-  const { task_assignees, subtasks, ...rest } = raw;
+  const { task_assignees, subtasks, approvals, ...rest } = raw;
+  const decision = (approvals ?? []).filter((a) => a.kind === "script").sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
   return {
     ...rest,
     script: Array.isArray(rest.script) ? rest.script : [],
     subtask_count: subtasks?.length ?? 0,
     subtask_done: subtasks?.filter((x) => x.status === "done").length ?? 0,
+    script_decision: decision
+      ? { status: decision.status, approver_name: decision.approver_name, comment: decision.comment, created_at: decision.created_at }
+      : null,
     assignees: task_assignees
       .map((a) => a.profile)
       .filter((p): p is Person => p !== null)

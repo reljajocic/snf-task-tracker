@@ -1,5 +1,6 @@
 "use client";
 
+import { ScriptDecisionBadge } from "@/components/tasks/ScriptDecisionBadge";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
@@ -100,6 +101,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                   {(v.profile || v.on_camera || v.location || m) && (
                     <span className="truncate text-[12.5px] text-ink3">{[v.profile, v.on_camera, v.location, m].filter(Boolean).join(" · ")}</span>
                   )}
+                  {v.script_decision && <ScriptDecisionBadge decision={v.script_decision} />}
                   {first && (
                     <span className="line-clamp-2 max-w-[720px] text-[13px] leading-snug text-ink2">
                       {first.label && <span className="mr-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-accent">{first.label}</span>}

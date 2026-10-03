@@ -630,7 +630,9 @@
   "scriptApproval": {
     "approved": "Script approved by {name}",
     "changes": "Script changes requested by {name}",
-    "pending": "Script not approved yet"
+    "pending": "Script not approved yet",
+    "approvedShort": "Approved · {name}",
+    "changesShort": "Changes · {name}"
   },
   "portal": {
     "nav": {

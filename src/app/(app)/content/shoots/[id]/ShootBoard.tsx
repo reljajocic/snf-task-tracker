@@ -1,5 +1,6 @@
 "use client";
 
+import { ScriptDecisionBadge } from "@/components/tasks/ScriptDecisionBadge";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -216,6 +217,7 @@ export function ShootBoard({
                   <TaskLink id={v.id} className="text-[18px] font-medium leading-snug">{v.title}</TaskLink>
                   {typeTag(v)}
                 </div>
+                <ScriptDecisionBadge decision={v.script_decision} full />
                 {scriptText(v) && <span className="text-[15px] leading-normal text-ink2">{scriptText(v)}</span>}
                 {v.note && <span className="text-[13px] font-medium text-[var(--status-waiting)]">{v.note}</span>}
                 {v.reference_url && (
@@ -245,6 +247,7 @@ export function ShootBoard({
                       {check(v, 32)}
                       <div className="flex min-w-0 flex-col gap-1">
                         <span className="text-[15px] font-medium leading-snug">{v.title}</span>
+                        <ScriptDecisionBadge decision={v.script_decision} />
                         {v.note && <span className="text-[13px] font-medium text-[var(--status-waiting)]">{v.note}</span>}
                       </div>
                     </div>
@@ -319,6 +322,7 @@ export function ShootBoard({
                     {check(v)}
                     <div className="flex min-w-0 flex-col gap-[5px]">
                       <span className={`text-[15px] font-medium leading-snug ${v.shot_status === "not_shot" ? "text-ink3 line-through" : ""}`}>{v.title}</span>
+                      <ScriptDecisionBadge decision={v.script_decision} />
                       {scriptText(v) && <span className="truncate text-[13px] text-ink3">{scriptText(v)}</span>}
                     </div>
                     {typeTag(v) || <span />}
