@@ -79,17 +79,14 @@ export function Sidebar({ profile, theme, initialCollapsed }: { profile: Profile
         {CONTENT_NAV.map((item) => (
           <NavLink key={item.href} item={item} active={isActive(pathname, item)} label={t(`nav.${item.key}`)} collapsed={collapsed} />
         ))}
-        {profile.role === "admin" && (
-          <>
-            {collapsed ? <div className="mx-3 my-3 border-t border-line" /> : <div className="eyebrow px-3 pb-2 pt-5">{t("nav.adminGroup")}</div>}
-            {ADMIN_NAV.map((item) => (
-              <NavLink key={item.href} item={item} active={isActive(pathname, item)} label={t(`nav.${item.key}`)} collapsed={collapsed} />
-            ))}
-          </>
-        )}
       </nav>
 
       <div className="mt-auto flex flex-col gap-3">
+        {/* Team and settings sit with the account, out of the day-to-day menu. */}
+        {profile.role === "admin" &&
+          ADMIN_NAV.map((item) => (
+            <NavLink key={item.href} item={item} active={isActive(pathname, item)} label={t(`nav.${item.key}`)} collapsed={collapsed} />
+          ))}
         <ThemeToggle initial={theme} compact={collapsed} />
         <div className={`flex items-center gap-2.5 ${collapsed ? "flex-col" : "px-1"}`}>
           <Link

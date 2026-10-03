@@ -3,11 +3,12 @@ import type { NavIconName } from "./icons";
 
 export type NavItem = { href: string; key: string; icon: NavIconName; match?: string[] };
 
+// Board, list and calendar are three views of one "Tasks" page (tabs inside it).
+const TASK_VIEWS = ["/kanban", "/tasks", "/calendar"];
+
 export const SIDEBAR_NAV: NavItem[] = [
   { href: "/", key: "home", icon: "home" },
-  { href: "/kanban", key: "kanban", icon: "kanban" },
-  { href: "/calendar", key: "calendar", icon: "calendar" },
-  { href: "/tasks", key: "list", icon: "list" },
+  { href: "/kanban", key: "tasks", icon: "kanban", match: TASK_VIEWS },
   { href: "/clients", key: "clients", icon: "clients" },
 ];
 
@@ -20,12 +21,11 @@ export const CONTENT_NAV: NavItem[] = [
 
 export const ADMIN_NAV: NavItem[] = [{ href: "/team", key: "team", icon: "team" }];
 
-// Mobile bottom bar: Kanban and list share the "Tasks" tab.
+// Mobile bottom bar: four places; Tasks and Content switch views with tabs at the top.
 export const MOBILE_NAV: NavItem[] = [
   { href: "/", key: "home", icon: "home" },
-  { href: "/kanban", key: "tasks", icon: "kanban", match: ["/kanban", "/tasks"] },
+  { href: "/kanban", key: "tasks", icon: "kanban", match: TASK_VIEWS },
   { href: "/content/videos", key: "content", icon: "schedule", match: ["/content"] },
-  { href: "/calendar", key: "calendar", icon: "calendar" },
   { href: "/clients", key: "clients", icon: "clients" },
 ];
 

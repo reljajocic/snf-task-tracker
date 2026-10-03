@@ -749,5 +749,10 @@
     "schedule": "Pick posting date",
     "drop": "Drop",
     "restore": "Restore"
+  },
+  "taskViews": {
+    "board": "Board",
+    "list": "List",
+    "calendar": "Calendar"
   }
 }
