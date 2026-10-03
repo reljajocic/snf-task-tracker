@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-/** "NoLimit Gym ▾" above the page title (design 2a). */
+/** Accented client switcher, first in the filter row (each client has its own schedule). */
 export function ClientPicker({ clients, value }: { clients: { id: string; name: string }[]; value: string }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -15,7 +15,8 @@ export function ClientPicker({ clients, value }: { clients: { id: string; name: 
         next.set("client", e.target.value);
         router.push(`${pathname}?${next}`);
       }}
-      className="cursor-pointer appearance-none border-0 bg-transparent bg-[url(/brand/chevron.svg)] bg-[length:9px] bg-[right_0_center] bg-no-repeat pr-4 text-[14px] font-medium normal-case tracking-normal text-ink2 outline-none"
+      aria-label="Client"
+      className="h-9 max-w-[260px] cursor-pointer appearance-none truncate rounded-full border border-accent bg-rust-bg bg-[url(/brand/chevron.svg)] bg-[length:9px] bg-[right_14px_center] bg-no-repeat pl-3.5 pr-9 text-[13px] font-semibold text-ink outline-none"
     >
       {clients.map((c) => (
         <option key={c.id} value={c.id}>

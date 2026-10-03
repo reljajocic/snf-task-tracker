@@ -19,7 +19,7 @@ export type ScheduleWeek = {
 const GRID = "grid grid-cols-[140px_minmax(0,1fr)_64px_150px_110px_140px_80px] gap-3.5";
 
 /** 2a: posting schedule as a table, grouped by week (desktop) / cards (mobile 2c). */
-export function ScheduleTable({ weeks, unscheduled, today }: { weeks: ScheduleWeek[]; unscheduled: Task[]; today: IsoDate }) {
+export function ScheduleTable({ weeks, unscheduled, today, clientPicker }: { weeks: ScheduleWeek[]; unscheduled: Task[]; today: IsoDate; clientPicker: React.ReactNode }) {
   const t = useTranslations();
   const router = useRouter();
   const [open, setOpen] = useState<string | null>(null);
@@ -76,6 +76,8 @@ export function ScheduleTable({ weeks, unscheduled, today }: { weeks: ScheduleWe
   return (
     <div className="flex flex-col pb-[120px] lg:pb-12">
       <div className="flex flex-wrap items-center gap-2.5 border-b border-line px-5 pb-[18px] lg:px-10">
+        {clientPicker}
+        <span className="mx-1 hidden h-5 w-px bg-line2 sm:block" />
         <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className={`${pill} ${tone(status !== "all")}`}>
           <option value="all">{t("schedule.allStatuses")}</option>
           {(["to_shoot", "shot", "published", "not_published", "not_shot"] as const).map((s) => (

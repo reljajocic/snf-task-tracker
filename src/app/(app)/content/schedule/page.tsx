@@ -79,6 +79,12 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
       : `${monthName(m)} ${m.slice(0, 4)}`;
   const addHref = `?new=1&kind=video&client=${client.id}`;
 
+  const picker = (
+    <Suspense>
+      <ClientPicker clients={clients.map((c) => ({ id: c.id, name: c.name }))} value={client.id} />
+    </Suspense>
+  );
+
   const controls = (
     <>
       <div className="flex h-[42px] items-center whitespace-nowrap rounded-[7px] border border-line2 text-[14px] font-medium">
@@ -97,11 +103,6 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     <>
       <PageHeader
         title={t("schedule.title")}
-        eyebrow={
-          <Suspense>
-            <ClientPicker clients={clients.map((c) => ({ id: c.id, name: c.name }))} value={client.id} />
-          </Suspense>
-        }
         newTask={false}
         actions={<span className="hidden items-center gap-3.5 lg:flex">{controls}</span>}
       />
@@ -110,9 +111,12 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
         <p className="px-5 pb-3 text-[13px] font-medium text-red-ink lg:px-10">{t("schedule.notPublishedCount", { count: late })}</p>
       )}
       {view === "table" ? (
-        <ScheduleTable weeks={weeks} unscheduled={unscheduled} today={today} />
+        <ScheduleTable weeks={weeks} unscheduled={unscheduled} today={today} clientPicker={picker} />
       ) : (
-        <ScheduleCalendar month={m} videos={videos} unscheduled={unscheduled} postingDays={client.postingDays} today={today} />
+        <>
+          <div className="border-b border-line px-5 pb-[18px] lg:px-10">{picker}</div>
+          <ScheduleCalendar month={m} videos={videos} unscheduled={unscheduled} postingDays={client.postingDays} today={today} />
+        </>
       )}
     </>
   );
