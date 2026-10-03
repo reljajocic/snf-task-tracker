@@ -152,8 +152,8 @@ export type Database = {
           created_at: string
           created_by: string | null
           default_editor_id: string | null
-          editor_rules: Json
           drive_url: string | null
+          editor_rules: Json
           email: string | null
           id: string
           locations: string[]
@@ -172,8 +172,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           default_editor_id?: string | null
-          editor_rules?: Json
           drive_url?: string | null
+          editor_rules?: Json
           email?: string | null
           id?: string
           locations?: string[]
@@ -192,8 +192,8 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           default_editor_id?: string | null
-          editor_rules?: Json
           drive_url?: string | null
+          editor_rules?: Json
           email?: string | null
           id?: string
           locations?: string[]
@@ -677,6 +677,7 @@ export type Database = {
           created_by: string | null
           description: string | null
           drive_url: string | null
+          dropped_at: string | null
           due_date: string | null
           estimate_minutes: number | null
           id: string
@@ -691,7 +692,6 @@ export type Database = {
           project_id: string | null
           publish_date: string | null
           published_at: string | null
-          dropped_at: string | null
           reference_url: string | null
           script: Json
           shoot_id: string | null
@@ -712,6 +712,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           drive_url?: string | null
+          dropped_at?: string | null
           due_date?: string | null
           estimate_minutes?: number | null
           id?: string
@@ -726,7 +727,6 @@ export type Database = {
           project_id?: string | null
           publish_date?: string | null
           published_at?: string | null
-          dropped_at?: string | null
           reference_url?: string | null
           script?: Json
           shoot_id?: string | null
@@ -747,6 +747,7 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           drive_url?: string | null
+          dropped_at?: string | null
           due_date?: string | null
           estimate_minutes?: number | null
           id?: string
@@ -761,7 +762,6 @@ export type Database = {
           project_id?: string | null
           publish_date?: string | null
           published_at?: string | null
-          dropped_at?: string | null
           reference_url?: string | null
           script?: Json
           shoot_id?: string | null
