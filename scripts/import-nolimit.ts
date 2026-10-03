@@ -5,7 +5,7 @@
 //   npm run import:nolimit -- --write      # creates the client, shoot days and videos
 //   … -- --write --vucko vucko@slatenframe.com   # also routes Wed/Fri + INFO/FUN edits to Vučko
 //
-// Rules (agreed with Relja, 2026-10-03):
+// Rules (agreed with Relja, 2026-10-03; Relja edits from relja@, not the admin account):
 // - Schedule rows are matched to shoot-sheet videos by title (+ shoot date when given).
 // - PUBLISHED/DONE → published on the schedule date. SCRAPED → dropped.
 // - FILMED with a date before CUTOFF is assumed to be out (published); later ones stay in edit,
@@ -292,6 +292,8 @@ async function main() {
   const admin = profiles.find((p) => p.role === "admin");
   if (!admin) throw new Error("No admin profile.");
   const marko = profiles.find((p) => p.email?.startsWith("marko@"));
+  const relja = profiles.find((p) => p.email?.startsWith("relja@"));
+  if (!relja) throw new Error("No profile for relja@slatenframe.com.");
   const vucko = args.vucko ? profiles.find((p) => p.email?.toLowerCase() === args.vucko!.toLowerCase()) : undefined;
   if (args.vucko && !vucko) throw new Error(`No profile for ${args.vucko} — invite them first.`);
 
@@ -300,7 +302,7 @@ async function main() {
 
   const rules: EditorRule[] = [
     ...(vucko ? [{ editor_id: vucko.id, days: [2, 4], types: ["INFO", "FUN"] }] : []),
-    { editor_id: admin.id, days: [0], types: ["GYM"] },
+    { editor_id: relja.id, days: [0], types: ["GYM"] },
   ];
   const client = must(
     await supabase
@@ -320,7 +322,13 @@ async function main() {
       .single(),
     "client",
   );
-  if (marko) await supabase.from("client_members").insert({ client_id: client.id, user_id: marko.id, role: "manager" });
+  must(
+    await supabase
+      .from("client_members")
+      .insert([relja, marko].flatMap((p) => (p ? [{ client_id: client.id, user_id: p.id, role: "manager" as const }] : [])))
+      .select("user_id"),
+    "team",
+  );
 
   const shootIds = new Map<Shoot, string>();
   const shootRows = must(
