@@ -13,7 +13,8 @@
     "db:types": "supabase gen types typescript --linked --schema public > src/lib/supabase/database.types.ts",
     "invite": "node --env-file=.env.local scripts/invite-user.mjs",
     "import:nolimit": "JITI_FS_CACHE=false JITI_ALIAS=\"{\\\"@/\\\":\\\"$PWD/src/\\\"}\" node --env-file=.env.local node_modules/jiti/lib/jiti-cli.mjs scripts/import-nolimit.ts",
-    "import:motomilano": "JITI_FS_CACHE=false JITI_ALIAS=\"{\\\"@/\\\":\\\"$PWD/src/\\\"}\" node --env-file=.env.local node_modules/jiti/lib/jiti-cli.mjs scripts/import-motomilano.ts"
+    "import:motomilano": "JITI_FS_CACHE=false JITI_ALIAS=\"{\\\"@/\\\":\\\"$PWD/src/\\\"}\" node --env-file=.env.local node_modules/jiti/lib/jiti-cli.mjs scripts/import-motomilano.ts",
+    "import:beric": "JITI_FS_CACHE=false JITI_ALIAS=\"{\\\"@/\\\":\\\"$PWD/src/\\\"}\" node --env-file=.env.local node_modules/jiti/lib/jiti-cli.mjs scripts/import-beric.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
