@@ -67,7 +67,7 @@ export function ShootForm({ clients, people, shoot, defaultDate }: { clients: Cl
         </label>
         <div className="flex flex-col gap-2 sm:col-span-2">
           {label(t("crew"))}
-          <PeoplePicker size="lg" people={people} value={crew} onChange={setCrew} />
+          <PeoplePicker size="lg" people={client ? people.filter((p) => client.team.includes(p.id) || crew.includes(p.id)) : people} value={crew} onChange={setCrew} />
         </div>
         <label className="flex flex-col gap-2 sm:col-span-2">
           {label(t("notes"))}
