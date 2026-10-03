@@ -68,6 +68,13 @@ export const NAV_ICONS = {
       <path d="M8.3 11.2v3.2l2.9-1.6Z" fill="currentColor" stroke="none" />
     </Icon>
   ),
+  videos: (
+    <Icon>
+      <rect x="3" y="6" width="14" height="10.5" rx="1.5" />
+      <path d="M5 3.5h10" />
+      <path d="M8.6 9v4.6l3.8-2.3Z" fill="currentColor" stroke="none" />
+    </Icon>
+  ),
   shoots: (
     <Icon>
       <rect x="3" y="8" width="14" height="8.5" rx="1" />

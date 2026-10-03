@@ -11,8 +11,9 @@ export const SIDEBAR_NAV: NavItem[] = [
   { href: "/clients", key: "clients", icon: "clients" },
 ];
 
-// "Content" group (design: SADRŽAJ): posting schedule and shoot days.
+// "Content" group (design: SADRŽAJ): video bank, posting schedule and shoot days.
 export const CONTENT_NAV: NavItem[] = [
+  { href: "/content/videos", key: "videos", icon: "videos" },
   { href: "/content/schedule", key: "schedule", icon: "schedule" },
   { href: "/content/shoots", key: "shoots", icon: "shoots" },
 ];

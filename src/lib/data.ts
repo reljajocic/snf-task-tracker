@@ -1,13 +1,23 @@
 import "server-only";
 import { cache } from "react";
 import { requireProfile, requireUserId } from "@/lib/auth";
+import { addDays, today } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
 import { TASK_SELECT, toTask, type Person, type RawTask, type Task } from "@/lib/tasks";
 
-/** Every task the signed-in user may see (RLS decides), open ones first by deadline. */
+/**
+ * Work the signed-in user may see (RLS decides), open ones first by deadline. A video only
+ * becomes work once it has a posting date (that's when it goes to edit); until then it lives in
+ * the video bank. Published videos drop out of the work views after a month.
+ */
 export const getTasks = cache(async (opts: { includeDone?: boolean } = {}): Promise<Task[]> => {
   const supabase = await createClient();
-  let query = supabase.from("tasks").select(TASK_SELECT).order("due_date", { nullsFirst: false });
+  const recent = addDays(today(), -30);
+  let query = supabase
+    .from("tasks")
+    .select(TASK_SELECT)
+    .or(`kind.neq.video,and(publish_date.not.is.null,or(status.neq.done,publish_date.gte.${recent}))`)
+    .order("due_date", { nullsFirst: false });
   if (!opts.includeDone) query = query.neq("status", "done");
   const { data, error } = await query.returns<RawTask[]>();
   if (error) throw error;

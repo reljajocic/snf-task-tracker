@@ -30,7 +30,8 @@
     "adminGroup": "Admin",
     "settings": "Settings",
     "collapse": "Collapse menu",
-    "expand": "Expand menu"
+    "expand": "Expand menu",
+    "videos": "Video bank"
   },
   "weekday": {
     "long": "{day, select, 0 {Monday} 1 {Tuesday} 2 {Wednesday} 3 {Thursday} 4 {Friday} 5 {Saturday} other {Sunday}}",
@@ -718,5 +719,31 @@
     "openPanel": "Open video ↗",
     "clickToEdit": "Click to edit",
     "empty": "—"
+  },
+  "bank": {
+    "title": "Video bank",
+    "new": "+ New video",
+    "intro": "Every video idea for this client until it gets a posting date. Then it goes to the editor as a task.",
+    "tab": {
+      "ideas": "Ideas",
+      "shoot": "On a shoot",
+      "ready": "Shot, no date",
+      "dropped": "Dropped"
+    },
+    "empty": {
+      "ideas": "No ideas yet. Add one with + New video.",
+      "shoot": "Nothing waiting on a shoot.",
+      "ready": "Nothing filmed is waiting for a date.",
+      "dropped": "Nothing dropped."
+    },
+    "shootOn": "Shoot {date}",
+    "notShotOn": "Not shot {date}",
+    "shotOn": "Shot {date}",
+    "droppedOn": "Dropped {date}",
+    "toShoot": "Add to shoot…",
+    "backToIdeas": "Back to ideas",
+    "schedule": "Pick posting date",
+    "drop": "Drop",
+    "restore": "Restore"
   }
 }
