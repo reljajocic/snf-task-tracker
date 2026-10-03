@@ -250,3 +250,30 @@ describe("content module", () => {
     ).rejects.toThrow(/row-level security/);
   });
 });
+
+describe("client portal", () => {
+  it("only managers configure the portal; nobody writes approvals through the API", async () => {
+    await expect(as(MEMBER, "insert into public.client_portals (client_id, enabled) values ($1, true)", [C1])).rejects.toThrow(
+      /row-level security/,
+    );
+    const [{ token }] = await as<{ token: string }>(
+      MANAGER,
+      "insert into public.client_portals (client_id, enabled) values ($1, true) returning token",
+      [C1],
+    );
+    expect(token).toMatch(/^[0-9a-f]{32}$/);
+    expect(await as(MEMBER, "select enabled from public.client_portals where client_id = $1", [C1])).toEqual([{ enabled: true }]);
+    await expect(
+      as(MANAGER, "insert into public.approvals (task_id, kind, status, approver_name) values ($1, 'script', 'approved', 'x')", [t4]),
+    ).rejects.toThrow(/permission denied|row-level security/);
+  });
+
+  it("versions belong to people who can edit the video", async () => {
+    expect(
+      await as(MANAGER, "insert into public.video_versions (task_id, version, url) values ($1, 1, 'https://x') returning version", [t4]),
+    ).toEqual([{ version: 1 }]);
+    await expect(
+      as(OUTSIDER, "insert into public.video_versions (task_id, version, url) values ($1, 2, 'https://x')", [t4]),
+    ).rejects.toThrow(/row-level security/);
+  });
+});

@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      approvals: {
+        Row: {
+          approver_name: string
+          comment: string | null
+          created_at: string
+          id: string
+          kind: string
+          status: string
+          task_id: string
+          version_id: string | null
+        }
+        Insert: {
+          approver_name: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          status: string
+          task_id: string
+          version_id?: string | null
+        }
+        Update: {
+          approver_name?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          status?: string
+          task_id?: string
+          version_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approvals_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "approvals_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "video_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_members: {
         Row: {
           client_id: string
@@ -46,6 +94,53 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_portals: {
+        Row: {
+          client_id: string
+          created_at: string
+          enabled: boolean
+          rotated_at: string | null
+          show_report: boolean
+          show_review: boolean
+          show_schedule: boolean
+          show_scripts: boolean
+          show_shoots: boolean
+          token: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          enabled?: boolean
+          rotated_at?: string | null
+          show_report?: boolean
+          show_review?: boolean
+          show_schedule?: boolean
+          show_scripts?: boolean
+          show_shoots?: boolean
+          token?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          enabled?: boolean
+          rotated_at?: string | null
+          show_report?: boolean
+          show_review?: boolean
+          show_schedule?: boolean
+          show_scripts?: boolean
+          show_shoots?: boolean
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_portals_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
         ]
@@ -198,6 +293,70 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_activity: {
+        Row: {
+          client_id: string
+          created_at: string
+          id: string
+          message: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          id?: string
+          message: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_activity_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_people: {
+        Row: {
+          can_approve: boolean
+          client_id: string
+          created_at: string
+          email: string | null
+          id: string
+          label: string
+        }
+        Insert: {
+          can_approve?: boolean
+          client_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          label: string
+        }
+        Update: {
+          can_approve?: boolean
+          client_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_people_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
         ]
@@ -627,6 +786,51 @@ export type Database = {
             columns: ["shoot_id"]
             isOneToOne: false
             referencedRelation: "shoot_days"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_versions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string | null
+          task_id: string
+          url: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          task_id: string
+          url: string
+          version: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string | null
+          task_id?: string
+          url?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_versions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
         ]
