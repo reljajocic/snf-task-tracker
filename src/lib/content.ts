@@ -16,6 +16,8 @@ export async function getClientVideos(clientId: string): Promise<Task[]> {
   return (data ?? []).map(toTask);
 }
 
+export type CallTime = { time: string; name: string; note: string };
+
 export type ShootDay = {
   id: string;
   client: { id: string; name: string; locations: string[] } | null;
@@ -24,6 +26,7 @@ export type ShootDay = {
   starts_at: string | null;
   ends_at: string | null;
   notes: string | null;
+  call_times: CallTime[];
   crew: Person[];
   total: number;
   shot: number;
@@ -35,7 +38,7 @@ type RawShoot = Omit<ShootDay, "crew" | "total" | "shot"> & {
 };
 
 const SHOOT_SELECT = `
-  id, date, location, starts_at, ends_at, notes,
+  id, date, location, starts_at, ends_at, notes, call_times,
   client:clients(id, name, locations),
   shoot_crew(profile:profiles(id, full_name, initials, avatar_bg, avatar_fg)),
   tasks(shot_status)
@@ -47,6 +50,7 @@ function toShoot(raw: RawShoot): ShootDay {
     ...rest,
     starts_at: rest.starts_at?.slice(0, 5) ?? null,
     ends_at: rest.ends_at?.slice(0, 5) ?? null,
+    call_times: (Array.isArray(rest.call_times) ? rest.call_times : []).sort((a, b) => a.time.localeCompare(b.time)),
     crew: shoot_crew.map((c) => c.profile).filter((p): p is Person => p !== null),
     total: tasks.length,
     shot: tasks.filter((x) => x.shot_status === "shot").length,

@@ -525,6 +525,7 @@ export type Database = {
       }
       shoot_days: {
         Row: {
+          call_times: Json
           client_id: string
           created_at: string
           created_by: string | null
@@ -536,6 +537,7 @@ export type Database = {
           starts_at: string | null
         }
         Insert: {
+          call_times?: Json
           client_id: string
           created_at?: string
           created_by?: string | null
@@ -547,6 +549,7 @@ export type Database = {
           starts_at?: string | null
         }
         Update: {
+          call_times?: Json
           client_id?: string
           created_at?: string
           created_by?: string | null

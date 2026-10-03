@@ -10,8 +10,9 @@ import { TaskLink } from "@/components/tasks/links";
 import { AvatarStack } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import type { ShootDay } from "@/lib/content";
-import { PHASES, type ShotStatus, type Task } from "@/lib/tasks";
+import { PHASES, type Person, type ShotStatus, type Task } from "@/lib/tasks";
 import { addVideosToShoot, removeFromShoot } from "../actions";
+import { CallTimes, PlanEdits } from "./ShootTools";
 
 type Slot = { time: string; onCamera: string; items: Task[] };
 
@@ -36,7 +37,9 @@ export function ShootBoard({
   canManage,
   isToday,
   nowTime,
+  people,
 }: {
+  people: Person[];
   day: ShootDay;
   videos: Task[];
   candidates: Task[];
@@ -52,9 +55,14 @@ export function ShootBoard({
   );
   const [selected, setSelected] = useState<string | null>(videos[0]?.id ?? null);
   const [adding, setAdding] = useState(false);
+  const [planning, setPlanning] = useState(false);
   const [showDone, setShowDone] = useState(false);
 
-  const slots = groupSlots(items);
+  const slots = groupSlots(items).map((s) => {
+    const call = day.call_times.find((c) => c.time === s.time);
+    return call ? { ...s, onCamera: call.name } : s;
+  });
+  const shotVideos = items.filter((v) => v.shot_status === "shot");
   const shot = items.filter((v) => v.shot_status === "shot").length;
   const pct = items.length ? (shot / items.length) * 100 : 0;
   const left = items.filter((v) => !isDone(v)).length;
@@ -158,9 +166,16 @@ export function ShootBoard({
           </div>
         )}
         {canManage && (
-          <button type="button" onClick={() => setAdding((a) => !a)} className="ml-auto cursor-pointer text-[14px] font-medium text-rust-ink">
-            {t("shoots.addVideos")}
-          </button>
+          <span className="ml-auto flex items-center gap-4">
+            {shotVideos.length > 0 && (
+              <button type="button" onClick={() => { setPlanning((p) => !p); setAdding(false); }} className="cursor-pointer text-[14px] font-medium text-ink">
+                {t("shoots.planEdits", { count: shotVideos.length })}
+              </button>
+            )}
+            <button type="button" onClick={() => { setAdding((a) => !a); setPlanning(false); }} className="cursor-pointer text-[14px] font-medium text-rust-ink">
+              {t("shoots.addVideos")}
+            </button>
+          </span>
         )}
       </div>
 
@@ -176,8 +191,21 @@ export function ShootBoard({
         />
       )}
 
+      {planning && (
+        <PlanEdits
+          shootId={day.id}
+          videos={shotVideos}
+          people={people}
+          onDone={() => {
+            setPlanning(false);
+            router.refresh();
+          }}
+        />
+      )}
+
       {/* Mobile: on set (2e) */}
       <div className="flex flex-col gap-[22px] px-5 pb-[120px] pt-5 lg:hidden">
+        <CallTimes shootId={day.id} initial={day.call_times} canManage={canManage} />
         {nowSlot && (
           <div className="flex flex-col gap-3 rounded-xl border border-accent bg-surf p-4">
             <div className="flex items-center gap-3">
@@ -255,7 +283,8 @@ export function ShootBoard({
 
       {/* Desktop (2d) */}
       <div className="hidden min-h-0 flex-1 grid-cols-[minmax(0,1fr)_400px] lg:grid xl:grid-cols-[minmax(0,1fr)_440px]">
-        <div className="flex flex-col overflow-auto pb-10 pl-10 pr-8 pt-2">
+        <div className="flex flex-col overflow-auto pb-10 pl-10 pr-8 pt-5">
+          <CallTimes shootId={day.id} initial={day.call_times} canManage={canManage} />
           {slots.map((s) => (
             <div key={s.time} className="flex flex-col gap-2 pt-5">
               <div className="flex items-center gap-3.5">

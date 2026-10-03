@@ -163,6 +163,8 @@ function PanelBody({
   };
 
   const done = task.status === "done";
+  // Videos only get a deadline/status/priority once they're in edit (phase 2+).
+  const editStage = task.kind !== "video" || (task.phase ?? 0) >= 2;
   const label = task.due_date ? dueLabel(task.due_date, today, done) : null;
   const tone = dueTone(task, today);
   const header = [task.client?.name ?? t("noClient"), task.project?.name].filter(Boolean).join(" · ");
@@ -203,15 +205,21 @@ function PanelBody({
         )}
 
         <div className="flex flex-col">
-          <FieldRow label={t("fields.status")}>
-            <StatusPicker value={task.status} disabled={disabled} onChange={(status) => save({ status }, { status })} />
-          </FieldRow>
-          <FieldRow label={t("fields.priority")}>
-            <PriorityPicker value={task.priority} disabled={disabled} onChange={(priority) => save({ priority }, { priority })} />
-          </FieldRow>
+          {editStage && (
+            <>
+              <FieldRow label={t("fields.status")}>
+                <StatusPicker value={task.status} disabled={disabled} onChange={(status) => save({ status }, { status })} />
+              </FieldRow>
+              <FieldRow label={t("fields.priority")}>
+                <PriorityPicker value={task.priority} disabled={disabled} onChange={(priority) => save({ priority }, { priority })} />
+              </FieldRow>
+            </>
+          )}
           <FieldRow label={t("fields.assignees")}>
             <PeoplePicker people={lookups.people} value={task.assignees.map((a) => a.id)} disabled={disabled} onChange={saveAssignees} />
           </FieldRow>
+          {editStage && (
+            <>
           <FieldRow label={t("fields.due")}>
             <div className="flex flex-wrap items-center gap-2.5">
               <DatePicker value={task.due_date} today={today} disabled={disabled} onChange={(due_date) => save({ due_date }, { due_date })} />
@@ -233,6 +241,8 @@ function PanelBody({
               className="h-9 w-32 rounded-md border border-line2 bg-transparent px-3 text-[14px] font-medium text-ink outline-none placeholder:font-normal placeholder:text-ink3 focus:border-accent"
             />
           </FieldRow>
+            </>
+          )}
           <ClientProjectSelects
             clients={lookups.clients}
             clientId={task.client?.id ?? null}

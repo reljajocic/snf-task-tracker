@@ -436,7 +436,16 @@
     "kindAll": "All",
     "kindVideo": "Video only",
     "kindOther": "Other",
-    "phase": "Phase"
+    "phase": "Phase",
+    "newTitle": "New video",
+    "titlePlaceholder": "Video title, e.g. One membership, 5 locations",
+    "addTag": "+ Tag",
+    "tagPlaceholder": "New tag",
+    "noTags": "No tags for this client yet.",
+    "scriptHint": "Write it now or later — the client can approve it before the shoot.",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "For the crew and editor: props, wardrobe, references, who must be in it…",
+    "laterHint": "Deadline, status and priority come in when the video moves to edit."
   },
   "schedule": {
     "title": "Posting schedule",
@@ -517,7 +526,23 @@
     "edit": "Edit",
     "empty": "No videos on this shoot yet. Use + Add videos.",
     "newVideo": "+ New video for this shoot",
-    "onOtherShoot": "on {date}"
+    "onOtherShoot": "on {date}",
+    "callTimes": "Call times",
+    "callTimesHint": "Who comes when.",
+    "editCallTimes": "Edit",
+    "addCall": "+ Add",
+    "saveCall": "Save",
+    "callName": "Name",
+    "callNote": "Note",
+    "noCallTimes": "No call times yet.",
+    "planEdits": "Plan edits ({count})",
+    "planTitle": "Move shot videos to edit",
+    "planHint": "Pick the editor and a deadline; the videos land on the Kanban as edit tasks.",
+    "editor": "Editor",
+    "deadline": "Deadline",
+    "priority": "Priority",
+    "apply": "Move to edit",
+    "noEditor": "—"
   },
   "portalSettings": {
     "title": "Client portal",

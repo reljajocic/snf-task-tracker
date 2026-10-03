@@ -56,6 +56,7 @@ export default async function ShootPage({ params }: PageProps<"/content/shoots/[
         canManage={canManage}
         isToday={day.date === getToday()}
         nowTime={nowTime}
+        people={lookups.people}
       />
     </div>
   );

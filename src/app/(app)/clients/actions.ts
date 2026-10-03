@@ -148,3 +148,17 @@ export async function deleteProject(id: string, clientId: string) {
   revalidatePath("/", "layout");
   redirect(`/clients/${clientId}`);
 }
+
+/** Adds a content-type tag to a client's own list (from the new-video form). Managers only (RLS). */
+export async function addClientContentType(clientId: string, tag: string) {
+  await requireProfile();
+  const value = tag.trim().toUpperCase().slice(0, 24);
+  if (!value) return { error: "Empty tag." };
+  const supabase = await createClient();
+  const { data } = await supabase.from("clients").select("content_types").eq("id", clientId).single();
+  const current: string[] = data?.content_types ?? [];
+  if (current.includes(value)) return { error: null };
+  const { error } = await supabase.from("clients").update({ content_types: [...current, value] }).eq("id", clientId);
+  revalidatePath("/", "layout");
+  return { error: error?.message ?? null };
+}

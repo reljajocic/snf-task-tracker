@@ -100,7 +100,7 @@ export function ClientForm({ client, canDelete }: { client?: Client; canDelete?:
           <input name="locations" defaultValue={client?.locations.join(", ")} className={inputClass} />
         </Field>
         <Field label={t("clientForm.contentTypes")} hint={t("clientForm.contentTypesHint")} wide>
-          <input name="content_types" defaultValue={(client?.content_types ?? ["FUN", "INFO", "GYM", "UGC", "PROMO"]).join(", ")} className={inputClass} />
+          <input name="content_types" defaultValue={(client?.content_types ?? []).join(", ")} className={inputClass} />
         </Field>
         <PostingDays initial={client?.posting_days ?? [0, 2, 4]} label={t("clientForm.postingDays")} />
         <Field label={t("clientForm.notes")} wide>
