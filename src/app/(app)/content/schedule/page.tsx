@@ -63,8 +63,9 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     if (rows.length) weeks.push({ n: isoWeek(wk), from: wk, to: addDays(wk, 6), current: wk === startOfWeek(today), rows });
   }
 
+  // Only filmed videos get a posting date; ideas still to shoot wait for a shoot day.
   const unscheduled = videos
-    .filter((v) => !v.publish_date && !v.dropped_at && (v.phase ?? 0) < 5)
+    .filter((v) => !v.publish_date && !v.dropped_at && (v.phase ?? 0) < 5 && (v.shot_status === "shot" || (v.phase ?? 0) >= 2))
     .sort((a, b) => (b.phase ?? 0) - (a.phase ?? 0));
   const late = videos.filter((v) => postingStatus(v, today) === "not_published").length;
 
