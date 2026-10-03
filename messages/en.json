@@ -323,7 +323,7 @@
     "create": "Create client",
     "cancel": "Cancel",
     "delete": "Delete client",
-    "deleteConfirm": "Delete this client with all of its projects and tasks? This can't be undone.",
+    "deleteConfirm": "This deletes the client with all of its videos, shoots, projects and tasks. It can't be undone. Type the client's name to confirm: {name}",
     "nameRequired": "Name is required.",
     "contentTypes": "Content types",
     "contentTypesHint": "Comma-separated, e.g. FUN, INFO, GYM",

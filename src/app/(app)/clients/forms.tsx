@@ -62,7 +62,12 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
               <button
                 type="button"
                 disabled={deleting}
-                onClick={() => window.confirm(t("clientForm.deleteConfirm")) && startDelete(async () => void (await deleteClient(client.id)))}
+                onClick={() => {
+                  // Typing the name guards against deleting a client with its whole history by accident.
+                  const typed = window.prompt(t("clientForm.deleteConfirm", { name: client.name }));
+                  if (typed?.trim() !== client.name.trim()) return;
+                  startDelete(async () => void (await deleteClient(client.id)));
+                }}
                 className="mr-auto h-10 cursor-pointer px-2 text-[13px] font-medium text-red-ink"
               >
                 {t("clientForm.delete")}

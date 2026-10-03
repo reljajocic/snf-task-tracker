@@ -24,7 +24,7 @@ export const ADMIN_NAV: NavItem[] = [{ href: "/team", key: "team", icon: "team" 
 export const MOBILE_NAV: NavItem[] = [
   { href: "/", key: "home", icon: "home" },
   { href: "/kanban", key: "tasks", icon: "kanban", match: ["/kanban", "/tasks"] },
-  { href: "/content/schedule", key: "content", icon: "schedule", match: ["/content"] },
+  { href: "/content/videos", key: "content", icon: "schedule", match: ["/content"] },
   { href: "/calendar", key: "calendar", icon: "calendar" },
   { href: "/clients", key: "clients", icon: "clients" },
 ];

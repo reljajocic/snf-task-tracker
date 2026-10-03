@@ -3,7 +3,7 @@
 import { parseEditorRules } from "@/lib/editor-rules";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireAdmin, requireProfile } from "@/lib/auth";
+import { requireProfile } from "@/lib/auth";
 import { parseSocials } from "@/lib/socials";
 import { createClient } from "@/lib/supabase/server";
 
@@ -85,11 +85,13 @@ export async function saveClient(_prev: FormState, form: FormData): Promise<Form
   redirect(`/clients/${clientId}`);
 }
 
+/** Admins and the client's managers (RLS decides). */
 export async function deleteClient(id: string) {
-  await requireAdmin();
+  await requireProfile();
   const supabase = await createClient();
-  const { error } = await supabase.from("clients").delete().eq("id", id);
+  const { data, error } = await supabase.from("clients").delete().eq("id", id).select("id");
   if (error) return { error: error.message };
+  if (!data?.length) return { error: "Only this client's managers can delete it." };
   revalidatePath("/", "layout");
   redirect("/clients");
 }

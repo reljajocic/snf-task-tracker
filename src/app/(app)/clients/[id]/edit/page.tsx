@@ -8,5 +8,6 @@ export default async function EditClientPage({ params }: PageProps<"/clients/[id
   const [{ id }, me, lookups] = await Promise.all([params, requireProfile(), getLookups()]);
   const data = await getClient(id);
   if (!data) notFound();
-  return <ClientForm client={data.client} canDelete={me.role === "admin"} people={lookups.people} />;
+  const canDelete = me.role === "admin" || data.members.some((m) => m.profile.id === me.id && m.role === "manager");
+  return <ClientForm client={data.client} canDelete={canDelete} people={lookups.people} />;
 }

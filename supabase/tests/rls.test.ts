@@ -209,12 +209,14 @@ describe("clients and projects", () => {
     // Manager of X adds and removes people there…
     await as(MEMBER, "insert into public.client_members (client_id, user_id, role) values ($1, $2, 'member')", [X, OUTSIDER]);
     expect(await as(MEMBER, "delete from public.client_members where client_id = $1 and user_id = $2 returning user_id", [X, OUTSIDER])).toHaveLength(1);
-    // …but not on a client where they're only a member, and they can't delete clients.
+    // …but not on a client where they're only a member.
     await expect(
       as(MEMBER, "insert into public.client_members (client_id, user_id, role) values ($1, $2, 'member')", [C1, OUTSIDER]),
     ).rejects.toThrow(/row-level security/);
     expect(await as(MEMBER, "delete from public.client_members where client_id = $1 and user_id = $2 returning user_id", [C1, MANAGER])).toEqual([]);
-    expect(await as(MEMBER, "delete from public.clients where id = $1 returning id", [X])).toEqual([]);
+    // Members can't delete a client; its managers can.
+    expect(await as(MEMBER, "delete from public.clients where id = $1 returning id", [C1])).toEqual([]);
+    expect(await as(MEMBER, "delete from public.clients where id = $1 returning id", [X])).toHaveLength(1);
   });
 
   it("managers edit their clients, not others", async () => {
