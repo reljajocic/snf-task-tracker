@@ -136,7 +136,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
       </div>
 
       {/* Desktop */}
-      <div className="hidden grid-cols-[minmax(0,1fr)_300px] items-start gap-10 min-[1400px]:grid-cols-[minmax(0,1fr)_340px] px-10 pb-12 pt-8 lg:grid">
+      <div className="hidden grid-cols-[minmax(0,1fr)_300px] items-start gap-10 wide:grid-cols-[minmax(0,1fr)_340px] px-10 pb-12 pt-8 lg:grid">
         <div className="flex flex-col gap-10">
           <section className="flex flex-col gap-3.5">
             <div className="flex items-baseline gap-3.5">

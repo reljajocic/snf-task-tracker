@@ -183,7 +183,7 @@
     "remove": "Remove",
     "makeManager": "Make manager",
     "makeMember": "Make member",
-    "teamHint": "Managers see and manage everything for this client. Members only see projects they're on.",
+    "teamHint": "Everyone here sees and edits all of this client's work. Managers also run projects, the portal and client settings.",
     "editor": "Regular editor"
   },
   "team": {

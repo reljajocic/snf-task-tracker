@@ -10,7 +10,7 @@ import { taskDue } from "@/lib/tasks";
 
 // Status column only fits from ~1400px; below that the row keeps title, priority, people, deadline.
 const ROW_GRID =
-  "grid grid-cols-[minmax(0,1fr)_96px_60px_156px] items-center gap-4 min-[1400px]:grid-cols-[minmax(0,1fr)_96px_150px_60px_156px]";
+  "grid grid-cols-[minmax(0,1fr)_96px_60px_156px] items-center gap-4 wide:grid-cols-[minmax(0,1fr)_96px_150px_60px_156px]";
 
 /** Desktop row inside a surface list (design 1a). `showDue` = relative chip vs plain date. */
 export function TaskRow({ task, today, plainDate = false }: { task: Task; today: IsoDate; plainDate?: boolean }) {
@@ -25,7 +25,7 @@ export function TaskRow({ task, today, plainDate = false }: { task: Task; today:
         <TaskMeta task={task} />
       </div>
       <PriorityMark priority={task.priority} />
-      <span className="hidden min-[1400px]:block">
+      <span className="hidden wide:block">
         <StatusDot status={task.status} />
       </span>
       <AvatarStack people={task.assignees} size={28} />

@@ -73,7 +73,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
         </div>
       </header>
 
-      <div className="grid grid-cols-1 items-start gap-9 px-5 pb-[120px] pt-7 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10 lg:px-10 lg:pb-10 min-[1400px]:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid grid-cols-1 items-start gap-9 px-5 pb-[120px] pt-7 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10 lg:px-10 lg:pb-10 wide:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex flex-col gap-9">
           <section className="flex flex-col gap-3.5">
             <div className="flex items-center justify-between">
@@ -89,7 +89,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                   <TaskLink
                     key={x.id}
                     id={x.id}
-                    className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-line px-[18px] py-3.5 last:border-b-0 hover:bg-chip lg:grid-cols-[minmax(0,1fr)_100px_60px_120px] min-[1400px]:grid-cols-[minmax(0,1fr)_100px_136px_60px_120px] ${x.status === "done" ? "opacity-60" : ""}`}
+                    className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-line px-[18px] py-3.5 last:border-b-0 hover:bg-chip lg:grid-cols-[minmax(0,1fr)_100px_60px_120px] wide:grid-cols-[minmax(0,1fr)_100px_150px_60px_120px] ${x.status === "done" ? "opacity-60" : ""}`}
                   >
                     <div className="flex min-w-0 flex-col gap-[5px]">
                       <span className={`text-[15px] font-medium leading-snug ${x.status === "done" ? "line-through" : ""}`}>{x.title}</span>
@@ -98,7 +98,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                       </span>
                     </div>
                     <span className="hidden lg:block"><PriorityMark priority={x.priority} /></span>
-                    <span className="hidden min-[1400px]:block"><StatusDot status={x.status} /></span>
+                    <span className="hidden wide:block"><StatusDot status={x.status} /></span>
                     <span className="hidden lg:block"><AvatarStack people={x.assignees} size={26} /></span>
                     {x.due_date ? (
                       <span className={`justify-self-end whitespace-nowrap rounded-[5px] px-[9px] py-1.5 text-[13px] font-semibold leading-none ${TONE[dueTone(x, today)]}`}>

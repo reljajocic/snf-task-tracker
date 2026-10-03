@@ -79,6 +79,11 @@
   color-scheme: light;
 }
 
+@theme {
+  /* Wide desktop: room for the status column in task rows. Named so it sorts after lg/xl. */
+  --breakpoint-wide: 87.5rem;
+}
+
 @theme inline {
   --font-display: var(--font-montserrat), "Archivo Black", system-ui, sans-serif;
   --font-body: var(--font-dm-sans), system-ui, sans-serif;
