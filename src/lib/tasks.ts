@@ -71,6 +71,7 @@ export type Task = {
   note: string | null;
   publish_date: IsoDate | null;
   published_at: IsoDate | null;
+  dropped_at: IsoDate | null;
   shoot_id: string | null;
   shoot_time: string | null;
   shot_status: ShotStatus | null;
@@ -90,7 +91,7 @@ export const TASK_SELECT = `
   parent:parent_id(id, title),
   task_assignees(profile:profiles(${PERSON_COLS})),
   phase, content_type, on_camera, location, script, reference_url, note,
-  publish_date, published_at, shoot_id, shoot_time, shot_status,
+  publish_date, published_at, dropped_at, shoot_id, shoot_time, shot_status,
   shoot:shoot_days(id, date, location),
   subtasks:tasks!parent_id(status)
 `;
@@ -163,9 +164,10 @@ export function phaseInfo(phase: number | null) {
 }
 
 /** Client-facing status of a video in the posting schedule. */
-export type PostingStatus = "published" | "not_published" | "shot" | "not_shot" | "to_shoot";
+export type PostingStatus = "published" | "not_published" | "shot" | "not_shot" | "to_shoot" | "dropped";
 
-export function postingStatus(t: Pick<Task, "phase" | "shot_status" | "publish_date">, today: IsoDate): PostingStatus {
+export function postingStatus(t: Pick<Task, "phase" | "shot_status" | "publish_date" | "dropped_at">, today: IsoDate): PostingStatus {
+  if (t.dropped_at) return "dropped";
   if ((t.phase ?? 0) >= PUBLISHED_PHASE) return "published";
   if (t.publish_date && t.publish_date < today) return "not_published";
   if (t.shot_status === "shot" || (t.phase ?? 0) >= 2) return "shot";
@@ -179,4 +181,5 @@ export const POSTING_STATUS_COLOR: Record<PostingStatus, string> = {
   to_shoot: "var(--status-todo)",
   not_shot: "var(--prio-urgent)",
   not_published: "var(--prio-urgent)",
+  dropped: "var(--ink3)",
 };

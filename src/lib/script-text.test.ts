@@ -12,6 +12,13 @@ describe("script text", () => {
     ]);
   });
 
+  it("keeps a hint written next to the label", () => {
+    expect(textToSections("HOOK (snimi sva tri)\nPrvi.\nDrugi.\nCTA 1: Sačuvaj.")).toEqual([
+      { label: "HOOK", text: "(snimi sva tri)\nPrvi.\nDrugi." },
+      { label: "CTA 1", text: "Sačuvaj." },
+    ]);
+  });
+
   it("keeps unlabeled scripts as one section", () => {
     expect(textToSections("Anketa.")).toEqual([{ label: "", text: "Anketa." }]);
     expect(textToSections("Mušterija: Mogu li?\nPult: PRSNEŠ")).toEqual([{ label: "", text: "Mušterija: Mogu li?\nPult: PRSNEŠ" }]);

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { requireProfile } from "@/lib/auth";
 import { addDays } from "@/lib/dates";
+import { parseEditorRules, pickEditor } from "@/lib/editor-rules";
 import { notify } from "@/lib/notify";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -50,6 +51,7 @@ export type TaskPatch = Partial<{
   publish_date: string | null;
   shoot_id: string | null;
   shoot_time: string | null;
+  dropped_at: string | null;
 }>;
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -89,6 +91,7 @@ function clean(patch: TaskPatch): TaskPatch {
   if (patch.publish_date !== undefined) out.publish_date = patch.publish_date && DATE_RE.test(patch.publish_date) ? patch.publish_date : null;
   if (patch.shoot_id !== undefined) out.shoot_id = patch.shoot_id || null;
   if (patch.shoot_time !== undefined) out.shoot_time = patch.shoot_time && /^\d{2}:\d{2}$/.test(patch.shoot_time) ? patch.shoot_time : null;
+  if (patch.dropped_at !== undefined) out.dropped_at = patch.dropped_at && DATE_RE.test(patch.dropped_at) ? patch.dropped_at : null;
   return out;
 }
 
@@ -104,17 +107,24 @@ const STATUS_LABEL: Record<TaskStatus, string> = {
 };
 
 /**
- * A video got a posting date: the client's regular editor gets the edit work (if not already on it),
+ * A video got a posting date: the client's editor for that day/type (see editor-rules) gets the edit work (if not already on it),
  * with a deadline the day before posting unless one is set.
  */
 async function handOffToEditor(taskId: string, publishDate: string, actorId: string) {
   const supabase = await createClient();
   const { data: task } = await supabase
     .from("tasks")
-    .select("kind, due_date, client:clients(default_editor_id), task_assignees(user_id)")
+    .select("kind, due_date, content_type, client:clients(default_editor_id, editor_rules), task_assignees(user_id)")
     .eq("id", taskId)
-    .single<{ kind: string; due_date: string | null; client: { default_editor_id: string | null } | null; task_assignees: { user_id: string }[] }>();
-  const editor = task?.client?.default_editor_id;
+    .single<{
+      kind: string;
+      due_date: string | null;
+      content_type: string | null;
+      client: { default_editor_id: string | null; editor_rules: unknown } | null;
+      task_assignees: { user_id: string }[];
+    }>();
+  const editor =
+    task?.client && pickEditor(parseEditorRules(task.client.editor_rules), task.client.default_editor_id, publishDate, task.content_type);
   if (!task || task.kind !== "video" || !editor) return;
   if (!task.due_date) await supabase.from("tasks").update({ due_date: addDays(publishDate, -1) }).eq("id", taskId);
   if (task.task_assignees.some((a) => a.user_id === editor)) return;

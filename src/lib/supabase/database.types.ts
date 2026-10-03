@@ -152,6 +152,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           default_editor_id: string | null
+          editor_rules: Json
           drive_url: string | null
           email: string | null
           id: string
@@ -171,6 +172,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           default_editor_id?: string | null
+          editor_rules?: Json
           drive_url?: string | null
           email?: string | null
           id?: string
@@ -190,6 +192,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           default_editor_id?: string | null
+          editor_rules?: Json
           drive_url?: string | null
           email?: string | null
           id?: string
@@ -688,6 +691,7 @@ export type Database = {
           project_id: string | null
           publish_date: string | null
           published_at: string | null
+          dropped_at: string | null
           reference_url: string | null
           script: Json
           shoot_id: string | null
@@ -722,6 +726,7 @@ export type Database = {
           project_id?: string | null
           publish_date?: string | null
           published_at?: string | null
+          dropped_at?: string | null
           reference_url?: string | null
           script?: Json
           shoot_id?: string | null
@@ -756,6 +761,7 @@ export type Database = {
           project_id?: string | null
           publish_date?: string | null
           published_at?: string | null
+          dropped_at?: string | null
           reference_url?: string | null
           script?: Json
           shoot_id?: string | null

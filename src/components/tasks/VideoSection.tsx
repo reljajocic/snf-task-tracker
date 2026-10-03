@@ -43,7 +43,7 @@ export function VideoSection({
       <div className="flex flex-col gap-3.5 rounded-lg border border-line bg-surf px-5 py-[18px]">
         <div className="flex items-center justify-between">
           <span className="eyebrow">{t("video.phase")}</span>
-          {next !== null && !disabled && (
+          {next !== null && !disabled && !task.dropped_at && (
             <button
               type="button"
               onClick={() => save({ phase: next }, { phase: next })}
@@ -81,11 +81,36 @@ export function VideoSection({
             );
           })}
         </div>
-        {phase >= PUBLISHED_PHASE && (
+        {task.dropped_at ? (
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[13px] font-medium text-ink3">
+              {t("phase.dropped")} · {formatDate(task.dropped_at)}
+            </span>
+            {!disabled && (
+              <button
+                type="button"
+                onClick={() => save({ dropped_at: null, status: "in_progress" }, { dropped_at: null, status: "in_progress" })}
+                className="cursor-pointer text-[13px] font-medium text-ink2 underline-offset-2 hover:underline"
+              >
+                {t("phase.restore")}
+              </button>
+            )}
+          </div>
+        ) : phase >= PUBLISHED_PHASE ? (
           <span className="text-[13px] font-medium text-[var(--status-done)]">
             {t("phase.published")}
             {task.published_at ? ` · ${formatDate(task.published_at)}` : ""}
           </span>
+        ) : (
+          !disabled && (
+            <button
+              type="button"
+              onClick={() => save({ dropped_at: today }, { dropped_at: today, status: "done" })}
+              className="cursor-pointer self-start text-[13px] text-ink3 underline-offset-2 hover:text-ink2 hover:underline"
+            >
+              {t("phase.drop")}
+            </button>
+          )
         )}
       </div>
 

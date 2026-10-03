@@ -1,5 +1,6 @@
 "use server";
 
+import { parseEditorRules } from "@/lib/editor-rules";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin, requireProfile } from "@/lib/auth";
@@ -52,6 +53,13 @@ export async function saveClient(_prev: FormState, form: FormData): Promise<Form
     notes: text(form.get("notes")),
     content_types: list(form.get("content_types")).map((x) => x.toUpperCase()),
     default_editor_id: text(form.get("default_editor_id")),
+    editor_rules: (() => {
+      try {
+        return parseEditorRules(JSON.parse(String(form.get("editor_rules") ?? "[]")));
+      } catch {
+        return [];
+      }
+    })(),
     posting_days: form
       .getAll("posting_days")
       .map(Number)

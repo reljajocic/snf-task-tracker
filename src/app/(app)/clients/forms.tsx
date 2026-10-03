@@ -7,6 +7,7 @@ import { PeoplePicker, inputClass, selectClass } from "@/components/tasks/fields
 import { Button } from "@/components/ui/Button";
 import { CLIENT_STATUSES, PROJECT_STATUSES } from "@/lib/client-status";
 import type { Client, Project } from "@/lib/clients";
+import type { EditorRule } from "@/lib/editor-rules";
 import type { Person } from "@/lib/tasks";
 import { SOCIAL_LABEL, SOCIAL_PLATFORMS, type Social, type SocialPlatform } from "@/lib/socials";
 import { deleteClient, deleteProject, saveClient, saveProject, type FormState } from "./actions";
@@ -103,6 +104,7 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
           <input name="content_types" defaultValue={(client?.content_types ?? []).join(", ")} className={inputClass} />
         </Field>
         <PostingDays initial={client?.posting_days ?? [0, 2, 4]} label={t("clientForm.postingDays")} />
+        <EditorRules initial={client?.editor_rules ?? []} people={people} />
         <Field label={t("clientForm.defaultEditor")} hint={t("clientForm.defaultEditorHint")} wide>
           <select name="default_editor_id" defaultValue={client?.default_editor_id ?? ""} className={`${selectClass} h-[42px]`}>
             <option value="">{t("clientForm.noEditor")}</option>
@@ -203,6 +205,75 @@ function PostingDays({ initial, label }: { initial: number[]; label: string }) {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+/** "Vučko edits Wed/Fri and INFO/FUN": one row per editor, days as pills, types as text. */
+function EditorRules({ initial, people }: { initial: EditorRule[]; people: Person[] }) {
+  const t = useTranslations("clientForm");
+  const tw = useTranslations("weekday");
+  const [rows, setRows] = useState<(EditorRule & { typesText: string })[]>(initial.map((r) => ({ ...r, typesText: r.types.join(", ") })));
+  const update = (i: number, patch: Partial<EditorRule & { typesText: string }>) =>
+    setRows((cur) => cur.map((r, j) => (j === i ? { ...r, ...patch } : r)));
+  const value = rows
+    .filter((r) => r.editor_id)
+    .map(({ editor_id, days, typesText }) => ({ editor_id, days, types: typesText.split(",").map((x) => x.trim().toUpperCase()).filter(Boolean) }));
+  return (
+    <div className="flex flex-col gap-2 sm:col-span-2">
+      <span className="text-[13px] font-medium text-ink3">{t("editorRules")}</span>
+      <input type="hidden" name="editor_rules" value={JSON.stringify(value)} />
+      {rows.map((r, i) => (
+        <div key={i} className="flex flex-col gap-2 rounded-md border border-line p-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <select
+            value={r.editor_id}
+            onChange={(e) => update(i, { editor_id: e.target.value })}
+            aria-label={t("defaultEditor")}
+            className={`${selectClass} h-[38px] sm:w-[190px]`}
+          >
+            <option value="">{t("noEditor")}</option>
+            {people.map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
+          </select>
+          <div className="flex flex-wrap gap-1">
+            {[0, 1, 2, 3, 4, 5, 6].map((d) => {
+              const on = r.days.includes(d);
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => update(i, { days: on ? r.days.filter((x) => x !== d) : [...r.days, d].sort() })}
+                  className={`h-[30px] cursor-pointer rounded-full border px-2.5 text-[12.5px] font-medium ${on ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"}`}
+                >
+                  {tw("short", { day: String(d) })}
+                </button>
+              );
+            })}
+          </div>
+          <input
+            value={r.typesText}
+            onChange={(e) => update(i, { typesText: e.target.value })}
+            placeholder={t("editorRuleTypes")}
+            className={`${inputClass} h-[38px] min-w-0 flex-1`}
+          />
+          <button
+            type="button"
+            onClick={() => setRows((cur) => cur.filter((_, j) => j !== i))}
+            aria-label={t("editorRuleRemove")}
+            className="h-[38px] cursor-pointer px-2 text-[18px] text-ink3 hover:text-ink"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => setRows((cur) => [...cur, { editor_id: "", days: [], types: [], typesText: "" }])}
+        className="cursor-pointer self-start text-[13px] font-medium text-ink2 hover:text-ink"
+      >
+        {t("editorRuleAdd")}
+      </button>
+      <span className="text-[12px] text-ink3">{t("editorRulesHint")}</span>
     </div>
   );
 }

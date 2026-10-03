@@ -330,8 +330,13 @@
     "socialHandle": "@handle or profile link",
     "socialRemove": "Remove profile",
     "socialAdd": "+ Add profile",
-    "defaultEditor": "Regular editor",
-    "defaultEditorHint": "Gets the edit task automatically when a video gets a posting date (deadline: the day before).",
+    "editorRules": "Editors by posting day and type",
+    "editorRulesHint": "When a video gets a posting date, the editor whose day matches gets the edit task (deadline: the day before). If no day matches, the content type decides.",
+    "editorRuleTypes": "Types, e.g. INFO, FUN",
+    "editorRuleAdd": "+ Add editor",
+    "editorRuleRemove": "Remove editor",
+    "defaultEditor": "Fallback editor",
+    "defaultEditorHint": "Gets videos no rule above covers.",
     "noEditor": "None"
   },
   "projectForm": {
@@ -402,14 +407,18 @@
     "published": "Published",
     "step": "{phase} · {n}/5",
     "moveTo": "Move to: {phase}",
-    "markPublished": "Mark as published"
+    "markPublished": "Mark as published",
+    "dropped": "Dropped — won't be published",
+    "drop": "Drop this video",
+    "restore": "Restore"
   },
   "postingStatus": {
     "published": "Published",
     "not_published": "Not published",
     "shot": "Shot",
     "not_shot": "Not shot",
-    "to_shoot": "To shoot"
+    "to_shoot": "To shoot",
+    "dropped": "Dropped"
   },
   "video": {
     "tag": "Video",

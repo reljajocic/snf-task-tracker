@@ -64,7 +64,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
   }
 
   const unscheduled = videos
-    .filter((v) => !v.publish_date && (v.phase ?? 0) < 5)
+    .filter((v) => !v.publish_date && !v.dropped_at && (v.phase ?? 0) < 5)
     .sort((a, b) => (b.phase ?? 0) - (a.phase ?? 0));
   const late = videos.filter((v) => postingStatus(v, today) === "not_published").length;
 

@@ -1,3 +1,4 @@
+import { parseEditorRules, type EditorRule } from "@/lib/editor-rules";
 import "server-only";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
@@ -21,6 +22,7 @@ export type Client = {
   content_types: string[];
   posting_days: number[];
   default_editor_id: string | null;
+  editor_rules: EditorRule[];
 };
 
 export type Project = {
@@ -35,14 +37,14 @@ export type Project = {
   members: string[];
 };
 
-const CLIENT_COLS = "id, name, status, services, city, since, email, socials, locations, drive_url, notes, content_types, posting_days, default_editor_id";
+const CLIENT_COLS = "id, name, status, services, city, since, email, socials, locations, drive_url, notes, content_types, posting_days, default_editor_id, editor_rules";
 
 /** Clients the user can see (RLS), sorted by name. */
 export const getClients = cache(async (): Promise<Client[]> => {
   const supabase = await createClient();
   const { data, error } = await supabase.from("clients").select(CLIENT_COLS).order("name").returns<Client[]>();
   if (error) throw error;
-  return (data ?? []).map((c) => ({ ...c, socials: parseSocials(c.socials) }));
+  return (data ?? []).map((c) => ({ ...c, socials: parseSocials(c.socials), editor_rules: parseEditorRules(c.editor_rules) }));
 });
 
 export async function getClient(id: string) {
@@ -62,7 +64,7 @@ export async function getClient(id: string) {
   if (!client.data) return null;
   type RawProject = Omit<Project, "members"> & { project_members: { user_id: string }[] };
   return {
-    client: { ...client.data, socials: parseSocials(client.data.socials) },
+    client: { ...client.data, socials: parseSocials(client.data.socials), editor_rules: parseEditorRules(client.data.editor_rules) },
     projects: ((projects.data ?? []) as RawProject[]).map(({ project_members, ...p }) => ({
       ...p,
       members: project_members.map((m) => m.user_id),

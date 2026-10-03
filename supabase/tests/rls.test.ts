@@ -229,6 +229,19 @@ describe("content module", () => {
     expect(await row()).toEqual({ phase: 2, status: "in_progress", published: false });
   });
 
+  it("dropped videos are closed without being published, and reopen from the board", async () => {
+    const [{ id }] = await as<{ id: string }>(
+      MANAGER,
+      "insert into public.tasks (title, kind, project_id, phase, dropped_at) values ('Idea', 'video', $1, 1, '2026-01-01') returning id",
+      [P1],
+    );
+    const row = async () =>
+      (await db.query("select phase, status, published_at, dropped_at is not null as dropped from public.tasks where id = $1", [id])).rows[0];
+    expect(await row()).toEqual({ phase: 1, status: "done", published_at: null, dropped: true });
+    await as(MANAGER, "update public.tasks set status = 'todo' where id = $1", [id]);
+    expect(await row()).toEqual({ phase: 1, status: "todo", published_at: null, dropped: false });
+  });
+
   it("shoot crew sees and marks videos of their shoot day", async () => {
     const CREW = "00000000-0000-0000-0000-00000000000f";
     await db.query("insert into auth.users values ($1, 'crew@snf.test', '{}')", [CREW]);
