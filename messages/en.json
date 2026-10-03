@@ -517,7 +517,7 @@
     "addVideos": "+ Add videos",
     "back": "‹ Shoots",
     "pickVideos": "Videos to shoot",
-    "pickHint": "Unfinished videos for this client that aren't on this shoot day.",
+    "pickHint": "New ideas for this client, plus what didn't get filmed on the previous shoot.",
     "time": "Time",
     "add": "Add to shoot",
     "noCandidates": "No other unfinished videos for this client.",

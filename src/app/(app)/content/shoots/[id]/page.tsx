@@ -5,6 +5,7 @@ import { getClientVideos, getShootDay } from "@/lib/content";
 import { getLookups } from "@/lib/data";
 import { formatDate, today as getToday, weekdayIndex } from "@/lib/dates";
 import { TIME_ZONE } from "@/lib/config";
+import type { Task } from "@/lib/tasks";
 import { Segmented } from "@/components/ui/Segmented";
 import { ShootBoard } from "./ShootBoard";
 
@@ -17,11 +18,7 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
   const { day, videos } = data;
   const client = data.day.client;
   const canManage = lookups.clients.some((c) => c.id === client.id && c.isTeam);
-  const candidates = canManage
-    ? (await getClientVideos(client.id))
-        .filter((v) => v.shoot_id !== day.id && (v.phase ?? 0) < 5)
-        .sort((a, b) => (a.phase ?? 0) - (b.phase ?? 0))
-    : [];
+  const candidates = canManage ? shootCandidates(await getClientVideos(client.id), day.id, day.date) : [];
   const nowTime = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
 
   return (
@@ -74,4 +71,27 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
       />
     </div>
   );
+}
+
+/**
+ * Videos that can go on this shoot: new ideas not on any shoot yet, and the ones that didn't get
+ * filmed on the previous shoot. Filmed, published or dropped videos, and leftovers from older
+ * shoots (long forgotten), are left out.
+ */
+function shootCandidates(videos: Task[], shootId: string, date: string) {
+  const previous = videos
+    .map((v) => v.shoot?.date)
+    .filter((d): d is string => !!d && d < date)
+    .sort()
+    .at(-1);
+  return videos
+    .filter(
+      (v) =>
+        v.shoot_id !== shootId &&
+        (v.phase ?? 0) < 5 &&
+        !v.dropped_at &&
+        v.shot_status !== "shot" &&
+        (!v.shoot || v.shoot.date === previous),
+    )
+    .sort((a, b) => (a.phase ?? 0) - (b.phase ?? 0));
 }
