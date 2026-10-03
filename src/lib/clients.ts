@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { ClientStatus } from "@/lib/client-status";
+import { parseSocials, type Social } from "@/lib/socials";
 
 export { CLIENT_STATUSES, CLIENT_STATUS_COLOR, PROJECT_STATUS_COLOR, clientInitials, type ClientStatus } from "@/lib/client-status";
 
@@ -13,7 +14,7 @@ export type Client = {
   city: string | null;
   since: string | null;
   email: string | null;
-  instagram: string | null;
+  socials: Social[];
   locations: string[];
   drive_url: string | null;
   notes: string | null;
@@ -33,14 +34,14 @@ export type Project = {
   members: string[];
 };
 
-const CLIENT_COLS = "id, name, status, services, city, since, email, instagram, locations, drive_url, notes, content_types, posting_days";
+const CLIENT_COLS = "id, name, status, services, city, since, email, socials, locations, drive_url, notes, content_types, posting_days";
 
 /** Clients the user can see (RLS), sorted by name. */
 export const getClients = cache(async (): Promise<Client[]> => {
   const supabase = await createClient();
   const { data, error } = await supabase.from("clients").select(CLIENT_COLS).order("name").returns<Client[]>();
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []).map((c) => ({ ...c, socials: parseSocials(c.socials) }));
 });
 
 export async function getClient(id: string) {
@@ -60,7 +61,7 @@ export async function getClient(id: string) {
   if (!client.data) return null;
   type RawProject = Omit<Project, "members"> & { project_members: { user_id: string }[] };
   return {
-    client: client.data,
+    client: { ...client.data, socials: parseSocials(client.data.socials) },
     projects: ((projects.data ?? []) as RawProject[]).map(({ project_members, ...p }) => ({
       ...p,
       members: project_members.map((m) => m.user_id),

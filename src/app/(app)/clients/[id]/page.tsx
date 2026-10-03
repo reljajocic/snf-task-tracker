@@ -10,6 +10,7 @@ import { CLIENT_STATUS_COLOR, PROJECT_STATUS_COLOR, getClient } from "@/lib/clie
 import { getLookups, getTasks } from "@/lib/data";
 import { formatDate, today as getToday } from "@/lib/dates";
 import { byDue } from "@/lib/tasks";
+import { SOCIAL_LABEL, socialDisplay, socialUrl } from "@/lib/socials";
 import { ClientTeam } from "./ClientTeam";
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink" };
@@ -173,22 +174,23 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
             <dl className="flex flex-col rounded-lg border border-line bg-surf px-4 py-1.5">
               {[
                 [t("clients.email"), client.email && <a href={`mailto:${client.email}`} className="hover:underline">{client.email}</a>],
-                [t("clients.instagram"), client.instagram && (
-                  <a href={`https://instagram.com/${client.instagram.replace(/^@/, "")}`} target="_blank" rel="noreferrer" className="hover:underline">
-                    @{client.instagram.replace(/^@/, "")}
-                  </a>
-                )],
+                ...client.socials.map((so) => [
+                  SOCIAL_LABEL[so.platform],
+                  <a key={so.handle} href={socialUrl(so)} target="_blank" rel="noreferrer" className="hover:underline">
+                    {socialDisplay(so)}
+                  </a>,
+                ]),
                 [t("clients.city"), client.city],
                 [t("clients.locations"), client.locations.length ? client.locations.join(", ") : null],
               ]
                 .filter(([, v]) => v)
-                .map(([k, v]) => (
-                  <div key={String(k)} className="flex justify-between gap-4 border-b border-line py-3 text-[14px] last:border-b-0">
+                .map(([k, v], i) => (
+                  <div key={`${String(k)}-${i}`} className="flex justify-between gap-4 border-b border-line py-3 text-[14px] last:border-b-0">
                     <dt className="text-ink3">{k}</dt>
                     <dd className="min-w-0 truncate text-right text-ink">{v}</dd>
                   </div>
                 ))}
-              {!client.email && !client.instagram && !client.city && !client.locations.length && <div className="py-3 text-[14px] text-ink3">—</div>}
+              {!client.email && !client.socials.length && !client.city && !client.locations.length && <div className="py-3 text-[14px] text-ink3">—</div>}
             </dl>
             {client.notes && <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink2">{client.notes}</p>}
           </section>

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin, requireProfile } from "@/lib/auth";
+import { parseSocials } from "@/lib/socials";
 import { createClient } from "@/lib/supabase/server";
 
 // RLS enforces who may do what (admins create clients and staff them, managers edit their
@@ -39,7 +40,13 @@ export async function saveClient(_prev: FormState, form: FormData): Promise<Form
     city: text(form.get("city")),
     since: date(form.get("since")),
     email: text(form.get("email")),
-    instagram: text(form.get("instagram")),
+    socials: (() => {
+      try {
+        return parseSocials(JSON.parse(String(form.get("socials") ?? "[]")));
+      } catch {
+        return [];
+      }
+    })(),
     locations: list(form.get("locations")),
     drive_url: text(form.get("drive_url")),
     notes: text(form.get("notes")),

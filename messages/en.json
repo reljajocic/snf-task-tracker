@@ -323,7 +323,12 @@
     "nameRequired": "Name is required.",
     "contentTypes": "Content types",
     "contentTypesHint": "Comma-separated, e.g. FUN, INFO, GYM",
-    "postingDays": "Posting days"
+    "postingDays": "Posting days",
+    "socials": "Social profiles",
+    "socialNetwork": "Network",
+    "socialHandle": "@handle or profile link",
+    "socialRemove": "Remove profile",
+    "socialAdd": "+ Add profile"
   },
   "projectForm": {
     "newTitle": "New project",

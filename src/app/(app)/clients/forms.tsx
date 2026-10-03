@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { CLIENT_STATUSES, PROJECT_STATUSES } from "@/lib/client-status";
 import type { Client, Project } from "@/lib/clients";
 import type { Person } from "@/lib/tasks";
+import { SOCIAL_LABEL, SOCIAL_PLATFORMS, type Social, type SocialPlatform } from "@/lib/socials";
 import { deleteClient, deleteProject, saveClient, saveProject, type FormState } from "./actions";
 
 function Field({ label, hint, children, wide }: { label: string; hint?: string; children: React.ReactNode; wide?: boolean }) {
@@ -91,10 +92,8 @@ export function ClientForm({ client, canDelete }: { client?: Client; canDelete?:
         <Field label={t("clientForm.email")}>
           <input name="email" type="email" defaultValue={client?.email ?? ""} className={inputClass} />
         </Field>
-        <Field label={t("clientForm.instagram")}>
-          <input name="instagram" placeholder="@" defaultValue={client?.instagram ?? ""} className={inputClass} />
-        </Field>
-        <Field label={t("clientForm.drive")}>
+        <SocialsField initial={client?.socials ?? []} />
+        <Field label={t("clientForm.drive")} wide>
           <input name="drive_url" placeholder="drive.google.com/…" defaultValue={client?.drive_url ?? ""} className={inputClass} />
         </Field>
         <Field label={t("clientForm.locations")} hint={t("clientForm.locationsHint")} wide>
@@ -198,6 +197,48 @@ function PostingDays({ initial, label }: { initial: number[]; label: string }) {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function SocialsField({ initial }: { initial: Social[] }) {
+  const t = useTranslations("clientForm");
+  const [rows, setRows] = useState<Social[]>(initial.length ? initial : [{ platform: "instagram", handle: "" }]);
+  const update = (i: number, patch: Partial<Social>) => setRows((cur) => cur.map((r, j) => (j === i ? { ...r, ...patch } : r)));
+  return (
+    <div className="flex flex-col gap-2 sm:col-span-2">
+      <span className="text-[13px] font-medium text-ink3">{t("socials")}</span>
+      <input type="hidden" name="socials" value={JSON.stringify(rows.filter((r) => r.handle.trim()))} />
+      {rows.map((r, i) => (
+        <div key={i} className="flex gap-2">
+          <select
+            value={r.platform}
+            onChange={(e) => update(i, { platform: e.target.value as SocialPlatform })}
+            aria-label={t("socialNetwork")}
+            className={`${selectClass} h-[42px] w-[140px] flex-none`}
+          >
+            {SOCIAL_PLATFORMS.map((p) => <option key={p} value={p}>{SOCIAL_LABEL[p]}</option>)}
+          </select>
+          <input
+            value={r.handle}
+            onChange={(e) => update(i, { handle: e.target.value })}
+            placeholder={t("socialHandle")}
+            aria-label={t("socialHandle")}
+            className={`${inputClass} min-w-0 flex-1`}
+          />
+          <button
+            type="button"
+            aria-label={t("socialRemove")}
+            onClick={() => setRows((cur) => (cur.length > 1 ? cur.filter((_, j) => j !== i) : [{ platform: "instagram", handle: "" }]))}
+            className="h-[42px] w-10 flex-none cursor-pointer rounded-md text-[18px] text-ink3 hover:text-red-ink"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={() => setRows((cur) => [...cur, { platform: "tiktok", handle: "" }])} className="cursor-pointer self-start text-[13px] font-medium text-rust-ink">
+        {t("socialAdd")}
+      </button>
     </div>
   );
 }

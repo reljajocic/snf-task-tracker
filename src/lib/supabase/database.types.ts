@@ -59,13 +59,13 @@ export type Database = {
           drive_url: string | null
           email: string | null
           id: string
-          instagram: string | null
           locations: string[]
           name: string
           notes: string | null
           posting_days: number[]
           services: string[]
           since: string | null
+          socials: Json
           status: Database["public"]["Enums"]["client_status"]
           updated_at: string
         }
@@ -77,13 +77,13 @@ export type Database = {
           drive_url?: string | null
           email?: string | null
           id?: string
-          instagram?: string | null
           locations?: string[]
           name: string
           notes?: string | null
           posting_days?: number[]
           services?: string[]
           since?: string | null
+          socials?: Json
           status?: Database["public"]["Enums"]["client_status"]
           updated_at?: string
         }
@@ -95,13 +95,13 @@ export type Database = {
           drive_url?: string | null
           email?: string | null
           id?: string
-          instagram?: string | null
           locations?: string[]
           name?: string
           notes?: string | null
           posting_days?: number[]
           services?: string[]
           since?: string | null
+          socials?: Json
           status?: Database["public"]["Enums"]["client_status"]
           updated_at?: string
         }
