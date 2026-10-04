@@ -125,6 +125,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Phones zoom into any field whose text is under 16px (and the page jumps around while typing),
+   so fields stay at 16px+ below the desktop breakpoint. */
+@media (max-width: 1023px) {
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
+  }
+}
+
 :focus-visible {
   outline: none;
   box-shadow: var(--shadow-focus);

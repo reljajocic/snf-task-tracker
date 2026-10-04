@@ -66,7 +66,7 @@ export function TaskPanel({ id, lookups, today, onClose }: { id: string; lookups
       <section
         role="dialog"
         aria-modal="true"
-        className="absolute inset-y-0 right-0 flex w-full flex-col border-l border-line2 bg-bg shadow-[-20px_0_60px_rgba(0,0,0,0.35)] lg:w-[680px]"
+        className="group/panel absolute inset-y-0 right-0 flex w-full flex-col border-l border-line2 bg-bg shadow-[-20px_0_60px_rgba(0,0,0,0.35)] lg:w-[680px]"
       >
         {missing ? (
           <div className="flex flex-1 flex-col items-start gap-4 p-7">
@@ -317,9 +317,9 @@ function PanelBody({
         )}
       </div>
 
-      {/* Mobile: persistent primary action (3c) */}
+      {/* Mobile: persistent primary action (3c), out of the way while typing (it would sit on the keyboard). */}
       {!disabled && (
-        <div className="absolute inset-x-0 bottom-0 flex gap-3 border-t border-line bg-bg px-5 pb-[calc(16px+env(safe-area-inset-bottom))] pt-4 lg:hidden">
+        <div className="absolute inset-x-0 bottom-0 flex gap-3 border-t border-line bg-bg px-5 pb-[calc(16px+env(safe-area-inset-bottom))] pt-4 group-has-[input:focus]/panel:hidden group-has-[textarea:focus]/panel:hidden lg:hidden">
           <button
             type="button"
             onClick={() => save({ status: done ? "in_progress" : "done" }, { status: done ? "in_progress" : "done" })}
