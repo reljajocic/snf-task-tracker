@@ -10,7 +10,7 @@ import type { ScriptSection } from "@/lib/tasks";
 // A label may be numbered or plural ("CTA 2", "Open loop 1", "Hooks", "Hook opcije") and carry a hint
 // before the colon: "HOOK (snimi sva tri):" or just "HOOK (snimi sva tri)".
 const LABEL =
-  /^\s*((?:HOOKS?|LEAD|BODY|OPEN\s*LOOP|CTA|INTRO|OUTRO|TEXT|TEKST)(?:\s+(?:\d+|OPCIJE|OPTIONS))?)\s*(?:(\([^)]*\))\s*:?|:)\s*/i;
+  /^\s*((?:HOOKS?|LEAD|BODY|OPEN\s*LOOP|CTA|INTRO|OUTRO|TEXT|TEKST|PRI[ČC]A|STORY)(?:\s+(?:\d+|OPCIJE|OPTIONS))?)\s*(?:(\([^)]*\))\s*:?|:)\s*/i;
 
 export function textToSections(text: string): ScriptSection[] {
   const out: ScriptSection[] = [];

@@ -26,6 +26,10 @@ describe("script text", () => {
       { label: "OPEN LOOP 2", text: "Oprema." },
       { label: "CTA 2", text: "Dođi." },
     ]);
+    expect(textToSections("HOOK: A\nPRIČA: Čekaš klupu.")).toEqual([
+      { label: "HOOK", text: "A" },
+      { label: "PRIČA", text: "Čekaš klupu." },
+    ]);
   });
 
   it("keeps unlabeled scripts as one section", () => {
