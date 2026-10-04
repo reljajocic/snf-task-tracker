@@ -73,6 +73,25 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
         </div>
       </header>
 
+      {/* The client's content first: that's where most of the day goes. */}
+      <nav className="grid grid-cols-2 gap-2 border-b border-line px-5 py-4 sm:flex sm:flex-wrap lg:px-10">
+        {[
+          { href: `/content/videos?client=${client.id}`, label: t("nav.videos") },
+          { href: `/content/schedule?client=${client.id}`, label: t("nav.schedule") },
+          { href: `/content/shoots?client=${client.id}`, label: t("nav.shoots") },
+          ...(canManage ? [{ href: `/clients/${client.id}/portal`, label: t("portalSettings.title") }] : []),
+        ].map((l) => (
+          <Link key={l.href} href={l.href} className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[14.5px] font-medium hover:border-line2">
+            {l.label} <span className="text-ink3">→</span>
+          </Link>
+        ))}
+        {client.drive_url && (
+          <a href={client.drive_url} target="_blank" rel="noreferrer" className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[14.5px] font-medium hover:border-line2">
+            {t("clients.drive")}
+          </a>
+        )}
+      </nav>
+
       <div className="grid grid-cols-1 items-start gap-9 px-5 pb-[120px] pt-7 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10 lg:px-10 lg:pb-10 wide:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex flex-col gap-9">
           <section className="flex flex-col gap-3.5">
@@ -193,30 +212,6 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
               {!client.email && !client.socials.length && !client.city && !client.locations.length && <div className="py-3 text-[14px] text-ink3">—</div>}
             </dl>
             {client.notes && <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink2">{client.notes}</p>}
-          </section>
-
-          <section className="flex flex-col gap-3.5">
-            {h2(t("clients.shortcuts"))}
-            <div className="flex flex-col gap-2">
-              <Link href={`/content/schedule?client=${client.id}`} className="flex h-12 items-center rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
-                {t("nav.schedule")} →
-              </Link>
-              <Link href="/content/shoots" className="flex h-12 items-center rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
-                {t("nav.shoots")} →
-              </Link>
-              {canManage && (
-                <Link href={`/clients/${client.id}/portal`} className="flex h-12 items-center rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
-                  {t("portalSettings.title")} →
-                </Link>
-              )}
-            </div>
-            {client.drive_url ? (
-              <a href={client.drive_url} target="_blank" rel="noreferrer" className="flex h-12 items-center rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
-                {t("clients.drive")}
-              </a>
-            ) : (
-              <p className="text-[14px] text-ink3">{t("clients.noDrive")}</p>
-            )}
           </section>
 
           <ClientTeam
