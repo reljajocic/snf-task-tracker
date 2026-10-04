@@ -774,18 +774,19 @@
   },
   "signup": {
     "title": "Who's in which video",
-    "lead": "Pick the videos you want to be in. Write your name once, then tap “I'm in” on each video. You can change it until the shoot.",
+    "lead": "Pick the videos you want to be in. Write your name once, then tap “I'm in”. Each video is for one person: once someone takes it, it's greyed out for everyone else.",
     "yourName": "Your name",
     "namePlaceholder": "e.g. Ana Petrović",
     "nameHint": "Remembered on this device.",
-    "inIt": "In it:",
-    "nobodyYet": "Nobody yet",
     "join": "I'm in",
     "leave": "Take me off",
-    "remove": "Remove {name}",
     "more": "Show the whole script",
     "less": "Show less",
     "empty": "No videos on this shoot yet.",
-    "failed": "That didn't work. Refresh the page and try again."
+    "failed": "That didn't work. Refresh the page and try again.",
+    "free": "Free",
+    "yours": "✓ You're doing this one",
+    "takenBy": "Taken: {name}",
+    "justTaken": "Someone just took that one. The list is up to date now."
   }
 }

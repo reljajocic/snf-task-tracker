@@ -774,18 +774,19 @@
   },
   "signup": {
     "title": "Ko je u kom videu",
-    "lead": "Izaberi videe u kojima želiš da budeš. Upiši ime jednom, pa na svakom videu klikni „Upiši me“. Možeš da menjaš sve do snimanja.",
+    "lead": "Izaberi videe u kojima želiš da budeš. Upiši ime jednom, pa klikni „Upiši me“. Jedan video je za jednu osobu: kad ga neko uzme, ostalima je posivljen.",
     "yourName": "Tvoje ime",
     "namePlaceholder": "npr. Ana Petrović",
     "nameHint": "Pamti se na ovom uređaju.",
-    "inIt": "Snimaju:",
-    "nobodyYet": "Još niko",
     "join": "Upiši me",
     "leave": "Skini me",
-    "remove": "Ukloni: {name}",
     "more": "Prikaži celu skriptu",
     "less": "Prikaži manje",
     "empty": "Na ovom snimanju još nema videa.",
-    "failed": "Nije uspelo. Osveži stranicu i probaj ponovo."
+    "failed": "Nije uspelo. Osveži stranicu i probaj ponovo.",
+    "free": "Slobodno",
+    "yours": "✓ Ovaj snimaš ti",
+    "takenBy": "Zauzeto: {name}",
+    "justTaken": "Neko je upravo uzeo taj video. Lista je sada osvežena."
   }
 }
