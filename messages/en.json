@@ -591,7 +591,9 @@
     "signupLink": "Sign-up link",
     "signupCopied": "Link copied",
     "signupOff": "Turn off sign-up link",
-    "signupHint": "Send it to people at the client: they write their name next to the videos they'll film (no login)."
+    "signupHint": "Send it to people at the client: they write their name next to the videos they'll film (no login).",
+    "noTime": "No time",
+    "noPerson": "Nobody yet"
   },
   "portalSettings": {
     "title": "Client portal",

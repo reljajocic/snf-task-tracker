@@ -591,7 +591,9 @@
     "signupLink": "Link za prijavu",
     "signupCopied": "Link kopiran",
     "signupOff": "Isključi link za prijavu",
-    "signupHint": "Pošalji ga ljudima kod klijenta: upisuju ime pored videa koje snimaju (bez prijave)."
+    "signupHint": "Pošalji ga ljudima kod klijenta: upisuju ime pored videa koje snimaju (bez prijave).",
+    "noTime": "Bez vremena",
+    "noPerson": "Još niko"
   },
   "portalSettings": {
     "title": "Portal za klijenta",

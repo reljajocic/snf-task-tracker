@@ -122,6 +122,15 @@ export function ShootBoard({
 
   const scriptText = (v: Task) => v.script.map((s) => s.text).filter(Boolean).join(" ");
 
+  // Who's on camera and when, on every video (gaps show up as "no time" / "nobody yet").
+  const whoWhen = (v: Task, size: "sm" | "md" = "md") => (
+    <span className={`flex flex-wrap items-center gap-x-2.5 gap-y-1 font-medium ${size === "sm" ? "text-[12.5px]" : "text-[14px]"}`}>
+      <span className={v.shoot_time ? "text-ink" : "text-ink3"}>🕗 {v.shoot_time ?? t("shoots.noTime")}</span>
+      <span className="text-ink3">·</span>
+      <span className={v.on_camera ? "text-ink" : "text-[var(--status-waiting)]"}>👤 {v.on_camera ?? t("shoots.noPerson")}</span>
+    </span>
+  );
+
   const shotButtons = (v: Task) => (
     <div className="grid grid-cols-[1.4fr_1fr] gap-2">
       <button
@@ -222,6 +231,7 @@ export function ShootBoard({
                   <TaskLink id={v.id} className="text-[18px] font-medium leading-snug">{v.title}</TaskLink>
                   {typeTag(v)}
                 </div>
+                {whoWhen(v)}
                 <ScriptDecisionBadge decision={v.script_decision} full />
                 {v.script.some((sec) => sec.text.trim()) && (
                   // Read on set: one block per part of the script (HOOK, OPEN LOOP 1, BODY, CTA…).
@@ -264,6 +274,7 @@ export function ShootBoard({
                       {check(v, 32)}
                       <div className="flex min-w-0 flex-col gap-1">
                         <span className="text-[15px] font-medium leading-snug">{v.title}</span>
+                        {whoWhen(v, "sm")}
                         <ScriptDecisionBadge decision={v.script_decision} />
                         {v.note && <span className="text-[13px] font-medium text-[var(--status-waiting)]">{v.note}</span>}
                       </div>
@@ -339,6 +350,7 @@ export function ShootBoard({
                     {check(v)}
                     <div className="flex min-w-0 flex-col gap-[5px]">
                       <span className={`text-[15px] font-medium leading-snug ${v.shot_status === "not_shot" ? "text-ink3 line-through" : ""}`}>{v.title}</span>
+                      {whoWhen(v, "sm")}
                       <ScriptDecisionBadge decision={v.script_decision} />
                       {scriptText(v) && <span className="truncate text-[13px] text-ink3">{scriptText(v)}</span>}
                     </div>
@@ -359,10 +371,9 @@ export function ShootBoard({
           {sel ? (
             <>
               <div className="flex flex-col gap-2">
-                <span className="text-[13px] font-medium text-ink3">
-                  {[sel.shoot_time, sel.on_camera, sel.location].filter(Boolean).join(" · ")}
-                </span>
+                {sel.location && <span className="text-[13px] font-medium text-ink3">{sel.location}</span>}
                 <TaskLink id={sel.id} className="text-[22px] font-medium leading-tight hover:underline">{sel.title}</TaskLink>
+                {whoWhen(sel)}
               </div>
               {sel.script.some((sec) => sec.text.trim()) ? (
                 <div className="flex flex-col gap-4">
