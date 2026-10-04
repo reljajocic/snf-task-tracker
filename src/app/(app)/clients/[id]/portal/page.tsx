@@ -44,7 +44,7 @@ export default async function PortalSettingsPage({ params }: PageProps<"/clients
         clientId={id}
         url={url}
         portal={
-          portal ?? { enabled: false, show_schedule: true, show_shoots: true, show_scripts: true, show_review: true, show_report: true }
+          portal ?? { enabled: false, show_schedule: true, show_shoots: true, show_scripts: true, show_review: true, show_report: true, locale: "sr" }
         }
         people={people ?? []}
         activity={(activity ?? []).map((a) => ({ id: a.id, message: a.message, when: `${formatDate(a.created_at.slice(0, 10))} ${a.created_at.slice(11, 16)}` }))}

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireProfile } from "@/lib/auth";
+import { parseLocale } from "@/lib/locale";
 import { createClient } from "@/lib/supabase/server";
 
 // RLS: only admins / managers of the client change portal settings.
@@ -21,6 +22,14 @@ export async function setPortalFlag(clientId: string, flag: PortalFlag, value: b
   if (flag !== "enabled" && !VIS.includes(flag)) return { error: "Unknown setting" };
   const supabase = await ensurePortal(clientId);
   const { error } = await supabase.from("client_portals").update({ [flag]: value }).eq("client_id", clientId);
+  revalidatePath(`/clients/${clientId}/portal`);
+  return { error: error?.message ?? null };
+}
+
+export async function setPortalLocale(clientId: string, value: string) {
+  await requireProfile();
+  const supabase = await ensurePortal(clientId);
+  const { error } = await supabase.from("client_portals").update({ locale: parseLocale(value) }).eq("client_id", clientId);
   revalidatePath(`/clients/${clientId}/portal`);
   return { error: error?.message ?? null };
 }

@@ -374,7 +374,7 @@
     "saveProfile": "Save profile",
     "saved": "Saved",
     "language": "Language",
-    "languageHint": "The app language for you. Emails and the client portal stay in English.",
+    "languageHint": "The app language for you. Emails stay in English; the client portal has its own language (client → Client portal).",
     "notifications": "Notifications",
     "notificationsLead": "Choose what we email you about. WhatsApp and Slack can be added as channels later.",
     "email": "Email",
@@ -620,7 +620,9 @@
     "activity": "Recent activity",
     "noActivity": "Nothing yet.",
     "disabledNote": "The portal is off. Turn it on to share the link.",
-    "link": "Portal"
+    "link": "Portal",
+    "language": "Portal language",
+    "languageHint": "What the client reads the portal in."
   },
   "versions": {
     "title": "Versions for client review",

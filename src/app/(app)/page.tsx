@@ -8,7 +8,8 @@ import { getLookups, getTasks } from "@/lib/data";
 import { addDays, formatDate, formatShortDate, today as getToday, weekdayIndex } from "@/lib/dates";
 import { byDue, taskOverdue, type Task } from "@/lib/tasks";
 
-// 1a / 1b. "Mine / All" filters the three task sections; stats always show the whole team.
+// 1a / 1b. What Home shows: members their own tasks; a client's managers all of that client's work;
+// the admin everything. "Mine / All" (for those who oversee) narrows the sections to their own.
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const [{ scope }, me, tasks, lookups, t] = await Promise.all([
     searchParams,
@@ -19,9 +20,12 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
   ]);
   const today = getToday();
   // Admins and managers oversee others' work, so they land on "All"; members on "Mine".
-  const oversees = lookups.me.isAdmin || lookups.clients.some((c) => c.canManage);
-  const mineOnly = scope === "mine" || (scope !== "all" && !oversees);
-  const scoped = mineOnly ? tasks.filter((x) => x.assignees.some((a) => a.id === me.id)) : tasks;
+  const managed = new Set(lookups.clients.filter((c) => c.canManage).map((c) => c.id));
+  const isMine = (x: Task) => x.assignees.some((a) => a.id === me.id) || (!x.client && x.created_by === me.id);
+  const visible = lookups.me.isAdmin ? tasks : tasks.filter((x) => isMine(x) || (x.client !== null && managed.has(x.client.id)));
+  const oversees = lookups.me.isAdmin || managed.size > 0;
+  const mineOnly = !oversees || scope === "mine";
+  const scoped = mineOnly ? visible.filter(isMine) : visible;
 
   const lateAndToday = scoped
     .filter((x) => x.status !== "waiting_client" && x.due_date && x.due_date <= today)
@@ -52,17 +56,17 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
     .filter((x) => x.status === "waiting_client")
     .sort((a, b) => a.status_changed_at.localeCompare(b.status_changed_at));
 
-  // Team stats (all visible open tasks, regardless of the toggle).
+  // Team stats (everything this person oversees, regardless of the toggle).
   const people = lookups.people
     .map((p) => {
-      const mine = tasks.filter((x) => x.assignees.some((a) => a.id === p.id));
+      const mine = visible.filter((x) => x.assignees.some((a) => a.id === p.id));
       const late = mine.filter((x) => x.status !== "waiting_client" && taskOverdue(x, today)).length;
       return { person: p, count: mine.length, late };
     })
     .filter((s) => s.count > 0 || s.person.id === me.id);
 
   const byClient = new Map<string, { name: string; count: number }>();
-  for (const x of tasks) {
+  for (const x of visible) {
     const key = x.client?.id ?? "personal";
     const name = x.client?.name ?? t("task.noClient");
     byClient.set(key, { name, count: (byClient.get(key)?.count ?? 0) + 1 });
@@ -82,11 +86,11 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
 
   return (
     <>
-      <PageHeader title={t("home.title")} eyebrow={eyebrow} border actions={<span className="hidden lg:flex"><Segmented items={toggle} /></span>} />
+      <PageHeader title={t("home.title")} eyebrow={eyebrow} border actions={oversees ? <span className="hidden lg:flex"><Segmented items={toggle} /></span> : undefined} />
 
       {/* Mobile */}
       <div className="flex flex-col gap-7 px-5 pb-[120px] lg:hidden">
-        <Segmented items={toggle} full size="lg" />
+        {oversees && <Segmented items={toggle} full size="lg" />}
         <PeopleStats stats={people} compact />
         <section className="flex flex-col gap-3">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">

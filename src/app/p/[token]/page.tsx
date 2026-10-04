@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { formatDate, today as getToday, weekdayIndex } from "@/lib/dates";
 import { getPortal, getPortalScriptProgress, getPortalShoots, getPortalVideos, portalStatus } from "@/lib/portal";
 import { Poster, PortalStatusLabel, TypeTag } from "./bits";
@@ -8,6 +8,7 @@ import { Poster, PortalStatusLabel, TypeTag } from "./bits";
 export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
   const { token } = await params;
   const portal = (await getPortal(token))!;
+  setRequestLocale(portal.locale);
   const today = getToday();
   const month = today.slice(0, 7);
   const [videos, publishedThisMonth, progress, shoots, t] = await Promise.all([

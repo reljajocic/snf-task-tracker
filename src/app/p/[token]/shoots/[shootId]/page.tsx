@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { formatDate, weekdayIndex } from "@/lib/dates";
 import { getPortal, getPortalShoots, getPortalVideos } from "@/lib/portal";
 import { ScriptApprovals } from "./ScriptApprovals";
@@ -9,6 +9,7 @@ import { ScriptApprovals } from "./ScriptApprovals";
 export default async function PortalShoot({ params }: PageProps<"/p/[token]/shoots/[shootId]">) {
   const { token, shootId } = await params;
   const portal = (await getPortal(token))!;
+  setRequestLocale(portal.locale);
   const shoot = (await getPortalShoots(portal.clientId)).find((s) => s.id === shootId);
   if (!shoot || (!portal.show.shoots && !portal.show.scripts)) notFound();
   const [videos, t] = await Promise.all([getPortalVideos(portal.clientId, { shootId }), getTranslations()]);

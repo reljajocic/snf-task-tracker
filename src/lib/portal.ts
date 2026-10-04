@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import type { IsoDate } from "@/lib/dates";
+import { parseLocale, type Locale } from "@/lib/locale";
 import { createAdminClient } from "@/lib/supabase/server";
 import type { ScriptSection } from "@/lib/tasks";
 
@@ -13,13 +14,14 @@ export type Portal = {
   clientName: string;
   token: string;
   show: { schedule: boolean; shoots: boolean; scripts: boolean; review: boolean; report: boolean };
+  locale: Locale;
 };
 
 export const getPortal = cache(async (token: string): Promise<Portal | null> => {
   if (!/^[0-9a-f]{32,64}$/.test(token)) return null;
   const { data } = await createAdminClient()
     .from("client_portals")
-    .select("client_id, token, enabled, show_schedule, show_shoots, show_scripts, show_review, show_report, client:clients(name)")
+    .select("client_id, token, enabled, locale, show_schedule, show_shoots, show_scripts, show_review, show_report, client:clients(name)")
     .eq("token", token)
     .eq("enabled", true)
     .maybeSingle<{
@@ -30,6 +32,7 @@ export const getPortal = cache(async (token: string): Promise<Portal | null> => 
       show_scripts: boolean;
       show_review: boolean;
       show_report: boolean;
+      locale: string;
       client: { name: string } | null;
     }>();
   if (!data) return null;
@@ -44,6 +47,7 @@ export const getPortal = cache(async (token: string): Promise<Portal | null> => 
       review: data.show_review,
       report: data.show_report,
     },
+    locale: parseLocale(data.locale),
   };
 });
 
