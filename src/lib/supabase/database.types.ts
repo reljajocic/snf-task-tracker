@@ -161,6 +161,8 @@ export type Database = {
           notes: string | null
           posting_days: number[]
           profiles: string[]
+          color: string | null
+          initials: string | null
           services: string[]
           since: string | null
           socials: Json
@@ -182,6 +184,8 @@ export type Database = {
           notes?: string | null
           posting_days?: number[]
           profiles?: string[]
+          color?: string | null
+          initials?: string | null
           services?: string[]
           since?: string | null
           socials?: Json
@@ -203,6 +207,8 @@ export type Database = {
           notes?: string | null
           posting_days?: number[]
           profiles?: string[]
+          color?: string | null
+          initials?: string | null
           services?: string[]
           since?: string | null
           socials?: Json

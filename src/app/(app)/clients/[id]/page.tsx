@@ -1,3 +1,4 @@
+import { ClientMark } from "@/components/ClientMark";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -50,7 +51,10 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
           <Link href="/clients" className="text-[14px] font-medium text-ink3 hover:text-ink">
             {t("clients.back")}
           </Link>
-          <h1 className="display text-[32px] lg:text-[44px]">{client.name}</h1>
+          <div className="flex items-center gap-4">
+            <ClientMark client={client} size={52} />
+            <h1 className="display text-[32px] lg:text-[44px]">{client.name}</h1>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="flex items-center gap-[7px] whitespace-nowrap rounded-full border border-line2 px-2.5 py-1.5 text-[13px] font-medium leading-none">
               <span className="size-2 rounded-full" style={{ background: CLIENT_STATUS_COLOR[client.status] }} />

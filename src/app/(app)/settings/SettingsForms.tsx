@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useActionState, useOptimistic, useState, useTransition } from "react";
 import { Avatar } from "@/components/ui/Avatar";
@@ -7,8 +8,9 @@ import { Button } from "@/components/ui/Button";
 import { inputClass } from "@/components/tasks/fields";
 import type { Profile } from "@/lib/auth";
 import { NOTIFICATION_EVENTS, isEnabled, type NotificationEvent, type Preference } from "@/lib/notifications";
+import { LOCALES, LOCALE_NAME, type Locale } from "@/lib/locale";
 import { AVATAR_COLORS } from "@/lib/team";
-import { saveProfile, setPreference } from "./actions";
+import { saveProfile, setLanguage, setPreference } from "./actions";
 
 export function ProfileForm({ profile }: { profile: Profile }) {
   const t = useTranslations("settings");
@@ -51,6 +53,34 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         <Button type="submit" size="sm" disabled={pending}>{t("saveProfile")}</Button>
       </div>
     </form>
+  );
+}
+
+export function LanguageSetting({ current }: { current: Locale }) {
+  const router = useRouter();
+  const [value, setValue] = useState(current);
+  const [pending, start] = useTransition();
+  return (
+    <div className="flex flex-wrap gap-2">
+      {LOCALES.map((l) => (
+        <button
+          key={l}
+          type="button"
+          disabled={pending}
+          aria-pressed={value === l}
+          onClick={() => {
+            setValue(l);
+            start(async () => {
+              await setLanguage(l);
+              router.refresh();
+            });
+          }}
+          className={`h-11 cursor-pointer rounded-full border px-5 text-[14px] font-medium ${value === l ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`}
+        >
+          {LOCALE_NAME[l]}
+        </button>
+      ))}
+    </div>
   );
 }
 

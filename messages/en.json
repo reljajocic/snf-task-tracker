@@ -96,7 +96,9 @@
   "kanban": {
     "title": "Kanban",
     "everyone": "Everyone",
-    "empty": "Nothing here"
+    "empty": "Nothing here",
+    "searchPeople": "Search people…",
+    "noPeople": "Nobody by that name."
   },
   "calendar": {
     "title": "Calendar",
@@ -340,7 +342,11 @@
     "editorRuleRemove": "Remove editor",
     "defaultEditor": "Fallback editor",
     "defaultEditorHint": "Gets videos no rule above covers.",
-    "noEditor": "None"
+    "noEditor": "None",
+    "mark": "Colour and initials",
+    "markNoColor": "No colour",
+    "markCustom": "Pick any colour",
+    "markInitials": "Initials, e.g. NLG"
   },
   "projectForm": {
     "newTitle": "New project",
@@ -367,6 +373,8 @@
     "color": "Avatar color",
     "saveProfile": "Save profile",
     "saved": "Saved",
+    "language": "Language",
+    "languageHint": "The app language for you. Emails and the client portal stay in English.",
     "notifications": "Notifications",
     "notificationsLead": "Choose what we email you about. WhatsApp and Slack can be added as channels later.",
     "email": "Email",

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ComponentProps } from "react";
 
 // Port of the design system's <Button>: uppercase DM Sans 500, tracked label,
-// 10px radius, rust primary with a soft glow that lightens on hover. No scale on press.
+// 10px radius, rust gradient primary with a big soft glow that brightens on hover. No scale on press.
 type Variant = "primary" | "secondary" | "ghost";
 type Size = "sm" | "md" | "lg";
 
@@ -11,7 +11,7 @@ const base =
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent border-accent text-charcoal shadow-[var(--shadow-glow)] hover:bg-accent-hover hover:border-accent-hover active:bg-accent-active active:border-accent-active",
+    "bg-accent border-transparent text-charcoal hover:brightness-110 active:brightness-95",
   secondary:
     "bg-transparent border-[var(--btn-secondary-line)] text-ink hover:border-ink",
   ghost: "bg-transparent border-transparent text-ink2 hover:text-ink px-1",

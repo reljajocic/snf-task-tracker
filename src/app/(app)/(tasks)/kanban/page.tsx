@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { KanbanBoard } from "@/components/tasks/KanbanBoard";
+import { PersonFilter } from "@/components/tasks/PersonFilter";
 import { Segmented } from "@/components/ui/Segmented";
 import { requireProfile } from "@/lib/auth";
 import { getLookups, getTasks } from "@/lib/data";
@@ -44,12 +45,9 @@ export default async function KanbanPage({ searchParams }: PageProps<"/kanban">)
     active: kindFilter === k,
   }));
 
-  // Desktop: everyone + each person who has tasks. Mobile: me / everyone.
-  const people = lookups.people.filter((p) => all.some((x) => x.assignees.some((a) => a.id === p.id)));
-  const desktopSeg = [
-    { key: "all", label: t("kanban.everyone"), href: q({ who: null }), active: !person },
-    ...people.map((p) => ({ key: p.id, label: p.full_name.split(" ")[0], href: q({ who: p.id }), active: person === p.id })),
-  ];
+  // Desktop: everyone, or one person (searchable list of the team). Mobile: me / everyone.
+  const people = lookups.people;
+  const personHrefs: Record<string, string> = { all: q({ who: null }), ...Object.fromEntries(people.map((p) => [p.id, q({ who: p.id })])) };
   const mobileSeg = [
     { key: "mine", label: t("home.mine"), href: q({ who: me.id }), active: person === me.id },
     { key: "all", label: t("home.all"), href: q({ who: null }), active: !person },
@@ -57,7 +55,7 @@ export default async function KanbanPage({ searchParams }: PageProps<"/kanban">)
 
   return (
     <>
-      <PageHeader title={t("kanban.title")} border actions={<span className="hidden gap-3.5 lg:flex"><Segmented items={kindSeg} /><Segmented items={desktopSeg} /></span>} />
+      <PageHeader title={t("kanban.title")} border actions={<span className="hidden gap-3.5 lg:flex"><Segmented items={kindSeg} /><PersonFilter people={people} value={person} hrefFor={personHrefs} /></span>} />
       <div className="flex flex-col gap-2.5 px-5 pb-1 lg:hidden">
         <Segmented items={kindSeg} full size="lg" />
         <Segmented items={mobileSeg} full />

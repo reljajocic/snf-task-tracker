@@ -3,7 +3,8 @@ import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { buttonClass } from "@/components/ui/Button";
 import { requireProfile } from "@/lib/auth";
-import { CLIENT_STATUSES, CLIENT_STATUS_COLOR, clientInitials, getClients, type ClientStatus } from "@/lib/clients";
+import { ClientMark } from "@/components/ClientMark";
+import { CLIENT_STATUSES, CLIENT_STATUS_COLOR, getClients, type ClientStatus } from "@/lib/clients";
 import { getTasks } from "@/lib/data";
 import { formatDate, today as getToday } from "@/lib/dates";
 import { byDue, taskOverdue } from "@/lib/tasks";
@@ -71,7 +72,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
       <div className="flex flex-col gap-2.5 px-5 pb-[120px] pt-4 lg:hidden">
         {rows.map(({ client: c, open, late }) => (
           <Link key={c.id} href={`/clients/${c.id}`} className="flex items-center gap-3 rounded-[10px] border border-line bg-surf p-4">
-            <span className="display grid size-[42px] flex-none place-items-center rounded-md bg-surf2 text-[14px]">{clientInitials(c.name)}</span>
+            <ClientMark client={c} />
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <span className="truncate text-[17px] font-medium leading-tight">{c.name}</span>
               <span className="flex items-center gap-2 text-[13px] text-ink2">
@@ -102,7 +103,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
         {rows.map(({ client: c, open, late, next }) => (
           <Link key={c.id} href={`/clients/${c.id}`} className={`${GRID} items-center border-b border-line p-4 hover:bg-chip`}>
             <div className="flex min-w-0 items-center gap-3">
-              <span className="display grid size-[38px] flex-none place-items-center rounded-md bg-surf2 text-[13px] leading-none">{clientInitials(c.name)}</span>
+              <ClientMark client={c} size={38} />
               <div className="flex min-w-0 flex-col gap-1">
                 <span className="truncate text-[16px] font-medium leading-tight">{c.name}</span>
                 <span className="text-[13px] leading-tight text-ink3">{c.city ?? ""}</span>

@@ -50,6 +50,8 @@ export async function saveClient(_prev: FormState, form: FormData): Promise<Form
     })(),
     locations: list(form.get("locations")),
     profiles: list(form.get("profiles")),
+    color: /^#[0-9a-f]{6}$/i.test(String(form.get("color") ?? "")) ? String(form.get("color")) : null,
+    initials: text(form.get("initials"))?.replace(/\s+/g, "").toUpperCase().slice(0, 3) || null,
     drive_url: text(form.get("drive_url")),
     notes: text(form.get("notes")),
     content_types: list(form.get("content_types")).map((x) => x.toUpperCase()),

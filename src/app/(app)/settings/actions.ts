@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { LOCALE_COOKIE, LOCALE_COOKIE_OPTIONS, parseLocale } from "@/lib/locale";
 import { requireProfile } from "@/lib/auth";
 import { NOTIFICATION_CHANNELS, NOTIFICATION_EVENTS, type NotificationChannel, type NotificationEvent } from "@/lib/notifications";
 import { createClient } from "@/lib/supabase/server";
@@ -25,6 +27,15 @@ export async function saveProfile(_prev: { ok: boolean; error?: string } | null,
   if (error) return { ok: false, error: error.message };
   revalidatePath("/", "layout");
   return { ok: true };
+}
+
+export async function setLanguage(value: string) {
+  const me = await requireProfile();
+  const locale = parseLocale(value);
+  const supabase = await createClient();
+  await supabase.from("profiles").update({ locale }).eq("id", me.id);
+  (await cookies()).set(LOCALE_COOKIE, locale, LOCALE_COOKIE_OPTIONS);
+  revalidatePath("/", "layout");
 }
 
 export async function setPreference(event: NotificationEvent, channel: NotificationChannel, enabled: boolean) {

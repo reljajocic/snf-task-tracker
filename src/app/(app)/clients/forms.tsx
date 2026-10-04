@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { CLIENT_STATUSES, PROJECT_STATUSES } from "@/lib/client-status";
 import type { Client, Project } from "@/lib/clients";
 import type { EditorRule } from "@/lib/editor-rules";
+import { AVATAR_COLORS } from "@/lib/team";
+import { ClientMark } from "@/components/ClientMark";
 import type { Person } from "@/lib/tasks";
 import { SOCIAL_LABEL, SOCIAL_PLATFORMS, type Social, type SocialPlatform } from "@/lib/socials";
 import { deleteClient, deleteProject, saveClient, saveProject, type FormState } from "./actions";
@@ -105,6 +107,7 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
         <Field label={t("clientForm.locations")} hint={t("clientForm.locationsHint")} wide>
           <input name="locations" defaultValue={client?.locations.join(", ")} className={inputClass} />
         </Field>
+        <MarkField name={client?.name ?? ""} initialColor={client?.color ?? null} initialInitials={client?.initials ?? ""} />
         <Field label={t("clientForm.profiles")} hint={t("clientForm.profilesHint")} wide>
           <input name="profiles" placeholder="Kymco Srbija, QJ Srbija" defaultValue={(client?.profiles ?? []).join(", ")} className={inputClass} />
         </Field>
@@ -212,6 +215,60 @@ function PostingDays({ initial, label }: { initial: number[]; label: string }) {
             </button>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+/** The client's mark in lists: a preset or custom colour, and initials (generated if empty). */
+function MarkField({ name, initialColor, initialInitials }: { name: string; initialColor: string | null; initialInitials: string }) {
+  const t = useTranslations("clientForm");
+  const [color, setColor] = useState<string | null>(initialColor);
+  const [initials, setInitials] = useState(initialInitials);
+  return (
+    <div className="flex flex-col gap-2 sm:col-span-2">
+      <span className="text-[13px] font-medium text-ink3">{t("mark")}</span>
+      <input type="hidden" name="color" value={color ?? ""} />
+      <div className="flex flex-wrap items-center gap-4">
+        <ClientMark client={{ name: name || "?", color, initials }} size={52} />
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            aria-pressed={!color}
+            onClick={() => setColor(null)}
+            className={`size-8 cursor-pointer rounded-full border border-line2 bg-surf2 text-[11px] text-ink3 ${!color ? "ring-2 ring-accent ring-offset-2 ring-offset-[var(--canvas)]" : ""}`}
+            title={t("markNoColor")}
+          >
+            ∅
+          </button>
+          {AVATAR_COLORS.map((c) => (
+            <button
+              key={c.bg}
+              type="button"
+              aria-label={c.bg}
+              aria-pressed={color?.toLowerCase() === c.bg.toLowerCase()}
+              onClick={() => setColor(c.bg)}
+              className={`size-8 cursor-pointer rounded-full ${color?.toLowerCase() === c.bg.toLowerCase() ? "ring-2 ring-accent ring-offset-2 ring-offset-[var(--canvas)]" : ""}`}
+              style={{ background: c.bg }}
+            />
+          ))}
+          <label
+            title={t("markCustom")}
+            className="relative grid size-8 cursor-pointer place-items-center overflow-hidden rounded-full border border-line2 text-[15px] text-ink2"
+            style={{ background: "conic-gradient(#ea693a, #d6a93e, #6fae7b, #4fa3a5, #5b8ec2, #9a7fd1, #ea693a)" }}
+          >
+            <span className="grid size-5 place-items-center rounded-full bg-[var(--canvas)] text-[13px]">+</span>
+            <input type="color" value={color ?? "#ea693a"} onChange={(e) => setColor(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0" />
+          </label>
+        </div>
+        <input
+          name="initials"
+          value={initials}
+          maxLength={3}
+          onChange={(e) => setInitials(e.target.value.replace(/\s+/g, "").toUpperCase())}
+          placeholder={t("markInitials")}
+          className={`${inputClass} w-[140px] uppercase`}
+        />
       </div>
     </div>
   );

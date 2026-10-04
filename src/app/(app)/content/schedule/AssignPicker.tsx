@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Task } from "@/lib/tasks";
 
 /** "+ Assign video" on a free slot: filmed videos with type, who's on camera and a script preview. */
@@ -12,14 +13,17 @@ export function AssignPicker({ videos, onPick }: { videos: Task[]; onPick: (id: 
   // Rows live in an overflow-hidden card, so the menu is fixed to the viewport, under the button.
   const [anchor, setAnchor] = useState<{ top: number; right: number; up: boolean } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  // The menu renders in <body> (cards blur their background, which would trap a fixed child).
+  const panel = useRef<HTMLDivElement>(null);
+  const inside = (t: EventTarget | null) => t instanceof Node && (ref.current?.contains(t) || panel.current?.contains(t));
 
   useEffect(() => {
     if (!open) return;
     const close = (e: MouseEvent | KeyboardEvent) => {
-      if (e instanceof KeyboardEvent ? e.key === "Escape" : !ref.current?.contains(e.target as Node)) setOpen(false);
+      if (e instanceof KeyboardEvent ? e.key === "Escape" : !inside(e.target)) setOpen(false);
     };
     const dismiss = (e: Event) => {
-      if (!(e.target instanceof Node && ref.current?.contains(e.target))) setOpen(false);
+      if (!inside(e.target)) setOpen(false);
     };
     document.addEventListener("mousedown", close);
     document.addEventListener("keydown", close);
@@ -53,59 +57,62 @@ export function AssignPicker({ videos, onPick }: { videos: Task[]; onPick: (id: 
       >
         {t("assign")}
       </button>
-      {open && (
-        <div
-          style={anchor ? ({ "--top": `${anchor.top}px`, "--right": `${anchor.right}px` } as React.CSSProperties) : undefined}
-          className={`fixed inset-x-4 bottom-4 z-50 flex max-h-[70vh] flex-col overflow-hidden rounded-lg border border-line2 bg-pop shadow-[0_12px_40px_rgba(0,0,0,0.28)] sm:inset-x-auto sm:bottom-auto sm:right-[var(--right)] sm:top-[var(--top)] sm:max-h-[460px] sm:w-[420px] ${anchor?.up ? "sm:-translate-y-full" : ""}`}
-        >
-          {types.length > 1 && (
-            <div className="flex flex-wrap gap-1.5 border-b border-line px-3.5 py-3">
-              <button type="button" onClick={() => setType(null)} className={chip(type === null)}>
-                {t("pickAll")}
-              </button>
-              {types.map((x) => (
-                <button key={x} type="button" onClick={() => setType(type === x ? null : x)} className={chip(type === x)}>
-                  {x}
+      {open &&
+        createPortal(
+          <div
+            ref={panel}
+            style={anchor ? ({ "--top": `${anchor.top}px`, "--right": `${anchor.right}px` } as React.CSSProperties) : undefined}
+            className={`fixed inset-x-4 bottom-4 z-50 flex max-h-[70vh] flex-col overflow-hidden rounded-lg border border-line2 bg-pop shadow-[0_12px_40px_rgba(0,0,0,0.28)] sm:inset-x-auto sm:bottom-auto sm:right-[var(--right)] sm:top-[var(--top)] sm:max-h-[460px] sm:w-[420px] ${anchor?.up ? "sm:-translate-y-full" : ""}`}
+          >
+            {types.length > 1 && (
+              <div className="flex flex-wrap gap-1.5 border-b border-line px-3.5 py-3">
+                <button type="button" onClick={() => setType(null)} className={chip(type === null)}>
+                  {t("pickAll")}
                 </button>
-              ))}
-            </div>
-          )}
-          <div className="flex flex-col overflow-y-auto">
-            {shown.map((v) => {
-              const first = v.script.find((s) => s.text.trim());
-              return (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => {
-                    setOpen(false);
-                    onPick(v.id);
-                  }}
-                  className="flex cursor-pointer flex-col gap-1.5 border-t border-line px-3.5 py-3 text-left first:border-t-0 hover:bg-chip"
-                >
-                  <span className="flex items-center gap-2">
-                    {v.content_type && (
-                      <span className="flex-none rounded-[3px] border border-line2 px-1.5 py-1 text-[10.5px] font-semibold leading-none tracking-[0.08em] text-ink2">
-                        {v.content_type}
+                {types.map((x) => (
+                  <button key={x} type="button" onClick={() => setType(type === x ? null : x)} className={chip(type === x)}>
+                    {x}
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="flex flex-col overflow-y-auto">
+              {shown.map((v) => {
+                const first = v.script.find((s) => s.text.trim());
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      onPick(v.id);
+                    }}
+                    className="flex cursor-pointer flex-col gap-1.5 border-t border-line px-3.5 py-3 text-left first:border-t-0 hover:bg-chip"
+                  >
+                    <span className="flex items-center gap-2">
+                      {v.content_type && (
+                        <span className="flex-none rounded-[3px] border border-line2 px-1.5 py-1 text-[10.5px] font-semibold leading-none tracking-[0.08em] text-ink2">
+                          {v.content_type}
+                        </span>
+                      )}
+                      <span className="min-w-0 truncate text-[14.5px] font-medium leading-snug text-ink">{v.title}</span>
+                    </span>
+                    {(v.on_camera || v.location) && (
+                      <span className="truncate text-[12.5px] text-ink3">{[v.on_camera, v.location].filter(Boolean).join(" · ")}</span>
+                    )}
+                    {first && (
+                      <span className="line-clamp-2 text-[13px] leading-snug text-ink2">
+                        {first.label && <span className="mr-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-accent">{first.label}</span>}
+                        {first.text}
                       </span>
                     )}
-                    <span className="min-w-0 truncate text-[14.5px] font-medium leading-snug text-ink">{v.title}</span>
-                  </span>
-                  {(v.on_camera || v.location) && (
-                    <span className="truncate text-[12.5px] text-ink3">{[v.on_camera, v.location].filter(Boolean).join(" · ")}</span>
-                  )}
-                  {first && (
-                    <span className="line-clamp-2 text-[13px] leading-snug text-ink2">
-                      {first.label && <span className="mr-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-accent">{first.label}</span>}
-                      {first.text}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

@@ -1,12 +1,13 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { requireProfile } from "@/lib/auth";
+import { parseLocale } from "@/lib/locale";
 import type { Preference } from "@/lib/notifications";
 import { createClient } from "@/lib/supabase/server";
-import { NotificationSettings, ProfileForm } from "./SettingsForms";
+import { LanguageSetting, NotificationSettings, ProfileForm } from "./SettingsForms";
 
 export default async function SettingsPage() {
-  const [me, t] = await Promise.all([requireProfile(), getTranslations("settings")]);
+  const [me, t, locale] = await Promise.all([requireProfile(), getTranslations("settings"), getLocale()]);
   const supabase = await createClient();
   const { data } = await supabase.from("notification_preferences").select("event_type, channel, enabled").eq("user_id", me.id);
 
@@ -17,6 +18,11 @@ export default async function SettingsPage() {
         <section className="flex flex-col gap-3.5">
           <h2 className="display text-[20px]">{t("profile")}</h2>
           <ProfileForm profile={me} />
+        </section>
+        <section className="flex flex-col gap-3.5">
+          <h2 className="display text-[20px]">{t("language")}</h2>
+          <p className="text-[14px] text-ink2">{t("languageHint")}</p>
+          <LanguageSetting current={parseLocale(locale)} />
         </section>
         <section className="flex flex-col gap-3.5">
           <h2 className="display text-[20px]">{t("notifications")}</h2>

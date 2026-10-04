@@ -1,5 +1,6 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import { syncLocaleCookie } from "@/lib/locale-server";
 import { createClient } from "@/lib/supabase/server";
 
 // Target of the sign-in and invite emails (see supabase/templates). Using token_hash
@@ -15,6 +16,7 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
     const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
     if (!error) {
+      await syncLocaleCookie();
       return NextResponse.redirect(new URL(safeNext, request.url));
     }
   }

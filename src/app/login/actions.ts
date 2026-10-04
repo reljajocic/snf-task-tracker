@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { env } from "@/lib/env";
+import { syncLocaleCookie } from "@/lib/locale-server";
 import { createAdminClient, createClient } from "@/lib/supabase/server";
 
 export type LoginResult =
@@ -59,5 +60,6 @@ export async function verifyLoginCode(rawEmail: string, rawCode: string): Promis
   const supabase = await createClient();
   const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
   if (error) return { ok: false, error: "codeInvalid" };
+  await syncLocaleCookie();
   redirect("/");
 }

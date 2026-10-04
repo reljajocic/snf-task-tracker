@@ -1,11 +1,12 @@
+import { cookies } from "next/headers";
 import { getRequestConfig } from "next-intl/server";
-import { DEFAULT_LOCALE, TIME_ZONE } from "@/lib/config";
+import { TIME_ZONE } from "@/lib/config";
+import { LOCALE_COOKIE, parseLocale } from "@/lib/locale";
 
-// Only English for now. Adding a language = a new messages/<locale>.json plus
-// picking the locale here (from the user's profile or a cookie). No URL prefixes.
-
+// The language comes from a cookie set at sign-in and in Settings (no URL prefixes).
+// The client portal is always English: its messages are English in every file.
 export default getRequestConfig(async () => {
-  const locale = DEFAULT_LOCALE;
+  const locale = parseLocale((await cookies()).get(LOCALE_COOKIE)?.value);
   return {
     locale,
     timeZone: TIME_ZONE,
