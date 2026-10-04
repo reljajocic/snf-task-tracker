@@ -123,13 +123,21 @@ export function ShootBoard({
   const scriptText = (v: Task) => v.script.map((s) => s.text).filter(Boolean).join(" ");
 
   // Who's on camera and when, on every video (gaps show up as "no time" / "nobody yet").
-  const whoWhen = (v: Task, size: "sm" | "md" = "md") => (
-    <span className={`flex flex-wrap items-center gap-x-2.5 gap-y-1 font-medium ${size === "sm" ? "text-[12.5px]" : "text-[14px]"}`}>
-      <span className={v.shoot_time ? "text-ink" : "text-ink3"}>🕗 {v.shoot_time ?? t("shoots.noTime")}</span>
-      <span className="text-ink3">·</span>
-      <span className={v.on_camera ? "text-ink" : "text-[var(--status-waiting)]"}>👤 {v.on_camera ?? t("shoots.noPerson")}</span>
-    </span>
-  );
+  const whoWhen = (v: Task, size: "sm" | "md" = "md") => {
+    const icon = size === "sm" ? 13 : 15;
+    return (
+      <span className={`flex flex-wrap items-center gap-x-3.5 gap-y-1 font-medium leading-none ${size === "sm" ? "text-[12.5px]" : "text-[14px]"}`}>
+        <span className={`inline-flex items-center gap-1.5 ${v.shoot_time ? "text-ink" : "text-ink3"}`}>
+          <ClockIcon size={icon} />
+          {v.shoot_time ?? t("shoots.noTime")}
+        </span>
+        <span className={`inline-flex items-center gap-1.5 ${v.on_camera ? "text-ink" : "text-[var(--status-waiting)]"}`}>
+          <PersonIcon size={icon} />
+          {v.on_camera ?? t("shoots.noPerson")}
+        </span>
+      </span>
+    );
+  };
 
   const shotButtons = (v: Task) => (
     <div className="grid grid-cols-[1.4fr_1fr] gap-2">
@@ -413,6 +421,25 @@ export function ShootBoard({
   );
 }
 
+// Small line glyphs for the time / person line (same stroke style as the nav icons).
+function ClockIcon({ size }: { size: number }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" aria-hidden="true" className="flex-none opacity-70">
+      <circle cx="8" cy="8" r="6.2" />
+      <path d="M8 4.8V8l2.2 1.4" />
+    </svg>
+  );
+}
+
+function PersonIcon({ size }: { size: number }) {
+  return (
+    <svg viewBox="0 0 16 16" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" aria-hidden="true" className="flex-none opacity-70">
+      <circle cx="8" cy="5.4" r="2.7" />
+      <path d="M3 13.6c.6-2.5 2.6-3.9 5-3.9s4.4 1.4 5 3.9" />
+    </svg>
+  );
+}
+
 /** "Sign-up link": makes the talent link for this shoot (once) and copies it; × turns it off. */
 function SignupLinkButton({ shootId, token }: { shootId: string; token: string | null }) {
   const t = useTranslations("shoots");
@@ -436,7 +463,7 @@ function SignupLinkButton({ shootId, token }: { shootId: string; token: string |
         }
         className="cursor-pointer whitespace-nowrap text-[14px] font-medium text-ink"
       >
-        {copied ? `✓ ${t("signupCopied")}` : `🔗 ${t("signupLink")}`}
+        {copied ? `✓ ${t("signupCopied")}` : t("signupLink")}
       </button>
       {token && (
         <button
