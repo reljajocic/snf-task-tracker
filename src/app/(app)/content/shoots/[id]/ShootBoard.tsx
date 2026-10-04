@@ -205,14 +205,18 @@ export function ShootBoard({
       <div className="flex flex-col gap-[22px] px-5 pb-[120px] pt-5 lg:hidden">
         <CallTimes times={deriveCallTimes(items)} />
         {nowSlot && (
-          <div className="flex flex-col gap-3 rounded-xl border border-accent bg-surf p-4">
-            <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3 px-1">
               <span className="rounded-full bg-rust-bg px-2 py-[5px] text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-rust-ink">{t("shoots.now")}</span>
               <span className="display text-[22px] leading-none">{nowSlot.time}</span>
               <span className="text-[16px] font-medium">{nowSlot.onCamera}</span>
             </div>
-            {nowSlot.items.map((v) => (
-              <div key={v.id} className="flex flex-col gap-3 border-t border-line pt-3.5">
+            {/* One card per video; the one up next is outlined. */}
+            {nowSlot.items.map((v, i) => (
+              <div
+                key={v.id}
+                className={`flex flex-col gap-3 rounded-xl border bg-surf p-4 ${i === nowSlot.items.findIndex((x) => !isDone(x)) ? "border-accent" : "border-line"}`}
+              >
                 <div className="flex items-start justify-between gap-2.5">
                   <TaskLink id={v.id} className="text-[18px] font-medium leading-snug">{v.title}</TaskLink>
                   {typeTag(v)}
@@ -236,14 +240,14 @@ export function ShootBoard({
             {pending
               .filter((s) => s !== nowSlot)
               .map((s) => (
-                <div key={s.time} className="flex flex-col gap-2.5 rounded-[10px] border border-line bg-surf px-4 py-3.5">
-                  <div className="flex items-center gap-3">
+                <div key={s.time} className="flex flex-col gap-2">
+                  <div className="flex items-center gap-3 px-1 pt-1">
                     <span className="display text-[18px] leading-none">{s.time}</span>
                     <span className="text-[15px] font-medium">{s.onCamera}</span>
                     <span className="ml-auto text-[13px] font-medium text-ink3">{s.items.filter(isDone).length}/{s.items.length}</span>
                   </div>
                   {s.items.map((v) => (
-                    <div key={v.id} className="flex min-h-11 items-center gap-3">
+                    <div key={v.id} className="flex min-h-11 items-center gap-3 rounded-xl border border-line bg-surf px-4 py-3">
                       {check(v, 32)}
                       <div className="flex min-w-0 flex-col gap-1">
                         <span className="text-[15px] font-medium leading-snug">{v.title}</span>
@@ -271,7 +275,7 @@ export function ShootBoard({
                 .filter((s) => !pending.includes(s))
                 .flatMap((s) => s.items)
                 .map((v) => (
-                  <div key={v.id} className="flex min-h-11 items-center gap-3 px-1">
+                  <div key={v.id} className="flex min-h-11 items-center gap-3 rounded-xl border border-line bg-surf px-4 py-3">
                     {check(v, 32)}
                     <span className="text-[15px] text-ink2">{v.title}</span>
                   </div>
