@@ -107,7 +107,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
               </div>
             </div>
             {shown.length ? (
-              <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-surf">
+              <div className="snf-stack">
                 {shown.map((x) => (
                   <TaskLink
                     key={x.id}

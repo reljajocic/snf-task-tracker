@@ -64,7 +64,7 @@ export function ScriptApprovals({ token, shootId, videos, canDecide }: { token: 
       )}
       {error && <span role="alert" className="text-[14px] text-red-ink">{error}</span>}
 
-      <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-surf">
+      <div className="snf-stack">
         {videos.map((v) => {
           const state = v.decision?.status ?? "pending";
           const isOpen = open === v.id;

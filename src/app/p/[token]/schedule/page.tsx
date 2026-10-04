@@ -33,7 +33,7 @@ export default async function PortalSchedule({ params }: PageProps<"/p/[token]/s
             </span>
             {wk === startOfWeek(today) && <span className="text-[12px] font-semibold text-accent">{t("schedule.thisWeek")}</span>}
           </div>
-          <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-surf">
+          <div className="snf-stack">
             {list.map((v) => {
               const status = portalStatus(v);
               const row = (

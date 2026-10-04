@@ -176,6 +176,50 @@ body {
   -webkit-backdrop-filter: blur(24px) saturate(1.7);
   backdrop-filter: blur(24px) saturate(1.7);
 }
+/* A list of separate glass cards (videos, posts, tasks) instead of one block with dividers. */
+@layer components {
+  .snf-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .snf-stack > * {
+    border-radius: var(--radius-lg);
+    background-color: var(--surf);
+    background-image: var(--sheen);
+    box-shadow: var(--glass-shadow);
+    -webkit-backdrop-filter: blur(24px) saturate(1.7);
+    backdrop-filter: blur(24px) saturate(1.7);
+    overflow: hidden;
+  }
+}
+/* Rows keep their own colours (late, hover); only the old divider lines give way to a full edge. */
+.snf-stack > * {
+  border: 1px solid var(--glass-edge) !important;
+}
+
+/* The same for table rows (the shoot sheet): each row a glass card, columns still aligned. */
+.snf-rows {
+  border-collapse: separate !important;
+  border-spacing: 0 0.5rem;
+}
+.snf-rows > tbody > tr > td {
+  background-color: var(--surf);
+  border-top: 1px solid var(--glass-edge);
+  border-bottom: 1px solid var(--glass-edge);
+}
+.snf-rows > tbody > tr > td:first-child {
+  border-left: 1px solid var(--glass-edge);
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+.snf-rows > tbody > tr > td:last-child {
+  border-right: 1px solid var(--glass-edge);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+.snf-rows > tbody > tr > td:only-child {
+  border-radius: var(--radius-lg);
+}
+
 /* Every rust button (the Button component and one-off ones alike): a gradient fill and a big
    soft glow, like light spilling onto the canvas. */
 :is(button, a).bg-accent:not(:disabled) {

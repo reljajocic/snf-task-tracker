@@ -48,7 +48,7 @@ export default async function PortalReports({ params, searchParams }: PageProps<
         </div>
       </div>
       {videos.length > 0 && (
-        <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-surf">
+        <div className="snf-stack">
           {videos.map((v) => (
             <div key={v.id} className="flex items-center justify-between gap-3 border-t border-line px-4 py-3 first:border-t-0">
               <span className="text-[15px] font-medium">{v.title}</span>

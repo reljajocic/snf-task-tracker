@@ -125,7 +125,7 @@ export function ScheduleTable({
                 </span>
                 {w.current && <span className="whitespace-nowrap text-[12px] font-semibold text-accent">{t("schedule.thisWeek")}</span>}
               </div>
-              <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-surf">
+              <div className="snf-stack">
                 {rows.map((r, i) => {
                   const v = r.video;
                   if (!v) {
@@ -230,7 +230,7 @@ export function ScheduleTable({
             <span className="text-[13px] font-medium text-ink3">{unscheduled.length}</span>
           </div>
           {unscheduled.length ? (
-            <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-surf">
+            <div className="snf-stack">
               {unscheduled.map((v) => (
                 <TaskLink key={v.id} id={v.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3.5 border-t border-line px-4 py-[13px] first:border-t-0 hover:bg-chip lg:grid-cols-[minmax(0,1fr)_64px_150px_110px_140px]">
                   <span className="truncate text-[15px] font-medium">{v.title}</span>

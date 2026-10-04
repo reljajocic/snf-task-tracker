@@ -307,7 +307,7 @@ export function ShootBoard({
                   {s.items.filter(isDone).length}/{s.items.length}
                 </span>
               </div>
-              <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-surf">
+              <div className="snf-stack">
                 {s.items.map((v) => (
                   <div
                     key={v.id}

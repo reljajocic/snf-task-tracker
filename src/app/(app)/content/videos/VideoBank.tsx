@@ -83,7 +83,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
       {shown.length === 0 ? (
         <p className="rounded-lg border border-dashed border-line2 px-4 py-10 text-center text-[14px] text-ink3">{t(`empty.${tab}`)}</p>
       ) : (
-        <div className="flex flex-col rounded-lg border border-line bg-surf">
+        <div className="snf-stack">
           {shown.map((v) => {
             const first = v.script.find((s) => s.text.trim());
             const m = meta(v);

@@ -41,7 +41,7 @@ export function TaskRow({ task, today, plainDate = false }: { task: Task; today:
 }
 
 export function RowList({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-surf">{children}</div>;
+  return <div className="snf-stack">{children}</div>;
 }
 
 /** Mobile card with relative deadline and priority (design 1b "Danas i zakasnelo"). */

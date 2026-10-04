@@ -69,8 +69,8 @@ export function ShootSheet({
 
   return (
     <div className="flex flex-col gap-3 px-10 pb-12 pt-5">
-      <div className="overflow-x-auto rounded-lg border border-line bg-surf">
-        <table className="w-full min-w-[1180px] border-collapse text-left">
+      <div className="overflow-x-auto">
+        <table className="snf-rows w-full min-w-[1180px] text-left">
           <thead>
             <tr className="border-b border-line text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
               <th className="w-10 px-3 py-2.5">#</th>
@@ -92,7 +92,7 @@ export function ShootSheet({
               const toggle = () => setOpen(isOpen ? null : v.id);
               return (
                 <Fragment key={v.id}>
-                  <tr className={`border-b border-line align-top ${isOpen ? "bg-chip" : ""}`}>
+                  <tr className={`align-top ${isOpen ? "[&>td]:bg-chip" : ""}`}>
                     <td className="px-3 py-2.5">
                       <button type="button" onClick={toggle} title={isOpen ? t("collapse") : t("expand")} className="cursor-pointer text-[13px] text-ink3 hover:text-ink">
                         {i + 1}
