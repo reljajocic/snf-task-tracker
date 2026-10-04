@@ -12,7 +12,7 @@ import { AvatarStack } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import type { ShootDay } from "@/lib/content";
 import { PHASES, type ShotStatus, type Task } from "@/lib/tasks";
-import { addVideosToShoot, removeFromShoot } from "../actions";
+import { addVideosToShoot, removeFromShoot, setSignupLink } from "../actions";
 import { byShootTime, deriveCallTimes } from "@/lib/script-text";
 import { CallTimes } from "./ShootTools";
 import { ShootSheet } from "./ShootSheet";
@@ -180,6 +180,7 @@ export function ShootBoard({
                 {t("shoots.scheduleShot", { count: shotVideos.length })}
               </Link>
             )}
+            <SignupLinkButton shootId={day.id} token={day.signup_token} />
             <button type="button" onClick={() => setAdding((a) => !a)} className="cursor-pointer text-[14px] font-medium text-rust-ink">
               {adding ? t("shoots.close") : t("shoots.addVideos")}
             </button>
@@ -398,6 +399,52 @@ export function ShootBoard({
         </aside>
       </div>
     </>
+  );
+}
+
+/** "Sign-up link": makes the talent link for this shoot (once) and copies it; × turns it off. */
+function SignupLinkButton({ shootId, token }: { shootId: string; token: string | null }) {
+  const t = useTranslations("shoots");
+  const router = useRouter();
+  const [copied, setCopied] = useState(false);
+  const [pending, start] = useTransition();
+  return (
+    <span className="flex items-center gap-1.5" title={t("signupHint")}>
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() =>
+          start(async () => {
+            const res = await setSignupLink(shootId, true);
+            if (!res.token) return;
+            await navigator.clipboard?.writeText(`${window.location.origin}/s/${res.token}`).catch(() => {});
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+            if (!token) router.refresh();
+          })
+        }
+        className="cursor-pointer whitespace-nowrap text-[14px] font-medium text-ink"
+      >
+        {copied ? `✓ ${t("signupCopied")}` : `🔗 ${t("signupLink")}`}
+      </button>
+      {token && (
+        <button
+          type="button"
+          disabled={pending}
+          aria-label={t("signupOff")}
+          title={t("signupOff")}
+          onClick={() =>
+            start(async () => {
+              await setSignupLink(shootId, false);
+              router.refresh();
+            })
+          }
+          className="grid size-6 cursor-pointer place-items-center rounded-full text-[15px] text-ink3 hover:text-red-ink"
+        >
+          ×
+        </button>
+      )}
+    </span>
   );
 }
 

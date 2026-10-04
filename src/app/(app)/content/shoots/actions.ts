@@ -79,6 +79,20 @@ export async function addVideosToShoot(shootId: string, items: { id: string; tim
   return { error: null };
 }
 
+/** Turns the talent sign-up link (/s/<token>) on, or off with `on = false`. RLS: the client team. */
+export async function setSignupLink(shootId: string, on: boolean): Promise<{ token: string | null; error: string | null }> {
+  await requireProfile();
+  const supabase = await createClient();
+  const { data: day } = await supabase.from("shoot_days").select("signup_token").eq("id", shootId).maybeSingle();
+  if (!day) return { token: null, error: "Not found." };
+  if (on && day.signup_token) return { token: day.signup_token, error: null };
+  const token = on ? Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("") : null;
+  const { data, error } = await supabase.from("shoot_days").update({ signup_token: token }).eq("id", shootId).select("id");
+  if (error || !data?.length) return { token: null, error: error?.message ?? "You can't change this shoot." };
+  revalidatePath(`/content/shoots/${shootId}`);
+  return { token, error: null };
+}
+
 export async function removeFromShoot(videoId: string) {
   await requireProfile();
   const supabase = await createClient();

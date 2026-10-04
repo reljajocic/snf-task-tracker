@@ -587,7 +587,11 @@
     },
     "callTimesAuto": "From the table below.",
     "close": "Close",
-    "allClients": "All clients"
+    "allClients": "All clients",
+    "signupLink": "Sign-up link",
+    "signupCopied": "Link copied",
+    "signupOff": "Turn off sign-up link",
+    "signupHint": "Send it to people at the client: they write their name next to the videos they'll film (no login)."
   },
   "portalSettings": {
     "title": "Client portal",
@@ -767,5 +771,21 @@
     "board": "Board",
     "list": "List",
     "calendar": "Calendar"
+  },
+  "signup": {
+    "title": "Who's in which video",
+    "lead": "Pick the videos you want to be in. Write your name once, then tap “I'm in” on each video. You can change it until the shoot.",
+    "yourName": "Your name",
+    "namePlaceholder": "e.g. Ana Petrović",
+    "nameHint": "Remembered on this device.",
+    "inIt": "In it:",
+    "nobodyYet": "Nobody yet",
+    "join": "I'm in",
+    "leave": "Take me off",
+    "remove": "Remove {name}",
+    "more": "Show the whole script",
+    "less": "Show less",
+    "empty": "No videos on this shoot yet.",
+    "failed": "That didn't work. Refresh the page and try again."
   }
 }

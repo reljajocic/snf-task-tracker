@@ -587,7 +587,11 @@
     },
     "callTimesAuto": "Iz tabele ispod.",
     "close": "Zatvori",
-    "allClients": "Svi klijenti"
+    "allClients": "Svi klijenti",
+    "signupLink": "Link za prijavu",
+    "signupCopied": "Link kopiran",
+    "signupOff": "Isključi link za prijavu",
+    "signupHint": "Pošalji ga ljudima kod klijenta: upisuju ime pored videa koje snimaju (bez prijave)."
   },
   "portalSettings": {
     "title": "Portal za klijenta",
@@ -767,5 +771,21 @@
     "board": "Tabla",
     "list": "Lista",
     "calendar": "Kalendar"
+  },
+  "signup": {
+    "title": "Ko je u kom videu",
+    "lead": "Izaberi videe u kojima želiš da budeš. Upiši ime jednom, pa na svakom videu klikni „Upiši me“. Možeš da menjaš sve do snimanja.",
+    "yourName": "Tvoje ime",
+    "namePlaceholder": "npr. Ana Petrović",
+    "nameHint": "Pamti se na ovom uređaju.",
+    "inIt": "Snimaju:",
+    "nobodyYet": "Još niko",
+    "join": "Upiši me",
+    "leave": "Skini me",
+    "remove": "Ukloni: {name}",
+    "more": "Prikaži celu skriptu",
+    "less": "Prikaži manje",
+    "empty": "Na ovom snimanju još nema videa.",
+    "failed": "Nije uspelo. Osveži stranicu i probaj ponovo."
   }
 }

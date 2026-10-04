@@ -63,6 +63,7 @@ export type ShootDay = {
   ends_at: string | null;
   notes: string | null;
   drive_url: string | null;
+  signup_token: string | null;
   call_times: CallTime[];
   crew: Person[];
   total: number;
@@ -75,7 +76,7 @@ type RawShoot = Omit<ShootDay, "crew" | "total" | "shot"> & {
 };
 
 const SHOOT_SELECT = `
-  id, date, location, starts_at, ends_at, notes, drive_url, call_times,
+  id, date, location, starts_at, ends_at, notes, drive_url, signup_token, call_times,
   client:clients(id, name, locations),
   shoot_crew(profile:profiles(id, full_name, initials, avatar_bg, avatar_fg)),
   tasks(shot_status)
