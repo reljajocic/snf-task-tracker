@@ -53,10 +53,13 @@ export const getLookups = cache(async (): Promise<Lookups> => {
 
   const [profile, people, clients, projects, memberships, projectMemberships, teams] = await Promise.all([
     requireProfile(),
+    // The admin account oversees everything but never does the work: it's left out of every
+    // people picker (assignees, crew, editors, teams, filters). The Team page lists it separately.
     supabase
       .from("profiles")
       .select("id, full_name, initials, avatar_bg, avatar_fg")
       .eq("is_active", true)
+      .neq("role", "admin")
       .order("full_name")
       .returns<Person[]>(),
     supabase.from("clients").select("id, name, status, content_types, locations, profiles, posting_days, default_editor_id").order("name"),
