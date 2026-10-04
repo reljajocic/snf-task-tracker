@@ -12,6 +12,7 @@ import { AvatarStack } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import type { ShootDay } from "@/lib/content";
 import { PHASES, type ShotStatus, type Task } from "@/lib/tasks";
+import { updateTask } from "@/app/(app)/task-actions";
 import { addVideosToShoot, removeFromShoot, setSignupLink } from "../actions";
 import { byShootTime, deriveCallTimes } from "@/lib/script-text";
 import { CallTimes } from "./ShootTools";
@@ -122,15 +123,37 @@ export function ShootBoard({
 
   const scriptText = (v: Task) => v.script.map((s) => s.text).filter(Boolean).join(" ");
 
+  const saveTime = (v: Task, value: string) => {
+    if (value === (v.shoot_time ?? "")) return;
+    startTransition(async () => {
+      await updateTask(v.id, { shoot_time: value || null });
+      router.refresh();
+    });
+  };
+
   // Who's on camera and when, on every video (gaps show up as "no time" / "nobody yet").
   const whoWhen = (v: Task, size: "sm" | "md" = "md") => {
     const icon = size === "sm" ? 13 : 15;
     return (
       <span className={`flex flex-wrap items-center gap-x-3.5 gap-y-1 font-medium leading-none ${size === "sm" ? "text-[12.5px]" : "text-[14px]"}`}>
-        <span className={`inline-flex items-center gap-1.5 ${v.shoot_time ? "text-ink" : "text-ink3"}`}>
-          <ClockIcon size={icon} />
-          {v.shoot_time ?? t("shoots.noTime")}
-        </span>
+        {canManage ? (
+          // Editable right here (phones too): a native time picker on tap.
+          <label className={`inline-flex items-center ${v.shoot_time ? "text-ink" : "text-ink3"}`} onClick={(e) => e.stopPropagation()}>
+            <input
+              type="time"
+              step={300}
+              defaultValue={v.shoot_time ?? ""}
+              aria-label={t("shoots.time")}
+              onChange={(e) => saveTime(v, e.target.value)}
+              className={`min-w-[4.5rem] cursor-pointer rounded-md border border-line2 bg-transparent px-1.5 py-1 font-medium text-inherit outline-none focus:border-accent ${size === "sm" ? "text-[12.5px]" : "text-[14px]"}`}
+            />
+          </label>
+        ) : (
+          <span className={`inline-flex items-center gap-1.5 ${v.shoot_time ? "text-ink" : "text-ink3"}`}>
+            <ClockIcon size={icon} />
+            {v.shoot_time ?? t("shoots.noTime")}
+          </span>
+        )}
         <span className={`inline-flex items-center gap-1.5 ${v.on_camera ? "text-ink" : "text-[var(--status-waiting)]"}`}>
           <PersonIcon size={icon} />
           {v.on_camera ?? t("shoots.noPerson")}
