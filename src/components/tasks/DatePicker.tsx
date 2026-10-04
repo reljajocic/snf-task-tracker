@@ -138,7 +138,7 @@ export function DatePicker({
         {value ? formatDate(value) : (emptyLabel ?? t("noDue"))} ▾
       </button>
       {open && (
-        <div className={`absolute ${align === "right" ? "right-0" : "left-0"} top-[42px] z-20 flex w-[300px] flex-col gap-2.5 rounded-lg border border-line2 bg-surf p-3.5 shadow-[var(--shadow-overlay)]`}>
+        <div className={`absolute ${align === "right" ? "right-0" : "left-0"} top-[42px] z-20 flex w-[300px] flex-col gap-2.5 rounded-lg border border-line2 bg-pop p-3.5 shadow-[var(--shadow-overlay)]`}>
           <MonthGrid value={value} today={today} onPick={pick} />
           <div className="flex flex-wrap gap-1.5 border-t border-line pt-2.5">
             {quickDates(today).map((q) => (

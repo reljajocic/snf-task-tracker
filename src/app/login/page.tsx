@@ -29,7 +29,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       </div>
 
       {/* Form column */}
-      <div className="relative flex min-h-dvh flex-col lg:items-center lg:justify-center lg:bg-charcoal lg:p-14">
+      <div className="relative flex min-h-dvh flex-col lg:items-center lg:justify-center lg:border-l lg:border-[rgba(244,243,237,0.12)] lg:bg-[rgba(244,243,237,0.045)] lg:p-14 lg:backdrop-blur-xl">
         <div className="px-7 pt-[76px] lg:hidden">
           <img src="/brand/logo-off-white.png" alt="Slate 'n' Frame" className="h-[30px]" />
         </div>

@@ -59,7 +59,7 @@ export default async function TaskListPage({ searchParams }: PageProps<"/tasks">
 
       {/* Desktop table */}
       <div className="hidden px-10 pb-10 lg:block">
-        <div className={`${GRID} sticky top-0 z-[1] border-b border-line bg-bg px-4 pb-2.5 pt-3.5 text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-ink3`}>
+        <div className={`${GRID} sticky top-0 z-[1] border-b border-line bg-side px-4 pb-2.5 pt-3.5 text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-ink3`}>
           <span>{t("list.col.task")}</span>
           <span>{t("list.col.client")}</span>
           <span className="hidden xl:block">{t("task.fields.type")}</span>

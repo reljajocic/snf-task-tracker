@@ -15,7 +15,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
   const theme = parseTheme(cookieStore.get(THEME_COOKIE)?.value);
 
   return (
-    <div className="flex min-h-dvh bg-bg text-ink">
+    <div className="snf-canvas flex min-h-dvh text-ink">
       <Sidebar profile={profile} theme={theme} initialCollapsed={cookieStore.get(SIDEBAR_COOKIE)?.value === "collapsed"} />
       <main className="flex min-w-0 flex-1 flex-col pb-[84px] lg:pb-0">
         <MobileTopBar profile={profile} theme={theme} />

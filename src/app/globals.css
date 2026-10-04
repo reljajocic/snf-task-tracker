@@ -1,14 +1,23 @@
 @import "tailwindcss";
 
 /* Slate 'n' Frame tokens — see docs/design/README.md ("Design tokeni").
-   Dark is the default theme; light is opt-in via <html data-theme="light">. */
+   Dark is the default theme; light is opt-in via <html data-theme="light">.
+   Surfaces are "liquid glass" like the cards on slatenframe.com (.snf-glass): translucent
+   off-white over a dark canvas with a warm glow, a thin light edge and a soft sheen. */
 :root {
-  --bg: #2f2d2e;
-  --side: #1c1a1b;
-  --surf: #3b3839;
-  --surf2: #454142;
-  --line: rgba(244, 243, 237, 0.1);
-  --line2: rgba(244, 243, 237, 0.18);
+  --canvas: #151314;
+  --glow-warm: rgba(234, 105, 58, 0.16);
+  --glow-cool: rgba(150, 144, 170, 0.1);
+  --bg: #1f1d1e; /* opaque panels: task panel, modals */
+  --side: rgba(21, 19, 20, 0.62);
+  --surf: rgba(244, 243, 237, 0.065);
+  --glass-edge: rgba(244, 243, 237, 0.15);
+  --glass-shadow: inset 0 1px 0 rgba(244, 243, 237, 0.07), 0 10px 32px rgba(0, 0, 0, 0.3);
+  --surf2: rgba(244, 243, 237, 0.1);
+  --pop: rgba(36, 33, 34, 0.9); /* popovers and menus: glass, but readable over content */
+  --sheen: linear-gradient(150deg, rgba(244, 243, 237, 0.06), rgba(244, 243, 237, 0) 55%);
+  --line: rgba(244, 243, 237, 0.09);
+  --line2: rgba(244, 243, 237, 0.17);
   --ink: #f4f3ed;
   --ink2: rgba(244, 243, 237, 0.7);
   --ink3: rgba(244, 243, 237, 0.48);
@@ -26,8 +35,9 @@
   --accent: #ea693a;
   --accent-hover: #ee8560;
   --accent-active: #c6552c;
-  --overlay: rgba(28, 26, 27, 0.62);
-  --shadow-overlay: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --overlay: rgba(12, 11, 12, 0.6);
+  --shadow-overlay: 0 18px 48px rgba(0, 0, 0, 0.45);
+  --shadow-glow: 0 8px 26px rgba(234, 105, 58, 0.28);
   --shadow-focus: 0 0 0 3px rgba(234, 105, 58, 0.35);
 
   /* Semantic colors, identical in both themes */
@@ -54,10 +64,17 @@
 }
 
 :root[data-theme="light"] {
-  --bg: #f4f3ed;
-  --side: #eae8de;
-  --surf: #fcfcf9;
-  --surf2: #ffffff;
+  --canvas: #eeece5;
+  --glow-warm: rgba(234, 105, 58, 0.14);
+  --glow-cool: rgba(120, 114, 140, 0.1);
+  --bg: #f7f6f1;
+  --side: rgba(247, 246, 241, 0.7);
+  --surf: rgba(255, 255, 255, 0.62);
+  --surf2: rgba(255, 255, 255, 0.85);
+  --pop: rgba(255, 255, 255, 0.94);
+  --glass-edge: rgba(47, 45, 46, 0.12);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 10px 30px rgba(47, 45, 46, 0.08);
+  --sheen: linear-gradient(150deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 60%);
   --line: rgba(47, 45, 46, 0.1);
   --line2: rgba(47, 45, 46, 0.2);
   --ink: #2f2d2e;
@@ -82,6 +99,9 @@
 @theme {
   /* Wide desktop: room for the status column in task rows. Named so it sorts after lg/xl. */
   --breakpoint-wide: 87.5rem;
+  /* Softer, glassier corners (cards 16px, controls 10px). */
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
 }
 
 @theme inline {
@@ -93,6 +113,7 @@
   --color-side: var(--side);
   --color-surf: var(--surf);
   --color-surf2: var(--surf2);
+  --color-pop: var(--pop);
   --color-line: var(--line);
   --color-line2: var(--line2);
   --color-ink: var(--ink);
@@ -123,6 +144,33 @@ body {
 body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+}
+
+/* The app canvas: dark with a warm glow top-right and a cool one bottom-left, so glass has
+   something to show through. Fixed, so it doesn't scroll away. */
+.snf-canvas {
+  background-color: var(--canvas);
+  background-image:
+    radial-gradient(1100px 700px at 100% -10%, var(--glow-warm), transparent 60%),
+    radial-gradient(900px 700px at -10% 110%, var(--glow-cool), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Glass: cards get a soft sheen; bars and popovers blur what's behind them. (Blur only on
+   elements that are themselves positioned: a backdrop-filter would trap fixed children.) */
+.bg-surf {
+  background-image: var(--sheen);
+}
+/* Cards (a glass surface with the default hairline) get the glass edge and depth; surfaces with
+   their own border colour or shadow (selected, accent) keep it. */
+.bg-surf.border-line {
+  border-color: var(--glass-edge);
+  box-shadow: var(--glass-shadow);
+}
+.bg-side,
+.bg-pop {
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
 }
 
 /* Phones zoom into any field whose text is under 16px (and the page jumps around while typing),

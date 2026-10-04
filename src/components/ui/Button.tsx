@@ -2,16 +2,16 @@ import Link from "next/link";
 import type { ComponentProps } from "react";
 
 // Port of the design system's <Button>: uppercase DM Sans 500, tracked label,
-// 4px radius, rust primary that lightens on hover. No scale on press.
+// 10px radius, rust primary with a soft glow that lightens on hover. No scale on press.
 type Variant = "primary" | "secondary" | "ghost";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-[4px] border font-medium uppercase tracking-[0.14em] transition-colors duration-[var(--dur-fast)] ease-[var(--ease-standard)] cursor-pointer disabled:cursor-not-allowed disabled:opacity-45";
+  "inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-md border font-medium uppercase tracking-[0.14em] transition-colors duration-[var(--dur-fast)] ease-[var(--ease-standard)] cursor-pointer disabled:cursor-not-allowed disabled:opacity-45";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent border-accent text-charcoal hover:bg-accent-hover hover:border-accent-hover active:bg-accent-active active:border-accent-active",
+    "bg-accent border-accent text-charcoal shadow-[var(--shadow-glow)] hover:bg-accent-hover hover:border-accent-hover active:bg-accent-active active:border-accent-active",
   secondary:
     "bg-transparent border-[var(--btn-secondary-line)] text-ink hover:border-ink",
   ghost: "bg-transparent border-transparent text-ink2 hover:text-ink px-1",

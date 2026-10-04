@@ -56,7 +56,7 @@ export function AssignPicker({ videos, onPick }: { videos: Task[]; onPick: (id: 
       {open && (
         <div
           style={anchor ? ({ "--top": `${anchor.top}px`, "--right": `${anchor.right}px` } as React.CSSProperties) : undefined}
-          className={`fixed inset-x-4 bottom-4 z-50 flex max-h-[70vh] flex-col overflow-hidden rounded-lg border border-line2 bg-surf shadow-[0_12px_40px_rgba(0,0,0,0.28)] sm:inset-x-auto sm:bottom-auto sm:right-[var(--right)] sm:top-[var(--top)] sm:max-h-[460px] sm:w-[420px] ${anchor?.up ? "sm:-translate-y-full" : ""}`}
+          className={`fixed inset-x-4 bottom-4 z-50 flex max-h-[70vh] flex-col overflow-hidden rounded-lg border border-line2 bg-pop shadow-[0_12px_40px_rgba(0,0,0,0.28)] sm:inset-x-auto sm:bottom-auto sm:right-[var(--right)] sm:top-[var(--top)] sm:max-h-[460px] sm:w-[420px] ${anchor?.up ? "sm:-translate-y-full" : ""}`}
         >
           {types.length > 1 && (
             <div className="flex flex-wrap gap-1.5 border-b border-line px-3.5 py-3">
