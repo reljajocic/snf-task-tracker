@@ -148,6 +148,7 @@ export type Database = {
       clients: {
         Row: {
           city: string | null
+          color: string | null
           content_types: string[]
           created_at: string
           created_by: string | null
@@ -156,13 +157,12 @@ export type Database = {
           editor_rules: Json
           email: string | null
           id: string
+          initials: string | null
           locations: string[]
           name: string
           notes: string | null
           posting_days: number[]
           profiles: string[]
-          color: string | null
-          initials: string | null
           services: string[]
           since: string | null
           socials: Json
@@ -171,6 +171,7 @@ export type Database = {
         }
         Insert: {
           city?: string | null
+          color?: string | null
           content_types?: string[]
           created_at?: string
           created_by?: string | null
@@ -179,13 +180,12 @@ export type Database = {
           editor_rules?: Json
           email?: string | null
           id?: string
+          initials?: string | null
           locations?: string[]
           name: string
           notes?: string | null
           posting_days?: number[]
           profiles?: string[]
-          color?: string | null
-          initials?: string | null
           services?: string[]
           since?: string | null
           socials?: Json
@@ -194,6 +194,7 @@ export type Database = {
         }
         Update: {
           city?: string | null
+          color?: string | null
           content_types?: string[]
           created_at?: string
           created_by?: string | null
@@ -202,13 +203,12 @@ export type Database = {
           editor_rules?: Json
           email?: string | null
           id?: string
+          initials?: string | null
           locations?: string[]
           name?: string
           notes?: string | null
           posting_days?: number[]
           profiles?: string[]
-          color?: string | null
-          initials?: string | null
           services?: string[]
           since?: string | null
           socials?: Json
