@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { embedUrl } from "@/lib/embed";
 import { formatDate, weekdayIndex } from "@/lib/dates";
 import { canUndo, getPortal, getPortalVideos, portalStatus, PORTAL_STATUS_COLOR } from "@/lib/portal";
@@ -11,8 +11,7 @@ import { VideoDecision } from "./VideoDecision";
 export default async function PortalVideo({ params, searchParams }: PageProps<"/p/[token]/video/[taskId]">) {
   const [{ token, taskId }, { v: versionParam }] = await Promise.all([params, searchParams]);
   const portal = (await getPortal(token))!;
-  setRequestLocale(portal.locale);
-  const t = await getTranslations();
+  const t = await getTranslations({ locale: portal.locale });
   if (!portal.show.review) notFound();
   const video = (await getPortalVideos(portal.clientId, { id: taskId }))[0];
   if (!video || !video.versions.length) notFound();

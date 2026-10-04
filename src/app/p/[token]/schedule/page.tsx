@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { addDays, formatDate, formatShortDate, isoWeek, startOfWeek, today as getToday, weekdayIndex } from "@/lib/dates";
 import { getPortal, getPortalVideos, portalStatus } from "@/lib/portal";
 import { PortalStatusLabel, TypeTag } from "../bits";
@@ -9,11 +9,10 @@ import { PortalStatusLabel, TypeTag } from "../bits";
 export default async function PortalSchedule({ params }: PageProps<"/p/[token]/schedule">) {
   const { token } = await params;
   const portal = (await getPortal(token))!;
-  setRequestLocale(portal.locale);
   if (!portal.show.schedule) notFound();
   const today = getToday();
   const from = addDays(startOfWeek(today), -14);
-  const [videos, t] = await Promise.all([getPortalVideos(portal.clientId, { from }), getTranslations()]);
+  const [videos, t] = await Promise.all([getPortalVideos(portal.clientId, { from }), getTranslations({ locale: portal.locale })]);
   const dated = videos.filter((v) => v.publish_date && v.publish_date >= from);
 
   const weeks = new Map<string, typeof dated>();

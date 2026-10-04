@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { formatDate, today as getToday } from "@/lib/dates";
 import { getPortal, getPortalVideos } from "@/lib/portal";
 
@@ -13,8 +13,7 @@ function shiftMonth(m: string, d: number) {
 export default async function PortalReports({ params, searchParams }: PageProps<"/p/[token]/reports">) {
   const [{ token }, { m }] = await Promise.all([params, searchParams]);
   const portal = (await getPortal(token))!;
-  setRequestLocale(portal.locale);
-  const t = await getTranslations();
+  const t = await getTranslations({ locale: portal.locale });
   if (!portal.show.report) notFound();
   const month = typeof m === "string" && /^\d{4}-\d{2}$/.test(m) ? m : getToday().slice(0, 7);
   const videos = await getPortalVideos(portal.clientId, { month });

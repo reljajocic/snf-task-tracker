@@ -1,15 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { formatDate, today as getToday, weekdayIndex } from "@/lib/dates";
 import { getPortal, getPortalShoots, getPortalScriptProgress } from "@/lib/portal";
 
 export default async function PortalShoots({ params }: PageProps<"/p/[token]/shoots">) {
   const { token } = await params;
   const portal = (await getPortal(token))!;
-  setRequestLocale(portal.locale);
   if (!portal.show.shoots && !portal.show.scripts) notFound();
-  const [shoots, progress, t] = await Promise.all([getPortalShoots(portal.clientId), getPortalScriptProgress(portal.clientId), getTranslations()]);
+  const [shoots, progress, t] = await Promise.all([getPortalShoots(portal.clientId), getPortalScriptProgress(portal.clientId), getTranslations({ locale: portal.locale })]);
   const today = getToday();
   const list = [...shoots.filter((s) => s.date >= today), ...shoots.filter((s) => s.date < today).reverse()];
 

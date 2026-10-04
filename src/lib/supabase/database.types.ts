@@ -103,6 +103,7 @@ export type Database = {
           client_id: string
           created_at: string
           enabled: boolean
+          locale: string
           rotated_at: string | null
           show_report: boolean
           show_review: boolean
@@ -115,6 +116,7 @@ export type Database = {
           client_id: string
           created_at?: string
           enabled?: boolean
+          locale?: string
           rotated_at?: string | null
           show_report?: boolean
           show_review?: boolean
@@ -127,6 +129,7 @@ export type Database = {
           client_id?: string
           created_at?: string
           enabled?: boolean
+          locale?: string
           rotated_at?: string | null
           show_report?: boolean
           show_review?: boolean

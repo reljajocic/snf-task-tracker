@@ -1,5 +1,7 @@
+"use client";
+
 import { useTranslations } from "next-intl";
-import { PORTAL_STATUS_COLOR, type PortalStatus } from "@/lib/portal";
+import { PORTAL_STATUS_COLOR, type PortalStatus } from "@/lib/portal-status";
 
 export function PortalStatusLabel({ status }: { status: PortalStatus }) {
   const t = useTranslations("portal.status");

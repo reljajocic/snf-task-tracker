@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { getPortal } from "@/lib/portal";
 import PortalNotFound from "./not-found";
 import { PortalNav } from "./PortalNav";
@@ -13,8 +13,7 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
   const portal = await getPortal(token);
   // Unknown or disabled link: a branded dead end (no hint whether the client exists).
   if (!portal) return <PortalNotFound />;
-  setRequestLocale(portal.locale);
-  const [t, messages] = await Promise.all([getTranslations("portal.nav"), getMessages()]);
+  const [t, messages] = await Promise.all([getTranslations({ locale: portal.locale, namespace: "portal.nav" }), getMessages({ locale: portal.locale })]);
   const base = `/p/${token}`;
   const tabs = [
     { href: base, label: t("home"), exact: true },

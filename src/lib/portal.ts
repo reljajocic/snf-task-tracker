@@ -69,8 +69,8 @@ export type PortalVideo = {
   scriptDecision: Decision | null;
 };
 
-/** What the client sees for a video: published / waiting for you / ready / in preparation. */
-export type PortalStatus = "published" | "awaiting" | "ready" | "preparing";
+import type { PortalStatus } from "@/lib/portal-status";
+export { PORTAL_STATUS_COLOR, type PortalStatus } from "@/lib/portal-status";
 
 export function portalStatus(v: PortalVideo): PortalStatus {
   if (v.phase >= 5) return "published";
@@ -80,12 +80,7 @@ export function portalStatus(v: PortalVideo): PortalStatus {
   return "preparing";
 }
 
-export const PORTAL_STATUS_COLOR: Record<PortalStatus, string> = {
-  published: "var(--status-done)",
-  awaiting: "var(--accent)",
-  ready: "var(--status-in-progress)",
-  preparing: "var(--status-todo)",
-};
+
 
 type RawVideo = Omit<PortalVideo, "versions" | "scriptDecision"> & {
   video_versions: Omit<PortalVideo["versions"][number], "decision">[];
