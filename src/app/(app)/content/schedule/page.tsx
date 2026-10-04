@@ -91,7 +91,8 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     view === "table"
       ? `${monthName(m).slice(0, 3)} – ${monthName(shiftMonth(m, 1)).slice(0, 3)} ${shiftMonth(m, 1).slice(0, 4)}`
       : `${monthName(m)} ${m.slice(0, 4)}`;
-  const addHref = `?new=1&kind=video&client=${client.id}${profile ? `&profile=${encodeURIComponent(profile)}` : ""}`;
+  // Keeps the month, view and profile, so closing the form lands back on the same schedule.
+  const addHref = href({ new: "1", kind: "video" });
 
   const picker = (
     <>

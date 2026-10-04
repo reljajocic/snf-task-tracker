@@ -21,7 +21,9 @@ export function TaskOverlays({ lookups, today }: { lookups: Lookups; today: IsoD
 
   const close = useCallback(() => {
     const next = new URLSearchParams(params);
-    for (const k of ["task", "new", "client", "project", "due", "status", "kind", "publish", "shoot", "profile"]) next.delete(k);
+    // `client` and `profile` stay: on the video bank, schedule and task list they're the page's own
+    // filter (the new-video form just borrows them as defaults), so closing must not reset the page.
+    for (const k of ["task", "new", "project", "due", "status", "kind", "publish", "shoot"]) next.delete(k);
     const qs = next.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [params, pathname, router]);

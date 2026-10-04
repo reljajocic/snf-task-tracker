@@ -87,7 +87,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
               content_type: contentType,
               on_camera: onCamera,
               location,
-              profile: client?.profiles.length ? profile || null : null,
+              profile: client?.profiles.includes(profile) ? profile : null,
               script: script.filter((s) => s.text.trim()),
               note,
               reference_url: reference,
