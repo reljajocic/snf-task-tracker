@@ -7,15 +7,17 @@ import type { ScriptSection } from "@/lib/tasks";
 // Lines starting with a known label begin a new section; anything before the first label
 // (or without labels at all, e.g. "Anketa.") becomes an unlabeled section.
 
-// A label may carry a hint before the colon: "HOOK (snimi sva tri):" or just "HOOK (snimi sva tri)".
-const LABEL = /^\s*(HOOK|LEAD|BODY(?:\s*\d+)?|OPEN\s*LOOP|CTA(?:\s*\d+)?|INTRO|OUTRO|TEXT|TEKST)\s*(?:(\([^)]*\))\s*:?|:)\s*/i;
+// A label may be numbered or plural ("CTA 2", "Open loop 1", "Hooks", "Hook opcije") and carry a hint
+// before the colon: "HOOK (snimi sva tri):" or just "HOOK (snimi sva tri)".
+const LABEL =
+  /^\s*((?:HOOKS?|LEAD|BODY|OPEN\s*LOOP|CTA|INTRO|OUTRO|TEXT|TEKST)(?:\s+(?:\d+|OPCIJE|OPTIONS))?)\s*(?:(\([^)]*\))\s*:?|:)\s*/i;
 
 export function textToSections(text: string): ScriptSection[] {
   const out: ScriptSection[] = [];
   for (const raw of text.replace(/\r\n/g, "\n").split("\n")) {
     const m = raw.match(LABEL);
     if (m) {
-      const label = m[1].replace(/\s+/g, " ").toUpperCase().replace(/^OPENLOOP$/, "OPEN LOOP");
+      const label = m[1].replace(/\s+/g, " ").toUpperCase().replace(/^OPENLOOP\b/, "OPEN LOOP");
       out.push({ label, text: [m[2], raw.slice(m[0].length)].filter(Boolean).join(" ") });
     } else if (out.length) {
       out[out.length - 1].text += `\n${raw}`;

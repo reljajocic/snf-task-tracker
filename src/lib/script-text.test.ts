@@ -19,6 +19,15 @@ describe("script text", () => {
     ]);
   });
 
+  it("reads numbered and plural labels", () => {
+    expect(textToSections("Hook opcije (snimamo sve 3): Prvi trening je besplatan.\nOpen loop 1: Prostor.\nOPENLOOP 2: Oprema.\nCTA 2: Dođi.")).toEqual([
+      { label: "HOOK OPCIJE", text: "(snimamo sve 3) Prvi trening je besplatan." },
+      { label: "OPEN LOOP 1", text: "Prostor." },
+      { label: "OPEN LOOP 2", text: "Oprema." },
+      { label: "CTA 2", text: "Dođi." },
+    ]);
+  });
+
   it("keeps unlabeled scripts as one section", () => {
     expect(textToSections("Anketa.")).toEqual([{ label: "", text: "Anketa." }]);
     expect(textToSections("Mušterija: Mogu li?\nPult: PRSNEŠ")).toEqual([{ label: "", text: "Mušterija: Mogu li?\nPult: PRSNEŠ" }]);

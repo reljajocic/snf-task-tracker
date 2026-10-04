@@ -222,7 +222,19 @@ export function ShootBoard({
                   {typeTag(v)}
                 </div>
                 <ScriptDecisionBadge decision={v.script_decision} full />
-                {scriptText(v) && <span className="text-[15px] leading-normal text-ink2">{scriptText(v)}</span>}
+                {v.script.some((sec) => sec.text.trim()) && (
+                  // Read on set: one block per part of the script (HOOK, OPEN LOOP 1, BODY, CTA…).
+                  <div className="flex flex-col gap-2.5">
+                    {v.script
+                      .filter((sec) => sec.text.trim())
+                      .map((sec, i) => (
+                        <div key={i} className="flex flex-col gap-1.5 border-l-2 border-accent/60 pl-3">
+                          {sec.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-accent">{sec.label}</span>}
+                          <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">{sec.text}</span>
+                        </div>
+                      ))}
+                  </div>
+                )}
                 {v.note && <span className="text-[13px] font-medium text-[var(--status-waiting)]">{v.note}</span>}
                 {v.reference_url && (
                   <a href={v.reference_url.startsWith("http") ? v.reference_url : `https://${v.reference_url}`} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-rust-ink">
