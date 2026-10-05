@@ -9,7 +9,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 
 type TaskInfo = { id: string; title: string; due_date: string | null; client: { name: string } | null };
 
-const FROM = process.env.NOTIFY_FROM ?? "Slate 'n' Frame <app@slatenframe.com>";
+const FROM = process.env.NOTIFY_FROM ?? "Slate n' Frame <app@slatenframe.com>";
 
 function siteUrl() {
   return (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
@@ -150,7 +150,7 @@ export async function emailClient(opts: { clientId: string; subject: string; hea
     let sent = 0;
     for (const p of people ?? []) {
       if (!p.email) continue;
-      if (await sendEmail(p.email, opts.subject, emailHtml(escapeHtml(opts.heading), opts.lines.map(escapeHtml), link, "Open", "", "Slate 'n' Frame"))) sent++;
+      if (await sendEmail(p.email, opts.subject, emailHtml(escapeHtml(opts.heading), opts.lines.map(escapeHtml), link, "Open", "", "Slate n' Frame"))) sent++;
     }
     return sent;
   } catch (e) {

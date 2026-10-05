@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "SNF Dailies",
     short_name: "SNF Dailies",
-    description: "Internal task tracker for the Slate 'n' Frame team.",
+    description: "Internal task tracker for the Slate n' Frame team.",
     start_url: "/",
     display: "standalone",
     background_color: "#2F2D2E",

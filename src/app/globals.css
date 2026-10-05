@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Slate 'n' Frame tokens — see docs/design/README.md ("Design tokeni").
+/* Slate n' Frame tokens — see docs/design/README.md ("Design tokeni").
    Dark is the default theme; light is opt-in via <html data-theme="light">.
    Surfaces are "liquid glass" like the cards on slatenframe.com (.snf-glass): translucent
    off-white over a dark canvas with a warm glow, a thin light edge and a soft sheen. */

@@ -22,7 +22,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   // One name on every page (owner's choice), no per-page titles.
   title: "SNF Dailies",
-  description: "Internal task tracker for the Slate 'n' Frame team.",
+  description: "Internal task tracker for the Slate n' Frame team.",
   appleWebApp: { capable: true, title: "SNF Dailies", statusBarStyle: "black-translucent" },
 };
 

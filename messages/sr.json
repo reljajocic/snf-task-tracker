@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Slate 'n' Frame",
+    "appName": "Slate n' Frame",
     "appSection": "Dailies",
     "newTask": "+ Novi zadatak",
     "save": "Sačuvaj",
@@ -50,7 +50,7 @@
   },
   "login": {
     "tagline": "Šta je danas na redu",
-    "intro": "Alat Slate 'n' Frame tima za zadatke, snimanja i objave.",
+    "intro": "Alat Slate n' Frame tima za zadatke, snimanja i objave.",
     "title": "Prijava",
     "lead": "Unesi email i poslaćemo ti link za prijavu. Lozinka nije potrebna.",
     "leadMobile": "Poslaćemo ti link za prijavu na email.",
@@ -58,7 +58,7 @@
     "send": "Pošalji link za prijavu",
     "sendShort": "Pošalji link",
     "sending": "Šaljem…",
-    "restricted": "Pristup imaju samo članovi Slate 'n' Frame tima.",
+    "restricted": "Pristup imaju samo članovi Slate n' Frame tima.",
     "notInvited": "Ovaj email nije u timu. Zatraži pozivnicu od admina.",
     "invalidEmail": "Unesi ispravnu email adresu.",
     "genericError": "Nešto nije u redu. Probaj ponovo za minut.",
@@ -702,7 +702,7 @@
     "back": "‹ Nazad na početnu",
     "review": "Pregledajte →",
     "script": "Skripta",
-    "fromTeam": "{name}, Slate 'n' Frame",
+    "fromTeam": "{name}, Slate n' Frame",
     "approve": "Odobri",
     "askChanges": "Zatraži izmene",
     "changesPlaceholder": "Šta treba promeniti? Možete navesti sekund, npr. „na 0:12 …“",
@@ -733,7 +733,7 @@
     "postsThisMonth": "Objave ovog meseca",
     "unavailable": "Ova stranica nije dostupna.",
     "notFoundTitle": "Link ne važi",
-    "notFoundText": "Ovaj link do portala više ne radi. Zatražite aktuelni od Slate 'n' Frame-a.",
+    "notFoundText": "Ovaj link do portala više ne radi. Zatražite aktuelni od Slate n' Frame-a.",
     "viewCalendar": "Kalendar",
     "viewList": "Lista"
   },

@@ -22,7 +22,7 @@ export function MobileTopBar({ profile }: { profile: Profile }) {
   return (
     <header className="flex items-center justify-between px-5 pb-1 pt-[max(14px,env(safe-area-inset-top))] lg:hidden">
       <Link href="/">
-        <img src="/brand/logo-off-white.png" alt="Slate 'n' Frame" className="h-[22px] [filter:var(--logo-filter)]" />
+        <img src="/brand/logo-off-white.png" alt="Slate n' Frame" className="h-[22px] [filter:var(--logo-filter)]" />
       </Link>
       <div ref={ref} className="relative flex items-center gap-2.5">
         <button type="button" aria-label={t("common.menu")} onClick={() => setOpen((o) => !o)} className="cursor-pointer rounded-full">

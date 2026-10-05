@@ -1,6 +1,6 @@
-# Slate 'n' Frame — task tracker
+# Slate n' Frame — task tracker
 
-Internal tool for the Slate 'n' Frame team: tasks, clients and (later) content
+Internal tool for the Slate n' Frame team: tasks, clients and (later) content
 planning, shoots and a client portal. The full product spec and the hi-fi
 prototype live in [`docs/design/`](docs/design/README.md).
 

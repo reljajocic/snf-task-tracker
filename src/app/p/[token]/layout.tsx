@@ -27,7 +27,7 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
     <div className="snf-canvas flex min-h-dvh flex-col text-ink">
       <header className="flex h-16 items-center gap-10 border-b border-line px-5 lg:h-[72px] lg:px-12">
         <div className="flex min-w-0 items-center gap-3.5">
-          <img src="/brand/logo-off-white.png" alt="Slate 'n' Frame" className="h-5 [filter:var(--logo-filter)] lg:h-6" />
+          <img src="/brand/logo-off-white.png" alt="Slate n' Frame" className="h-5 [filter:var(--logo-filter)] lg:h-6" />
           <span className="text-[16px] text-ink3">×</span>
           <span className="truncate text-[15px] font-semibold">{portal.clientName}</span>
         </div>

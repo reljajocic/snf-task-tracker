@@ -19,7 +19,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <div className="absolute inset-0 bg-[url(/brand/grain.png)] bg-[length:180px_180px] opacity-[0.09] mix-blend-overlay" />
         <img
           src="/brand/logo-off-white.png"
-          alt="Slate 'n' Frame"
+          alt="Slate n' Frame"
           className="relative hidden h-10 self-start lg:block"
         />
         <div className="relative hidden max-w-[420px] flex-col gap-4 lg:flex">
@@ -31,7 +31,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       {/* Form column */}
       <div className="relative flex min-h-dvh flex-col lg:items-center lg:justify-center lg:border-l lg:border-[rgba(244,243,237,0.12)] lg:bg-[rgba(244,243,237,0.045)] lg:p-14 lg:backdrop-blur-xl">
         <div className="px-7 pt-[76px] lg:hidden">
-          <img src="/brand/logo-off-white.png" alt="Slate 'n' Frame" className="h-[30px]" />
+          <img src="/brand/logo-off-white.png" alt="Slate n' Frame" className="h-[30px]" />
         </div>
         <div className="mt-auto w-full px-7 pb-11 lg:mt-0 lg:max-w-[400px] lg:p-0">
           <LoginForm initialError={error === "link" ? "linkExpired" : error === "inactive" ? "inactive" : null} />

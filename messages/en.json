@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Slate 'n' Frame",
+    "appName": "Slate n' Frame",
     "appSection": "Dailies",
     "newTask": "+ New task",
     "save": "Save",
@@ -50,7 +50,7 @@
   },
   "login": {
     "tagline": "What's on today",
-    "intro": "The Slate 'n' Frame team's tool for tasks, shoots and posts.",
+    "intro": "The Slate n' Frame team's tool for tasks, shoots and posts.",
     "title": "Sign in",
     "lead": "Enter your email and we'll send you a sign-in link. No password needed.",
     "leadMobile": "We'll email you a sign-in link.",
@@ -58,7 +58,7 @@
     "send": "Send sign-in link",
     "sendShort": "Send link",
     "sending": "Sending…",
-    "restricted": "Only Slate 'n' Frame team members have access.",
+    "restricted": "Only Slate n' Frame team members have access.",
     "notInvited": "This email isn't on the team. Ask the admin for an invite.",
     "invalidEmail": "Enter a valid email address.",
     "genericError": "Something went wrong. Try again in a minute.",
@@ -702,7 +702,7 @@
     "back": "‹ Back to home",
     "review": "Review →",
     "script": "Script",
-    "fromTeam": "{name}, Slate 'n' Frame",
+    "fromTeam": "{name}, Slate n' Frame",
     "approve": "Approve",
     "askChanges": "Request changes",
     "changesPlaceholder": "What should change? You can mention the second, e.g. “at 0:12 …”",
@@ -733,7 +733,7 @@
     "postsThisMonth": "Posts this month",
     "unavailable": "This page isn't available.",
     "notFoundTitle": "Link not valid",
-    "notFoundText": "This portal link doesn't work any more. Ask Slate 'n' Frame for the current one.",
+    "notFoundText": "This portal link doesn't work any more. Ask Slate n' Frame for the current one.",
     "viewCalendar": "Calendar",
     "viewList": "List"
   },

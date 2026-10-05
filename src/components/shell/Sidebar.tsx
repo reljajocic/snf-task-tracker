@@ -51,7 +51,7 @@ export function Sidebar({ profile, initialCollapsed }: { profile: Profile; initi
         <Link href="/" className="flex-none">
           <img
             src="/brand/logo-off-white.png"
-            alt="Slate 'n' Frame"
+            alt="Slate n' Frame"
             className={`[filter:var(--logo-filter)] ${collapsed ? "h-[15px]" : "h-[26px]"}`}
           />
         </Link>
