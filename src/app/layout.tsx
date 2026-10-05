@@ -23,11 +23,12 @@ export const metadata: Metadata = {
   // One name on every page (owner's choice), no per-page titles.
   title: "SNF Dailies",
   description: "Internal task tracker for the Slate n' Frame team.",
-  appleWebApp: { capable: true, title: "SNF Dailies", statusBarStyle: "black-translucent" },
+  appleWebApp: { capable: true, title: "SNF Dailies", statusBarStyle: "black" },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#2F2D2E",
+  // Matches the canvas so the (opaque) status bar blends in on installed apps.
+  themeColor: "#121011",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

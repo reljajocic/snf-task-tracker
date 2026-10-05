@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: LayoutProps<"/p/[token]">): P
     // Installed on a phone, the portal opens as its own app, straight on this client's portal.
     manifest: `/p/${token}/manifest.webmanifest`,
     title: portal ? `${portal.clientName} · Slate n' Frame` : "Slate n' Frame",
-    appleWebApp: { capable: true, title: portal?.clientName ?? "Slate n' Frame", statusBarStyle: "black-translucent" },
+    appleWebApp: { capable: true, title: portal?.clientName ?? "Slate n' Frame", statusBarStyle: "black" },
   };
 }
 
