@@ -8,13 +8,23 @@ const VIEW = 280; // the round window on screen
 const OUT = 256; // the saved image
 
 /**
- * Position a photo in the avatar circle: drag to move, slider to zoom. Returns a 256×256 WebP.
- * The image always covers the circle (no empty edges).
+ * Position a photo in the avatar circle: drag to move (any direction), slider to zoom (also out,
+ * smaller than the circle). Uncovered parts are filled with the avatar colour. Returns 256×256 WebP.
  */
-export function AvatarCropper({ file, onCancel, onDone }: { file: File; onCancel: () => void; onDone: (blob: Blob) => void }) {
+export function AvatarCropper({
+  file,
+  background = "#2F2D2E",
+  onCancel,
+  onDone,
+}: {
+  file: File;
+  background?: string;
+  onCancel: () => void;
+  onDone: (blob: Blob) => void;
+}) {
   const t = useTranslations("avatar");
   const [img, setImg] = useState<HTMLImageElement | null>(null);
-  const [zoom, setZoom] = useState(1); // 1 = just covers the circle
+  const [zoom, setZoom] = useState(1); // 1 = the short side fills the circle
   const [pos, setPos] = useState({ x: 0, y: 0 }); // image top-left inside the window
   const drag = useRef<{ px: number; py: number; x: number; y: number } | null>(null);
 
@@ -35,9 +45,10 @@ export function AvatarCropper({ file, onCancel, onDone }: { file: File; onCancel
   const scale = cover * zoom;
   const w = img.naturalWidth * scale;
   const h = img.naturalHeight * scale;
+  // Free movement, but a quarter of the photo always stays in the circle so it can't be lost.
   const clamp = (p: { x: number; y: number }, sw = w, sh = h) => ({
-    x: Math.min(0, Math.max(VIEW - sw, p.x)),
-    y: Math.min(0, Math.max(VIEW - sh, p.y)),
+    x: Math.min(VIEW - sw * 0.25, Math.max(sw * 0.25 - sw, p.x)),
+    y: Math.min(VIEW - sh * 0.25, Math.max(sh * 0.25 - sh, p.y)),
   });
   const at = clamp(pos);
 
@@ -53,7 +64,11 @@ export function AvatarCropper({ file, onCancel, onDone }: { file: File; onCancel
   const save = () => {
     const canvas = document.createElement("canvas");
     canvas.width = canvas.height = OUT;
-    canvas.getContext("2d")!.drawImage(img, -at.x / scale, -at.y / scale, VIEW / scale, VIEW / scale, 0, 0, OUT, OUT);
+    const ctx = canvas.getContext("2d")!;
+    const k = OUT / VIEW;
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, OUT, OUT);
+    ctx.drawImage(img, at.x * k, at.y * k, w * k, h * k);
     canvas.toBlob((b) => b && onDone(b), "image/webp", 0.88);
   };
 
@@ -62,8 +77,8 @@ export function AvatarCropper({ file, onCancel, onDone }: { file: File; onCancel
       <div className="flex w-full max-w-[360px] flex-col items-center gap-5 rounded-2xl border border-line2 bg-pop p-6 shadow-[var(--shadow-overlay)]" onClick={(e) => e.stopPropagation()}>
         <span className="display self-start text-[18px]">{t("cropTitle")}</span>
         <div
-          className="relative cursor-grab touch-none overflow-hidden rounded-full bg-chip active:cursor-grabbing"
-          style={{ width: VIEW, height: VIEW }}
+          className="relative cursor-grab touch-none overflow-hidden rounded-full active:cursor-grabbing"
+          style={{ width: VIEW, height: VIEW, background }}
           onPointerDown={(e) => {
             e.currentTarget.setPointerCapture(e.pointerId);
             drag.current = { px: e.clientX, py: e.clientY, x: at.x, y: at.y };
@@ -73,13 +88,13 @@ export function AvatarCropper({ file, onCancel, onDone }: { file: File; onCancel
             if (d) setPos(clamp({ x: d.x + e.clientX - d.px, y: d.y + e.clientY - d.py }));
           }}
           onPointerUp={() => (drag.current = null)}
-          onWheel={(e) => setZoomKeepingCenter(Math.min(4, Math.max(1, zoom - e.deltaY * 0.002)))}
+          onWheel={(e) => setZoomKeepingCenter(Math.min(4, Math.max(0.5, zoom - e.deltaY * 0.002)))}
         >
           <img src={img.src} alt="" draggable={false} className="pointer-events-none absolute max-w-none select-none" style={{ left: at.x, top: at.y, width: w, height: h }} />
         </div>
         <label className="flex w-full items-center gap-3 text-[13px] font-medium text-ink3">
           {t("zoom")}
-          <input type="range" min={1} max={4} step={0.01} value={zoom} onChange={(e) => setZoomKeepingCenter(Number(e.target.value))} className="flex-1 accent-[var(--accent)]" />
+          <input type="range" min={0.5} max={4} step={0.01} value={zoom} onChange={(e) => setZoomKeepingCenter(Number(e.target.value))} className="flex-1 accent-[var(--accent)]" />
         </label>
         <span className="-mt-2 self-start text-[12.5px] text-ink3">{t("cropHint")}</span>
         <div className="flex w-full justify-end gap-2">

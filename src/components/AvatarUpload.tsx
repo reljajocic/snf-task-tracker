@@ -37,7 +37,7 @@ export function AvatarUpload({ person, size = 56, compact = false }: { person: P
       if (!res.error) router.refresh();
     });
   };
-  const cropper = cropping && <AvatarCropper file={cropping} onCancel={() => setCropping(null)} onDone={upload} />;
+  const cropper = cropping && <AvatarCropper file={cropping} background={person.avatar_bg} onCancel={() => setCropping(null)} onDone={upload} />;
 
   const btn = "cursor-pointer text-[13px] font-medium disabled:opacity-50";
   if (compact) {
