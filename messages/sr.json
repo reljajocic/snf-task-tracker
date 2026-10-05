@@ -7,7 +7,10 @@
     "cancel": "Otkaži",
     "signOut": "Odjavi se",
     "comingNext": "Ovaj ekran stiže uskoro.",
-    "menu": "Meni"
+    "menu": "Meni",
+    "errorTitle": "Nešto nije u redu",
+    "errorText": "Ovaj deo stranice se nije učitao. Već smo obavešteni. Probaj ponovo, a ako se ponavlja, javi nam.",
+    "tryAgain": "Probaj ponovo"
   },
   "theme": {
     "toLight": "Svetla tema",

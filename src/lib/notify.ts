@@ -20,7 +20,7 @@ function escapeHtml(s: string) {
 }
 
 // Team emails carry the app's name; emails to clients carry the agency's.
-function emailHtml(heading: string, lines: string[], link: string, linkLabel: string, footer = "", brand = "SNF Dailies") {
+export function emailHtml(heading: string, lines: string[], link: string, linkLabel: string, footer = "", brand = "SNF Dailies") {
   const body = lines.map((l) => `<p style="margin:0 0 10px;font:400 15px/1.55 Arial,sans-serif;color:#C9C7C1">${l}</p>`).join("");
   return `<!doctype html><html><body style="margin:0;background:#1C1A1B">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#1C1A1B;padding:32px 16px"><tr><td align="center">
@@ -33,7 +33,7 @@ ${footer ? `<tr><td style="padding-top:26px;font:400 12px/1.5 Arial,sans-serif;c
 </table></td></tr></table></body></html>`;
 }
 
-async function sendEmail(to: string, subject: string, html: string) {
+export async function sendEmail(to: string, subject: string, html: string) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.warn(`[notify] RESEND_API_KEY not set; skipped email to ${to}: ${subject}`);

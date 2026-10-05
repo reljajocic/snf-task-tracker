@@ -303,6 +303,15 @@ describe("content module", () => {
   });
 });
 
+describe("app errors", () => {
+  it("only the admin reads reported errors; nobody writes them through the API", async () => {
+    await db.query("insert into public.app_errors (source, message) values ('server', 'boom')");
+    expect(await as(ADMIN, "select message from public.app_errors")).toEqual([{ message: "boom" }]);
+    expect(await as(MEMBER, "select message from public.app_errors")).toEqual([]);
+    await expect(as(MEMBER, "insert into public.app_errors (source, message) values ('browser', 'x')")).rejects.toThrow(/permission denied|row-level security/);
+  });
+});
+
 describe("client portal", () => {
   it("only managers configure the portal; nobody writes approvals through the API", async () => {
     await expect(as(MEMBER, "insert into public.client_portals (client_id, enabled) values ($1, true)", [C1])).rejects.toThrow(
