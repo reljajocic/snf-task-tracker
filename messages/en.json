@@ -698,6 +698,7 @@
       "published": "Published",
       "awaiting": "Waiting for your approval",
       "ready": "Ready to publish",
+      "editing": "In editing",
       "preparing": "In preparation"
     },
     "back": "‹ Back to home",

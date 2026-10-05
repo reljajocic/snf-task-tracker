@@ -80,7 +80,10 @@ export function portalStatus(v: PortalVideo): PortalStatus {
   if (v.phase >= 5) return "published";
   const latest = v.versions[0];
   if (latest && !latest.decision) return "awaiting";
-  if (latest?.decision?.status === "approved" || v.shot_status === "shot" || v.phase >= 2) return "ready";
+  // Ready = the client approved the cut, or it's in the publish step.
+  if (latest?.decision?.status === "approved" || v.phase >= 4) return "ready";
+  // Filmed and being edited (or reworked after the client asked for changes).
+  if (v.shot_status === "shot" || v.phase >= 2) return "editing";
   return "preparing";
 }
 

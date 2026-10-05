@@ -6,7 +6,17 @@ import PortalNotFound from "./not-found";
 import { PortalLang } from "./PortalLang";
 import { PortalNav, type PortalTab } from "./PortalNav";
 
-export const metadata: Metadata = { robots: { index: false, follow: false } };
+export async function generateMetadata({ params }: LayoutProps<"/p/[token]">): Promise<Metadata> {
+  const { token } = await params;
+  const portal = await getPortal(token);
+  return {
+    robots: { index: false, follow: false },
+    // Installed on a phone, the portal opens as its own app, straight on this client's portal.
+    manifest: `/p/${token}/manifest.webmanifest`,
+    title: portal ? `${portal.clientName} · Slate n' Frame` : "Slate n' Frame",
+    appleWebApp: { capable: true, title: portal?.clientName ?? "Slate n' Frame", statusBarStyle: "black-translucent" },
+  };
+}
 
 // 7a header: logo × client name, tabs (underlined active), same tabs at the bottom on mobile.
 export default async function PortalLayout({ children, params }: LayoutProps<"/p/[token]">) {
@@ -25,7 +35,7 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
 
   return (
     <div className="snf-canvas flex min-h-dvh flex-col text-ink">
-      <header className="flex h-16 items-center gap-10 border-b border-line px-5 lg:h-[72px] lg:px-12">
+      <header className="flex min-h-16 items-center gap-10 border-b border-line px-5 pt-[env(safe-area-inset-top)] lg:h-[72px] lg:px-12">
         <div className="flex min-w-0 items-center gap-3.5">
           <img src="/brand/logo-off-white.png" alt="Slate n' Frame" className="h-5 [filter:var(--logo-filter)] lg:h-6" />
           <span className="text-[16px] text-ink3">×</span>
