@@ -101,7 +101,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
       <PageHeader title={t("home.title")} eyebrow={eyebrow} border actions={oversees ? <span className="hidden lg:flex"><Segmented items={toggle} /></span> : undefined} />
 
       {/* Mobile */}
-      <div className="flex flex-col gap-7 px-5 pb-[120px] lg:hidden">
+      <div className="flex flex-col gap-7 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:hidden">
         {oversees && <Segmented items={toggle} full size="lg" />}
         <PeopleStats stats={people} compact />
         <section className="flex flex-col gap-3">

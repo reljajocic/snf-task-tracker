@@ -6,13 +6,13 @@ import { useTranslations } from "next-intl";
 import { NAV_ICONS } from "./icons";
 import { MOBILE_NAV, isActive } from "./nav";
 
-/** Mobile bottom bar, 84px: orange 18×3 marker, icon and label; the active tab is accented. */
+/** Mobile bottom bar, 68px + the home-indicator area: orange 18×3 marker, icon and label; the active tab is accented. */
 export function MobileNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[84px] border-t border-line bg-side pb-[env(safe-area-inset-bottom)] lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[calc(68px+env(safe-area-inset-bottom))] border-t border-line bg-side pb-[env(safe-area-inset-bottom)] lg:hidden">
       {MOBILE_NAV.map((item) => {
         const active = isActive(pathname, item);
         return (

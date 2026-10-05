@@ -69,7 +69,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
       </div>
 
       {/* Mobile cards (6c) */}
-      <div className="flex flex-col gap-2.5 px-5 pb-[120px] pt-4 lg:hidden">
+      <div className="flex flex-col gap-2.5 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 lg:hidden">
         {rows.map(({ client: c, open, late }) => (
           <Link key={c.id} href={`/clients/${c.id}`} className="flex items-center gap-3 rounded-[10px] border border-line bg-surf p-4">
             <ClientMark client={c} />

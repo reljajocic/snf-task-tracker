@@ -50,7 +50,7 @@ export default async function TaskListPage({ searchParams }: PageProps<"/tasks">
       </Suspense>
 
       {/* Mobile cards */}
-      <div className="flex flex-col gap-2.5 px-5 pb-[120px] lg:hidden">
+      <div className="flex flex-col gap-2.5 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:hidden">
         {rows.map((x) => (
           <TaskCardMobile key={x.id} task={x} today={today} />
         ))}

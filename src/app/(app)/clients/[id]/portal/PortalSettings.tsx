@@ -60,7 +60,7 @@ export function PortalSettings({
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-6 px-5 pb-[120px] lg:grid-cols-2 lg:px-10 lg:pb-12">
+    <div className="grid grid-cols-1 gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:grid-cols-2 lg:px-10 lg:pb-12">
       <div className="flex flex-col gap-6">
         <section className={card}>
           <div className="flex items-center justify-between">

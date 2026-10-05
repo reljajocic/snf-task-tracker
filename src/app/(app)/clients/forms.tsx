@@ -36,7 +36,7 @@ function FormShell({
   footer: React.ReactNode;
 }) {
   return (
-    <div className="flex max-w-[760px] flex-col gap-6 px-5 pb-[120px] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
+    <div className="flex max-w-[760px] flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
       <Link href={backHref} className="text-[14px] font-medium text-ink3 hover:text-ink">‹</Link>
       <h1 className="display text-[30px] lg:text-[40px]">{title}</h1>
       <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">{children}</div>

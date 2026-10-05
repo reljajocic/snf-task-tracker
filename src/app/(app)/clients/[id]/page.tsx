@@ -96,7 +96,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
         )}
       </nav>
 
-      <div className="grid grid-cols-1 items-start gap-9 px-5 pb-[120px] pt-7 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10 lg:px-10 lg:pb-10 wide:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid grid-cols-1 items-start gap-9 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-7 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10 lg:px-10 lg:pb-10 wide:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex flex-col gap-9">
           <section className="flex flex-col gap-3.5">
             <div className="flex items-center justify-between">

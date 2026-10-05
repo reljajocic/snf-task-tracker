@@ -243,7 +243,7 @@ export function ShootBoard({
 
 
       {/* Mobile: on set (2e) */}
-      <div className="flex flex-col gap-[22px] px-5 pb-[120px] pt-5 lg:hidden">
+      <div className="flex flex-col gap-[22px] px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-5 lg:hidden">
         <CallTimes times={deriveCallTimes(items)} />
         {nowSlot && (
           <div className="flex flex-col gap-3">

@@ -99,7 +99,7 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
             </button>
           ))}
         </div>
-        <div className="flex flex-col gap-2.5 px-5 pb-[120px]">
+        <div className="flex flex-col gap-2.5 px-5 pb-[calc(120px+env(safe-area-inset-bottom))]">
           {active.cards.length ? (
             active.cards.map((x) => <KanbanCard key={x.id} task={x} today={today} mobile />)
           ) : (

@@ -46,7 +46,7 @@ export function NewTaskButton() {
   );
 }
 
-/** Mobile FAB: 64×64 rust circle, 20px from the right, 100px from the bottom. */
+/** Mobile FAB: 64×64 rust circle, 20px from the right, just above the bottom bar (and the home indicator). */
 export function NewTaskFab() {
   const t = useTranslations("common");
   const href = useOverlayHref();
@@ -55,7 +55,7 @@ export function NewTaskFab() {
       href={href({ new: "1", task: null })}
       scroll={false}
       aria-label={t("newTask")}
-      className="fixed bottom-[100px] right-5 z-30 flex size-16 items-center justify-center rounded-full bg-accent text-[30px] font-light text-charcoal shadow-[0_10px_30px_rgba(0,0,0,0.35)] lg:hidden"
+      className="fixed bottom-[calc(84px+env(safe-area-inset-bottom))] right-5 z-30 flex size-16 items-center justify-center rounded-full bg-accent text-[30px] font-light text-charcoal shadow-[0_10px_30px_rgba(0,0,0,0.35)] lg:hidden"
     >
       +
     </Link>

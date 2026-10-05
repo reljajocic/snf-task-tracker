@@ -32,7 +32,7 @@ export function ShootForm({ clients, people, shoot, defaultDate }: { clients: Cl
   const label = (s: string) => <span className="text-[13px] font-medium text-ink3">{s}</span>;
 
   return (
-    <form action={action} className="flex max-w-[760px] flex-col gap-6 px-5 pb-[120px] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
+    <form action={action} className="flex max-w-[760px] flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
       {shoot && <input type="hidden" name="id" value={shoot.id} />}
       {crew.map((c) => <input key={c} type="hidden" name="crew" value={c} />)}
       <Link href={back} className="text-[14px] font-medium text-ink3 hover:text-ink">‹</Link>

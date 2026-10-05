@@ -16,7 +16,7 @@ export default async function SettingsPage() {
   return (
     <>
       <PageHeader title={t("title")} newTask={false} />
-      <div className="flex max-w-[760px] flex-col gap-10 px-5 pb-[120px] lg:px-10 lg:pb-12">
+      <div className="flex max-w-[760px] flex-col gap-10 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:px-10 lg:pb-12">
         <section className="flex flex-col gap-3.5">
           <h2 className="display text-[20px]">{t("profile")}</h2>
           <ProfileForm profile={me} />

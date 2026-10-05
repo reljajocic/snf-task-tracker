@@ -35,7 +35,7 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
 
   return (
     <div className="snf-canvas flex min-h-dvh flex-col text-ink">
-      <header className="flex min-h-16 items-center gap-10 border-b border-line px-5 pt-[env(safe-area-inset-top)] lg:h-[72px] lg:px-12">
+      <header className="sticky top-0 z-20 flex min-h-16 items-center gap-10 border-b border-line bg-side px-5 pt-[env(safe-area-inset-top)] lg:static lg:h-[72px] lg:bg-transparent lg:px-12">
         <div className="flex min-w-0 items-center gap-3.5">
           <img src="/brand/logo-off-white.png" alt="Slate n' Frame" className="h-5 [filter:var(--logo-filter)] lg:h-6" />
           <span className="text-[16px] text-ink3">×</span>
@@ -47,7 +47,7 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
         </div>
       </header>
       <NextIntlClientProvider locale={portal.locale} messages={messages}>
-        <main className="flex flex-1 flex-col pb-[84px] lg:pb-0">{children}</main>
+        <main className="flex flex-1 flex-col pb-[calc(76px+env(safe-area-inset-bottom))] lg:pb-0">{children}</main>
       </NextIntlClientProvider>
       <PortalNav tabs={tabs} variant="bottom" />
     </div>

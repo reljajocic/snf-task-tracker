@@ -76,7 +76,7 @@ export function ScheduleTable({
     unscheduled.length > 0 && <AssignPicker videos={unscheduled} onPick={(id) => assign(id, date)} />;
 
   return (
-    <div className="flex flex-col pb-[120px] lg:pb-12">
+    <div className="flex flex-col pb-[calc(120px+env(safe-area-inset-bottom))] lg:pb-12">
       <div className="flex flex-wrap items-center gap-2.5 border-b border-line px-5 pb-[18px] lg:px-10">
         {clientPicker}
         <span className="mx-1 hidden h-5 w-px bg-line2 sm:block" />

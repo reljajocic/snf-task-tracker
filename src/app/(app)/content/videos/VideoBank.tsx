@@ -82,7 +82,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   };
 
   return (
-    <div className="flex flex-col gap-4 px-5 pb-[120px] pt-5 lg:px-10 lg:pb-12">
+    <div className="flex flex-col gap-4 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-5 lg:px-10 lg:pb-12">
       <div className="flex flex-wrap items-center gap-2">
         <input
           value={q}

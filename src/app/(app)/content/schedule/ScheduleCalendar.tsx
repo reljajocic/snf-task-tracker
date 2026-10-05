@@ -80,7 +80,7 @@ export function ScheduleCalendar({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-6 px-5 pb-[120px] pt-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:px-10 lg:pb-10">
+    <div className="grid grid-cols-1 gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:px-10 lg:pb-10">
       <div className="flex flex-col">
         <div className="grid grid-cols-[28px_repeat(7,minmax(0,1fr))] pb-2 text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-ink3">
           <span />

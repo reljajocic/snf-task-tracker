@@ -20,7 +20,7 @@ export function MobileTopBar({ profile }: { profile: Profile }) {
   }, [open]);
 
   return (
-    <header className="flex items-center justify-between px-5 pb-1 pt-[max(14px,env(safe-area-inset-top))] lg:hidden">
+    <header className="sticky top-0 z-20 flex items-center justify-between bg-side px-5 pb-2.5 pt-[max(12px,calc(env(safe-area-inset-top)+8px))] lg:hidden">
       <Link href="/">
         <img src="/brand/logo-off-white.png" alt="Slate n' Frame" className="h-[22px] [filter:var(--logo-filter)]" />
       </Link>

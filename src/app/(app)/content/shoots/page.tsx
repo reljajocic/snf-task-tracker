@@ -75,7 +75,7 @@ export default async function ShootsPage({ searchParams }: PageProps<"/content/s
           </Suspense>
         </div>
       )}
-      <div className="flex flex-col gap-9 px-5 pb-[120px] lg:px-10 lg:pb-12">
+      <div className="flex flex-col gap-9 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:px-10 lg:pb-12">
         <section className="flex flex-col gap-3.5">
           <h2 className="display text-[19px] lg:text-[20px]">{t("shoots.upcoming")}</h2>
           {upcoming.length ? (
