@@ -25,6 +25,7 @@ export function VideoSection({
   disabled,
   save,
   onChanged,
+  part = "all",
 }: {
   task: Task;
   lookups: Lookups;
@@ -32,7 +33,10 @@ export function VideoSection({
   disabled: boolean;
   save: Save;
   onChanged: () => void;
+  /** The task window shows settings on the left ("fields") and the script and notes on the right ("text"). */
+  part?: "all" | "fields" | "text";
 }) {
+  const show = (p: "fields" | "text") => part === "all" || part === p;
   const t = useTranslations();
   const phase = task.phase ?? 0;
   const client = lookups.clients.find((c) => c.id === task.client?.id);
@@ -41,6 +45,8 @@ export function VideoSection({
 
   return (
     <div className="flex flex-col gap-[26px]">
+      {show("fields") && (
+      <>
       {/* Phase stepper */}
       <div className="flex flex-col gap-3.5 rounded-lg border border-line bg-surf px-5 py-[18px]">
         <div className="flex items-center justify-between">
@@ -182,7 +188,11 @@ export function VideoSection({
       <Subtasks task={task} lookups={lookups} disabled={disabled} onChanged={onChanged} />
 
       <ReviewSection task={task} disabled={disabled} onChanged={onChanged} />
+      </>
+      )}
 
+      {show("text") && (
+      <>
       <ScriptEditor task={task} disabled={disabled} save={save} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -215,6 +225,8 @@ export function VideoSection({
           </div>
         </label>
       </div>
+      </>
+      )}
     </div>
   );
 }
