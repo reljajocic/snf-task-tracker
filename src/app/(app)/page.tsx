@@ -4,19 +4,22 @@ import { RowList, TaskCardMobile, TaskRow, TaskRowMobile, WaitingCard } from "@/
 import { Avatar } from "@/components/ui/Avatar";
 import { Segmented } from "@/components/ui/Segmented";
 import { requireProfile } from "@/lib/auth";
+import { getShootDays, type ShootDay } from "@/lib/content";
 import { getLookups, getTasks } from "@/lib/data";
+import { ShootEvent } from "@/components/tasks/ShootEvent";
 import { addDays, formatDate, formatShortDate, today as getToday, weekdayIndex } from "@/lib/dates";
 import { byDue, taskOverdue, type Task } from "@/lib/tasks";
 
 // 1a / 1b. What Home shows: members their own tasks; a client's managers all of that client's work;
 // the admin everything. "Mine / All" (for those who oversee) narrows the sections to their own.
 export default async function HomePage({ searchParams }: PageProps<"/">) {
-  const [{ scope }, me, tasks, lookups, t] = await Promise.all([
+  const [{ scope }, me, tasks, lookups, t, allShoots] = await Promise.all([
     searchParams,
     requireProfile(),
     getTasks(),
     getLookups(),
     getTranslations(),
+    getShootDays(),
   ]);
   const today = getToday();
   // Admins and managers oversee others' work, so they land on "All"; members on "Mine".
@@ -27,6 +30,13 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
   const mineOnly = !oversees || scope === "mine";
   const scoped = mineOnly ? visible.filter(isMine) : visible;
 
+  // Shoot days are work too: yours if you're on the crew, or the client is yours to run.
+  const myShoots = allShoots.filter(
+    (s) => lookups.me.isAdmin || s.crew.some((c) => c.id === me.id) || (!mineOnly && s.client !== null && managed.has(s.client.id)),
+  );
+  const shootsToday = myShoots.filter((s) => s.date === today);
+  const shootLabel = t("shoots.shootDay");
+
   const lateAndToday = scoped
     .filter((x) => x.status !== "waiting_client" && x.due_date && x.due_date <= today)
     .sort(byDue);
@@ -36,16 +46,18 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
   const week = scoped
     .filter((x) => x.status !== "waiting_client" && x.due_date && x.due_date > today && x.due_date <= weekEnd)
     .sort(byDue);
-  const groups: { date: string; label: string; items: Task[] }[] = [];
-  for (const x of week) {
-    const d = x.due_date!;
+  const groups: { date: string; label: string; items: Task[]; shoots: ShootDay[] }[] = [];
+  const groupFor = (d: string) => {
     let g = groups.find((g) => g.date === d);
     if (!g) {
-      g = { date: d, label: `${t("weekday.long", { day: String(weekdayIndex(d)) })}, ${formatShortDate(d)}`, items: [] };
+      g = { date: d, label: `${t("weekday.long", { day: String(weekdayIndex(d)) })}, ${formatShortDate(d)}`, items: [], shoots: [] };
       groups.push(g);
     }
-    g.items.push(x);
-  }
+    return g;
+  };
+  for (const x of week) groupFor(x.due_date!).items.push(x);
+  for (const s of myShoots.filter((s) => s.date > today && s.date <= weekEnd)) groupFor(s.date).shoots.push(s);
+  groups.sort((a, b) => a.date.localeCompare(b.date));
 
   // Open tasks without a deadline would otherwise appear nowhere on Home.
   const noDeadline = scoped
@@ -97,7 +109,10 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
             {sectionTitle(t("home.todayLate"))}
             <span className="whitespace-nowrap text-[13px] font-semibold text-red-ink">{lateSummary}</span>
           </div>
-          {lateAndToday.length ? lateAndToday.map((x) => <TaskCardMobile key={x.id} task={x} today={today} />) : empty(t("home.nothingToday"))}
+          {shootsToday.map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} />)}
+          {lateAndToday.length
+            ? lateAndToday.map((x) => <TaskCardMobile key={x.id} task={x} today={today} />)
+            : !shootsToday.length && empty(t("home.nothingToday"))}
         </section>
         <section className="flex flex-col gap-3">
           {sectionTitle(t("home.thisWeek"))}
@@ -105,6 +120,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
             ? groups.map((g) => (
                 <div key={g.date} className="flex flex-col gap-2">
                   <div className="eyebrow pt-1 text-[12px]">{g.label}</div>
+                  {g.shoots.map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} />)}
                   {g.items.map((x) => <TaskRowMobile key={x.id} task={x} />)}
                 </div>
               ))
@@ -147,10 +163,11 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
               {sectionTitle(t("home.todayLate"))}
               <span className="whitespace-nowrap text-[13px] font-semibold text-red-ink">{lateSummary}</span>
             </div>
+            {shootsToday.map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} />)}
             {lateAndToday.length ? (
               <RowList>{lateAndToday.map((x) => <TaskRow key={x.id} task={x} today={today} />)}</RowList>
             ) : (
-              empty(t("home.nothingToday"))
+              !shootsToday.length && empty(t("home.nothingToday"))
             )}
           </section>
           <section className="flex flex-col gap-3.5">
@@ -165,7 +182,8 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
                 {groups.map((g) => (
                   <div key={g.date} className="flex flex-col gap-2">
                     <div className="eyebrow text-[12px]">{g.label}</div>
-                    <RowList>{g.items.map((x) => <TaskRow key={x.id} task={x} today={today} plainDate />)}</RowList>
+                    {g.shoots.map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} />)}
+                    {g.items.length > 0 && <RowList>{g.items.map((x) => <TaskRow key={x.id} task={x} today={today} plainDate />)}</RowList>}
                   </div>
                 ))}
               </div>

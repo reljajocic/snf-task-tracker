@@ -1,3 +1,5 @@
+import { ShootEvent } from "@/components/tasks/ShootEvent";
+import { getShootDays } from "@/lib/content";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
@@ -22,7 +24,7 @@ function shiftMonth(d: IsoDate, delta: number): IsoDate {
 
 // 5c / 5d. URL: ?view=month|week&d=<anchor>&day=<selected day (mobile list)>
 export default async function CalendarPage({ searchParams }: PageProps<"/calendar">) {
-  const [params, tasks, t] = await Promise.all([searchParams, getTasks({ includeDone: true }), getTranslations()]);
+  const [params, tasks, t, shoots] = await Promise.all([searchParams, getTasks({ includeDone: true }), getTranslations(), getShootDays()]);
   const today = getToday();
   const view = params.view === "week" ? "week" : "month";
   const anchor = typeof params.d === "string" && DATE_RE.test(params.d) ? params.d : today;
@@ -35,6 +37,9 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
   }
   for (const list of byDay.values()) list.sort(byDue);
   const on = (d: IsoDate) => byDay.get(d) ?? [];
+  // Shoot days sit on the calendar with the tasks (they're work too).
+  const shootsOn = (d: IsoDate) => shoots.filter((s) => s.date === d);
+  const shootLabel = t("shoots.shootDay");
 
   // Month grid: Monday on/before the 1st, through the Sunday on/after the last day.
   const first = monthStart(anchor);
@@ -112,6 +117,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                   <span className={`text-[11px] font-semibold uppercase ${sel ? "" : "text-ink3"}`}>{t("weekday.short", { day: String(weekdayIndex(d)) })}</span>
                   <span className="text-[17px] font-semibold">{Number(d.slice(8, 10))}</span>
                   <span className="flex h-1.5 gap-0.5">
+                    {shootsOn(d).length > 0 && <span className="size-1.5 rounded-full bg-accent ring-2 ring-rust-bg" />}
                     {on(d).slice(0, 3).map((x) => <span key={x.id} className="size-1.5 rounded-full" style={{ background: PRIORITY_COLOR[x.priority] }} />)}
                   </span>
                 </Link>
@@ -132,7 +138,8 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                       {Number(d.slice(8, 10))}
                     </span>
                     <span className="flex h-1.5 gap-0.5">
-                      {on(d).slice(0, 3).map((x) => <span key={x.id} className="size-1.5 rounded-full" style={{ background: PRIORITY_COLOR[x.priority] }} />)}
+                      {shootsOn(d).length > 0 && <span className="size-1.5 rounded-full bg-accent ring-2 ring-rust-bg" />}
+                    {on(d).slice(0, 3).map((x) => <span key={x.id} className="size-1.5 rounded-full" style={{ background: PRIORITY_COLOR[x.priority] }} />)}
                     </span>
                   </Link>
                 );
@@ -143,10 +150,11 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
         <h2 className="display pt-2 text-[17px]">
           {t("weekday.long", { day: String(weekdayIndex(selected)) })}, {formatDate(selected)}
         </h2>
+        {shootsOn(selected).map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} />)}
         {selectedTasks.length ? (
           selectedTasks.map((x) => <TaskCardMobile key={x.id} task={x} today={today} />)
         ) : (
-          <p className="text-[14px] text-ink3">{t("calendar.nothingThatDay")}</p>
+          !shootsOn(selected).length && <p className="text-[14px] text-ink3">{t("calendar.nothingThatDay")}</p>
         )}
       </div>
 
@@ -167,6 +175,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                     </span>
                     {weekdayIndex(d) === 0 && <span className="pr-1 text-[10.5px] font-semibold text-ink3">{t("calendar.weekShort", { n: isoWeek(d) })}</span>}
                   </div>
+                  {shootsOn(d).map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} variant="chip" />)}
                   {list.slice(0, 4).map((x) => {
                     const late = dueTone(x, today) === "late";
                     const done = x.status === "done";
@@ -199,6 +208,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                     </span>
                     <span className="ml-auto text-[12px] font-medium text-ink3">{list.length}</span>
                   </div>
+                  {shootsOn(d).map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} variant="chip" />)}
                   {list.map((x) => {
                     const late = dueTone(x, today) === "late";
                     const done = x.status === "done";
@@ -213,7 +223,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                       </TaskLink>
                     );
                   })}
-                  {!list.length && <span className="px-1 py-1.5 text-[12.5px] text-ink3">{t("calendar.noDeadlines")}</span>}
+                  {!list.length && !shootsOn(d).length && <span className="px-1 py-1.5 text-[12.5px] text-ink3">{t("calendar.noDeadlines")}</span>}
                 </div>
               );
             })}

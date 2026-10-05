@@ -600,7 +600,8 @@
     "signupOff": "Isključi link za prijavu",
     "signupHint": "Pošalji ga ljudima kod klijenta: upisuju ime pored videa koje snimaju (bez prijave).",
     "noTime": "Bez vremena",
-    "noPerson": "Još niko"
+    "noPerson": "Još niko",
+    "shootDay": "Snimanje"
   },
   "portalSettings": {
     "title": "Portal za klijenta",

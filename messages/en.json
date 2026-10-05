@@ -600,7 +600,8 @@
     "signupOff": "Turn off sign-up link",
     "signupHint": "Send it to people at the client: they write their name next to the videos they'll film (no login).",
     "noTime": "No time",
-    "noPerson": "Nobody yet"
+    "noPerson": "Nobody yet",
+    "shootDay": "Shoot"
   },
   "portalSettings": {
     "title": "Client portal",
