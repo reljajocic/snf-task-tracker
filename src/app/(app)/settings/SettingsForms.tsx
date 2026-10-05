@@ -11,17 +11,18 @@ import { NOTIFICATION_EVENTS, isEnabled, type NotificationEvent, type Preference
 import { LOCALES, LOCALE_NAME, type Locale } from "@/lib/locale";
 import { THEMES, THEME_COOKIE, type Theme } from "@/lib/theme";
 import { saveTheme } from "@/components/shell/actions";
+import { inkOn } from "@/lib/color";
 import { AVATAR_COLORS } from "@/lib/team";
 import { saveProfile, setLanguage, setPreference } from "./actions";
 
 export function ProfileForm({ profile }: { profile: Profile }) {
   const t = useTranslations("settings");
   const [state, action, pending] = useActionState(saveProfile, null);
-  const initialColor = Math.max(0, AVATAR_COLORS.findIndex((c) => c.bg.toLowerCase() === profile.avatar_bg.toLowerCase()));
-  const [color, setColor] = useState(initialColor);
+  const [color, setColor] = useState(profile.avatar_bg);
+  const preset = AVATAR_COLORS.some((c) => c.bg.toLowerCase() === color.toLowerCase());
   const [name, setName] = useState(profile.full_name);
   const [initials, setInitials] = useState(profile.initials);
-  const preview = { ...profile, full_name: name, initials: initials || name.charAt(0).toUpperCase(), avatar_bg: AVATAR_COLORS[color].bg, avatar_fg: AVATAR_COLORS[color].fg };
+  const preview = { ...profile, full_name: name, initials: initials || name.charAt(0).toUpperCase(), avatar_bg: color, avatar_fg: inkOn(color) };
 
   return (
     <form action={action} className="flex flex-col gap-4 rounded-lg border border-line bg-surf p-6">
@@ -41,12 +42,24 @@ export function ProfileForm({ profile }: { profile: Profile }) {
       </div>
       <fieldset className="flex flex-col gap-2">
         <legend className="eyebrow mb-2">{t("color")}</legend>
-        <input type="hidden" name="color" value={color} />
-        <div className="flex flex-wrap gap-2">
-          {AVATAR_COLORS.map((c, i) => (
-            <button key={c.bg} type="button" aria-label={c.bg} aria-pressed={color === i} onClick={() => setColor(i)}
-              className={`size-7 cursor-pointer rounded-full ring-offset-2 ring-offset-[var(--surf)] ${color === i ? "ring-2 ring-accent" : ""}`} style={{ background: c.bg }} />
-          ))}
+        <input type="hidden" name="avatar_bg" value={color} />
+        <div className="flex flex-wrap items-center gap-2">
+          {AVATAR_COLORS.map((c) => {
+            const on = color.toLowerCase() === c.bg.toLowerCase();
+            return (
+              <button key={c.bg} type="button" aria-label={c.bg} aria-pressed={on} onClick={() => setColor(c.bg)}
+                className={`size-7 cursor-pointer rounded-full ring-offset-2 ring-offset-[var(--surf)] ${on ? "ring-2 ring-accent" : ""}`} style={{ background: c.bg }} />
+            );
+          })}
+          {/* Any colour: the swatch shows the custom pick once there is one. */}
+          <label
+            title={t("customColor")}
+            className={`relative grid size-7 cursor-pointer place-items-center overflow-hidden rounded-full ring-offset-2 ring-offset-[var(--surf)] ${!preset ? "ring-2 ring-accent" : ""}`}
+            style={{ background: preset ? "conic-gradient(#ea693a, #d6a93e, #6fae7b, #4fa3a5, #5b8ec2, #9a7fd1, #ea693a)" : color }}
+          >
+            {preset && <span className="grid size-4 place-items-center rounded-full bg-[var(--surf)] text-[11px] text-ink2">+</span>}
+            <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0" />
+          </label>
         </div>
       </fieldset>
       <div className="flex items-center justify-end gap-3">

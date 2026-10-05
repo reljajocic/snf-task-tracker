@@ -6,13 +6,13 @@ import { LOCALE_COOKIE, LOCALE_COOKIE_OPTIONS, parseLocale } from "@/lib/locale"
 import { requireProfile } from "@/lib/auth";
 import { NOTIFICATION_CHANNELS, NOTIFICATION_EVENTS, type NotificationChannel, type NotificationEvent } from "@/lib/notifications";
 import { createClient } from "@/lib/supabase/server";
-import { AVATAR_COLORS } from "@/lib/team";
+import { inkOn, isHexColor } from "@/lib/color";
 
 export async function saveProfile(_prev: { ok: boolean; error?: string } | null, form: FormData) {
   const me = await requireProfile();
   const fullName = String(form.get("full_name") ?? "").trim();
   const initials = String(form.get("initials") ?? "").trim().toUpperCase().slice(0, 2);
-  const color = AVATAR_COLORS[Number(form.get("color"))];
+  const bg = form.get("avatar_bg");
   if (!fullName) return { ok: false, error: "Name is required." };
 
   const supabase = await createClient();
@@ -21,7 +21,7 @@ export async function saveProfile(_prev: { ok: boolean; error?: string } | null,
     .update({
       full_name: fullName,
       initials: initials || fullName.charAt(0).toUpperCase(),
-      ...(color ? { avatar_bg: color.bg, avatar_fg: color.fg } : {}),
+      ...(isHexColor(bg) ? { avatar_bg: bg, avatar_fg: inkOn(bg) } : {}),
     })
     .eq("id", me.id);
   if (error) return { ok: false, error: error.message };

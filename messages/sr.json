@@ -417,7 +417,8 @@
         "title": "Klijent traži izmene",
         "hint": "Klijent traži izmene na videu ili skripti na kojoj si."
       }
-    }
+    },
+    "customColor": "Izaberi bilo koju boju"
   },
   "phase": {
     "script": "Skripta",
@@ -826,6 +827,11 @@
     "change": "Promeni sliku",
     "remove": "Ukloni",
     "uploading": "Šaljem…",
-    "failed": "Slika ne može da se učita. Probaj JPG ili PNG."
+    "failed": "Slika ne može da se učita. Probaj JPG ili PNG.",
+    "cropTitle": "Namesti sliku",
+    "zoom": "Uvećanje",
+    "cropHint": "Prevuci sliku da je pomeriš u krugu.",
+    "save": "Sačuvaj",
+    "cancel": "Otkaži"
   }
 }

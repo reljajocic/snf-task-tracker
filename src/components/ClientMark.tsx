@@ -1,11 +1,5 @@
 import { clientInitials } from "@/lib/client-status";
-
-/** Readable text on a colour: dark ink on light colours, off-white on dark ones. */
-function inkOn(hex: string) {
-  const n = parseInt(hex.slice(1), 16);
-  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  return 0.299 * r + 0.587 * g + 0.114 * b > 150 ? "#2F2D2E" : "#F4F3ED";
-}
+import { inkOn } from "@/lib/color";
 
 /** A client's square mark: their own colour and initials, or neutral glass with generated initials. */
 export function ClientMark({

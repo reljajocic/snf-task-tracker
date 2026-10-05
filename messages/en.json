@@ -417,7 +417,8 @@
         "title": "Client requested changes",
         "hint": "A client asks for changes on a video or script you're on."
       }
-    }
+    },
+    "customColor": "Pick any colour"
   },
   "phase": {
     "script": "Script",
@@ -826,6 +827,11 @@
     "change": "Change photo",
     "remove": "Remove",
     "uploading": "Uploading…",
-    "failed": "That photo couldn't be read. Try a JPG or PNG."
+    "failed": "That photo couldn't be read. Try a JPG or PNG.",
+    "cropTitle": "Position your photo",
+    "zoom": "Zoom",
+    "cropHint": "Drag to move it inside the circle.",
+    "save": "Save",
+    "cancel": "Cancel"
   }
 }
