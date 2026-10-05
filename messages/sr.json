@@ -788,7 +788,16 @@
     "drop": "Odbaci",
     "restore": "Vrati",
     "showScript": "Prikaži skriptu ({count, plural, one {# deo} few {# dela} other {# delova}})",
-    "hideScript": "Sakrij skriptu"
+    "hideScript": "Sakrij skriptu",
+    "search": "Pretraži naslov, osobu, skriptu…",
+    "sort": "Sortiranje",
+    "sortNewest": "Najnovije snimanje prvo",
+    "sortOldest": "Najstarije snimanje prvo",
+    "sortTitle": "Naslov A–Ž",
+    "shootFilter": "Snimanje",
+    "allShoots": "Sva snimanja",
+    "noShoot": "Nije sa snimanja",
+    "matching": "{count, plural, one {# video} few {# videa} other {# videa}}"
   },
   "taskViews": {
     "board": "Tabla",

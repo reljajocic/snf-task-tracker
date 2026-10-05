@@ -20,6 +20,9 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   const [type, setType] = useState<string | null>(null);
   const [location, setLocation] = useState<string | null>(null);
   const [profile, setProfile] = useState<string | null>(null);
+  const [shootFilter, setShootFilter] = useState<string>("all");
+  const [sort, setSort] = useState<"newest" | "oldest" | "title">("newest");
+  const [q, setQ] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [open, setOpen] = useState<Set<string>>(new Set());
   const toggle = (id: string) =>
@@ -44,9 +47,26 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   const types = [...new Set(videos.map((v) => v.content_type).filter(Boolean))] as string[];
   const locations = [...new Set(videos.map((v) => v.location).filter(Boolean))] as string[];
   const profiles = [...new Set(videos.map((v) => v.profile).filter(Boolean))] as string[];
-  const shown = videos.filter(
-    (v) => (!type || v.content_type === type) && (!location || v.location === location) && (!profile || v.profile === profile),
+  // Shoot days these videos came from (newest first), for the "which shoot" filter.
+  const shootOptions = [...new Map(videos.filter((v) => v.shoot).map((v) => [v.shoot!.id, v.shoot!])).values()].sort((a, b) =>
+    b.date.localeCompare(a.date),
   );
+  const norm = (x: string) => x.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const needle = norm(q.trim());
+  const when = (v: Task) => v.shoot?.date ?? v.dropped_at ?? v.created_at.slice(0, 10);
+  const shown = videos
+    .filter(
+      (v) =>
+        (!type || v.content_type === type) &&
+        (!location || v.location === location) &&
+        (!profile || v.profile === profile) &&
+        (shootFilter === "all" || (shootFilter === "none" ? !v.shoot : v.shoot?.id === shootFilter)) &&
+        (!needle || norm([v.title, v.on_camera ?? "", ...v.script.map((sec) => sec.text)].join(" ")).includes(needle)),
+    )
+    .sort((a, b) =>
+      sort === "title" ? a.title.localeCompare(b.title) : sort === "oldest" ? when(a).localeCompare(when(b)) : when(b).localeCompare(when(a)),
+    );
+  const selectCls = "h-9 cursor-pointer appearance-none rounded-full border border-line2 bg-transparent px-3.5 text-[13px] font-medium text-ink2 outline-none hover:text-ink";
   const chip = (active: boolean) =>
     `h-8 cursor-pointer whitespace-nowrap rounded-full border px-3 text-[12.5px] font-semibold tracking-[0.04em] ${active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`;
   const action = "h-8 cursor-pointer whitespace-nowrap rounded-md border border-line2 bg-transparent px-2.5 text-[12.5px] font-medium text-ink2 hover:border-ink hover:text-ink disabled:opacity-50";
@@ -63,6 +83,32 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
 
   return (
     <div className="flex flex-col gap-4 px-5 pb-[120px] pt-5 lg:px-10 lg:pb-12">
+      <div className="flex flex-wrap items-center gap-2">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={t("search")}
+          className="h-9 min-w-[200px] flex-1 rounded-full border border-line2 bg-transparent px-4 text-[14px] text-ink outline-none focus:border-accent sm:max-w-[320px]"
+        />
+        <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} aria-label={t("sort")} className={selectCls}>
+          <option value="newest">{t("sortNewest")}</option>
+          <option value="oldest">{t("sortOldest")}</option>
+          <option value="title">{t("sortTitle")}</option>
+        </select>
+        {shootOptions.length > 0 && (
+          <select value={shootFilter} onChange={(e) => setShootFilter(e.target.value)} aria-label={t("shootFilter")} className={`${selectCls} ${shootFilter !== "all" ? "border-ink2 text-ink" : ""}`}>
+            <option value="all">{t("allShoots")}</option>
+            {shootOptions.map((sh) => (
+              <option key={sh.id} value={sh.id}>
+                {formatDate(sh.date)}
+                {sh.location ? ` · ${sh.location}` : ""}
+              </option>
+            ))}
+            {videos.some((v) => !v.shoot) && <option value="none">{t("noShoot")}</option>}
+          </select>
+        )}
+        {(q || shootFilter !== "all") && <span className="text-[13px] text-ink3">{t("matching", { count: shown.length })}</span>}
+      </div>
       {(types.length > 1 || locations.length > 1 || profiles.length > 1) && (
         <div className="flex flex-wrap gap-1.5">
           {profiles.length > 1 && (

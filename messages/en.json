@@ -788,7 +788,16 @@
     "drop": "Drop",
     "restore": "Restore",
     "showScript": "Show script ({count, plural, one {# part} other {# parts}})",
-    "hideScript": "Hide script"
+    "hideScript": "Hide script",
+    "search": "Search title, person, script…",
+    "sort": "Sort",
+    "sortNewest": "Newest shoot first",
+    "sortOldest": "Oldest shoot first",
+    "sortTitle": "Title A–Z",
+    "shootFilter": "Shoot",
+    "allShoots": "All shoots",
+    "noShoot": "Not from a shoot",
+    "matching": "{count, plural, one {# video} other {# videos}}"
   },
   "taskViews": {
     "board": "Board",
