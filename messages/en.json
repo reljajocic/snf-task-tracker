@@ -820,5 +820,12 @@
     "yours": "✓ You're doing this one",
     "takenBy": "Taken: {name}",
     "justTaken": "Someone just took that one. The list is up to date now."
+  },
+  "avatar": {
+    "add": "Add photo",
+    "change": "Change photo",
+    "remove": "Remove",
+    "uploading": "Uploading…",
+    "failed": "That photo couldn't be read. Try a JPG or PNG."
   }
 }

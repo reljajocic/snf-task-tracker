@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useActionState, useOptimistic, useState, useTransition } from "react";
-import { Avatar } from "@/components/ui/Avatar";
+import { AvatarUpload } from "@/components/AvatarUpload";
 import { Button } from "@/components/ui/Button";
 import { inputClass } from "@/components/tasks/fields";
 import type { Profile } from "@/lib/auth";
@@ -25,8 +25,8 @@ export function ProfileForm({ profile }: { profile: Profile }) {
 
   return (
     <form action={action} className="flex flex-col gap-4 rounded-lg border border-line bg-surf p-6">
-      <div className="flex items-center gap-3">
-        <Avatar person={preview} size={40} />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <AvatarUpload person={preview} size={56} />
         <span className="text-[13px] text-ink3">{profile.email}</span>
       </div>
       <div className="grid gap-3 sm:grid-cols-[1fr_90px]">

@@ -1,7 +1,20 @@
-type Person = { initials: string; avatar_bg: string; avatar_fg: string; full_name?: string };
+type Person = { initials: string; avatar_bg: string; avatar_fg: string; full_name?: string; avatar_url?: string | null };
 
-/** Circle with the person's initial. Stacks overlap by 8px with a ring in the page color. */
+/** Circle with the person's photo, or their initials on their colour. Stacks overlap by 8px. */
 export function Avatar({ person, size = 28 }: { person: Person; size?: number }) {
+  if (person.avatar_url) {
+    return (
+      <img
+        src={person.avatar_url}
+        alt={person.full_name ?? person.initials}
+        title={person.full_name}
+        width={size}
+        height={size}
+        className="shrink-0 rounded-full object-cover"
+        style={{ width: size, height: size, background: person.avatar_bg }}
+      />
+    );
+  }
   return (
     <span
       title={person.full_name}

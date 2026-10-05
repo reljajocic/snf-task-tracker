@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
-import { Avatar } from "@/components/ui/Avatar";
+import { AvatarUpload } from "@/components/AvatarUpload";
 import { requireAdmin, type Profile } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { InviteForm } from "./InviteForm";
@@ -12,7 +12,7 @@ export default async function TeamPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
-    .select("id, email, full_name, initials, avatar_bg, avatar_fg, role, theme, is_active")
+    .select("id, email, full_name, initials, avatar_bg, avatar_fg, avatar_url, role, theme, is_active")
     .order("full_name");
   const people = (data ?? []) as Profile[];
 
@@ -23,7 +23,7 @@ export default async function TeamPage() {
         <ul className="flex flex-col border-t border-line">
           {people.map((p) => (
             <li key={p.id} className="flex items-center gap-4 border-b border-line py-3.5">
-              <Avatar person={p} size={32} />
+              <AvatarUpload person={p} size={36} compact />
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <span className="text-[15px] font-medium">
                   {p.full_name}

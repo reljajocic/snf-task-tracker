@@ -235,7 +235,7 @@ export type TaskComment = {
   body: string;
   created_at: string;
   edited_at: string | null;
-  author: { id: string; full_name: string; initials: string; avatar_bg: string; avatar_fg: string } | null;
+  author: { id: string; full_name: string; initials: string; avatar_bg: string; avatar_fg: string; avatar_url?: string | null } | null;
 };
 
 export type TaskDetail = {
@@ -254,7 +254,7 @@ export async function loadTask(id: string): Promise<ActionResult<TaskDetail>> {
     supabase.from("tasks").select(TASK_SELECT).eq("id", id).maybeSingle<RawTask>(),
     supabase
       .from("task_comments")
-      .select("id, body, created_at, edited_at, author:profiles(id, full_name, initials, avatar_bg, avatar_fg)")
+      .select("id, body, created_at, edited_at, author:profiles(id, full_name, initials, avatar_bg, avatar_fg, avatar_url)")
       .eq("task_id", id)
       .order("created_at")
       .returns<TaskComment[]>(),

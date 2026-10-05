@@ -244,7 +244,7 @@ async function PeopleStats({
   stats,
   compact = false,
 }: {
-  stats: { person: { id: string; full_name: string; initials: string; avatar_bg: string; avatar_fg: string }; count: number; late: number }[];
+  stats: { person: { id: string; full_name: string; initials: string; avatar_bg: string; avatar_fg: string; avatar_url?: string | null }; count: number; late: number }[];
   compact?: boolean;
 }) {
   const t = await getTranslations("home");

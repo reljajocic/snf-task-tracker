@@ -78,7 +78,7 @@ type RawShoot = Omit<ShootDay, "crew" | "total" | "shot"> & {
 const SHOOT_SELECT = `
   id, date, location, starts_at, ends_at, notes, drive_url, signup_token, call_times,
   client:clients(id, name, locations),
-  shoot_crew(profile:profiles(id, full_name, initials, avatar_bg, avatar_fg)),
+  shoot_crew(profile:profiles(id, full_name, initials, avatar_bg, avatar_fg, avatar_url)),
   tasks(shot_status)
 `;
 

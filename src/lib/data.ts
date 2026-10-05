@@ -57,7 +57,7 @@ export const getLookups = cache(async (): Promise<Lookups> => {
     // people picker (assignees, crew, editors, teams, filters). The Team page lists it separately.
     supabase
       .from("profiles")
-      .select("id, full_name, initials, avatar_bg, avatar_fg")
+      .select("id, full_name, initials, avatar_bg, avatar_fg, avatar_url")
       .eq("is_active", true)
       .neq("role", "admin")
       .order("full_name")

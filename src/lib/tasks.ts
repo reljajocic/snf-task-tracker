@@ -38,6 +38,7 @@ export type Person = {
   initials: string;
   avatar_bg: string;
   avatar_fg: string;
+  avatar_url?: string | null;
 };
 
 export type Task = {
@@ -85,7 +86,7 @@ export type Task = {
 
 export type ScriptDecision = { status: "approved" | "changes"; approver_name: string; comment: string | null; created_at: string };
 
-const PERSON_COLS = "id, full_name, initials, avatar_bg, avatar_fg";
+const PERSON_COLS = "id, full_name, initials, avatar_bg, avatar_fg, avatar_url";
 
 /** PostgREST select that returns rows shaped like `RawTask` (see `toTask`). */
 export const TASK_SELECT = `

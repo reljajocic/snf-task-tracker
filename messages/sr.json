@@ -820,5 +820,12 @@
     "yours": "✓ Ovaj snimaš ti",
     "takenBy": "Zauzeto: {name}",
     "justTaken": "Neko je upravo uzeo taj video. Lista je sada osvežena."
+  },
+  "avatar": {
+    "add": "Dodaj sliku",
+    "change": "Promeni sliku",
+    "remove": "Ukloni",
+    "uploading": "Šaljem…",
+    "failed": "Slika ne može da se učita. Probaj JPG ili PNG."
   }
 }

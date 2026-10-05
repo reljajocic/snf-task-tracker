@@ -9,6 +9,7 @@ export type Profile = {
   initials: string;
   avatar_bg: string;
   avatar_fg: string;
+  avatar_url?: string | null;
   role: "admin" | "user";
   theme: "dark" | "light";
   is_active: boolean;
@@ -30,7 +31,7 @@ export const requireProfile = cache(async (): Promise<Profile> => {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, email, full_name, initials, avatar_bg, avatar_fg, role, theme, is_active")
+    .select("id, email, full_name, initials, avatar_bg, avatar_fg, avatar_url, role, theme, is_active")
     .eq("id", userId)
     .single<Profile>();
 
