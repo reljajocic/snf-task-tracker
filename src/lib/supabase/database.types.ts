@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_errors: {
+        Row: {
+          created_at: string
+          digest: string | null
+          id: number
+          message: string
+          path: string | null
+          route: string | null
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          digest?: string | null
+          id?: never
+          message: string
+          path?: string | null
+          route?: string | null
+          source: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          digest?: string | null
+          id?: never
+          message?: string
+          path?: string | null
+          route?: string | null
+          source?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_errors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       approvals: {
         Row: {
           approver_name: string
