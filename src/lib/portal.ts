@@ -114,7 +114,12 @@ export async function getPortalVideos(clientId: string, scope: PortalScope): Pro
   if ("id" in scope) query = query.eq("id", scope.id);
   else if ("shootId" in scope) query = query.eq("shoot_id", scope.shootId);
   else if ("from" in scope) query = query.gte("publish_date", scope.from);
-  else if ("month" in scope) query = query.gte("publish_date", `${scope.month}-01`).lte("publish_date", `${scope.month}-31`).gte("phase", 5);
+  else if ("month" in scope) {
+    // Up to the 1st of the next month: "-31" isn't a date in 30-day months (or February).
+    const [y, m] = scope.month.split("-").map(Number);
+    const next = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 10);
+    query = query.gte("publish_date", `${scope.month}-01`).lt("publish_date", next).gte("phase", 5);
+  }
   else query = query.or(`phase.lt.5,publish_date.gte.${scope.open}`);
   const { data, error } = await query.order("publish_date", { nullsFirst: false }).returns<RawVideo[]>();
   if (error) throw error;
