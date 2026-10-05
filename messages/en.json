@@ -482,7 +482,13 @@
     "notesPlaceholder": "For the crew and editor: props, wardrobe, references, who must be in it…",
     "laterHint": "Deadline, status and priority come in when the video moves to edit.",
     "removeSection": "Remove section",
-    "referenceLabel": "Reference"
+    "referenceLabel": "Reference",
+    "stage": "Status",
+    "stages": {
+      "idea": "Idea",
+      "shot": "Already filmed",
+      "published": "Already published"
+    }
   },
   "schedule": {
     "title": "Posting schedule",

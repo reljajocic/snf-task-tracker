@@ -22,6 +22,7 @@ type Defaults = {
   publish_date?: string | null;
   shoot_id?: string | null;
   profile?: string | null;
+  stage?: "idea" | "shot" | "published";
 };
 
 /**
@@ -48,6 +49,8 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const [description, setDescription] = useState("");
   // Video fields
   const [contentType, setContentType] = useState<string | null>(null);
+  // Where the new video starts: an idea, already filmed (waiting for a date), or already out.
+  const [stage, setStage] = useState<"idea" | "shot" | "published">(defaults.stage ?? "idea");
   const [extraTags, setExtraTags] = useState<string[]>([]);
   const [tagDraft, setTagDraft] = useState<string | null>(null);
   const [onCamera, setOnCamera] = useState("");
@@ -94,6 +97,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
               drive_url: drive,
               publish_date: defaults.publish_date ?? null,
               shoot_id: defaults.shoot_id ?? null,
+              ...(stage === "shot" ? { phase: 2, shot_status: "shot" as const } : stage === "published" ? { phase: 5, shot_status: "shot" as const } : {}),
             }
           : {
               title,
@@ -158,6 +162,14 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const videoFields = (
     <>
       <div className="flex flex-col gap-2 sm:col-span-2">
+        {label(tv("stage"))}
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          {(["idea", "shot", "published"] as const).map((k) => (
+            <Pill key={k} size="lg" selected={stage === k} onClick={() => setStage(k)}>
+              {tv(`stages.${k}`)}
+            </Pill>
+          ))}
+        </div>
         {label(tv("contentType"))}
         <div className="flex flex-wrap items-center gap-1.5">
           {tags.map((ct) => (

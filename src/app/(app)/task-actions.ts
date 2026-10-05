@@ -53,6 +53,7 @@ export type TaskPatch = Partial<{
   shoot_id: string | null;
   shoot_time: string | null;
   dropped_at: string | null;
+  shot_status: ShotStatus;
 }>;
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -93,6 +94,7 @@ function clean(patch: TaskPatch): TaskPatch {
   if (patch.publish_date !== undefined) out.publish_date = patch.publish_date && DATE_RE.test(patch.publish_date) ? patch.publish_date : null;
   if (patch.shoot_id !== undefined) out.shoot_id = patch.shoot_id || null;
   if (patch.shoot_time !== undefined) out.shoot_time = patch.shoot_time && /^\d{2}:\d{2}$/.test(patch.shoot_time) ? patch.shoot_time : null;
+  if (patch.shot_status !== undefined && ["to_shoot", "shot", "not_shot"].includes(patch.shot_status)) out.shot_status = patch.shot_status;
   if (patch.dropped_at !== undefined) out.dropped_at = patch.dropped_at && DATE_RE.test(patch.dropped_at) ? patch.dropped_at : null;
   return out;
 }

@@ -82,7 +82,7 @@ export default async function VideoBankPage({ searchParams }: PageProps<"/conten
         title={t("bank.title")}
         newTask={false}
         actions={
-          <Link href={`?new=1&kind=video&client=${client.id}${tab === "ready" ? "" : `&tab=${tab}`}`} scroll={false} className={buttonClass({ size: "sm" })}>
+          <Link href={`?new=1&kind=video&client=${client.id}${tab === "ready" ? "&stage=shot" : `&tab=${tab}`}`} scroll={false} className={buttonClass({ size: "sm" })}>
             {t("bank.new")}
           </Link>
         }

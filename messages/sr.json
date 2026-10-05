@@ -482,7 +482,13 @@
     "notesPlaceholder": "Za ekipu i editora: rekviziti, garderoba, reference, ko mora da bude u videu…",
     "laterHint": "Rok, status i prioritet dolaze kad video pređe u montažu.",
     "removeSection": "Ukloni deo",
-    "referenceLabel": "Referenca"
+    "referenceLabel": "Referenca",
+    "stage": "Status",
+    "stages": {
+      "idea": "Ideja",
+      "shot": "Već snimljeno",
+      "published": "Već objavljeno"
+    }
   },
   "schedule": {
     "title": "Raspored objava",

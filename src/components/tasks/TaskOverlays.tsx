@@ -23,7 +23,7 @@ export function TaskOverlays({ lookups, today }: { lookups: Lookups; today: IsoD
     const next = new URLSearchParams(params);
     // `client` and `profile` stay: on the video bank, schedule and task list they're the page's own
     // filter (the new-video form just borrows them as defaults), so closing must not reset the page.
-    for (const k of ["task", "new", "project", "due", "status", "kind", "publish", "shoot"]) next.delete(k);
+    for (const k of ["task", "new", "project", "due", "status", "kind", "publish", "shoot", "stage"]) next.delete(k);
     const qs = next.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }, [params, pathname, router]);
@@ -47,6 +47,7 @@ export function TaskOverlays({ lookups, today }: { lookups: Lookups; today: IsoD
             publish_date: params.get("publish"),
             shoot_id: params.get("shoot"),
             profile: params.get("profile"),
+            stage: params.get("stage") === "shot" ? "shot" : params.get("stage") === "published" ? "published" : undefined,
           }}
         />
       )}
