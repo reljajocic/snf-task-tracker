@@ -780,7 +780,9 @@
     "backToIdeas": "Vrati u ideje",
     "schedule": "Izaberi datum objave",
     "drop": "Odbaci",
-    "restore": "Vrati"
+    "restore": "Vrati",
+    "showScript": "Prikaži skriptu ({count, plural, one {# deo} few {# dela} other {# delova}})",
+    "hideScript": "Sakrij skriptu"
   },
   "taskViews": {
     "board": "Tabla",

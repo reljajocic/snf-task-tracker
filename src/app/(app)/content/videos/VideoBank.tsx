@@ -21,6 +21,15 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   const [location, setLocation] = useState<string | null>(null);
   const [profile, setProfile] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [open, setOpen] = useState<Set<string>>(new Set());
+  const toggle = (id: string) =>
+    setOpen((cur) => {
+      const next = new Set(cur);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const parts = (v: Task) => v.script.filter((sec) => sec.text.trim());
   const [, startTransition] = useTransition();
 
   const run = (id: string, fn: () => Promise<unknown>) => {
@@ -89,7 +98,8 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
             const m = meta(v);
             const disabled = busy === v.id;
             return (
-              <div key={v.id} className={`flex flex-col gap-3 border-t border-line px-4 py-3.5 first:border-t-0 lg:flex-row lg:items-center lg:gap-6 ${disabled ? "opacity-60" : ""}`}>
+              <div key={v.id} className={`flex flex-col gap-3 px-4 py-3.5 ${disabled ? "opacity-60" : ""}`}>
+               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
                 <TaskLink id={v.id} className="flex min-w-0 flex-1 flex-col gap-1.5 hover:opacity-80">
                   <span className="flex items-center gap-2">
                     {v.content_type && (
@@ -103,7 +113,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                     <span className="truncate text-[12.5px] text-ink3">{[v.profile, v.on_camera, v.location, m].filter(Boolean).join(" · ")}</span>
                   )}
                   {v.script_decision && <ScriptDecisionBadge decision={v.script_decision} />}
-                  {first && (
+                  {first && !open.has(v.id) && (
                     <span className="line-clamp-2 max-w-[720px] text-[13px] leading-snug text-ink2">
                       {first.label && <span className="mr-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-accent">{first.label}</span>}
                       {first.text}
@@ -163,6 +173,25 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                     </button>
                   )}
                 </div>
+               </div>
+                {parts(v).length > 0 && (
+                  <>
+                    {open.has(v.id) && (
+                      // The whole script, part by part, readable without opening the video.
+                      <div className="flex max-w-[820px] flex-col gap-3 border-t border-line pt-3.5">
+                        {parts(v).map((sec, i) => (
+                          <div key={i} className="flex flex-col gap-1.5 border-l-2 border-accent/60 pl-3">
+                            {sec.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-accent">{sec.label}</span>}
+                            <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink">{sec.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <button type="button" onClick={() => toggle(v.id)} className="cursor-pointer self-start text-[13px] font-medium text-rust-ink hover:underline">
+                      {open.has(v.id) ? t("hideScript") : t("showScript", { count: parts(v).length })}
+                    </button>
+                  </>
+                )}
               </div>
             );
           })}

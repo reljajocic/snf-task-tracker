@@ -780,7 +780,9 @@
     "backToIdeas": "Back to ideas",
     "schedule": "Pick posting date",
     "drop": "Drop",
-    "restore": "Restore"
+    "restore": "Restore",
+    "showScript": "Show script ({count, plural, one {# part} other {# parts}})",
+    "hideScript": "Hide script"
   },
   "taskViews": {
     "board": "Board",
