@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { addDays, formatDate, startOfWeek, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { Pill } from "./bits";
 
@@ -106,21 +107,43 @@ export function DatePicker({
 }) {
   const t = useTranslations("task");
   const [open, setOpen] = useState(false);
+  // The calendar renders in <body>, fixed under (or above) the button: glass cards each form their
+  // own layer, so a popover inside one would be covered by the next card or clipped.
+  const [pos, setPos] = useState<{ top: number; left: number; up: boolean } | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
+    const inside = (n: EventTarget | null) => n instanceof Node && (ref.current?.contains(n) || panel.current?.contains(n));
     const close = (e: MouseEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+      if (!inside(e.target)) setOpen(false);
     };
     const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const away = (e: Event) => {
+      if (!inside(e.target)) setOpen(false);
+    };
     document.addEventListener("mousedown", close);
     document.addEventListener("keydown", esc);
+    document.addEventListener("scroll", away, true);
+    window.addEventListener("resize", away);
     return () => {
       document.removeEventListener("mousedown", close);
       document.removeEventListener("keydown", esc);
+      document.removeEventListener("scroll", away, true);
+      window.removeEventListener("resize", away);
     };
   }, [open]);
+
+  const toggle = (button: HTMLElement) => {
+    if (open) return setOpen(false);
+    const r = button.getBoundingClientRect();
+    const width = 300;
+    const up = window.innerHeight - r.bottom < 380 && r.top > window.innerHeight - r.bottom;
+    const left = Math.min(Math.max(8, align === "right" ? r.right - width : r.left), window.innerWidth - width - 8);
+    setPos({ top: up ? r.top - 8 : r.bottom + 8, left, up });
+    setOpen(true);
+  };
 
   const pick = (d: IsoDate | null) => {
     onChange(d);
@@ -132,13 +155,19 @@ export function DatePicker({
       <button
         type="button"
         disabled={disabled}
-        onClick={() => setOpen((o) => !o)}
+        onClick={(e) => toggle(e.currentTarget)}
         className="h-[34px] cursor-pointer whitespace-nowrap rounded-md border border-line2 px-3 text-[14px] font-semibold text-ink disabled:cursor-default"
       >
         {value ? formatDate(value) : (emptyLabel ?? t("noDue"))} ▾
       </button>
-      {open && (
-        <div className={`absolute ${align === "right" ? "right-0" : "left-0"} top-[42px] z-20 flex w-[300px] flex-col gap-2.5 rounded-lg border border-line2 bg-pop p-3.5 shadow-[var(--shadow-overlay)]`}>
+      {open &&
+        pos &&
+        createPortal(
+        <div
+          ref={panel}
+          style={{ top: pos.top, left: pos.left }}
+          className={`fixed z-[60] flex w-[300px] flex-col gap-2.5 rounded-lg border border-line2 bg-pop p-3.5 shadow-[var(--shadow-overlay)] ${pos.up ? "-translate-y-full" : ""}`}
+        >
           <MonthGrid value={value} today={today} onPick={pick} />
           <div className="flex flex-wrap gap-1.5 border-t border-line pt-2.5">
             {quickDates(today).map((q) => (
@@ -152,7 +181,8 @@ export function DatePicker({
               </Pill>
             )}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
