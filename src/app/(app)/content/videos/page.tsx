@@ -6,12 +6,14 @@ import { buttonClass } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/Segmented";
 import { countDropped, getClientVideos, getShootDays } from "@/lib/content";
 import { getLookups } from "@/lib/data";
+import { rememberedClient } from "@/lib/remembered-client";
 import { today as getToday } from "@/lib/dates";
 import type { Task } from "@/lib/tasks";
 import { ClientPicker } from "../schedule/ClientPicker";
 import { VideoBank } from "./VideoBank";
 
-const TABS = ["ideas", "shoot", "ready", "dropped"] as const;
+// Most-used first: filmed and waiting for a date, then what's on a shoot, then ideas.
+const TABS = ["ready", "shoot", "ideas", "dropped"] as const;
 type Tab = (typeof TABS)[number];
 
 const shot = (v: Task) => v.shot_status === "shot" || (v.phase ?? 0) >= 2;
@@ -26,11 +28,15 @@ function shelf(v: Task): Tab | null {
 
 // Video bank: every video of a client that isn't work yet. URL: ?client=<id>&tab=ideas|shoot|ready|dropped
 export default async function VideoBankPage({ searchParams }: PageProps<"/content/videos">) {
-  const [params, lookups, t] = await Promise.all([searchParams, getLookups(), getTranslations()]);
+  const [params, lookups, t, remembered] = await Promise.all([searchParams, getLookups(), getTranslations(), rememberedClient()]);
   const today = getToday();
   const clients = lookups.clients;
-  const client = clients.find((c) => c.id === params.client) ?? clients.find((c) => c.status === "active") ?? clients[0];
-  const tab: Tab = TABS.includes(params.tab as Tab) ? (params.tab as Tab) : "ideas";
+  const client =
+    clients.find((c) => c.id === params.client) ??
+    clients.find((c) => c.id === remembered) ??
+    clients.find((c) => c.status === "active") ??
+    clients[0];
+  const tab: Tab = TABS.includes(params.tab as Tab) ? (params.tab as Tab) : "ready";
 
   if (!client) {
     return (
@@ -66,7 +72,7 @@ export default async function VideoBankPage({ searchParams }: PageProps<"/conten
   const tabs = TABS.map((k) => ({
     key: k,
     label: `${t(`bank.tab.${k}`)} · ${counts[k]}`,
-    href: `/content/videos?client=${client.id}${k === "ideas" ? "" : `&tab=${k}`}`,
+    href: `/content/videos?client=${client.id}${k === "ready" ? "" : `&tab=${k}`}`,
     active: k === tab,
   }));
 
@@ -76,7 +82,7 @@ export default async function VideoBankPage({ searchParams }: PageProps<"/conten
         title={t("bank.title")}
         newTask={false}
         actions={
-          <Link href={`?new=1&kind=video&client=${client.id}${tab === "ideas" ? "" : `&tab=${tab}`}`} scroll={false} className={buttonClass({ size: "sm" })}>
+          <Link href={`?new=1&kind=video&client=${client.id}${tab === "ready" ? "" : `&tab=${tab}`}`} scroll={false} className={buttonClass({ size: "sm" })}>
             {t("bank.new")}
           </Link>
         }

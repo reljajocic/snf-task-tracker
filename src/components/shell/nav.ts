@@ -14,9 +14,9 @@ export const SIDEBAR_NAV: NavItem[] = [
 
 // "Content" group (design: SADRŽAJ): video bank, posting schedule and shoot days.
 export const CONTENT_NAV: NavItem[] = [
-  { href: "/content/videos", key: "videos", icon: "videos" },
-  { href: "/content/schedule", key: "schedule", icon: "schedule" },
   { href: "/content/shoots", key: "shoots", icon: "shoots" },
+  { href: "/content/schedule", key: "schedule", icon: "schedule" },
+  { href: "/content/videos", key: "videos", icon: "videos" },
 ];
 
 export const ADMIN_NAV: NavItem[] = [{ href: "/team", key: "team", icon: "team" }];
@@ -25,7 +25,7 @@ export const ADMIN_NAV: NavItem[] = [{ href: "/team", key: "team", icon: "team" 
 export const MOBILE_NAV: NavItem[] = [
   { href: "/", key: "home", icon: "home" },
   { href: "/kanban", key: "tasks", icon: "kanban", match: TASK_VIEWS },
-  { href: "/content/videos", key: "content", icon: "videos", match: ["/content"] },
+  { href: "/content/shoots", key: "content", icon: "videos", match: ["/content"] },
   { href: "/clients", key: "clients", icon: "clients" },
 ];
 

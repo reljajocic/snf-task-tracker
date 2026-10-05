@@ -112,7 +112,9 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                 </TaskLink>
 
                 <div className="flex flex-none flex-wrap items-center gap-2">
-                  {(tab === "ideas" || tab === "shoot") && shoots.length > 0 && (
+                  {/* Only what still needs a shoot: ideas, and leftovers whose shoot has passed. */}
+                  {(tab === "ideas" || (tab === "shoot" && v.shoot !== null && v.shoot.date < today)) &&
+                    shoots.some((s) => s.id !== v.shoot_id) && (
                     <select
                       value=""
                       disabled={disabled}

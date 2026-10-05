@@ -3,7 +3,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { getPortal } from "@/lib/portal";
 import PortalNotFound from "./not-found";
-import { PortalNav } from "./PortalNav";
+import { PortalLang } from "./PortalLang";
+import { PortalNav, type PortalTab } from "./PortalNav";
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -16,11 +17,11 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
   const [t, messages] = await Promise.all([getTranslations({ locale: portal.locale, namespace: "portal.nav" }), getMessages({ locale: portal.locale })]);
   const base = `/p/${token}`;
   const tabs = [
-    { href: base, label: t("home"), exact: true },
-    portal.show.schedule && { href: `${base}/schedule`, label: t("schedule") },
-    (portal.show.shoots || portal.show.scripts) && { href: `${base}/shoots`, label: t("shoots") },
-    portal.show.report && { href: `${base}/reports`, label: t("reports") },
-  ].filter(Boolean) as { href: string; label: string; exact?: boolean }[];
+    { href: base, label: t("home"), icon: "home", exact: true },
+    portal.show.schedule && { href: `${base}/schedule`, label: t("schedule"), icon: "schedule" },
+    (portal.show.shoots || portal.show.scripts) && { href: `${base}/shoots`, label: t("shoots"), icon: "shoots" },
+    portal.show.report && { href: `${base}/reports`, label: t("reports"), icon: "list" },
+  ].filter(Boolean) as PortalTab[];
 
   return (
     <div className="snf-canvas flex min-h-dvh flex-col text-ink">
@@ -31,6 +32,9 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
           <span className="truncate text-[15px] font-semibold">{portal.clientName}</span>
         </div>
         <PortalNav tabs={tabs} variant="top" />
+        <div className="ml-auto">
+          <PortalLang current={portal.locale} />
+        </div>
       </header>
       <NextIntlClientProvider locale={portal.locale} messages={messages}>
         <main className="flex flex-1 flex-col pb-[84px] lg:pb-0">{children}</main>

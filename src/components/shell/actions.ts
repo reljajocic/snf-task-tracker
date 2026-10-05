@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { parseTheme, type Theme } from "@/lib/theme";
 
-/** Remembers the theme on the profile so it follows the user to other devices. */
+/** Remembers the theme (light / dark / follow the device) on the profile. */
 export async function saveTheme(theme: Theme) {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();

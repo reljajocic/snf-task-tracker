@@ -11,6 +11,8 @@ export function ClientPicker({ clients, value, allLabel }: { clients: { id: stri
     <select
       value={value}
       onChange={(e) => {
+        // Remembered for the other content pages (shoots / schedule / video bank).
+        if (e.target.value !== "all") document.cookie = `snf-client=${e.target.value}; path=/; max-age=31536000; samesite=lax`;
         const next = new URLSearchParams(params);
         next.set("client", e.target.value);
         router.push(`${pathname}?${next}`);

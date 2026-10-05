@@ -10,7 +10,8 @@ export default async function PortalShoots({ params }: PageProps<"/p/[token]/sho
   if (!portal.show.shoots && !portal.show.scripts) notFound();
   const [shoots, progress, t] = await Promise.all([getPortalShoots(portal.clientId), getPortalScriptProgress(portal.clientId), getTranslations({ locale: portal.locale })]);
   const today = getToday();
-  const list = [...shoots.filter((s) => s.date >= today), ...shoots.filter((s) => s.date < today).reverse()];
+  // What's coming, plus the last few for reference; the full history would just be noise here.
+  const list = [...shoots.filter((s) => s.date >= today), ...shoots.filter((s) => s.date < today).reverse().slice(0, 3)];
 
   return (
     <div className="flex flex-col gap-5 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">

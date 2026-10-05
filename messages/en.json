@@ -373,6 +373,13 @@
     "color": "Avatar color",
     "saveProfile": "Save profile",
     "saved": "Saved",
+    "appearance": "Appearance",
+    "appearanceHint": "Follow your device, or always light or dark.",
+    "themes": {
+      "system": "Like my device",
+      "light": "Light",
+      "dark": "Dark"
+    },
     "language": "Language",
     "languageHint": "The app language for you. Emails stay in English; the client portal has its own language (client → Client portal).",
     "notifications": "Notifications",
@@ -716,7 +723,9 @@
     "postsThisMonth": "Posts this month",
     "unavailable": "This page isn't available.",
     "notFoundTitle": "Link not valid",
-    "notFoundText": "This portal link doesn't work any more. Ask Slate 'n' Frame for the current one."
+    "notFoundText": "This portal link doesn't work any more. Ask Slate 'n' Frame for the current one.",
+    "viewCalendar": "Calendar",
+    "viewList": "List"
   },
   "shootSheet": {
     "status": "Status",

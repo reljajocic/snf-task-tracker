@@ -6,15 +6,17 @@ import { AvatarStack } from "@/components/ui/Avatar";
 import { buttonClass } from "@/components/ui/Button";
 import { getShootDays, type ShootDay } from "@/lib/content";
 import { getLookups } from "@/lib/data";
+import { rememberedClient } from "@/lib/remembered-client";
 import { formatDate, today as getToday, weekdayIndex } from "@/lib/dates";
 import { ClientPicker } from "../schedule/ClientPicker";
 import { ImportSheet } from "./ImportSheet";
 
-// URL: ?client=<id> (default: all clients)
+// URL: ?client=<id>|all (default: the client last picked on a content page, else all)
 export default async function ShootsPage({ searchParams }: PageProps<"/content/shoots">) {
-  const [params, all, lookups, t] = await Promise.all([searchParams, getShootDays(), getLookups(), getTranslations()]);
+  const [params, all, lookups, t, remembered] = await Promise.all([searchParams, getShootDays(), getLookups(), getTranslations(), rememberedClient()]);
   const today = getToday();
-  const clientId = lookups.clients.some((c) => c.id === params.client) ? (params.client as string) : null;
+  const wanted = params.client === "all" ? null : typeof params.client === "string" ? params.client : remembered;
+  const clientId = lookups.clients.some((c) => c.id === wanted) ? (wanted as string) : null;
   const days = clientId ? all.filter((d) => d.client?.id === clientId) : all;
   const withShoots = lookups.clients.filter((c) => all.some((d) => d.client?.id === c.id));
   const upcoming = days.filter((d) => d.date >= today);

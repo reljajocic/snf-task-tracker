@@ -1,9 +1,12 @@
+import { Suspense } from "react";
 import { ContentTabs } from "./ContentTabs";
 
 export default function ContentLayout({ children }: LayoutProps<"/content">) {
   return (
     <>
-      <ContentTabs />
+      <Suspense>
+        <ContentTabs />
+      </Suspense>
       {children}
     </>
   );

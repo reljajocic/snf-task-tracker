@@ -6,6 +6,7 @@ import { buttonClass } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/Segmented";
 import { getClientVideos } from "@/lib/content";
 import { getLookups } from "@/lib/data";
+import { rememberedClient } from "@/lib/remembered-client";
 import { addDays, isoWeek, startOfWeek, today as getToday, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { postingStatus } from "@/lib/tasks";
 import { ClientPicker } from "./ClientPicker";
@@ -22,11 +23,16 @@ function shiftMonth(d: IsoDate, delta: number): IsoDate {
 
 // 2a / 2b / 2c. URL: ?client=<id>&m=YYYY-MM&view=table|calendar&profile=<name>|all
 export default async function SchedulePage({ searchParams }: PageProps<"/content/schedule">) {
-  const [params, lookups, t] = await Promise.all([searchParams, getLookups(), getTranslations()]);
+  const [params, lookups, t, remembered] = await Promise.all([searchParams, getLookups(), getTranslations(), rememberedClient()]);
   const today = getToday();
-  const view = params.view === "calendar" ? "calendar" : "table";
+  // Calendar by default; the table is one click away.
+  const view = params.view === "table" ? "table" : "calendar";
   const clients = lookups.clients;
-  const client = clients.find((c) => c.id === params.client) ?? clients.find((c) => c.status === "active") ?? clients[0];
+  const client =
+    clients.find((c) => c.id === params.client) ??
+    clients.find((c) => c.id === remembered) ??
+    clients.find((c) => c.status === "active") ??
+    clients[0];
   const m = typeof params.m === "string" && /^\d{4}-\d{2}$/.test(params.m) ? `${params.m}-01` : monthStart(today);
 
   // Clients posting to several profiles get a schedule per profile (first one by default).
@@ -37,7 +43,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     const merged: Record<string, string | null> = {
       client: client?.id ?? null,
       m: m.slice(0, 7),
-      view: view === "table" ? null : view,
+      view: view === "calendar" ? null : view,
       profile: profiles.length ? (profile ?? "all") : null,
       ...patch,
     };
@@ -83,8 +89,8 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
   const late = videos.filter((v) => postingStatus(v, today) === "not_published").length;
 
   const viewSeg = [
-    { key: "table", label: t("schedule.table"), href: href({ view: null }), active: view === "table" },
-    { key: "calendar", label: t("schedule.calendar"), href: href({ view: "calendar" }), active: view === "calendar" },
+    { key: "calendar", label: t("schedule.calendar"), href: href({ view: null }), active: view === "calendar" },
+    { key: "table", label: t("schedule.table"), href: href({ view: "table" }), active: view === "table" },
   ];
   const monthName = (d: IsoDate) => t("month.name", { m: String(Number(d.slice(5, 7))) });
   const period =

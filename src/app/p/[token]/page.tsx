@@ -9,10 +9,8 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
   const { token } = await params;
   const portal = (await getPortal(token))!;
   const today = getToday();
-  const month = today.slice(0, 7);
-  const [videos, publishedThisMonth, progress, shoots, t] = await Promise.all([
+  const [videos, progress, shoots, t] = await Promise.all([
     getPortalVideos(portal.clientId, { open: today }),
-    getPortalVideos(portal.clientId, { month }),
     getPortalScriptProgress(portal.clientId),
     getPortalShoots(portal.clientId),
     getTranslations({ locale: portal.locale }),
@@ -31,8 +29,6 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
 
   const nextPosts = videos.filter((v) => v.publish_date && v.publish_date >= today).slice(0, 5);
   const nextShoot = shoots.find((s) => s.date >= today) ?? null;
-  const byType = new Map<string, number>();
-  for (const v of publishedThisMonth) byType.set(v.content_type ?? "—", (byType.get(v.content_type ?? "—") ?? 0) + 1);
 
   const h2 = (s: string) => <h2 className="display whitespace-nowrap text-[19px] leading-[1.1] lg:text-[20px]">{s}</h2>;
 
@@ -138,29 +134,6 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
             ) : (
               <p className="text-[14px] text-ink3">{t("portal.noShoot")}</p>
             )}
-          </section>
-        )}
-        {portal.show.report && (
-          <section className="flex flex-col gap-3.5">
-            {h2(t("portal.report", { month: t("month.name", { m: String(Number(month.slice(5, 7))) }) }))}
-            <div className="flex flex-col gap-4 rounded-lg border border-line bg-surf p-[18px]">
-              <div className="flex items-baseline gap-2.5">
-                <span className="display text-[44px] leading-[0.9]">{publishedThisMonth.length}</span>
-                <span className="text-[14px] text-ink2">{t("portal.published")}</span>
-              </div>
-              {byType.size > 0 ? (
-                <div className="flex flex-col">
-                  {[...byType.entries()].map(([type, n]) => (
-                    <div key={type} className="flex justify-between border-t border-line py-2.5 text-[14px]">
-                      <span className="text-ink2">{type}</span>
-                      <span className="font-semibold">{n}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <span className="text-[13px] text-ink3">{t("portal.noReport")}</span>
-              )}
-            </div>
           </section>
         )}
       </aside>

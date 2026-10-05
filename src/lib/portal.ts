@@ -1,4 +1,5 @@
 import "server-only";
+import { cookies } from "next/headers";
 import { cache } from "react";
 import type { IsoDate } from "@/lib/dates";
 import { parseLocale, type Locale } from "@/lib/locale";
@@ -8,6 +9,8 @@ import type { ScriptSection } from "@/lib/tasks";
 // Everything the client portal shows is loaded here with the service role, always scoped to
 // the one client the secret token belongs to. Only client-safe fields are selected: no
 // assignees, internal tasks, comments, notes or descriptions.
+
+export const PORTAL_LANG_COOKIE = "snf-portal-lang";
 
 export type Portal = {
   clientId: string;
@@ -47,7 +50,8 @@ export const getPortal = cache(async (token: string): Promise<Portal | null> => 
       review: data.show_review,
       report: data.show_report,
     },
-    locale: parseLocale(data.locale),
+    // A visitor's own pick (the SR/EN switch in the portal header) wins over the client's default.
+    locale: parseLocale((await cookies()).get(PORTAL_LANG_COOKIE)?.value ?? data.locale),
   };
 });
 

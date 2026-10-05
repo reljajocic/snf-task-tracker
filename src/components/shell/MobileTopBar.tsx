@@ -5,13 +5,10 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import type { Profile } from "@/lib/auth";
-import { THEME_COOKIE, type Theme } from "@/lib/theme";
-import { saveTheme } from "./actions";
 
-/** Mobile header (design 1b): logo, theme pill, avatar with a small account menu. */
-export function MobileTopBar({ profile, theme: initial }: { profile: Profile; theme: Theme }) {
+/** Mobile header (design 1b): logo, avatar with a small account menu (theme lives in Settings). */
+export function MobileTopBar({ profile }: { profile: Profile }) {
   const t = useTranslations();
-  const [theme, setTheme] = useState(initial);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -22,23 +19,12 @@ export function MobileTopBar({ profile, theme: initial }: { profile: Profile; th
     return () => document.removeEventListener("mousedown", close);
   }, [open]);
 
-  const toggleTheme = () => {
-    const next: Theme = theme === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    document.cookie = `${THEME_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
-    setTheme(next);
-    void saveTheme(next);
-  };
-
   return (
     <header className="flex items-center justify-between px-5 pb-1 pt-[max(14px,env(safe-area-inset-top))] lg:hidden">
       <Link href="/">
         <img src="/brand/logo-off-white.png" alt="Slate 'n' Frame" className="h-[22px] [filter:var(--logo-filter)]" />
       </Link>
       <div ref={ref} className="relative flex items-center gap-2.5">
-        <button type="button" onClick={toggleTheme} className="h-9 cursor-pointer whitespace-nowrap rounded-full border border-line2 px-3 text-[13px] font-medium text-ink2">
-          {theme === "dark" ? t("theme.toLightShort") : t("theme.toDarkShort")}
-        </button>
         <button type="button" aria-label={t("common.menu")} onClick={() => setOpen((o) => !o)} className="cursor-pointer rounded-full">
           <Avatar person={profile} size={36} />
         </button>

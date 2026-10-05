@@ -373,6 +373,13 @@
     "color": "Boja avatara",
     "saveProfile": "Sačuvaj profil",
     "saved": "Sačuvano",
+    "appearance": "Izgled",
+    "appearanceHint": "Prati temu uređaja ili uvek svetla ili tamna.",
+    "themes": {
+      "system": "Kao uređaj",
+      "light": "Svetla",
+      "dark": "Tamna"
+    },
     "language": "Jezik",
     "languageHint": "Jezik aplikacije za tebe. Mailovi ostaju na engleskom; portal za klijente ima svoj jezik (klijent → Portal za klijenta).",
     "notifications": "Obaveštenja",
@@ -716,7 +723,9 @@
     "postsThisMonth": "Objave ovog meseca",
     "unavailable": "Ova stranica nije dostupna.",
     "notFoundTitle": "Link ne važi",
-    "notFoundText": "Ovaj link do portala više ne radi. Zatražite aktuelni od Slate 'n' Frame-a."
+    "notFoundText": "Ovaj link do portala više ne radi. Zatražite aktuelni od Slate 'n' Frame-a.",
+    "viewCalendar": "Kalendar",
+    "viewList": "Lista"
   },
   "shootSheet": {
     "status": "Status",

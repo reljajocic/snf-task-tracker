@@ -3,7 +3,7 @@ import { DM_Sans, Montserrat } from "next/font/google";
 import { cookies } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
-import { THEME_COOKIE, parseTheme } from "@/lib/theme";
+import { SYSTEM_THEME_SCRIPT, THEME_COOKIE, parseTheme } from "@/lib/theme";
 import "./globals.css";
 
 // Display face: free stand-in for Uni Neue Black (brand font, not licensed for web yet).
@@ -40,9 +40,14 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang={locale}
-      data-theme={theme}
+      data-theme={theme === "system" ? undefined : theme}
       className={`${montserrat.variable} ${dmSans.variable} h-full`}
+      suppressHydrationWarning
     >
+      <head>
+        {/* "system": set the theme from the device before the first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: SYSTEM_THEME_SCRIPT }} />
+      </head>
       {/* Browser extensions (e.g. Grammarly) inject attributes on <body> before hydration. */}
       <body className="min-h-full" suppressHydrationWarning>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>

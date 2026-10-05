@@ -6,10 +6,9 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import type { Profile } from "@/lib/auth";
-import { SIDEBAR_COOKIE, type Theme } from "@/lib/theme";
+import { SIDEBAR_COOKIE } from "@/lib/theme";
 import { NAV_ICONS } from "./icons";
 import { ADMIN_NAV, CONTENT_NAV, SIDEBAR_NAV, isActive, type NavItem } from "./nav";
-import { ThemeToggle } from "./ThemeToggle";
 
 function NavLink({ item, active, label, collapsed }: { item: NavItem; active: boolean; label: string; collapsed: boolean }) {
   return (
@@ -29,7 +28,7 @@ function NavLink({ item, active, label, collapsed }: { item: NavItem; active: bo
 }
 
 /** Desktop sidebar: 240px, or a 72px icon rail when collapsed (remembered in a cookie). */
-export function Sidebar({ profile, theme, initialCollapsed }: { profile: Profile; theme: Theme; initialCollapsed: boolean }) {
+export function Sidebar({ profile, initialCollapsed }: { profile: Profile; initialCollapsed: boolean }) {
   const t = useTranslations();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(initialCollapsed);
@@ -87,7 +86,6 @@ export function Sidebar({ profile, theme, initialCollapsed }: { profile: Profile
           ADMIN_NAV.map((item) => (
             <NavLink key={item.href} item={item} active={isActive(pathname, item)} label={t(`nav.${item.key}`)} collapsed={collapsed} />
           ))}
-        <ThemeToggle initial={theme} compact={collapsed} />
         <div className={`flex items-center gap-2.5 ${collapsed ? "flex-col" : "px-1"}`}>
           <Link
             href="/settings"

@@ -9,6 +9,8 @@ import { inputClass } from "@/components/tasks/fields";
 import type { Profile } from "@/lib/auth";
 import { NOTIFICATION_EVENTS, isEnabled, type NotificationEvent, type Preference } from "@/lib/notifications";
 import { LOCALES, LOCALE_NAME, type Locale } from "@/lib/locale";
+import { THEMES, THEME_COOKIE, type Theme } from "@/lib/theme";
+import { saveTheme } from "@/components/shell/actions";
 import { AVATAR_COLORS } from "@/lib/team";
 import { saveProfile, setLanguage, setPreference } from "./actions";
 
@@ -53,6 +55,38 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         <Button type="submit" size="sm" disabled={pending}>{t("saveProfile")}</Button>
       </div>
     </form>
+  );
+}
+
+function applyTheme(theme: Theme) {
+  document.cookie = `${THEME_COOKIE}=${theme}; path=/; max-age=31536000; samesite=lax`;
+  if (theme === "system") (window as unknown as { __snfApplySystemTheme?: () => void }).__snfApplySystemTheme?.();
+  else document.documentElement.dataset.theme = theme;
+}
+
+/** Light, dark, or follow the device (default). Applied at once; remembered in a cookie + the profile. */
+export function ThemeSetting({ current }: { current: Theme }) {
+  const t = useTranslations("settings");
+  const [value, setValue] = useState(current);
+  const pick = (theme: Theme) => {
+    setValue(theme);
+    applyTheme(theme);
+    void saveTheme(theme);
+  };
+  return (
+    <div className="flex flex-wrap gap-2">
+      {THEMES.map((theme) => (
+        <button
+          key={theme}
+          type="button"
+          aria-pressed={value === theme}
+          onClick={() => pick(theme)}
+          className={`h-11 cursor-pointer rounded-full border px-5 text-[14px] font-medium ${value === theme ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`}
+        >
+          {t(`themes.${theme}`)}
+        </button>
+      ))}
+    </div>
   );
 }
 
