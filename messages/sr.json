@@ -762,7 +762,18 @@
     "editText": "Izmeni tekst",
     "openPanel": "Otvori video ↗",
     "clickToEdit": "Klikni za izmenu",
-    "empty": "—"
+    "empty": "—",
+    "sortBy": "Redosled",
+    "sort": {
+      "manual": "Redosled snimanja",
+      "time": "Vreme",
+      "status": "Status",
+      "person": "Osoba",
+      "type": "Tip"
+    },
+    "sortViewOnly": "Samo za pregled — redosled snimanja ostaje kakav je.",
+    "moveUp": "Pomeri gore",
+    "moveDown": "Pomeri dole"
   },
   "bank": {
     "title": "Banka videa",

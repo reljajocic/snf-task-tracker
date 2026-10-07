@@ -45,6 +45,21 @@ export function byShootTime<T extends { shoot_time: string | null; created_at: s
   return oa !== ob ? oa - ob : a.created_at.localeCompare(b.created_at);
 }
 
+/** The shoot's own order (set by hand, or by time when times are entered), then when added. */
+export function byShootOrder<T extends { shoot_order?: number | null; created_at: string }>(a: T, b: T) {
+  const oa = a.shoot_order ?? Number.MAX_SAFE_INTEGER;
+  const ob = b.shoot_order ?? Number.MAX_SAFE_INTEGER;
+  return oa !== ob ? oa - ob : a.created_at.localeCompare(b.created_at);
+}
+
+/** Ids in time order (untimed last); videos at the same time keep their current order. */
+export function idsByTime(videos: { id: string; shoot_time: string | null }[]) {
+  return videos
+    .map((v, i) => ({ id: v.id, time: v.shoot_time ?? "99:99", i }))
+    .sort((a, b) => (a.time === b.time ? a.i - b.i : a.time < b.time ? -1 : 1))
+    .map((v) => v.id);
+}
+
 /** Call sheet derived from the videos: one line per time with everyone on camera then. */
 export function deriveCallTimes(videos: { shoot_time: string | null; on_camera: string | null }[]) {
   const byTime = new Map<string, string[]>();

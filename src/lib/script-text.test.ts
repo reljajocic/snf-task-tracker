@@ -77,3 +77,27 @@ describe("shoot helpers", () => {
     expect(splitReference("Mora žensko da snima.")).toEqual({ reference: null, rest: "Mora žensko da snima." });
   });
 });
+
+import { byShootOrder, idsByTime } from "./script-text";
+
+describe("shoot running order", () => {
+  it("puts timed videos in time order, untimed last, ties keep their order", () => {
+    expect(
+      idsByTime([
+        { id: "a", shoot_time: null },
+        { id: "b", shoot_time: "21:00" },
+        { id: "c", shoot_time: "20:00" },
+        { id: "d", shoot_time: "21:00" },
+      ]),
+    ).toEqual(["c", "b", "d", "a"]);
+  });
+
+  it("orders by the saved position, then by when added", () => {
+    const rows = [
+      { id: "x", shoot_order: null, created_at: "2026-10-01" },
+      { id: "y", shoot_order: 1, created_at: "2026-10-02" },
+      { id: "z", shoot_order: 0, created_at: "2026-10-03" },
+    ];
+    expect([...rows].sort(byShootOrder).map((r) => r.id)).toEqual(["z", "y", "x"]);
+  });
+});

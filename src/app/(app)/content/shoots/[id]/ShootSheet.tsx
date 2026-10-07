@@ -3,12 +3,12 @@
 import { ScriptDecisionBadge } from "@/components/tasks/ScriptDecisionBadge";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Fragment, useState, useTransition } from "react";
+import { Fragment, useOptimistic, useState, useTransition } from "react";
 import { createTask, setShotStatus, updateTask, type TaskPatch } from "@/app/(app)/task-actions";
 import { TaskLink } from "@/components/tasks/links";
-import { sectionsToText, textToSections } from "@/lib/script-text";
+import { idsByTime, sectionsToText, textToSections } from "@/lib/script-text";
 import type { ScriptSection, ShotStatus, Task } from "@/lib/tasks";
-import { removeFromShoot } from "../actions";
+import { removeFromShoot, reorderShoot } from "../actions";
 
 const STATUS_STYLE: Record<ShotStatus, string> = {
   to_shoot: "text-ink2",
@@ -41,6 +41,49 @@ export function ShootSheet({
   const [, startTransition] = useTransition();
   const [adding, setAdding] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
+  // "manual" is the saved running order (arrows move videos); the others only change the view.
+  const [sort, setSort] = useState<"manual" | "time" | "status" | "person" | "type">("manual");
+  const [ordered, reorder] = useOptimistic(videos, (cur, ids: string[]) => ids.map((id) => cur.find((v) => v.id === id)!).filter(Boolean));
+  const STATUS_RANK: Record<string, number> = { to_shoot: 0, shot: 1, not_shot: 2 };
+  const shown =
+    sort === "manual"
+      ? ordered
+      : [...ordered].sort((a, b) => {
+          const key = (v: Task) =>
+            sort === "time"
+              ? v.shoot_time ?? "99:99"
+              : sort === "status"
+                ? String(STATUS_RANK[v.shot_status ?? "to_shoot"] ?? 9)
+                : sort === "person"
+                  ? (v.on_camera ?? "\uffff").toLowerCase()
+                  : (v.content_type ?? "\uffff").toLowerCase();
+          return key(a).localeCompare(key(b));
+        });
+
+  const move = (id: string, dir: -1 | 1) => {
+    const ids = ordered.map((v) => v.id);
+    const i = ids.indexOf(id);
+    const j = i + dir;
+    if (j < 0 || j >= ids.length) return;
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+    startTransition(async () => {
+      reorder(ids);
+      await reorderShoot(shootId, ids);
+      router.refresh();
+    });
+  };
+
+  const saveTime = (v: Task, raw: string) => {
+    const time = raw.trim() || null;
+    startTransition(async () => {
+      await updateTask(v.id, { shoot_time: time });
+      // Entering a time slots the video into time order; arrows can still move it afterwards.
+      const ids = idsByTime(ordered.map((x) => (x.id === v.id ? { ...x, shoot_time: time } : x)));
+      reorder(ids);
+      await reorderShoot(shootId, ids);
+      router.refresh();
+    });
+  };
 
   const save = (id: string, patch: TaskPatch) =>
     startTransition(async () => {
@@ -69,11 +112,27 @@ export function ShootSheet({
 
   return (
     <div className="flex flex-col gap-3 px-10 pb-12 pt-5">
+      <div className="flex items-center gap-2.5">
+        <span className="text-[13px] font-medium text-ink3">{t("sortBy")}</span>
+        <div className="inline-flex gap-0.5 rounded-[7px] border border-line2 p-[3px]">
+          {(["manual", "time", "status", "person", "type"] as const).map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setSort(k)}
+              className={`h-8 cursor-pointer rounded-[5px] px-3 text-[13px] font-medium ${sort === k ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
+            >
+              {t(`sort.${k}`)}
+            </button>
+          ))}
+        </div>
+        {sort !== "manual" && <span className="text-[12.5px] text-ink3">{t("sortViewOnly")}</span>}
+      </div>
       <div className="overflow-x-auto">
         <table className="snf-rows w-full min-w-[1180px] text-left">
           <thead>
             <tr className="border-b border-line text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
-              <th className="w-10 px-3 py-2.5">#</th>
+              <th className="w-[70px] px-3 py-2.5">#</th>
               <th className="w-[124px] px-2 py-2.5">{t("status")}</th>
               <th className="w-[78px] px-2 py-2.5">{t("time")}</th>
               <th className="w-[150px] px-2 py-2.5">{t("person")}</th>
@@ -86,18 +145,26 @@ export function ShootSheet({
             </tr>
           </thead>
           <tbody>
-            {videos.map((v, i) => {
+            {shown.map((v, i) => {
               const status = (v.shot_status ?? "to_shoot") as ShotStatus;
               const isOpen = open === v.id;
               const toggle = () => setOpen(isOpen ? null : v.id);
               return (
                 <Fragment key={v.id}>
                   <tr className={`align-top ${isOpen ? "[&>td]:bg-chip" : ""}`}>
-                    <td className="px-3 py-2.5">
-                      <button type="button" onClick={toggle} title={isOpen ? t("collapse") : t("expand")} className="cursor-pointer text-[13px] text-ink3 hover:text-ink">
-                        {i + 1}
-                        <span className="ml-1 text-[10px]">{isOpen ? "▲" : "▼"}</span>
-                      </button>
+                    <td className="px-2 py-2">
+                      <div className="flex items-center gap-1">
+                        {editable && sort === "manual" && (
+                          <span className="flex flex-col">
+                            <button type="button" aria-label={t("moveUp")} disabled={i === 0} onClick={() => move(v.id, -1)} className="h-4 cursor-pointer px-0.5 text-[10px] leading-none text-ink3 hover:text-ink disabled:opacity-25">▲</button>
+                            <button type="button" aria-label={t("moveDown")} disabled={i === shown.length - 1} onClick={() => move(v.id, 1)} className="h-4 cursor-pointer px-0.5 text-[10px] leading-none text-ink3 hover:text-ink disabled:opacity-25">▼</button>
+                          </span>
+                        )}
+                        <button type="button" onClick={toggle} title={isOpen ? t("collapse") : t("expand")} className="cursor-pointer text-[13px] text-ink3 hover:text-ink">
+                          {i + 1}
+                          <span className="ml-1 text-[10px]">{isOpen ? "−" : "+"}</span>
+                        </button>
+                      </div>
                     </td>
                     <td className="px-1 py-1">
                       <select
@@ -117,7 +184,7 @@ export function ShootSheet({
                       </select>
                     </td>
                     <td className="px-1 py-1">
-                      <InputCell value={v.shoot_time ?? ""} disabled={!editable} placeholder="—" onSave={(x) => save(v.id, { shoot_time: x.trim() || null })} className="font-semibold" />
+                      <InputCell value={v.shoot_time ?? ""} disabled={!editable} placeholder="—" onSave={(x) => saveTime(v, x)} className="font-semibold" />
                     </td>
                     <td className="px-1 py-1">
                       <InputCell value={v.on_camera ?? ""} disabled={!editable} onSave={(x) => save(v.id, { on_camera: x })} />

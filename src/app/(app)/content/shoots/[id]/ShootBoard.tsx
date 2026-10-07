@@ -13,8 +13,8 @@ import { Button } from "@/components/ui/Button";
 import type { ShootDay } from "@/lib/content";
 import { PHASES, type ShotStatus, type Task } from "@/lib/tasks";
 import { updateTask } from "@/app/(app)/task-actions";
-import { addVideosToShoot, removeFromShoot, setSignupLink } from "../actions";
-import { byShootTime, deriveCallTimes } from "@/lib/script-text";
+import { addVideosToShoot, removeFromShoot, reorderShoot, setSignupLink } from "../actions";
+import { byShootOrder, byShootTime, deriveCallTimes, idsByTime } from "@/lib/script-text";
 import { CallTimes } from "./ShootTools";
 import { ShootSheet } from "./ShootSheet";
 
@@ -127,6 +127,9 @@ export function ShootBoard({
     if (value === (v.shoot_time ?? "")) return;
     startTransition(async () => {
       await updateTask(v.id, { shoot_time: value || null });
+      // A time puts the video in its place in the running order.
+      const next = [...unsorted].sort(byShootOrder).map((x) => (x.id === v.id ? { ...x, shoot_time: value || null } : x));
+      await reorderShoot(day.id, idsByTime(next));
       router.refresh();
     });
   };
@@ -346,7 +349,7 @@ export function ShootBoard({
           <div className="px-10 pt-5">
             <CallTimes times={deriveCallTimes(items)} />
           </div>
-          <ShootSheet shootId={day.id} clientId={day.client?.id ?? ""} videos={items} tags={tags} editable={canManage} />
+          <ShootSheet shootId={day.id} clientId={day.client?.id ?? ""} videos={[...unsorted].sort(byShootOrder)} tags={tags} editable={canManage} />
         </div>
       )}
 

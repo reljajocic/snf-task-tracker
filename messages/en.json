@@ -762,7 +762,18 @@
     "editText": "Edit text",
     "openPanel": "Open video ↗",
     "clickToEdit": "Click to edit",
-    "empty": "—"
+    "empty": "—",
+    "sortBy": "Order",
+    "sort": {
+      "manual": "Running order",
+      "time": "Time",
+      "status": "Status",
+      "person": "Person",
+      "type": "Type"
+    },
+    "sortViewOnly": "Just for viewing — the running order stays as it is.",
+    "moveUp": "Move up",
+    "moveDown": "Move down"
   },
   "bank": {
     "title": "Video bank",

@@ -93,6 +93,18 @@ export async function setSignupLink(shootId: string, on: boolean): Promise<{ tok
   return { token, error: null };
 }
 
+/** Saves the shoot's running order (ids top to bottom). RLS: the client team. */
+export async function reorderShoot(shootId: string, ids: string[]): Promise<{ error: string | null }> {
+  await requireProfile();
+  const supabase = await createClient();
+  for (const [i, id] of ids.entries()) {
+    const { error } = await supabase.from("tasks").update({ shoot_order: i }).eq("id", id).eq("shoot_id", shootId);
+    if (error) return { error: error.message };
+  }
+  revalidatePath(`/content/shoots/${shootId}`);
+  return { error: null };
+}
+
 export async function removeFromShoot(videoId: string) {
   await requireProfile();
   const supabase = await createClient();
