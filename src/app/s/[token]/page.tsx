@@ -1,3 +1,4 @@
+import { AutoRefresh } from "@/components/AutoRefresh";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
@@ -37,6 +38,7 @@ export default async function SignupPage({ params }: PageProps<"/s/[token]">) {
           <p className="max-w-[620px] text-[15px] leading-relaxed text-ink2">{t("lead")}</p>
         </div>
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <AutoRefresh seconds={15} />
           <SignupList token={token} videos={signup.videos} />
         </NextIntlClientProvider>
       </main>

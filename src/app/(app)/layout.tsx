@@ -1,3 +1,4 @@
+import { AutoRefresh } from "@/components/AutoRefresh";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 import { MobileNav } from "@/components/shell/MobileNav";
@@ -16,7 +17,9 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="snf-canvas flex min-h-dvh text-ink">
       <Sidebar profile={profile} initialCollapsed={cookieStore.get(SIDEBAR_COOKIE)?.value === "collapsed"} />
-      <main className="flex min-w-0 flex-1 flex-col pb-[84px] lg:pb-0">
+      {/* Others' changes show up on their own (every minute, and when you come back to the tab). */}
+      <AutoRefresh seconds={60} />
+      <main className="flex min-w-0 flex-1 flex-col pb-[calc(68px+env(safe-area-inset-bottom))] lg:pb-0">
         <MobileTopBar profile={profile} />
         {children}
       </main>

@@ -1,3 +1,4 @@
+import { AutoRefresh } from "@/components/AutoRefresh";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -26,6 +27,8 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
+      {/* Names from the sign-up link and ticks from the crew show up within seconds. */}
+      <AutoRefresh seconds={15} />
       <header className="flex flex-col gap-4 px-5 pb-5 pt-6 lg:flex-row lg:items-end lg:justify-between lg:px-10 lg:pt-9">
         <div className="flex min-w-0 flex-col gap-3">
           <Link href="/content/shoots" className="text-[14px] font-medium text-ink3 hover:text-ink">
