@@ -23,7 +23,7 @@ export function NameField({ name, setName }: { name: string; setName: (v: string
   );
 }
 
-export function VideoDecision({ token, taskId, versionId, decision, undoable }: { token: string; taskId: string; versionId: string; decision: Decision | null; undoable: boolean }) {
+export function VideoDecision({ token, taskId, versionId, decision, undoable }: { token: string; taskId: string; versionId: string | null; decision: Decision | null; undoable: boolean }) {
   const t = useTranslations("portal");
   const router = useRouter();
   const [name, setName] = useApprover();

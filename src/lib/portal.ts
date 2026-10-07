@@ -71,6 +71,9 @@ export type PortalVideo = {
   shoot_time: string | null;
   versions: { id: string; version: number; url: string; note: string | null; created_at: string; decision: Decision | null }[];
   scriptDecision: Decision | null;
+  /** The client's word when the video was sent for approval without a version (e.g. via Drive). */
+  looseDecision: Decision | null;
+  drive_url: string | null;
 };
 
 import type { PortalStatus } from "@/lib/portal-status";
@@ -80,6 +83,8 @@ export function portalStatus(v: PortalVideo): PortalStatus {
   if (v.phase >= 5) return "published";
   const latest = v.versions[0];
   if (latest && !latest.decision) return "awaiting";
+  // Sent to the client in the app ("Waiting on client" / Revision): their turn, version or not.
+  if (v.phase === 3) return "awaiting";
   // Ready = the client approved the cut, or it's in the publish step.
   if (latest?.decision?.status === "approved" || v.phase >= 4) return "ready";
   // Filmed and being edited (or reworked after the client asked for changes).
@@ -89,7 +94,7 @@ export function portalStatus(v: PortalVideo): PortalStatus {
 
 
 
-type RawVideo = Omit<PortalVideo, "versions" | "scriptDecision"> & {
+type RawVideo = Omit<PortalVideo, "versions" | "scriptDecision" | "looseDecision"> & {
   video_versions: Omit<PortalVideo["versions"][number], "decision">[];
   approvals: (Decision & { kind: string; version_id: string | null })[];
 };
@@ -106,7 +111,7 @@ export async function getPortalVideos(clientId: string, scope: PortalScope): Pro
   let query = createAdminClient()
     .from("tasks")
     .select(
-      `id, title, content_type, on_camera, location, script, publish_date, phase, shot_status, shoot_time,
+      `id, title, content_type, on_camera, location, script, publish_date, phase, shot_status, shoot_time, drive_url,
        shoot:shoot_days(id, date, location),
        video_versions(id, version, url, note, created_at),
        approvals(id, kind, version_id, status, approver_name, comment, created_at)`,
@@ -130,6 +135,7 @@ export async function getPortalVideos(clientId: string, scope: PortalScope): Pro
     const byNewest = [...approvals].sort((a, b) => b.created_at.localeCompare(a.created_at));
     const pick = ({ id, status, approver_name, comment, created_at }: Decision) => ({ id, status, approver_name, comment, created_at });
     const scriptDecision = byNewest.find((a) => a.kind === "script");
+    const looseDecision = byNewest.find((a) => a.kind === "video" && !a.version_id);
     return {
       ...v,
       phase: v.phase ?? 0,
@@ -141,6 +147,7 @@ export async function getPortalVideos(clientId: string, scope: PortalScope): Pro
           return { ...ver, decision: d ? pick(d) : null };
         }),
       scriptDecision: scriptDecision ? pick(scriptDecision) : null,
+      looseDecision: looseDecision ? pick(looseDecision) : null,
     };
   });
 }

@@ -40,7 +40,7 @@ function cleanName(name: string) {
 export async function decideVideo(
   token: string,
   taskId: string,
-  versionId: string,
+  versionId: string | null,
   decision: "approved" | "changes",
   name: string,
   comment: string,
@@ -51,7 +51,10 @@ export async function decideVideo(
   if (!approver) return { ok: false, error: "Please enter your name." };
   if (decision === "changes" && !comment.trim()) return { ok: false, error: "Please describe what to change." };
   const latest = ctx.video.versions[0];
-  if (!latest || latest.id !== versionId) return { ok: false, error: "There's a newer version of this video." };
+  // With versions, decide on the newest; without any, only while it's waiting on the client.
+  if (versionId ? !latest || latest.id !== versionId : latest || ctx.video.phase !== 3) {
+    return { ok: false, error: "There's a newer version of this video." };
+  }
 
   const admin = createAdminClient();
   const { data, error } = await admin
@@ -68,7 +71,7 @@ export async function decideVideo(
   after(async () => {
     await admin.from("portal_activity").insert({
       client_id: ctx.portal.clientId,
-      message: `${approver} ${decision === "approved" ? "approved" : "asked for changes to"} version ${latest.version} of “${title}”`,
+      message: `${approver} ${decision === "approved" ? "approved" : "asked for changes to"} ${latest ? `version ${latest.version} of ` : ""}“${title}”`,
     });
     await notify({
       event: decision === "approved" ? "client_approved" : "client_changes",

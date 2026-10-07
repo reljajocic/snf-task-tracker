@@ -679,6 +679,7 @@
     "awaiting": "Waiting for your approval",
     "nothingAwaiting": "Nothing needs your approval right now.",
     "videoVersion": "Video · version {n}",
+    "videoOnly": "Video",
     "postOn": "Posting {date}",
     "reviewCta": "Watch and approve →",
     "scriptsFor": "Scripts for the shoot",

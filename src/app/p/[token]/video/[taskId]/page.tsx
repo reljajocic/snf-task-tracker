@@ -14,11 +14,14 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
   const t = await getTranslations({ locale: portal.locale });
   if (!portal.show.review) notFound();
   const video = (await getPortalVideos(portal.clientId, { id: taskId }))[0];
-  if (!video || !video.versions.length) notFound();
+  // Sent for approval without a version (Revision in the app): the client still decides, watching via Drive.
+  if (!video || (!video.versions.length && video.phase !== 3 && !video.looseDecision)) notFound();
 
-  const shown = video.versions.find((x) => String(x.version) === versionParam) ?? video.versions[0];
-  const isLatest = shown.id === video.versions[0].id;
-  const player = embedUrl(shown.url);
+  const shown = video.versions.find((x) => String(x.version) === versionParam) ?? video.versions[0] ?? null;
+  const isLatest = !shown || shown.id === video.versions[0].id;
+  const url = shown?.url ?? video.drive_url;
+  const player = url ? embedUrl(url) : null;
+  const decision = shown ? shown.decision : video.phase === 3 ? null : video.looseDecision;
   const status = portalStatus(video);
   const facts = [
     video.publish_date && t("portal.postOn", { date: `${t("weekday.short", { day: String(weekdayIndex(video.publish_date)) })}, ${formatDate(video.publish_date)}` }),
@@ -36,25 +39,32 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
         <div className="relative aspect-[9/16] w-full max-w-[400px] overflow-hidden rounded-[10px] bg-ink-black">
           {player ? (
             <iframe src={player} title={video.title} allow="autoplay; fullscreen" allowFullScreen className="absolute inset-0 size-full border-0" />
+          ) : !url ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
+              <Poster className="size-[76px] rounded-full text-[24px]" />
+              <span className="text-[14px] font-medium text-offwhite">{t("portal.noVideo")}</span>
+            </div>
           ) : (
-            <a href={shown.url} target="_blank" rel="noreferrer" className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+            <a href={url} target="_blank" rel="noreferrer" className="absolute inset-0 flex flex-col items-center justify-center gap-3">
               <Poster className="size-[76px] rounded-full text-[24px]" />
               <span className="text-[14px] font-medium text-offwhite">{t("portal.openVideo")}</span>
             </a>
           )}
         </div>
-        <div className="flex w-full max-w-[400px] flex-wrap justify-between gap-2 text-[13px] font-medium text-ink3">
-          <span>{t("portal.version", { n: shown.version, date: formatDate(shown.created_at.slice(0, 10)) })}</span>
-          <span className="flex gap-3">
-            {video.versions
-              .filter((x) => x.id !== shown.id)
-              .map((x) => (
-                <Link key={x.id} href={`?v=${x.version}`} className="text-ink2 hover:text-ink">
-                  {t("portal.version", { n: x.version, date: "" }).replace(" · ", "")}
-                </Link>
-              ))}
-          </span>
-        </div>
+        {shown && (
+          <div className="flex w-full max-w-[400px] flex-wrap justify-between gap-2 text-[13px] font-medium text-ink3">
+            <span>{t("portal.version", { n: shown.version, date: formatDate(shown.created_at.slice(0, 10)) })}</span>
+            <span className="flex gap-3">
+              {video.versions
+                .filter((x) => x.id !== shown.id)
+                .map((x) => (
+                  <Link key={x.id} href={`?v=${x.version}`} className="text-ink2 hover:text-ink">
+                    {t("portal.version", { n: x.version, date: "" }).replace(" · ", "")}
+                  </Link>
+                ))}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="flex max-w-[720px] flex-col gap-7 px-5 pb-12 pt-6 lg:px-14 lg:py-10">
@@ -81,19 +91,19 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
           </div>
         )}
 
-        {shown.note && (
+        {shown?.note && (
           <div className="flex gap-3">
             <span className="grid size-8 flex-none place-items-center rounded-full bg-[#F4A98D] text-[13px] font-semibold text-charcoal">S</span>
             <div className="flex flex-col gap-1.5">
               <span className="text-[14px] font-semibold">
-                Slate &apos;n&apos; Frame <span className="font-normal text-ink3">· {formatDate(shown.created_at.slice(0, 10))}</span>
+                Slate n&apos; Frame <span className="font-normal text-ink3">· {formatDate(shown.created_at.slice(0, 10))}</span>
               </span>
               <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">{shown.note}</span>
             </div>
           </div>
         )}
 
-        {isLatest && <VideoDecision token={token} taskId={video.id} versionId={shown.id} decision={shown.decision} undoable={canUndo(shown.decision)} />}
+        {isLatest && <VideoDecision token={token} taskId={video.id} versionId={shown?.id ?? null} decision={decision} undoable={canUndo(decision)} />}
       </div>
     </div>
   );

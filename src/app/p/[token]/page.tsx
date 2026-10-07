@@ -55,7 +55,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                     <Poster className="h-32 w-[72px]" />
                     <div className="flex min-w-0 flex-1 flex-col gap-2">
                       <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">
-                        {t("portal.videoVersion", { n: v.versions[0].version })}
+                        {v.versions[0] ? t("portal.videoVersion", { n: v.versions[0].version }) : t("portal.videoOnly")}
                       </span>
                       <span className="text-[17px] font-medium leading-snug">{v.title}</span>
                       {v.publish_date && (
