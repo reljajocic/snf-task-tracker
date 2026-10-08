@@ -835,8 +835,8 @@
     "yours": "✓ Ovaj snimaš ti",
     "takenBy": "Zauzeto: {name}",
     "justTaken": "Neko je upravo uzeo taj video. Lista je sada osvežena.",
-    "callTimes": "Ko kada dolazi",
-    "nobodyYet": "još niko",
+    "overview": "Ko šta snima",
+    "filter": { "all": "Svi", "mine": "Moji", "free": "Slobodni" },
     "yourCall": "Tvoj dolazak: {time}",
     "yourCallNoTime": "Vreme dolaska još nije upisano",
     "yourVideos": "{count, plural, one {Snimaš # video} few {Snimaš # videa} other {Snimaš # videa}}"

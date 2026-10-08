@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
-import { deriveCallTimes } from "@/lib/script-text";
 import type { SignupVideo } from "@/lib/signup";
 import { useApprover } from "../../p/[token]/useApprover";
 import { addName, removeName } from "./actions";
@@ -24,7 +23,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
   const [pending, start] = useTransition();
   const me = name.trim().toLowerCase();
   const isMine = (v: SignupVideo) => v.names.some((n) => n.toLowerCase() === me);
-  const callTimes = deriveCallTimes(videos.map((v) => ({ shoot_time: v.time, on_camera: v.names.join(", ") || null })));
+  const [filter, setFilter] = useState<"all" | "mine" | "free">("all");
   const mineList = me ? videos.filter(isMine) : [];
   const myTimes = mineList.map((v) => v.time).filter((x): x is string => !!x).sort();
 
@@ -58,28 +57,51 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
         </div>
       )}
 
-      {callTimes.length > 0 && (
-        <div className="flex flex-col gap-2.5 rounded-xl border border-line bg-surf px-4 py-4 lg:px-5">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink3">{t("callTimes")}</span>
-          {callTimes.map((c) => (
-            <div key={c.time} className="flex gap-4 text-[15px]">
-              <span className="w-[52px] flex-none font-semibold tabular-nums">{c.time}</span>
-              <span className="text-ink2">{c.name || t("nobodyYet")}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* The whole day at a glance, one line per video; a tap jumps to its card. */}
+      <div className="flex flex-col rounded-xl border border-line bg-surf py-2">
+        <span className="px-4 pb-1.5 pt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink3 lg:px-5">{t("overview")}</span>
+        {videos.map((v, i) => (
+          <a
+            key={v.id}
+            href={`#v-${v.id}`}
+            className={`flex items-center gap-3 px-4 py-2 text-[14.5px] hover:bg-line/40 lg:px-5 ${isMine(v) ? "font-semibold" : ""}`}
+          >
+            <span className="w-[42px] flex-none tabular-nums text-ink3">{v.time ?? `#${i + 1}`}</span>
+            <span className={`min-w-0 flex-1 truncate ${v.status === "not_shot" ? "text-ink3 line-through" : ""}`}>{v.title}</span>
+            <span className={`max-w-[40%] flex-none truncate text-right ${v.names.length ? "text-ink2" : "text-accent"}`}>
+              {v.names.length ? v.names.join(", ") : t("free")}
+            </span>
+            <span className="size-2 flex-none rounded-full" style={{ background: STATUS_COLOR[v.status] }} title={ts(v.status)} />
+          </a>
+        ))}
+      </div>
+
+      <div className="flex gap-1.5">
+        {(["all", "mine", "free"] as const).map((k) => (
+          <button
+            key={k}
+            type="button"
+            onClick={() => setFilter(k)}
+            disabled={k === "mine" && !me}
+            className={`h-9 cursor-pointer rounded-full border px-4 text-[14px] font-medium disabled:cursor-default disabled:opacity-40 ${filter === k ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"}`}
+          >
+            {t(`filter.${k}`)}
+          </button>
+        ))}
+      </div>
 
       <div className="flex flex-col gap-3">
         {videos.map((v, i) => {
           const mine = isMine(v);
           const taken = v.names.length > 0 && !mine;
+          if ((filter === "mine" && !mine) || (filter === "free" && v.names.length > 0)) return null;
           const isOpen = open === v.id;
           const parts = isOpen ? v.script : v.script.slice(0, 1);
           return (
             <div
               key={v.id}
-              className={`flex flex-col gap-3.5 rounded-xl border bg-surf p-4 transition-opacity lg:p-5 ${mine ? "border-accent" : "border-line"} ${taken ? "opacity-45 grayscale" : ""}`}
+              id={`v-${v.id}`}
+              className={`flex scroll-mt-4 flex-col gap-3.5 rounded-xl border bg-surf p-4 transition-opacity lg:p-5 ${mine ? "border-accent" : "border-line"} ${taken ? "opacity-45 grayscale" : ""}`}
             >
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13px] font-medium text-ink3">
                 <span className="tabular-nums">#{i + 1}</span>

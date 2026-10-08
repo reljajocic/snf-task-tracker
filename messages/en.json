@@ -835,8 +835,8 @@
     "yours": "✓ You're doing this one",
     "takenBy": "Taken: {name}",
     "justTaken": "Someone just took that one. The list is up to date now.",
-    "callTimes": "Who comes when",
-    "nobodyYet": "nobody yet",
+    "overview": "Who's in what",
+    "filter": { "all": "All", "mine": "Mine", "free": "Free" },
     "yourCall": "Your call time: {time}",
     "yourCallNoTime": "Your call time isn't set yet",
     "yourVideos": "{count, plural, one {You're in # video} other {You're in # videos}}"
