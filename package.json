@@ -17,13 +17,15 @@
     "import:beric": "JITI_FS_CACHE=false JITI_ALIAS=\"{\\\"@/\\\":\\\"$PWD/src/\\\"}\" node --env-file=.env.local node_modules/jiti/lib/jiti-cli.mjs scripts/import-beric.ts"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "next": "16.3.8",
     "next-intl": "^4.14.9",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

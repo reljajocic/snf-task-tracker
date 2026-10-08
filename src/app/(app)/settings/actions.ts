@@ -7,6 +7,8 @@ import { requireProfile } from "@/lib/auth";
 import { NOTIFICATION_CHANNELS, NOTIFICATION_EVENTS, type NotificationChannel, type NotificationEvent } from "@/lib/notifications";
 import { createClient } from "@/lib/supabase/server";
 import { inkOn, isHexColor } from "@/lib/color";
+import { env } from "@/lib/env";
+import { hashApiToken, newApiToken } from "@/lib/mcp/auth";
 
 export async function saveProfile(_prev: { ok: boolean; error?: string } | null, form: FormData) {
   const me = await requireProfile();
@@ -45,5 +47,24 @@ export async function setPreference(event: NotificationEvent, channel: Notificat
   await supabase
     .from("notification_preferences")
     .upsert({ user_id: me.id, event_type: event, channel, enabled });
+  revalidatePath("/settings");
+}
+
+/** A personal AI key (MCP). The key is returned once; only its hash is stored. RLS: your own keys. */
+export async function createApiToken(name: string): Promise<{ url: string } | { error: string }> {
+  await requireProfile();
+  const label = name.trim().slice(0, 60) || "Claude";
+  const token = newApiToken();
+  const supabase = await createClient();
+  const { error } = await supabase.from("api_tokens").insert({ name: label, token_hash: hashApiToken(token) });
+  if (error) return { error: error.message };
+  revalidatePath("/settings");
+  return { url: `${env.siteUrl}/api/mcp/${token}` };
+}
+
+export async function deleteApiToken(id: string) {
+  await requireProfile();
+  const supabase = await createClient();
+  await supabase.from("api_tokens").delete().eq("id", id);
   revalidatePath("/settings");
 }

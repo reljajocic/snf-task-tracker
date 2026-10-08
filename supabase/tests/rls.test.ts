@@ -312,6 +312,23 @@ describe("app errors", () => {
   });
 });
 
+describe("api tokens", () => {
+  it("people make, see and delete only their own AI keys", async () => {
+    await as(MEMBER, "insert into public.api_tokens (name, token_hash) values ('Claude', 'h-member')");
+    await expect(as(MEMBER, "insert into public.api_tokens (user_id, name, token_hash) values ($1, 'x', 'h-steal')", [MANAGER])).rejects.toThrow(
+      /row-level security/,
+    );
+    expect(await as(MEMBER, "select name from public.api_tokens")).toEqual([{ name: "Claude" }]);
+    expect(await as(MANAGER, "select name from public.api_tokens")).toEqual([]);
+    expect(await as(ADMIN, "select name from public.api_tokens")).toEqual([]);
+    await as(MANAGER, "delete from public.api_tokens where token_hash = 'h-member'");
+    expect(await as(MEMBER, "select name from public.api_tokens")).toEqual([{ name: "Claude" }]);
+    await expect(as(MEMBER, "update public.api_tokens set last_used_at = now()")).rejects.toThrow(/permission denied/);
+    await as(MEMBER, "delete from public.api_tokens where token_hash = 'h-member'");
+    expect(await as(MEMBER, "select name from public.api_tokens")).toEqual([]);
+  });
+});
+
 describe("client portal", () => {
   it("only managers configure the portal; nobody writes approvals through the API", async () => {
     await expect(as(MEMBER, "insert into public.client_portals (client_id, enabled) values ($1, true)", [C1])).rejects.toThrow(

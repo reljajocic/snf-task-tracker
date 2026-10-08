@@ -3,7 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { env } from "@/lib/env";
 
 // Routes reachable without a session.
-const PUBLIC_PATHS = ["/login", "/auth/", "/api/cron/", "/p/", "/s/"];
+// /api/mcp/ checks its own personal key.
+const PUBLIC_PATHS = ["/login", "/auth/", "/api/cron/", "/api/mcp/", "/p/", "/s/"];
 
 /** Refreshes the Supabase session cookie and sends signed-out visitors to /login. */
 export async function proxy(request: NextRequest) {

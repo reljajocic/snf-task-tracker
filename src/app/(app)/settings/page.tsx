@@ -6,12 +6,16 @@ import { THEME_COOKIE, parseTheme } from "@/lib/theme";
 import { cookies } from "next/headers";
 import type { Preference } from "@/lib/notifications";
 import { createClient } from "@/lib/supabase/server";
+import { AiKeys, type ApiKey } from "./AiKeys";
 import { LanguageSetting, NotificationSettings, ProfileForm, ThemeSetting } from "./SettingsForms";
 
 export default async function SettingsPage() {
   const [me, t, locale] = await Promise.all([requireProfile(), getTranslations("settings"), getLocale()]);
   const supabase = await createClient();
-  const { data } = await supabase.from("notification_preferences").select("event_type, channel, enabled").eq("user_id", me.id);
+  const [{ data }, { data: keys }] = await Promise.all([
+    supabase.from("notification_preferences").select("event_type, channel, enabled").eq("user_id", me.id),
+    supabase.from("api_tokens").select("id, name, created_at, last_used_at").order("created_at", { ascending: false }),
+  ]);
 
   return (
     <>
@@ -35,6 +39,11 @@ export default async function SettingsPage() {
           <h2 className="display text-[20px]">{t("notifications")}</h2>
           <p className="text-[14px] text-ink2">{t("notificationsLead")}</p>
           <NotificationSettings prefs={(data ?? []) as Preference[]} />
+        </section>
+        <section className="flex flex-col gap-3.5">
+          <h2 className="display text-[20px]">{t("ai.title")}</h2>
+          <p className="text-[14px] text-ink2">{t("ai.lead")}</p>
+          <AiKeys keys={(keys ?? []) as ApiKey[]} />
         </section>
       </div>
     </>

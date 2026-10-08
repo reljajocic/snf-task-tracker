@@ -418,7 +418,23 @@
         "hint": "Klijent traži izmene na videu ili skripti na kojoj si."
       }
     },
-    "customColor": "Izaberi bilo koju boju"
+    "customColor": "Izaberi bilo koju boju",
+    "ai": {
+      "title": "AI asistenti",
+      "lead": "Poveži Claude (ili drugi AI koji podržava MCP) sa SNF Dailies, pa mu samo reci šta da ubaci: videe sa skriptama, snimanja, ko je na kameri i ko radi na kom videu. AI radi u tvoje ime i vidi samo ono što vidiš ti.",
+      "keyName": "Naziv ključa",
+      "create": "Napravi ključ",
+      "created": "Tvoj link za AI je spreman",
+      "copy": "Kopiraj",
+      "copied": "Kopirano ✓",
+      "onceHint": "Ovaj link je kao lozinka i prikazuje se samo sada. Ako procuri, obriši ključ ispod i napravi novi.",
+      "step1": "U Claude aplikaciji otvori Settings → Connectors → Add custom connector.",
+      "step2": "Upiši ime (npr. SNF Dailies) i nalepi ovaj link kao URL.",
+      "step3": "U novom razgovoru uključi SNF Dailies i napiši npr. „Ubaci ove skripte za NoLimit na snimanje 13.10“.",
+      "lastUsed": "Korišćen {date}",
+      "neverUsed": "Još nije korišćen",
+      "delete": "Obriši"
+    }
   },
   "phase": {
     "script": "Skripta",
@@ -836,7 +852,11 @@
     "takenBy": "Zauzeto: {name}",
     "justTaken": "Neko je upravo uzeo taj video. Lista je sada osvežena.",
     "overview": "Ko šta snima",
-    "filter": { "all": "Svi", "mine": "Moji", "free": "Slobodni" },
+    "filter": {
+      "all": "Svi",
+      "mine": "Moji",
+      "free": "Slobodni"
+    },
     "yourCall": "Tvoj dolazak: {time}",
     "yourCallNoTime": "Vreme dolaska još nije upisano",
     "yourVideos": "{count, plural, one {Snimaš # video} few {Snimaš # videa} other {Snimaš # videa}}"

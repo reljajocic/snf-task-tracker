@@ -418,7 +418,23 @@
         "hint": "A client asks for changes on a video or script you're on."
       }
     },
-    "customColor": "Pick any colour"
+    "customColor": "Pick any colour",
+    "ai": {
+      "title": "AI assistants",
+      "lead": "Connect Claude (or another AI that supports MCP) to SNF Dailies, then just tell it what to add: videos with scripts, shoot days, who's on camera and who works on which video. It acts as you and sees only what you see.",
+      "keyName": "Key name",
+      "create": "Create key",
+      "created": "Your AI link is ready",
+      "copy": "Copy",
+      "copied": "Copied ✓",
+      "onceHint": "This link works like a password and is shown only now. If it leaks, delete the key below and make a new one.",
+      "step1": "In the Claude app open Settings → Connectors → Add custom connector.",
+      "step2": "Enter a name (e.g. SNF Dailies) and paste this link as the URL.",
+      "step3": "In a new chat turn on SNF Dailies and write e.g. “Add these scripts for NoLimit to the 13.10 shoot”.",
+      "lastUsed": "Used {date}",
+      "neverUsed": "Not used yet",
+      "delete": "Delete"
+    }
   },
   "phase": {
     "script": "Script",
@@ -836,7 +852,11 @@
     "takenBy": "Taken: {name}",
     "justTaken": "Someone just took that one. The list is up to date now.",
     "overview": "Who's in what",
-    "filter": { "all": "All", "mine": "Mine", "free": "Free" },
+    "filter": {
+      "all": "All",
+      "mine": "Mine",
+      "free": "Free"
+    },
     "yourCall": "Your call time: {time}",
     "yourCallNoTime": "Your call time isn't set yet",
     "yourVideos": "{count, plural, one {You're in # video} other {You're in # videos}}"
