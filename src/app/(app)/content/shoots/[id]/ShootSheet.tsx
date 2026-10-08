@@ -149,7 +149,7 @@ export function ShootSheet({
         )}
       </div>
       <div className="overflow-x-auto">
-        <table className="snf-rows w-full min-w-[1180px] text-left">
+        <table className="snf-rows w-full min-w-[1240px] text-left">
           <thead>
             <tr className="border-b border-line text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
               <th className="w-[70px] px-3 py-2.5">#</th>
@@ -159,8 +159,8 @@ export function ShootSheet({
               <th className="w-[90px] px-2 py-2.5">{t("type")}</th>
               <th className="w-[200px] px-2 py-2.5">{t("title")}</th>
               <th className="px-2 py-2.5">{t("text")}</th>
-              <th className="w-[130px] px-2 py-2.5">{t("reference")}</th>
-              <th className="w-[170px] px-2 py-2.5">{t("note")}</th>
+              <th className="w-[100px] px-2 py-2.5">{t("reference")}</th>
+              <th className="w-[280px] px-2 py-2.5">{t("note")}</th>
               <th className="w-8" />
             </tr>
           </thead>
@@ -240,7 +240,12 @@ export function ShootSheet({
                       />
                     </td>
                     <td className="px-1 py-1">
-                      <TextCell value={v.note ?? ""} disabled={!editable} onSave={(x) => save(v.id, { note: x })} render={(val) => <Linkified text={val} />} />
+                      <TextCell value={v.note ?? ""} disabled={!editable} onSave={(x) => save(v.id, { note: x })} render={(val) => (
+                          // The script is what matters on set; a long note stays short here (all of it under +).
+                          <div className="max-h-[110px] overflow-hidden text-[13px] leading-snug [mask-image:linear-gradient(to_bottom,black_65%,transparent)]">
+                            <Linkified text={val} />
+                          </div>
+                        )} />
                     </td>
                     <td className="px-1 py-2">
                       {editable && (
@@ -290,12 +295,13 @@ export function ShootSheet({
 }
 
 /** HOOK / CTA / BODY with the label set off in the accent color. */
+/** `clamp`: the compact in-row style (whole script, smaller type). */
 export function ScriptPreview({ sections, clamp = false }: { sections: ScriptSection[]; clamp?: boolean }) {
   const t = useTranslations("shootSheet");
   const filled = sections.filter((s) => s.text.trim() || s.label.trim());
   if (!filled.length) return <span className="text-[14px] text-ink3">{t("empty")}</span>;
   return (
-    <div className={`flex flex-col gap-2 ${clamp ? "max-h-[96px] overflow-hidden [mask-image:linear-gradient(to_bottom,black_70%,transparent)]" : ""}`}>
+    <div className="flex flex-col gap-2">
       {filled.map((s, i) => (
         <div key={i} className={clamp ? "text-[13.5px] leading-snug" : "grid grid-cols-[84px_minmax(0,1fr)] gap-3"}>
           {s.label && (
