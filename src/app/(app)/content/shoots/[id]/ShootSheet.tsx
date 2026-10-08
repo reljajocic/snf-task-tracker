@@ -85,6 +85,17 @@ export function ShootSheet({
     });
   };
 
+  // Saves the running order as the times written in the sheet (untimed videos go last).
+  const orderByTime = () => {
+    const ids = idsByTime(ordered);
+    setSort("manual");
+    startTransition(async () => {
+      reorder(ids);
+      await reorderShoot(shootId, ids);
+      router.refresh();
+    });
+  };
+
   const save = (id: string, patch: TaskPatch) =>
     startTransition(async () => {
       await updateTask(id, patch);
@@ -127,6 +138,15 @@ export function ShootSheet({
           ))}
         </div>
         {sort !== "manual" && <span className="text-[12.5px] text-ink3">{t("sortViewOnly")}</span>}
+        {editable && ordered.some((v) => v.shoot_time) && (
+          <button
+            type="button"
+            onClick={orderByTime}
+            className="ml-auto h-8 cursor-pointer rounded-md border border-line2 px-3 text-[13px] font-medium text-ink2 hover:border-ink hover:text-ink"
+          >
+            {t("orderByTime")}
+          </button>
+        )}
       </div>
       <div className="overflow-x-auto">
         <table className="snf-rows w-full min-w-[1180px] text-left">

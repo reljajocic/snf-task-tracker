@@ -773,6 +773,7 @@
       "type": "Type"
     },
     "sortViewOnly": "Just for viewing — the running order stays as it is.",
+    "orderByTime": "Set running order by time",
     "moveUp": "Move up",
     "moveDown": "Move down"
   },
