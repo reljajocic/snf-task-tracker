@@ -149,18 +149,21 @@ export function ShootSheet({
         )}
       </div>
       <div className="overflow-x-auto">
-        <table className="snf-rows w-full min-w-[1240px] table-fixed text-left">
+        <table className="snf-rows w-full min-w-[1040px] table-fixed text-left">
           <thead>
             <tr className="border-b border-line text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
-              <th className="w-[70px] px-3 py-2.5">#</th>
-              <th className="w-[124px] px-2 py-2.5">{t("status")}</th>
-              <th className="w-[78px] px-2 py-2.5">{t("time")}</th>
-              <th className="w-[150px] px-2 py-2.5">{t("person")}</th>
-              <th className="w-[90px] px-2 py-2.5">{t("type")}</th>
-              <th className="w-[200px] px-2 py-2.5">{t("title")}</th>
-              <th className="px-2 py-2.5">{t("text")}</th>
-              <th className="w-[100px] px-2 py-2.5">{t("reference")}</th>
-              <th className="w-[280px] px-2 py-2.5">{t("note")}</th>
+              {/* Script gets whatever is left: title sits above it, type under the person. */}
+              <th className="w-[60px] px-3 py-2.5">#</th>
+              <th className="w-[120px] px-2 py-2.5">{t("status")}</th>
+              <th className="w-[68px] px-2 py-2.5">{t("time")}</th>
+              <th className="w-[140px] px-2 py-2.5">
+                {t("person")} · {t("type")}
+              </th>
+              <th className="px-2 py-2.5">
+                {t("title")} · {t("text")}
+              </th>
+              <th className="w-[84px] px-2 py-2.5">{t("reference")}</th>
+              <th className="w-[22%] px-2 py-2.5">{t("note")}</th>
               <th className="w-8" />
             </tr>
           </thead>
@@ -208,19 +211,23 @@ export function ShootSheet({
                     </td>
                     <td className="px-1 py-1">
                       <InputCell value={v.on_camera ?? ""} disabled={!editable} onSave={(x) => save(v.id, { on_camera: x })} />
+                      <InputCell
+                        value={v.content_type ?? ""}
+                        disabled={!editable}
+                        list={`tags-${shootId}`}
+                        upper
+                        placeholder={t("type")}
+                        onSave={(x) => save(v.id, { content_type: x.toUpperCase() })}
+                        className="text-[12px] text-ink3"
+                      />
                     </td>
                     <td className="px-1 py-1">
-                      <InputCell value={v.content_type ?? ""} disabled={!editable} list={`tags-${shootId}`} upper onSave={(x) => save(v.id, { content_type: x.toUpperCase() })} />
-                    </td>
-                    <td className="px-1 py-1">
-                      <InputCell value={v.title} disabled={!editable} onSave={(x) => x.trim() && save(v.id, { title: x })} className="font-medium" />
+                      <InputCell value={v.title} disabled={!editable} onSave={(x) => x.trim() && save(v.id, { title: x })} className="font-semibold" />
                       {v.script_decision && (
                         <span className="block px-2 pb-1">
                           <ScriptDecisionBadge decision={v.script_decision} />
                         </span>
                       )}
-                    </td>
-                    <td className="px-1 py-1">
                       <TextCell
                         value={sectionsToText(v.script)}
                         disabled={!editable}
@@ -264,7 +271,7 @@ export function ShootSheet({
                   {isOpen && (
                     <tr className="border-b border-line bg-chip">
                       <td />
-                      <td colSpan={9} className="px-2 pb-5 pt-1">
+                      <td colSpan={7} className="px-2 pb-5 pt-1">
                         <div className="grid grid-cols-[minmax(0,1fr)_260px] gap-8">
                           <ScriptPreview sections={v.script} />
                           <div className="flex flex-col gap-3 text-[14px]">
