@@ -310,7 +310,7 @@ export function ShootBoard({
                         <span className="text-[15px] font-medium leading-snug">{v.title}</span>
                         {whoWhen(v, "sm")}
                         <ScriptDecisionBadge decision={v.script_decision} />
-                        {v.note && <span className="text-[13px] font-medium text-[var(--status-waiting)]">{v.note}</span>}
+                        {v.note && <span className="line-clamp-3 text-[13px] font-medium text-[var(--status-waiting)]">{v.note}</span>}
                       </div>
                     </div>
                   ))}
@@ -377,7 +377,7 @@ export function ShootBoard({
                     tabIndex={0}
                     onClick={() => setSelected(v.id)}
                     onKeyDown={(e) => e.key === "Enter" && setSelected(v.id)}
-                    className={`grid cursor-pointer grid-cols-[30px_minmax(0,1fr)_56px_100px] items-center gap-3.5 border-t border-line px-3.5 py-3 first:border-t-0 ${
+                    className={`grid cursor-pointer grid-cols-[30px_minmax(0,1fr)_56px_76px] items-center gap-3.5 border-t border-line px-3.5 py-3 first:border-t-0 ${
                       sel?.id === v.id ? "bg-chip" : "hover:bg-chip"
                     }`}
                   >
@@ -387,11 +387,12 @@ export function ShootBoard({
                       {whoWhen(v, "sm")}
                       <ScriptDecisionBadge decision={v.script_decision} />
                       {scriptText(v) && <span className="truncate text-[13px] text-ink3">{scriptText(v)}</span>}
+                      {/* Under the title, two lines at most; the whole note is in the panel on the right. */}
+                      {v.note && <span className="line-clamp-2 text-[12.5px] font-medium leading-snug text-[var(--status-waiting)]">{v.note}</span>}
                     </div>
                     {typeTag(v) || <span />}
                     <div className="flex flex-col items-start gap-1">
                       {v.reference_url && <span className="whitespace-nowrap text-[13px] font-medium text-rust-ink">{t("shoots.reference")}</span>}
-                      {v.note && <span className="text-[12px] font-medium leading-tight text-[var(--status-waiting)]">{v.note}</span>}
                     </div>
                   </div>
                 ))}
