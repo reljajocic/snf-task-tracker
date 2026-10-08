@@ -149,7 +149,7 @@ export function ShootSheet({
         )}
       </div>
       <div className="overflow-x-auto">
-        <table className="snf-rows w-full min-w-[1240px] text-left">
+        <table className="snf-rows w-full min-w-[1240px] table-fixed text-left">
           <thead>
             <tr className="border-b border-line text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
               <th className="w-[70px] px-3 py-2.5">#</th>
