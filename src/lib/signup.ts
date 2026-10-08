@@ -6,7 +6,15 @@ import type { ScriptSection } from "@/lib/tasks";
 // The talent sign-up page (/s/<token>): one shoot day, its videos and scripts, who's signed up.
 // Loaded with the service role and always scoped to the shoot the token belongs to.
 
-export type SignupVideo = { id: string; title: string; type: string | null; names: string[]; script: ScriptSection[] };
+export type SignupVideo = {
+  id: string;
+  title: string;
+  type: string | null;
+  names: string[];
+  script: ScriptSection[];
+  time: string | null;
+  status: "to_shoot" | "shot" | "not_shot";
+};
 export type Signup = {
   shootId: string;
   clientName: string;
@@ -31,7 +39,7 @@ export async function getSignup(token: string): Promise<Signup | null> {
   if (!shoot) return null;
   const { data: videos } = await admin
     .from("tasks")
-    .select("id, title, content_type, on_camera, script, shoot_time, shoot_order, created_at")
+    .select("id, title, content_type, on_camera, script, shoot_time, shot_status, shoot_order, created_at")
     .eq("shoot_id", shoot.id)
     .is("dropped_at", null)
     .order("shoot_order", { nullsFirst: false })
@@ -50,6 +58,8 @@ export async function getSignup(token: string): Promise<Signup | null> {
       type: v.content_type,
       names: splitNames(v.on_camera),
       script: (Array.isArray(v.script) ? (v.script as ScriptSection[]) : []).filter((s) => s.text?.trim()),
+      time: v.shoot_time,
+      status: v.shot_status === "shot" || v.shot_status === "not_shot" ? v.shot_status : "to_shoot",
     })),
   };
 }

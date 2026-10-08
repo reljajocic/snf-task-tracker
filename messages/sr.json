@@ -834,7 +834,12 @@
     "free": "Slobodno",
     "yours": "✓ Ovaj snimaš ti",
     "takenBy": "Zauzeto: {name}",
-    "justTaken": "Neko je upravo uzeo taj video. Lista je sada osvežena."
+    "justTaken": "Neko je upravo uzeo taj video. Lista je sada osvežena.",
+    "callTimes": "Ko kada dolazi",
+    "nobodyYet": "još niko",
+    "yourCall": "Tvoj dolazak: {time}",
+    "yourCallNoTime": "Vreme dolaska još nije upisano",
+    "yourVideos": "{count, plural, one {Snimaš # video} few {Snimaš # videa} other {Snimaš # videa}}"
   },
   "avatar": {
     "add": "Dodaj sliku",
