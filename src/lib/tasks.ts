@@ -76,6 +76,8 @@ export type Task = {
   dropped_at: IsoDate | null;
   shoot_id: string | null;
   shoot_time: string | null;
+  /** Position in the shoot day's running order (null = not placed yet). */
+  shoot_order: number | null;
   shot_status: ShotStatus | null;
   shoot: { id: string; date: IsoDate; location: string | null } | null;
   subtask_count: number;
@@ -97,7 +99,7 @@ export const TASK_SELECT = `
   parent:parent_id(id, title),
   task_assignees(profile:profiles(${PERSON_COLS})),
   phase, content_type, on_camera, location, profile, script, reference_url, note,
-  publish_date, published_at, dropped_at, shoot_id, shoot_time, shot_status,
+  publish_date, published_at, dropped_at, shoot_id, shoot_time, shoot_order, shot_status,
   shoot:shoot_days(id, date, location),
   subtasks:tasks!parent_id(status),
   approvals(kind, status, approver_name, comment, created_at)
