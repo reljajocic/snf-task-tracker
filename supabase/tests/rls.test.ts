@@ -460,3 +460,37 @@ describe("reshoots (return to ideas)", () => {
     await expect(as(MANAGER, "delete from public.video_shoot_history")).rejects.toThrow(/permission denied/);
   });
 });
+
+describe("moodboards", () => {
+  const el = (id: string, version: number, extra: Record<string, unknown> = {}) => ({ id, version, versionNonce: version * 10, index: `a${id}`, type: "rectangle", ...extra });
+  let board: string;
+
+  it("the client's team works on a project's board; outsiders can't see it", async () => {
+    [{ id: board }] = await as<{ id: string }>(MEMBER, "insert into public.boards (project_id) values ($1) returning id", [P1]);
+    expect(await as(MANAGER, "select client_access from public.boards where id = $1", [board])).toEqual([{ client_access: "none" }]);
+    expect(await as(OUTSIDER, "select id from public.boards")).toEqual([]);
+    await expect(as(OUTSIDER, "select public.board_merge($1, '[]'::jsonb)", [board])).rejects.toThrow(/not found|Not allowed/);
+    await expect(as(OUTSIDER, "insert into public.boards (project_id) values ($1)", [P1])).rejects.toThrow(/row-level security|duplicate/);
+  });
+
+  it("saves merge per element: newer versions win, both people's new shapes stay", async () => {
+    await as(MANAGER, "select public.board_merge($1, $2::jsonb)", [board, JSON.stringify([el("1", 1), el("2", 1)])]);
+    // Two people at once: one moves shape 1 (v2), the other adds shape 3 and still has the old shape 1.
+    await as(MEMBER, "select public.board_merge($1, $2::jsonb)", [board, JSON.stringify([el("1", 2, { x: 50 })])]);
+    const [{ board_merge }] = await as<{ board_merge: { id: string; version: number; x?: number }[] }>(
+      MANAGER,
+      "select public.board_merge($1, $2::jsonb, $3::jsonb)",
+      [board, JSON.stringify([el("1", 1), el("3", 1)]), JSON.stringify({ f1: { url: "https://x/f1.png", mimeType: "image/png" } })],
+    );
+    expect(board_merge.map((e) => [e.id, e.version, e.x ?? null])).toEqual([
+      ["1", 2, 50],
+      ["2", 1, null],
+      ["3", 1, null],
+    ]);
+    // Deleting is a newer version with isDeleted, so it sticks.
+    await as(MEMBER, "select public.board_merge($1, $2::jsonb)", [board, JSON.stringify([el("2", 5, { isDeleted: true })])]);
+    expect(await as(MANAGER, "select elements->1->>'isDeleted' as d, files ? 'f1' as has_file from public.boards where id = $1", [board])).toEqual([
+      { d: "true", has_file: true },
+    ]);
+  });
+});

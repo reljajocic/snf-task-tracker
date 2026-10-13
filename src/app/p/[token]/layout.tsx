@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
+import { getPortalBoards } from "@/lib/boards";
 import { getPortal } from "@/lib/portal";
 import PortalNotFound from "./not-found";
 import { PortalLang } from "./PortalLang";
@@ -24,13 +25,18 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
   const portal = await getPortal(token);
   // Unknown or disabled link: a branded dead end (no hint whether the client exists).
   if (!portal) return <PortalNotFound />;
-  const [t, messages] = await Promise.all([getTranslations({ locale: portal.locale, namespace: "portal.nav" }), getMessages({ locale: portal.locale })]);
+  const [t, messages, boards] = await Promise.all([
+    getTranslations({ locale: portal.locale, namespace: "portal.nav" }),
+    getMessages({ locale: portal.locale }),
+    getPortalBoards(portal.clientId),
+  ]);
   const base = `/p/${token}`;
   const tabs = [
     { href: base, label: t("home"), icon: "home", exact: true },
     portal.show.schedule && { href: `${base}/schedule`, label: t("schedule"), icon: "schedule" },
     (portal.show.shoots || portal.show.scripts) && { href: `${base}/shoots`, label: t("shoots"), icon: "shoots" },
     portal.show.report && { href: `${base}/reports`, label: t("reports"), icon: "list" },
+    boards.length > 0 && { href: `${base}/boards`, label: t("boards"), icon: "board" },
   ].filter(Boolean) as PortalTab[];
 
   return (

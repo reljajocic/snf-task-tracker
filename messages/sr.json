@@ -696,7 +696,8 @@
       "home": "Početna",
       "schedule": "Raspored",
       "shoots": "Snimanja",
-      "reports": "Izveštaji"
+      "reports": "Izveštaji",
+      "boards": "Moodboard"
     },
     "yourContent": "Vaš sadržaj",
     "awaiting": "Čeka Vaše odobrenje",
@@ -897,5 +898,25 @@
     "noDate": "bez datuma snimanja",
     "wasPosting": "Objava bila {date}",
     "returned": "Vratio/la {name}, {date}"
+  },
+  "board": {
+    "title": "Moodboard",
+    "open": "Moodboard",
+    "portalTitle": "Moodboard",
+    "here": "{count, plural, one {još # na tabli} few {još # na tabli} other {još # na tabli}}",
+    "viewOnly": "Samo pregled",
+    "canEdit": "Možete da menjate",
+    "canView": "Pregled",
+    "status": {
+      "saved": "Sačuvano",
+      "saving": "Čuvam…",
+      "offline": "Nije sačuvano, pokušavam ponovo"
+    },
+    "access": {
+      "label": "Klijent:",
+      "none": "ne vidi",
+      "view": "vidi",
+      "edit": "može da menja"
+    }
   }
 }

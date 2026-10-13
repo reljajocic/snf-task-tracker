@@ -17,6 +17,7 @@
     "import:beric": "JITI_FS_CACHE=false JITI_ALIAS=\"{\\\"@/\\\":\\\"$PWD/src/\\\"}\" node --env-file=.env.local node_modules/jiti/lib/jiti-cli.mjs scripts/import-beric.ts"
   },
   "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.1",
     "@modelcontextprotocol/sdk": "^1.32.1",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",

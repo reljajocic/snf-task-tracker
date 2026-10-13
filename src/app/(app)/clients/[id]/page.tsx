@@ -175,13 +175,20 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                       </div>
                     </>
                   );
-                  const cls = "flex flex-col gap-3.5 rounded-lg border border-line bg-surf p-[18px]";
-                  return canManage ? (
-                    <Link key={p.id} href={`/clients/${client.id}/projects/${p.id}`} className={`${cls} hover:border-line2`}>
-                      {card}
-                    </Link>
-                  ) : (
-                    <div key={p.id} className={cls}>{card}</div>
+                  const cls = "flex flex-col gap-3.5";
+                  return (
+                    <div key={p.id} className="flex flex-col gap-3 rounded-lg border border-line bg-surf p-[18px]">
+                      {canManage ? (
+                        <Link href={`/clients/${client.id}/projects/${p.id}`} className={`${cls} hover:opacity-80`}>
+                          {card}
+                        </Link>
+                      ) : (
+                        <div className={cls}>{card}</div>
+                      )}
+                      <Link href={`/clients/${client.id}/projects/${p.id}/board`} className="self-start text-[14px] font-semibold text-rust-ink hover:underline">
+                        {t("board.open")} →
+                      </Link>
+                    </div>
                   );
                 })}
               </div>

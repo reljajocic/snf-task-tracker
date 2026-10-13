@@ -696,7 +696,8 @@
       "home": "Home",
       "schedule": "Schedule",
       "shoots": "Shoots",
-      "reports": "Reports"
+      "reports": "Reports",
+      "boards": "Moodboard"
     },
     "yourContent": "Your content",
     "awaiting": "Waiting for your approval",
@@ -897,5 +898,25 @@
     "noDate": "no shoot date",
     "wasPosting": "Was posting {date}",
     "returned": "Sent back by {name}, {date}"
+  },
+  "board": {
+    "title": "Moodboard",
+    "open": "Moodboard",
+    "portalTitle": "Moodboard",
+    "here": "{count, plural, one {# more here} other {# more here}}",
+    "viewOnly": "View only",
+    "canEdit": "You can edit",
+    "canView": "View",
+    "status": {
+      "saved": "Saved",
+      "saving": "Saving…",
+      "offline": "Not saved, retrying"
+    },
+    "access": {
+      "label": "Client:",
+      "none": "can't see",
+      "view": "can view",
+      "edit": "can edit"
+    }
   }
 }

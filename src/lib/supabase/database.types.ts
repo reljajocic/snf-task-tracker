@@ -138,6 +138,51 @@ export type Database = {
           },
         ]
       }
+      boards: {
+        Row: {
+          client_access: string
+          elements: Json
+          files: Json
+          id: string
+          project_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          client_access?: string
+          elements?: Json
+          files?: Json
+          id?: string
+          project_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          client_access?: string
+          elements?: Json
+          files?: Json
+          id?: string
+          project_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "boards_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "boards_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_members: {
         Row: {
           client_id: string
@@ -1026,6 +1071,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      board_merge: {
+        Args: { bid: string; incoming: Json; new_files?: Json }
+        Returns: Json
+      }
+      can_use_board: { Args: { bid: string }; Returns: boolean }
+      can_use_project_board: { Args: { pid: string }; Returns: boolean }
       can_create_task_in: {
         Args: { cid: string; pid: string }
         Returns: boolean

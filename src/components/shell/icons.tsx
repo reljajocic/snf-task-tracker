@@ -20,6 +20,13 @@ function Icon(props: SVGProps<SVGSVGElement>) {
 }
 
 export const NAV_ICONS = {
+  board: (
+    <Icon>
+      <rect x="3" y="3.5" width="14" height="13" rx="1.5" />
+      <rect x="5.5" y="6" width="4" height="4" rx=".6" />
+      <path d="M12 7h2.5M12 9.5h2.5M5.5 13h9" />
+    </Icon>
+  ),
   home: (
     <Icon>
       <path d="M3 9.5 10 3.5l7 6" />
