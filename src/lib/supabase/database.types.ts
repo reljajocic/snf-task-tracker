@@ -1044,10 +1044,7 @@ export type Database = {
         Args: { new_status: string; tid: string }
         Returns: undefined
       }
-      return_to_ideas: {
-        Args: { tid: string; why: string }
-        Returns: string
-      }
+      return_to_ideas: { Args: { tid: string; why: string }; Returns: string }
       task_editable: {
         Args: { cid: string; creator: string; tid: string }
         Returns: boolean
