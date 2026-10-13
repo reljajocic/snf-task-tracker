@@ -137,7 +137,7 @@ export function ShootSheet({
             </button>
           ))}
         </div>
-        {sort !== "manual" && <span className="text-[12.5px] text-ink3">{t("sortViewOnly")}</span>}
+        {sort !== "manual" && <span className="text-[13px] text-ink3">{t("sortViewOnly")}</span>}
         {editable && ordered.some((v) => v.shoot_time) && (
           <button
             type="button"
@@ -179,13 +179,13 @@ export function ShootSheet({
                       <div className="flex items-center gap-1">
                         {editable && sort === "manual" && (
                           <span className="flex flex-col">
-                            <button type="button" aria-label={t("moveUp")} disabled={i === 0} onClick={() => move(v.id, -1)} className="h-4 cursor-pointer px-0.5 text-[10px] leading-none text-ink3 hover:text-ink disabled:opacity-25">▲</button>
-                            <button type="button" aria-label={t("moveDown")} disabled={i === shown.length - 1} onClick={() => move(v.id, 1)} className="h-4 cursor-pointer px-0.5 text-[10px] leading-none text-ink3 hover:text-ink disabled:opacity-25">▼</button>
+                            <button type="button" aria-label={t("moveUp")} disabled={i === 0} onClick={() => move(v.id, -1)} className="h-4 cursor-pointer px-0.5 text-[12px] leading-none text-ink3 hover:text-ink disabled:opacity-25">▲</button>
+                            <button type="button" aria-label={t("moveDown")} disabled={i === shown.length - 1} onClick={() => move(v.id, 1)} className="h-4 cursor-pointer px-0.5 text-[12px] leading-none text-ink3 hover:text-ink disabled:opacity-25">▼</button>
                           </span>
                         )}
                         <button type="button" onClick={toggle} title={isOpen ? t("collapse") : t("expand")} className="cursor-pointer text-[13px] text-ink3 hover:text-ink">
                           {i + 1}
-                          <span className="ml-1 text-[10px]">{isOpen ? "−" : "+"}</span>
+                          <span className="ml-1 text-[12px]">{isOpen ? "−" : "+"}</span>
                         </button>
                       </div>
                     </td>
@@ -310,9 +310,9 @@ export function ScriptPreview({ sections, clamp = false }: { sections: ScriptSec
   return (
     <div className="flex flex-col gap-2">
       {filled.map((s, i) => (
-        <div key={i} className={clamp ? "text-[13.5px] leading-snug" : "grid grid-cols-[84px_minmax(0,1fr)] gap-3"}>
+        <div key={i} className={clamp ? "text-[14px] leading-snug" : "grid grid-cols-[84px_minmax(0,1fr)] gap-3"}>
           {s.label && (
-            <span className={`font-semibold uppercase tracking-[0.12em] text-accent ${clamp ? "mr-1.5 text-[10.5px]" : "pt-[3px] text-[11px]"}`}>{s.label}</span>
+            <span className={`font-semibold uppercase tracking-[0.12em] text-accent ${clamp ? "mr-1.5 text-[11px]" : "pt-[3px] text-[11px]"}`}>{s.label}</span>
           )}
           <span className={`whitespace-pre-wrap text-ink2 ${clamp ? "" : `text-[15px] leading-relaxed ${s.label ? "" : "col-span-2"}`}`}>{s.text}</span>
         </div>

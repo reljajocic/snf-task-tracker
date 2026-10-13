@@ -57,7 +57,7 @@ export function MonthGrid({
           <button type="button" aria-label={t("calendar.next")} onClick={() => setMonth(shiftMonth(month, 1))} className="grid size-7 cursor-pointer place-items-center hover:text-ink">›</button>
         </span>
       </div>
-      <div className="grid grid-cols-7 text-center text-[11px] font-semibold text-ink3">
+      <div className="grid grid-cols-7 text-center text-[12px] font-semibold text-ink3">
         {[0, 1, 2, 3, 4, 5, 6].map((d) => (
           <span key={d}>{t("weekday.narrow", { day: String(d) })}</span>
         ))}

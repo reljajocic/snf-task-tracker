@@ -91,18 +91,18 @@ export function AssignPicker({ videos, onPick }: { videos: Task[]; onPick: (id: 
                   >
                     <span className="flex items-center gap-2">
                       {v.content_type && (
-                        <span className="flex-none rounded-[3px] border border-line2 px-1.5 py-1 text-[10.5px] font-semibold leading-none tracking-[0.08em] text-ink2">
+                        <span className="flex-none rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">
                           {v.content_type}
                         </span>
                       )}
-                      <span className="min-w-0 truncate text-[14.5px] font-medium leading-snug text-ink">{v.title}</span>
+                      <span className="min-w-0 truncate text-[15px] font-medium leading-snug text-ink">{v.title}</span>
                     </span>
                     {(v.on_camera || v.location) && (
-                      <span className="truncate text-[12.5px] text-ink3">{[v.on_camera, v.location].filter(Boolean).join(" · ")}</span>
+                      <span className="truncate text-[13px] text-ink3">{[v.on_camera, v.location].filter(Boolean).join(" · ")}</span>
                     )}
                     {first && (
                       <span className="line-clamp-2 text-[13px] leading-snug text-ink2">
-                        {first.label && <span className="mr-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-accent">{first.label}</span>}
+                        {first.label && <span className="mr-1.5 text-[11px] font-semibold tracking-[0.12em] text-accent">{first.label}</span>}
                         {first.text}
                       </span>
                     )}

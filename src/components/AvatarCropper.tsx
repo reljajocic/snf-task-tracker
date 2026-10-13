@@ -96,7 +96,7 @@ export function AvatarCropper({
           {t("zoom")}
           <input type="range" min={0.5} max={4} step={0.01} value={zoom} onChange={(e) => setZoomKeepingCenter(Number(e.target.value))} className="flex-1 accent-[var(--accent)]" />
         </label>
-        <span className="-mt-2 self-start text-[12.5px] text-ink3">{t("cropHint")}</span>
+        <span className="-mt-2 self-start text-[13px] text-ink3">{t("cropHint")}</span>
         <div className="flex w-full justify-end gap-2">
           <button type="button" onClick={onCancel} className="h-10 cursor-pointer rounded-md px-4 text-[14px] font-medium text-ink2 hover:text-ink">
             {t("cancel")}

@@ -46,7 +46,7 @@ export function AvatarUpload({ person, size = 56, compact = false }: { person: P
       <>
       <button type="button" onClick={() => input.current?.click()} disabled={pending} title={error ?? t("change")} className={`relative flex-none cursor-pointer rounded-full ${pending ? "opacity-60" : ""}`}>
         <Avatar person={person} size={size} />
-        <span className={`absolute -bottom-0.5 -right-0.5 grid size-[18px] place-items-center rounded-full border border-line2 bg-pop text-[10px] ${error ? "text-red-ink" : "text-ink2"}`}>✎</span>
+        <span className={`absolute -bottom-0.5 -right-0.5 grid size-[18px] place-items-center rounded-full border border-line2 bg-pop text-[12px] ${error ? "text-red-ink" : "text-ink2"}`}>✎</span>
         <input ref={input} type="file" accept="image/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
       </button>
       {/* Outside the button: React events from the (portalled) cropper would otherwise reach it. */}

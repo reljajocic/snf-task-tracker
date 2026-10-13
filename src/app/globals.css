@@ -233,13 +233,12 @@ body {
   line-height: 0.96;
 }
 
+/* Section labels: a small bold heading in sentence case, not tracked-out capitals. */
 .eyebrow {
   font-weight: 600;
-  font-size: 11px;
-  line-height: 1;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink3);
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--ink2);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -93,7 +93,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
   const eyebrow = `${t("weekday.long", { day: String(weekdayIndex(today)) })}, ${formatDate(today)}`;
   const lateSummary = t("home.lateSummary", { late: nLate, today: lateAndToday.length - nLate });
 
-  const sectionTitle = (text: string) => <h2 className="display whitespace-nowrap text-[19px] leading-[1.1] lg:text-[20px]">{text}</h2>;
+  const sectionTitle = (text: string) => <h2 className="display whitespace-nowrap text-[18px] leading-[1.1] lg:text-[20px]">{text}</h2>;
   const empty = (text: string) => <p className="rounded-lg border border-dashed border-line2 px-4 py-6 text-[14px] text-ink3">{text}</p>;
 
   return (
@@ -257,7 +257,7 @@ async function PeopleStats({
             <span className={`truncate font-medium text-ink2 ${compact ? "text-[15px]" : "text-[14px]"}`}>{person.full_name.split(" ")[0]}</span>
           </div>
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1.5">
-            <span className={`display ${compact ? "text-[28px]" : "text-[40px]"} leading-[0.9]`}>{count}</span>
+            <span className={`display ${compact ? "text-[30px]" : "text-[40px]"} leading-[0.9]`}>{count}</span>
             {!compact && <span className="whitespace-nowrap text-[13px] text-ink3">{late ? t("lateShort", { count: late }) : t("noLate")}</span>}
           </div>
         </div>

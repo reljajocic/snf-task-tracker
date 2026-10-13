@@ -21,7 +21,7 @@ export default async function PortalReports({ params, searchParams }: PageProps<
 
   return (
     <div className="flex max-w-[860px] flex-col gap-6 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
-      <h1 className="display text-[34px] lg:text-[44px]">{t("portal.reportsTitle")}</h1>
+      <h1 className="display text-[32px] lg:text-[44px]">{t("portal.reportsTitle")}</h1>
       <div className="flex h-[42px] items-center self-start rounded-[7px] border border-line2 text-[14px] font-medium">
         <Link href={`?m=${shiftMonth(month, -1)}`} className="px-3 text-ink3 hover:text-ink">‹</Link>
         <span className="min-w-[140px] text-center">{label}</span>

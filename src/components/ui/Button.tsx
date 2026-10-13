@@ -20,7 +20,7 @@ const variants: Record<Variant, string> = {
 const sizes: Record<Size, string> = {
   sm: "h-10 px-[1.1rem] text-[13px]",
   md: "h-12 px-7 text-[15px]",
-  lg: "h-[52px] px-9 text-[17px]",
+  lg: "h-[52px] px-9 text-[18px]",
 };
 
 type Common = { variant?: Variant; size?: Size; className?: string };

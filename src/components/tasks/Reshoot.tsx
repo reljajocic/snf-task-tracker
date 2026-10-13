@@ -44,7 +44,7 @@ export function ReturnToIdeas({ taskId, onDone, className = "" }: { taskId: stri
           className="h-10 rounded-md border border-line2 bg-transparent px-3 text-[16px] text-ink outline-none focus:border-accent sm:text-[14px]"
         />
       </label>
-      <span className="text-[12.5px] leading-snug text-ink3">{t("hint")}</span>
+      <span className="text-[13px] leading-snug text-ink3">{t("hint")}</span>
       {error && <span role="alert" className="text-[13px] text-red-ink">{error}</span>}
       <div className="flex gap-2">
         <button
@@ -80,7 +80,7 @@ export function ShootHistory({ attempts }: { attempts: ShootAttempt[] }) {
   const ts = useTranslations("postingStatus");
   if (!attempts.length) return null;
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-line bg-surf px-5 py-[18px]">
+    <div className="flex flex-col gap-3">
       <span className="eyebrow">{t("history")}</span>
       {attempts.map((a, i) => (
         <div key={a.returned_at} className="flex flex-col gap-1 border-l-2 border-accent/60 pl-3">
@@ -91,7 +91,7 @@ export function ShootHistory({ attempts }: { attempts: ShootAttempt[] }) {
           <span className="text-[13px] text-ink2">
             {[a.on_camera, a.shoot_time, a.shot_status && ts.has(a.shot_status) ? ts(a.shot_status) : null].filter(Boolean).join(" · ")}
           </span>
-          <span className="text-[13.5px] text-ink">“{a.reason}”</span>
+          <span className="text-[14px] text-ink">“{a.reason}”</span>
           <span className="text-[12px] text-ink3">
             {a.publish_date ? `${t("wasPosting", { date: formatDate(a.publish_date) })} · ` : ""}
             {t("returned", { name: a.returned_by?.full_name ?? "—", date: formatDate(a.returned_at.slice(0, 10)) })}

@@ -42,7 +42,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
       {t(key === "open" ? "clients.openTab" : "clients.doneTab")}
     </Link>
   );
-  const h2 = (text: string) => <h2 className="display text-[19px] leading-[1.1] lg:text-[20px]">{text}</h2>;
+  const h2 = (text: string) => <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{text}</h2>;
 
   return (
     <div className="flex flex-col">
@@ -85,12 +85,12 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
           { href: `/content/shoots?client=${client.id}`, label: t("nav.shoots") },
           ...(canManage ? [{ href: `/clients/${client.id}/portal`, label: t("portalSettings.title") }] : []),
         ].map((l) => (
-          <Link key={l.href} href={l.href} className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[14.5px] font-medium hover:border-line2">
+          <Link key={l.href} href={l.href} className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
             {l.label} <span className="text-ink3">→</span>
           </Link>
         ))}
         {client.drive_url && (
-          <a href={client.drive_url} target="_blank" rel="noreferrer" className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[14.5px] font-medium hover:border-line2">
+          <a href={client.drive_url} target="_blank" rel="noreferrer" className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
             {t("clients.drive")}
           </a>
         )}
@@ -158,7 +158,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                     <>
                       <div className="flex items-center justify-between gap-3">
                         <span className="text-[16px] font-medium leading-tight">{p.name}</span>
-                        <span className="flex items-center gap-1.5 whitespace-nowrap text-[12.5px] font-medium text-ink2">
+                        <span className="flex items-center gap-1.5 whitespace-nowrap text-[13px] font-medium text-ink2">
                           <span className="size-[7px] rounded-full" style={{ background: PROJECT_STATUS_COLOR[p.status] }} />
                           {t(`projectStatus.${p.status}`)}
                         </span>

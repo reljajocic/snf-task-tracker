@@ -24,7 +24,7 @@ export async function PageHeader({
     >
       <div className="flex min-w-0 flex-col gap-2.5">
         {eyebrow && (
-          <span className="whitespace-nowrap text-[12px] font-medium uppercase leading-none tracking-[0.14em] text-ink3 lg:text-[13px]">
+          <span className="whitespace-nowrap text-[14px] font-medium leading-none text-ink2">
             {eyebrow}
           </span>
         )}

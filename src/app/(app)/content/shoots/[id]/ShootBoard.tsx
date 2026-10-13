@@ -138,7 +138,7 @@ export function ShootBoard({
   const whoWhen = (v: Task, size: "sm" | "md" = "md") => {
     const icon = size === "sm" ? 13 : 15;
     return (
-      <span className={`flex flex-wrap items-center gap-x-3.5 gap-y-1 font-medium leading-none ${size === "sm" ? "text-[12.5px]" : "text-[14px]"}`}>
+      <span className={`flex flex-wrap items-center gap-x-3.5 gap-y-1 font-medium leading-none ${size === "sm" ? "text-[13px]" : "text-[14px]"}`}>
         {canManage ? (
           // Editable right here (phones too): a native time picker on tap.
           <label className={`inline-flex items-center ${v.shoot_time ? "text-ink" : "text-ink3"}`} onClick={(e) => e.stopPropagation()}>
@@ -148,7 +148,7 @@ export function ShootBoard({
               defaultValue={v.shoot_time ?? ""}
               aria-label={t("shoots.time")}
               onChange={(e) => saveTime(v, e.target.value)}
-              className={`min-w-[4.5rem] cursor-pointer rounded-md border border-line2 bg-transparent px-1.5 py-1 font-medium text-inherit outline-none focus:border-accent ${size === "sm" ? "text-[12.5px]" : "text-[14px]"}`}
+              className={`min-w-[4.5rem] cursor-pointer rounded-md border border-line2 bg-transparent px-1.5 py-1 font-medium text-inherit outline-none focus:border-accent ${size === "sm" ? "text-[13px]" : "text-[14px]"}`}
             />
           </label>
         ) : (
@@ -252,7 +252,7 @@ export function ShootBoard({
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3 px-1">
               <span className="rounded-full bg-rust-bg px-2 py-[5px] text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-rust-ink">{t("shoots.now")}</span>
-              <span className="display text-[22px] leading-none">{nowSlot.time}</span>
+              <span className="display text-[24px] leading-none">{nowSlot.time}</span>
               <span className="text-[16px] font-medium">{nowSlot.onCamera}</span>
             </div>
             {/* One card per video; the one up next is outlined. */}
@@ -360,7 +360,7 @@ export function ShootBoard({
           {slots.map((s) => (
             <div key={s.time} className="flex flex-col gap-2 pt-5">
               <div className="flex items-center gap-3.5">
-                <span className="display text-[22px] leading-none">{s.time}</span>
+                <span className="display text-[24px] leading-none">{s.time}</span>
                 <span className="whitespace-nowrap text-[15px] font-medium">{s.onCamera}</span>
                 {s === nowSlot && isToday && (
                   <span className="rounded-full bg-rust-bg px-2 py-[5px] text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-rust-ink">{t("shoots.now")}</span>
@@ -388,7 +388,7 @@ export function ShootBoard({
                       <ScriptDecisionBadge decision={v.script_decision} />
                       {scriptText(v) && <span className="truncate text-[13px] text-ink3">{scriptText(v)}</span>}
                       {/* Under the title, two lines at most; the whole note is in the panel on the right. */}
-                      {v.note && <span className="line-clamp-2 text-[12.5px] font-medium leading-snug text-[var(--waiting-ink)]">{v.note}</span>}
+                      {v.note && <span className="line-clamp-2 text-[13px] font-medium leading-snug text-[var(--waiting-ink)]">{v.note}</span>}
                     </div>
                     {typeTag(v) || <span />}
                     <div className="flex flex-col items-start gap-1">
@@ -407,7 +407,7 @@ export function ShootBoard({
             <>
               <div className="flex flex-col gap-2">
                 {sel.location && <span className="text-[13px] font-medium text-ink3">{sel.location}</span>}
-                <TaskLink id={sel.id} className="text-[22px] font-medium leading-tight hover:underline">{sel.title}</TaskLink>
+                <TaskLink id={sel.id} className="text-[24px] font-medium leading-tight hover:underline">{sel.title}</TaskLink>
                 {whoWhen(sel)}
               </div>
               {sel.script.some((sec) => sec.text.trim()) ? (

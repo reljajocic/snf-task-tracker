@@ -234,7 +234,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
         {label(t("fields.driveLink"))}
         <input value={drive} onChange={(e) => setDrive(e.target.value)} placeholder="drive.google.com/…" className={inputClass} />
       </label>
-      <p className="text-[12.5px] leading-snug text-ink3 sm:col-span-2">{tv("laterHint")}</p>
+      <p className="text-[13px] leading-snug text-ink3 sm:col-span-2">{tv("laterHint")}</p>
     </>
   );
 
@@ -246,7 +246,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
           {tv("addSection")}
         </button>
       </div>
-      <span className="-mt-2 text-[12.5px] text-ink3">{tv("scriptHint")}</span>
+      <span className="-mt-2 text-[13px] text-ink3">{tv("scriptHint")}</span>
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto">
         {script.map((s, i) => (
           <div key={i} className="group relative grid grid-cols-1 gap-1 rounded-md border border-line px-3.5 pb-3 pr-11 pt-2 focus-within:border-line2 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-3 sm:px-3 sm:py-2.5 sm:pr-8">
@@ -356,10 +356,10 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
       >
         <div className="flex items-center justify-between px-5 pt-6 lg:px-7 lg:pt-[22px]">
           <div className="flex items-center gap-4">
-            <h2 className="display whitespace-nowrap text-[22px] leading-tight">{isVideo ? tv("newTitle") : t("new")}</h2>
+            <h2 className="display whitespace-nowrap text-[24px] leading-tight">{isVideo ? tv("newTitle") : t("new")}</h2>
             {kindSwitch}
           </div>
-          <button type="button" aria-label={t("cancel")} onClick={onClose} className="size-[34px] cursor-pointer rounded-md text-[22px] text-ink2 hover:text-ink">
+          <button type="button" aria-label={t("cancel")} onClick={onClose} className="size-[34px] cursor-pointer rounded-md text-[24px] text-ink2 hover:text-ink">
             ×
           </button>
         </div>

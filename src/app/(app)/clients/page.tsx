@@ -74,7 +74,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
           <Link key={c.id} href={`/clients/${c.id}`} className="flex items-center gap-3 rounded-[10px] border border-line bg-surf p-4">
             <ClientMark client={c} />
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-              <span className="truncate text-[17px] font-medium leading-tight">{c.name}</span>
+              <span className="truncate text-[18px] font-medium leading-tight">{c.name}</span>
               <span className="flex items-center gap-2 text-[13px] text-ink2">
                 <span className="size-2 rounded-full" style={{ background: CLIENT_STATUS_COLOR[c.status] }} />
                 {t(`clientStatus.${c.status}`)}
@@ -82,7 +82,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
               </span>
             </div>
             <div className="flex flex-col items-end gap-1">
-              <span className="display text-[22px] leading-none">{open}</span>
+              <span className="display text-[24px] leading-none">{open}</span>
               {late > 0 && <span className="whitespace-nowrap text-[12px] font-semibold text-red-ink">{t("clients.late", { count: late })}</span>}
             </div>
           </Link>
@@ -119,7 +119,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
               ))}
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="display text-[22px] leading-none">{open}</span>
+              <span className="display text-[24px] leading-none">{open}</span>
               {late > 0 && <span className="whitespace-nowrap text-[12px] font-semibold text-red-ink">{t("clients.late", { count: late })}</span>}
             </div>
             <div className="flex min-w-0 flex-col gap-[5px]">

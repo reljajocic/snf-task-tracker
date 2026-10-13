@@ -236,7 +236,7 @@ function MarkField({ name, initialColor, initialInitials }: { name: string; init
             type="button"
             aria-pressed={!color}
             onClick={() => setColor(null)}
-            className={`size-8 cursor-pointer rounded-full border border-line2 bg-surf2 text-[11px] text-ink3 ${!color ? "ring-2 ring-accent ring-offset-2 ring-offset-[var(--canvas)]" : ""}`}
+            className={`size-8 cursor-pointer rounded-full border border-line2 bg-surf2 text-[12px] text-ink3 ${!color ? "ring-2 ring-accent ring-offset-2 ring-offset-[var(--canvas)]" : ""}`}
             title={t("markNoColor")}
           >
             ∅
@@ -308,7 +308,7 @@ function EditorRules({ initial, people }: { initial: EditorRule[]; people: Perso
                   type="button"
                   aria-pressed={on}
                   onClick={() => update(i, { days: on ? r.days.filter((x) => x !== d) : [...r.days, d].sort() })}
-                  className={`h-[30px] cursor-pointer rounded-full border px-2.5 text-[12.5px] font-medium ${on ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"}`}
+                  className={`h-[30px] cursor-pointer rounded-full border px-2.5 text-[13px] font-medium ${on ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"}`}
                 >
                   {tw("short", { day: String(d) })}
                 </button>

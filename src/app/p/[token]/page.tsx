@@ -30,7 +30,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
   const nextPosts = videos.filter((v) => v.publish_date && v.publish_date >= today).slice(0, 5);
   const nextShoot = shoots.find((s) => s.date >= today) ?? null;
 
-  const h2 = (s: string) => <h2 className="display whitespace-nowrap text-[19px] leading-[1.1] lg:text-[20px]">{s}</h2>;
+  const h2 = (s: string) => <h2 className="display whitespace-nowrap text-[18px] leading-[1.1] lg:text-[20px]">{s}</h2>;
 
   return (
     <div className="grid grid-cols-1 items-start gap-10 px-5 pb-12 pt-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-12 lg:pt-10">
@@ -39,7 +39,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
           <span className="text-[12px] font-medium uppercase tracking-[0.14em] text-ink3 lg:text-[13px]">
             {t("weekday.long", { day: String(weekdayIndex(today)) })}, {formatDate(today)}
           </span>
-          <h1 className="display text-[34px] lg:text-[48px]">{t("portal.yourContent")}</h1>
+          <h1 className="display text-[32px] lg:text-[48px]">{t("portal.yourContent")}</h1>
         </div>
 
         {(portal.show.review || portal.show.scripts) && (
@@ -57,7 +57,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                       <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">
                         {v.versions[0] ? t("portal.videoVersion", { n: v.versions[0].version }) : t("portal.videoOnly")}
                       </span>
-                      <span className="text-[17px] font-medium leading-snug">{v.title}</span>
+                      <span className="text-[18px] font-medium leading-snug">{v.title}</span>
                       {v.publish_date && (
                         <span className="text-[14px] text-ink2">{t("portal.postOn", { date: `${day(v.publish_date)}, ${formatDate(v.publish_date)}` })}</span>
                       )}
@@ -68,7 +68,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                 {scriptPacks.map((p) => (
                   <Link key={p.shoot.id} href={`${base}/shoots/${p.shoot.id}`} className="flex flex-col gap-2 rounded-lg border border-line bg-surf p-[18px]">
                     <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-ink3">{t("portal.scriptsFor")}</span>
-                    <span className="text-[17px] font-medium leading-snug">
+                    <span className="text-[18px] font-medium leading-snug">
                       {t("portal.shootOn", { date: formatDate(p.shoot.date), location: p.shoot.location ? `, ${p.shoot.location}` : "" })}
                     </span>
                     <span className="text-[14px] text-ink2">{t("portal.scriptsProgress", { approved: p.approved, total: p.total, changes: p.changes })}</span>
@@ -124,7 +124,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
             {h2(t("portal.nextShoot"))}
             {nextShoot ? (
               <Link href={`${base}/shoots/${nextShoot.id}`} className="flex flex-col gap-1.5 rounded-lg border border-line bg-surf p-[18px]">
-                <span className="text-[17px] font-medium">
+                <span className="text-[18px] font-medium">
                   {t("weekday.long", { day: String(weekdayIndex(nextShoot.date)) })}, {formatDate(nextShoot.date)}
                 </span>
                 <span className="text-[14px] text-ink2">

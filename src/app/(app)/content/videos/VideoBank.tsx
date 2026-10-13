@@ -69,8 +69,8 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
     );
   const selectCls = "h-9 cursor-pointer appearance-none rounded-full border border-line2 bg-transparent px-3.5 text-[13px] font-medium text-ink2 outline-none hover:text-ink";
   const chip = (active: boolean) =>
-    `h-8 cursor-pointer whitespace-nowrap rounded-full border px-3 text-[12.5px] font-semibold tracking-[0.04em] ${active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`;
-  const action = "h-8 cursor-pointer whitespace-nowrap rounded-md border border-line2 bg-transparent px-2.5 text-[12.5px] font-medium text-ink2 hover:border-ink hover:text-ink disabled:opacity-50";
+    `h-8 cursor-pointer whitespace-nowrap rounded-full border px-3 text-[13px] font-semibold tracking-[0.04em] ${active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`;
+  const action = "h-8 cursor-pointer whitespace-nowrap rounded-md border border-line2 bg-transparent px-2.5 text-[13px] font-medium text-ink2 hover:border-ink hover:text-ink disabled:opacity-50";
 
   const meta = (v: Task) => {
     if (tab === "dropped") return v.dropped_at ? t("droppedOn", { date: formatDate(v.dropped_at) }) : "";
@@ -150,20 +150,20 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                 <TaskLink id={v.id} className="flex min-w-0 flex-1 flex-col gap-1.5 hover:opacity-80">
                   <span className="flex items-center gap-2">
                     {v.content_type && (
-                      <span className="flex-none rounded-[3px] border border-line2 px-1.5 py-1 text-[10.5px] font-semibold leading-none tracking-[0.08em] text-ink2">
+                      <span className="flex-none rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">
                         {v.content_type}
                       </span>
                     )}
                     <span className="min-w-0 truncate text-[15px] font-medium leading-snug text-ink">{v.title}</span>
                   </span>
                   {(v.profile || v.on_camera || v.location || m) && (
-                    <span className="truncate text-[12.5px] text-ink3">{[v.profile, v.on_camera, v.location, m].filter(Boolean).join(" · ")}</span>
+                    <span className="truncate text-[13px] text-ink3">{[v.profile, v.on_camera, v.location, m].filter(Boolean).join(" · ")}</span>
                   )}
                   {v.script_decision && <ScriptDecisionBadge decision={v.script_decision} />}
                   {tab === "ideas" && pendingReshoot(v) && <ReshootBadge attempt={pendingReshoot(v)!} />}
                   {first && !open.has(v.id) && (
                     <span className="line-clamp-2 max-w-[720px] text-[13px] leading-snug text-ink2">
-                      {first.label && <span className="mr-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-accent">{first.label}</span>}
+                      {first.label && <span className="mr-1.5 text-[11px] font-semibold tracking-[0.12em] text-accent">{first.label}</span>}
                       {first.text}
                     </span>
                   )}

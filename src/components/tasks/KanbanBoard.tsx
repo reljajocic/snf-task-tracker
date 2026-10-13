@@ -37,8 +37,8 @@ function KanbanCard({ task, today, mobile = false }: { task: Task; today: IsoDat
           task.type && <span className={`flex-none font-medium text-ink3 ${mobile ? "text-[13px]" : "text-[12px]"}`}>{t(`taskType.${task.type}`)}</span>
         )}
       </div>
-      {task.parent && <span className="text-[12.5px] leading-tight text-ink3">{t("task.subtaskOf", { title: task.parent.title })}</span>}
-      <span className={`font-medium leading-[1.35] ${mobile ? "text-[17px]" : "text-[15px]"} ${done ? "line-through" : ""}`}>{task.title}</span>
+      {task.parent && <span className="text-[13px] leading-tight text-ink3">{t("task.subtaskOf", { title: task.parent.title })}</span>}
+      <span className={`font-medium leading-[1.35] ${mobile ? "text-[18px]" : "text-[15px]"} ${done ? "line-through" : ""}`}>{task.title}</span>
       {task.kind === "video" && <PhaseBar task={task} />}
       <div className="flex items-center justify-between">
         <DueChip task={task} today={today} />

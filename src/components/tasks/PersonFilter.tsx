@@ -58,7 +58,7 @@ export function PersonFilter({ people, value, hrefFor }: { people: Person[]; val
           <div className="flex max-h-[320px] flex-col overflow-y-auto">
             {!q && (
               <Link href={hrefFor.all} onClick={() => setOpen(false)} className={`${item} ${!value ? "text-ink" : "text-ink2"}`}>
-                <span className="grid size-6 place-items-center rounded-full border border-line2 text-[11px]">∗</span>
+                <span className="grid size-6 place-items-center rounded-full border border-line2 text-[12px]">∗</span>
                 {t("everyone")}
               </Link>
             )}

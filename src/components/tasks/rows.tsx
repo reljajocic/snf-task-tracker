@@ -57,7 +57,7 @@ export function TaskCardMobile({ task, today }: { task: Task; today: IsoDate }) 
     >
       <div className="flex justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-1.5">
-          <span className="text-[17px] font-medium leading-snug">{task.title}</span>
+          <span className="text-[18px] font-medium leading-snug">{task.title}</span>
           <TaskMeta task={task} />
         </div>
         <AvatarStack people={task.assignees} size={30} />

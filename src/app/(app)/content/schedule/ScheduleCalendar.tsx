@@ -69,12 +69,12 @@ export function ScheduleCalendar({
         onDragStart={drag(v.id)}
         className={`flex cursor-grab flex-col gap-1 rounded-[5px] border px-2 py-1.5 active:cursor-grabbing ${s === "not_published" ? "border-red-line bg-red-bg" : "border-line bg-surf"}`}
       >
-        <span className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase leading-none tracking-[0.08em] text-ink3">
+        <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] text-ink3">
           <span className="size-[7px] flex-none rounded-full" style={{ background: POSTING_STATUS_COLOR[s] }} />
           {v.content_type}
         </span>
         <span className="line-clamp-2 text-[12px] font-medium leading-tight">{v.title}</span>
-        {v.on_camera && <span className="truncate text-[11px] text-ink3">{v.on_camera}</span>}
+        {v.on_camera && <span className="truncate text-[12px] text-ink3">{v.on_camera}</span>}
       </TaskLink>
     );
   };
@@ -96,7 +96,7 @@ export function ScheduleCalendar({
             return (
               <div key={d} className="contents">
                 {i % 7 === 0 && (
-                  <span className="border-b border-r border-line pt-2 text-center text-[10.5px] font-semibold text-ink3">
+                  <span className="border-b border-r border-line pt-2 text-center text-[12px] font-semibold text-ink3">
                     {t("calendar.weekShort", { n: isoWeek(d) })}
                   </span>
                 )}
@@ -149,7 +149,7 @@ export function ScheduleCalendar({
           <span className="display text-[15px] leading-none">{t("schedule.unscheduled")}</span>
           <span className="text-[13px] font-medium text-ink3">{pool.length}</span>
         </div>
-        <span className="text-[12.5px] leading-snug text-ink3">{t("schedule.unscheduledHint")}</span>
+        <span className="text-[13px] leading-snug text-ink3">{t("schedule.unscheduledHint")}</span>
         {pool.map(chip)}
         {!pool.length && <span className="text-[13px] text-ink3">{t("schedule.noVideos")}</span>}
       </aside>

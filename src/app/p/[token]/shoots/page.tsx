@@ -15,14 +15,14 @@ export default async function PortalShoots({ params }: PageProps<"/p/[token]/sho
 
   return (
     <div className="flex flex-col gap-5 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
-      <h1 className="display text-[34px] lg:text-[44px]">{t("portal.shootsTitle")}</h1>
+      <h1 className="display text-[32px] lg:text-[44px]">{t("portal.shootsTitle")}</h1>
       {list.length ? (
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {list.map((s) => {
             const { total, approved, changes } = progress.get(s.id) ?? { total: 0, approved: 0, changes: 0 };
             return (
               <Link key={s.id} href={`/p/${token}/shoots/${s.id}`} className={`flex flex-col gap-2 rounded-lg border border-line bg-surf p-[18px] ${s.date < today ? "opacity-70" : ""}`}>
-                <span className="text-[17px] font-medium">
+                <span className="text-[18px] font-medium">
                   {t("weekday.long", { day: String(weekdayIndex(s.date)) })}, {formatDate(s.date)}
                 </span>
                 <span className="text-[14px] text-ink2">

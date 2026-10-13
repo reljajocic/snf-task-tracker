@@ -52,7 +52,7 @@ export function LoginForm({ initialError }: { initialError: "linkExpired" | "ina
         }}
       >
         <div className="flex flex-col gap-2.5 lg:gap-3">
-          <h1 className="display text-[34px] lg:text-[40px]">{t("title")}</h1>
+          <h1 className="display text-[32px] lg:text-[40px]">{t("title")}</h1>
           <p className="text-[15px] leading-normal text-offwhite/70 lg:text-[16px]">
             <span className="lg:hidden">{t("leadMobile")}</span>
             <span className="hidden lg:inline">{t("lead")}</span>
@@ -73,7 +73,7 @@ export function LoginForm({ initialError }: { initialError: "linkExpired" | "ina
             aria-label={t("emailLabel")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-14 rounded-lg border border-offwhite/36 bg-offwhite/6 px-4 text-[17px] text-offwhite outline-none focus:border-accent lg:h-[52px] lg:rounded-none lg:border-0 lg:border-b lg:border-accent lg:bg-transparent lg:px-0 lg:text-[18px] lg:focus-visible:shadow-none"
+            className="h-14 rounded-lg border border-offwhite/36 bg-offwhite/6 px-4 text-[18px] text-offwhite outline-none focus:border-accent lg:h-[52px] lg:rounded-none lg:border-0 lg:border-b lg:border-accent lg:bg-transparent lg:px-0 lg:text-[18px] lg:focus-visible:shadow-none"
           />
         </label>
 
@@ -96,7 +96,7 @@ export function LoginForm({ initialError }: { initialError: "linkExpired" | "ina
   return (
     <div className="flex flex-col gap-[22px] lg:gap-7">
       <div className="flex flex-col gap-2.5 lg:gap-3">
-        <h1 className="display text-[34px] lg:text-[40px]">{t("checkTitle")}</h1>
+        <h1 className="display text-[32px] lg:text-[40px]">{t("checkTitle")}</h1>
         <p className="text-[15px] leading-[1.55] text-offwhite/70 lg:text-[16px]">
           <span className="lg:hidden">{t("checkLeadMobile", { email })}</span>
           <span className="hidden lg:inline">

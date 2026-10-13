@@ -27,7 +27,7 @@ export function ClientTeam({ clientId, members, people, canManage }: { clientId:
 
   return (
     <section className="flex flex-col gap-3.5">
-      <h2 className="display text-[19px] leading-[1.1] lg:text-[20px]">{t("team")}</h2>
+      <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{t("team")}</h2>
       <div className="flex flex-col rounded-lg border border-line bg-surf px-4 py-1.5">
         {sorted.map((m) => (
           <div key={m.id} className="flex items-center gap-3 border-b border-line py-2.5 last:border-b-0">
@@ -66,7 +66,7 @@ export function ClientTeam({ clientId, members, people, canManage }: { clientId:
           </button>
         </div>
       )}
-      <p className="text-[12.5px] leading-snug text-ink3">{t("teamHint")}</p>
+      <p className="text-[13px] leading-snug text-ink3">{t("teamHint")}</p>
       {error && <p role="alert" className="text-[13px] text-red-ink">{error}</p>}
     </section>
   );

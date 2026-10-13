@@ -7,7 +7,7 @@ export function VideoTag({ contentType, size = "sm" }: { contentType?: string | 
   return (
     <span
       className={`flex flex-none items-center gap-[5px] whitespace-nowrap rounded-[3px] border border-line2 font-semibold uppercase leading-none tracking-[0.1em] text-ink ${
-        size === "md" ? "px-2 py-[5px] text-[10.5px]" : "px-1.5 py-1 text-[10.5px]"
+        size === "md" ? "px-2 py-[5px] text-[12px]" : "px-1.5 py-1 text-[12px]"
       }`}
     >
       <span className="size-1.5 rounded-[1px] bg-accent" />

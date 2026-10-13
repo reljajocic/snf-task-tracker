@@ -52,7 +52,7 @@ export function VideoSection({
       {show("fields") && (
       <>
       {/* Phase stepper */}
-      <div className="flex flex-col gap-3.5 rounded-lg border border-line bg-surf px-5 py-[18px]">
+      <div className="flex flex-col gap-3.5">
         <div className="flex items-center justify-between">
           <span className="eyebrow">{t("video.phase")}</span>
           {next !== null && !disabled && !task.dropped_at && (

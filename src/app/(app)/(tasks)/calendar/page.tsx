@@ -115,7 +115,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
               return (
                 <Link key={d} href={href({ day: d })} scroll={false} className={`flex flex-col items-center gap-1.5 rounded-[10px] py-2.5 ${sel ? "bg-seg text-seg-ink" : d === today ? "text-accent" : "text-ink"}`}>
                   <span className={`text-[11px] font-semibold uppercase ${sel ? "" : "text-ink3"}`}>{t("weekday.short", { day: String(weekdayIndex(d)) })}</span>
-                  <span className="text-[17px] font-semibold">{Number(d.slice(8, 10))}</span>
+                  <span className="text-[18px] font-semibold">{Number(d.slice(8, 10))}</span>
                   <span className="flex h-1.5 gap-0.5">
                     {shootsOn(d).length > 0 && <span className="size-1.5 rounded-full bg-accent ring-2 ring-rust-bg" />}
                     {on(d).slice(0, 3).map((x) => <span key={x.id} className="size-1.5 rounded-full" style={{ background: PRIORITY_COLOR[x.priority] }} />)}
@@ -126,7 +126,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
           </div>
         ) : (
           <div>
-            <div className="grid grid-cols-7 pb-1 text-center text-[11px] font-semibold text-ink3">
+            <div className="grid grid-cols-7 pb-1 text-center text-[12px] font-semibold text-ink3">
               {[0, 1, 2, 3, 4, 5, 6].map((d) => <span key={d}>{t("weekday.narrow", { day: String(d) })}</span>)}
             </div>
             <div className="grid grid-cols-7 gap-y-1">
@@ -147,7 +147,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
             </div>
           </div>
         )}
-        <h2 className="display pt-2 text-[17px]">
+        <h2 className="display pt-2 text-[18px]">
           {t("weekday.long", { day: String(weekdayIndex(selected)) })}, {formatDate(selected)}
         </h2>
         {shootsOn(selected).map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} />)}
@@ -173,7 +173,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                     <span className={`grid size-6 flex-none place-items-center rounded-full text-[12px] font-semibold ${isToday ? "bg-accent text-charcoal" : inMonth(d) ? "text-ink" : "text-ink3"}`}>
                       {Number(d.slice(8, 10))}
                     </span>
-                    {weekdayIndex(d) === 0 && <span className="pr-1 text-[10.5px] font-semibold text-ink3">{t("calendar.weekShort", { n: isoWeek(d) })}</span>}
+                    {weekdayIndex(d) === 0 && <span className="pr-1 text-[12px] font-semibold text-ink3">{t("calendar.weekShort", { n: isoWeek(d) })}</span>}
                   </div>
                   {shootsOn(d).map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} variant="chip" />)}
                   {list.slice(0, 4).map((x) => {
@@ -187,7 +187,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                     );
                   })}
                   {list.length > 4 && (
-                    <Link href={href({ view: "week", d })} scroll={false} className="px-1.5 text-[11.5px] font-medium text-ink3 hover:text-ink">
+                    <Link href={href({ view: "week", d })} scroll={false} className="px-1.5 text-[12px] font-medium text-ink3 hover:text-ink">
                       {t("calendar.more", { count: list.length - 4 })}
                     </Link>
                   )}
@@ -214,8 +214,8 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                     const done = x.status === "done";
                     return (
                       <TaskLink key={x.id} id={x.id} className={`flex flex-col gap-2 rounded-md border bg-surf p-2.5 ${late ? "border-red-line" : "border-line"} ${done ? "opacity-60" : ""}`}>
-                        <span className="text-[10.5px] font-semibold uppercase leading-tight tracking-[0.1em] text-ink3">{x.client?.name ?? t("task.noClient")}</span>
-                        <span className={`text-[13.5px] font-medium leading-snug ${done ? "line-through" : ""}`}>{x.title}</span>
+                        <span className="text-[11px] font-semibold uppercase leading-tight tracking-[0.1em] text-ink3">{x.client?.name ?? t("task.noClient")}</span>
+                        <span className={`text-[14px] font-medium leading-snug ${done ? "line-through" : ""}`}>{x.title}</span>
                         <div className="flex items-center justify-between">
                           <PriorityMark priority={x.priority} />
                           <AvatarStack people={x.assignees} size={22} />
@@ -223,7 +223,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                       </TaskLink>
                     );
                   })}
-                  {!list.length && !shootsOn(d).length && <span className="px-1 py-1.5 text-[12.5px] text-ink3">{t("calendar.noDeadlines")}</span>}
+                  {!list.length && !shootsOn(d).length && <span className="px-1 py-1.5 text-[13px] text-ink3">{t("calendar.noDeadlines")}</span>}
                 </div>
               );
             })}

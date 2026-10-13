@@ -44,7 +44,7 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
     const label = `${t("month.name", { m: String(Number(month.slice(5, 7))) })} ${month.slice(0, 4)}`;
     return (
       <div className="flex flex-col gap-4 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
-        <h1 className="display text-[34px] lg:text-[44px]">{t("schedule.title")}</h1>
+        <h1 className="display text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
         <div className="flex flex-wrap items-center gap-3">
           {viewSwitch}
           <div className="flex h-[42px] items-center rounded-[7px] border border-line2 text-[14px] font-medium">
@@ -68,15 +68,16 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
                 return (
                   <div
                     key={d}
-                    className={`flex min-h-[78px] flex-col gap-1 rounded-lg border p-1.5 lg:min-h-[108px] lg:p-2 ${d === today ? "border-accent" : "border-line"} ${inMonth ? "bg-surf" : "opacity-40"}`}
+                    className={`flex min-h-[56px] flex-col gap-1 rounded-lg border p-1.5 lg:min-h-[108px] lg:p-2 ${d === today ? "border-accent" : "border-line"} ${inMonth ? "bg-surf" : "opacity-40"}`}
                   >
                     <span className={`text-[12px] font-semibold ${d === today ? "text-accent" : "text-ink3"}`}>{Number(d.slice(8))}</span>
                     {posts.map((v) => {
                       const status = portalStatus(v);
                       const chip = (
-                        <span className="flex items-center gap-1.5 rounded-md bg-chip px-1.5 py-1 text-[11.5px] font-medium leading-tight lg:text-[12.5px]">
-                          <span className="size-1.5 flex-none rounded-full" style={{ background: PORTAL_STATUS_COLOR[status] }} />
-                          <span className="line-clamp-2 min-w-0 break-words">{v.title}</span>
+                        // Phones: a cell is ~45px wide, so just the status dot (titles are in the list view).
+                        <span title={v.title} className="flex items-center gap-1.5 text-[13px] font-medium leading-tight lg:rounded-md lg:bg-chip lg:px-1.5 lg:py-1">
+                          <span className="size-2 flex-none rounded-full lg:size-1.5" style={{ background: PORTAL_STATUS_COLOR[status] }} />
+                          <span className="hidden min-w-0 break-words lg:line-clamp-2">{v.title}</span>
                         </span>
                       );
                       return status === "awaiting" && portal.show.review ? (
@@ -103,7 +104,7 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
 
   return (
     <div className="flex flex-col gap-2 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
-      <h1 className="display pb-2 text-[34px] lg:text-[44px]">{t("schedule.title")}</h1>
+      <h1 className="display pb-2 text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
       {viewSwitch}
       {[...weeks.entries()].map(([wk, list]) => (
         <div key={wk} className="flex flex-col">

@@ -23,7 +23,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         />
         <div className="relative hidden max-w-[420px] flex-col gap-4 lg:flex">
           <span className="display text-[56px]">{t("tagline")}</span>
-          <span className="text-[17px] leading-[1.55] text-offwhite/70">{t("intro")}</span>
+          <span className="text-[18px] leading-[1.55] text-offwhite/70">{t("intro")}</span>
         </div>
       </div>
 

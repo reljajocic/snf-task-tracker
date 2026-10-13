@@ -46,7 +46,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
           placeholder={t("namePlaceholder")}
           className="h-12 rounded-md border border-line2 bg-transparent px-3.5 text-[16px] text-ink outline-none focus:border-accent"
         />
-        <span className="text-[12.5px] text-ink3">{t("nameHint")}</span>
+        <span className="text-[13px] text-ink3">{t("nameHint")}</span>
       </label>
       {error && <span role="alert" className="text-[14px] text-red-ink">{error}</span>}
 
@@ -64,7 +64,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
           <a
             key={v.id}
             href={`#v-${v.id}`}
-            className={`flex items-center gap-3 px-4 py-2 text-[14.5px] hover:bg-line/40 lg:px-5 ${isMine(v) ? "font-semibold" : ""}`}
+            className={`flex items-center gap-3 px-4 py-2 text-[15px] hover:bg-line/40 lg:px-5 ${isMine(v) ? "font-semibold" : ""}`}
           >
             <span className="w-[42px] flex-none tabular-nums text-ink3">{v.time ?? `#${i + 1}`}</span>
             <span className={`min-w-0 flex-1 truncate ${v.status === "not_shot" ? "text-ink3 line-through" : ""}`}>{v.title}</span>
@@ -106,7 +106,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13px] font-medium text-ink3">
                 <span className="tabular-nums">#{i + 1}</span>
                 {v.time && <span className="font-semibold tabular-nums text-ink">{v.time}</span>}
-                <span className="ml-auto flex items-center gap-1.5 rounded-full border border-line2 px-2.5 py-1 text-[12.5px] text-ink2">
+                <span className="ml-auto flex items-center gap-1.5 rounded-full border border-line2 px-2.5 py-1 text-[13px] text-ink2">
                   <span className="size-2 rounded-full" style={{ background: STATUS_COLOR[v.status] }} />
                   {ts(v.status)}
                 </span>

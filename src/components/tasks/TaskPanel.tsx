@@ -186,7 +186,7 @@ function PanelBody({
           <button type="button" onClick={copyLink} className="h-[34px] cursor-pointer whitespace-nowrap rounded-md border border-line2 px-3 text-[13px] font-medium text-ink2 hover:text-ink">
             {copied ? t("copied") : t("copyLink")}
           </button>
-          <button type="button" aria-label={t("close")} onClick={onClose} className="size-[34px] cursor-pointer rounded-md text-[22px] text-ink2 hover:text-ink">
+          <button type="button" aria-label={t("close")} onClick={onClose} className="size-[34px] cursor-pointer rounded-md text-[24px] text-ink2 hover:text-ink">
             ×
           </button>
         </div>
@@ -206,7 +206,7 @@ function PanelBody({
           onChange={(e) => setTitle(e.target.value)}
           onBlur={() => title.trim() && title.trim() !== task.title && save({ title }, { title: title.trim() })}
           onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-          className="focus-visible:shadow-none w-full border-0 border-b border-transparent bg-transparent py-1 text-[22px] font-medium leading-tight text-ink outline-none focus:border-accent lg:text-[26px]"
+          className="focus-visible:shadow-none w-full border-0 border-b border-transparent bg-transparent py-1 text-[24px] font-medium leading-tight text-ink outline-none focus:border-accent lg:text-[24px]"
         />
 
         {task.kind === "video" && (
@@ -324,7 +324,7 @@ function PanelBody({
       </div>
 
       <div className="hidden items-center justify-between gap-3 border-t border-line px-7 py-4 lg:flex">
-        <span className="text-[12.5px] leading-snug text-ink3">
+        <span className="text-[13px] leading-snug text-ink3">
           {t("createdBy", { name: detail.creatorName ?? "—", date: formatDate(task.created_at.slice(0, 10)) })}
         </span>
         {detail.canDelete && (
