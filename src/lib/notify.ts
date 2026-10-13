@@ -81,6 +81,16 @@ function describe(event: NotificationEvent, task: TaskInfo, actor: string | null
         heading: `${escapeHtml(extra.by ?? "The client")} approved the ${extra.what ?? "video"}`,
         lines: [`<b style="color:#F4F3ED">${title}</b>${where}`],
       };
+    case "edit_cancelled":
+      return {
+        subject: `Edit cancelled: ${task.title}`,
+        heading: `${who} sent a video back for a reshoot`,
+        lines: [
+          `<b style="color:#F4F3ED">${title}</b>${where}`,
+          `Reason: “${escapeHtml(extra.reason ?? "")}”`,
+          extra.publish ? `It was due to post on ${escapeHtml(extra.publish)}; there's nothing to edit for now.` : "There's nothing to edit for now.",
+        ],
+      };
     case "client_changes":
       return {
         subject: `Changes requested: ${task.title}`,

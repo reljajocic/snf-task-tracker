@@ -355,3 +355,108 @@ describe("client portal", () => {
     ).rejects.toThrow(/row-level security/);
   });
 });
+
+describe("reshoots (return to ideas)", () => {
+  const video = async (title: string, extra = "", params: unknown[] = []) =>
+    (
+      await as<{ id: string }>(
+        MANAGER,
+        `insert into public.tasks (title, kind, client_id${extra ? ", " + extra.split("=")[0] : ""}) values ($1, 'video', $2${extra ? ", " + extra.split("=")[1] : ""}) returning id`,
+        [title, C1, ...params],
+      )
+    )[0].id;
+  let shootA: string;
+  let filmed: string;
+  let idea: string;
+
+  beforeAll(async () => {
+    [{ id: shootA }] = await as<{ id: string }>(
+      MANAGER,
+      "insert into public.shoot_days (client_id, date, location) values ($1, '2026-09-23', 'Liman') returning id",
+      [C1],
+    );
+    filmed = await video("Reshoot me");
+    await as(
+      MANAGER,
+      `update public.tasks set shoot_id = $2, shoot_time = '20:00', shoot_order = 3, on_camera = 'Djole', shot_status = 'shot', phase = 2,
+         publish_date = '2026-10-20', due_date = '2026-10-19', script = '[{"label":"HOOK","text":"Zašto?"}]'::jsonb where id = $1`,
+      [filmed, shootA],
+    );
+    idea = await video("Plain idea");
+  });
+
+  it("sends a filmed video back to ideas and keeps the attempt", async () => {
+    await as(MANAGER, "select public.return_to_ideas($1, '  loš sagovornik ')", [filmed]);
+    const [t] = await as(
+      MANAGER,
+      "select phase, status, shot_status, shoot_id, shoot_time, shoot_order, publish_date, due_date, on_camera, script from public.tasks where id = $1",
+      [filmed],
+    );
+    expect(t).toEqual({
+      phase: 0,
+      status: "todo",
+      shot_status: "to_shoot",
+      shoot_id: null,
+      shoot_time: null,
+      shoot_order: null,
+      publish_date: null,
+      due_date: null,
+      on_camera: "Djole",
+      script: [{ label: "HOOK", text: "Zašto?" }],
+    });
+    expect(
+      await as(
+        MEMBER,
+        "select shoot_id, to_char(shoot_date, 'YYYY-MM-DD') as shoot_date, location, shoot_time, on_camera, shot_status, to_char(publish_date, 'YYYY-MM-DD') as publish_date, reason, returned_by from public.video_shoot_history where task_id = $1",
+        [filmed],
+      ),
+    ).toEqual([
+      { shoot_id: shootA, shoot_date: "2026-09-23", location: "Liman", shoot_time: "20:00", on_camera: "Djole", shot_status: "shot", publish_date: "2026-10-20", reason: "loš sagovornik", returned_by: MANAGER },
+    ]);
+  });
+
+  it("keeps the history when the video goes on a shoot day again", async () => {
+    const [{ id: shootB }] = await as<{ id: string }>(
+      MANAGER,
+      "insert into public.shoot_days (client_id, date, location) values ($1, '2026-10-30', 'Promenada') returning id",
+      [C1],
+    );
+    expect(await as(MANAGER, "update public.tasks set shoot_id = $2 where id = $1 returning phase, shoot_id", [filmed, shootB])).toEqual([
+      { phase: 1, shoot_id: shootB },
+    ]);
+    expect(await as(MANAGER, "select reason from public.video_shoot_history where task_id = $1", [filmed])).toEqual([{ reason: "loš sagovornik" }]);
+    // The shoot day the attempt was on can go; the record of it stays.
+    await as(MANAGER, "update public.tasks set shoot_id = null where shoot_id = $1", [shootA]);
+    await db.query("delete from public.shoot_days where id = $1", [shootA]);
+    expect(await as(MANAGER, "select shoot_id, location from public.video_shoot_history where task_id = $1", [filmed])).toEqual([
+      { shoot_id: null, location: "Liman" },
+    ]);
+  });
+
+  it("leaves plain ideas alone", async () => {
+    await expect(as(MANAGER, "select public.return_to_ideas($1, 'x')", [idea])).rejects.toThrow(/already an idea/);
+    expect(await as(MANAGER, "select count(*)::int as n from public.video_shoot_history where task_id = $1", [idea])).toEqual([{ n: 0 }]);
+    expect(await as(MANAGER, "select phase, shot_status, shoot_id from public.tasks where id = $1", [idea])).toEqual([
+      { phase: 0, shot_status: "to_shoot", shoot_id: null },
+    ]);
+  });
+
+  it("needs a reason, and only people who can edit the video can do it", async () => {
+    await expect(as(MANAGER, "select public.return_to_ideas($1, '   ')", [filmed])).rejects.toThrow(/reason is required/);
+    const [{ id: other }] = await as<{ id: string }>(
+      ADMIN,
+      "insert into public.tasks (title, kind, client_id, phase, shot_status) values ('Other client', 'video', $1, 2, 'shot') returning id",
+      [C2],
+    );
+    await expect(as(MEMBER, "select public.return_to_ideas($1, 'x')", [other])).rejects.toThrow(/not found|Not allowed|row-level security/);
+    await expect(as(OUTSIDER, "insert into public.video_shoot_history (task_id, reason) values ($1, 'x')", [other])).rejects.toThrow(
+      /row-level security/,
+    );
+    expect(await as(ADMIN, "select count(*)::int as n from public.video_shoot_history where task_id = $1", [other])).toEqual([{ n: 0 }]);
+  });
+
+  it("history can't be rewritten through the API", async () => {
+    await expect(as(MANAGER, "update public.video_shoot_history set reason = 'x'")).rejects.toThrow(/permission denied/);
+    await expect(as(MANAGER, "delete from public.video_shoot_history")).rejects.toThrow(/permission denied/);
+  });
+});

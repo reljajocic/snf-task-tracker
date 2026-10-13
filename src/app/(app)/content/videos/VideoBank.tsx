@@ -7,9 +7,10 @@ import { useState, useTransition } from "react";
 import { addVideosToShoot, removeFromShoot } from "@/app/(app)/content/shoots/actions";
 import { updateTask } from "@/app/(app)/task-actions";
 import { DatePicker } from "@/components/tasks/DatePicker";
+import { ReshootBadge, ReturnToIdeas } from "@/components/tasks/Reshoot";
 import { TaskLink } from "@/components/tasks/links";
 import { formatDate, type IsoDate } from "@/lib/dates";
-import type { Task } from "@/lib/tasks";
+import { pendingReshoot, type Task } from "@/lib/tasks";
 
 type Shoot = { id: string; date: IsoDate; location: string | null };
 
@@ -159,6 +160,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                     <span className="truncate text-[12.5px] text-ink3">{[v.profile, v.on_camera, v.location, m].filter(Boolean).join(" · ")}</span>
                   )}
                   {v.script_decision && <ScriptDecisionBadge decision={v.script_decision} />}
+                  {tab === "ideas" && pendingReshoot(v) && <ReshootBadge attempt={pendingReshoot(v)!} />}
                   {first && !open.has(v.id) && (
                     <span className="line-clamp-2 max-w-[720px] text-[13px] leading-snug text-ink2">
                       {first.label && <span className="mr-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-accent">{first.label}</span>}
@@ -220,6 +222,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                   )}
                 </div>
                </div>
+                {(tab === "shoot" || tab === "ready") && <ReturnToIdeas taskId={v.id} onDone={() => router.refresh()} className="self-start" />}
                 {parts(v).length > 0 && (
                   <>
                     {open.has(v.id) && (

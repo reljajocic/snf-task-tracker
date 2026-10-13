@@ -909,6 +909,73 @@ export type Database = {
           },
         ]
       }
+      video_shoot_history: {
+        Row: {
+          id: string
+          location: string | null
+          on_camera: string | null
+          publish_date: string | null
+          reason: string
+          returned_at: string
+          returned_by: string | null
+          shoot_date: string | null
+          shoot_id: string | null
+          shoot_time: string | null
+          shot_status: string | null
+          task_id: string
+        }
+        Insert: {
+          id?: string
+          location?: string | null
+          on_camera?: string | null
+          publish_date?: string | null
+          reason: string
+          returned_at?: string
+          returned_by?: string | null
+          shoot_date?: string | null
+          shoot_id?: string | null
+          shoot_time?: string | null
+          shot_status?: string | null
+          task_id: string
+        }
+        Update: {
+          id?: string
+          location?: string | null
+          on_camera?: string | null
+          publish_date?: string | null
+          reason?: string
+          returned_at?: string
+          returned_by?: string | null
+          shoot_date?: string | null
+          shoot_id?: string | null
+          shoot_time?: string | null
+          shot_status?: string | null
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_shoot_history_returned_by_fkey"
+            columns: ["returned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_shoot_history_shoot_id_fkey"
+            columns: ["shoot_id"]
+            isOneToOne: false
+            referencedRelation: "shoot_days"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_shoot_history_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       video_versions: {
         Row: {
           created_at: string
@@ -976,6 +1043,10 @@ export type Database = {
       mark_shot: {
         Args: { new_status: string; tid: string }
         Returns: undefined
+      }
+      return_to_ideas: {
+        Args: { tid: string; why: string }
+        Returns: string
       }
       task_editable: {
         Args: { cid: string; creator: string; tid: string }

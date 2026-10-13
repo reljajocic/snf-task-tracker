@@ -6,8 +6,9 @@ import { z } from "zod";
 import { today } from "@/lib/dates";
 import { notify } from "@/lib/notify";
 import { sectionsToText, textToSections } from "@/lib/script-text";
+import { returnToIdeas } from "@/lib/reshoot";
 import { clean, handOffToEditor, type TaskPatch } from "@/lib/task-patch";
-import { PHASES, PUBLISHED_PHASE, type ScriptSection } from "@/lib/tasks";
+import { canReturnToIdeas, pendingReshoot, PHASES, PUBLISHED_PHASE, type ScriptSection, type ShootAttempt } from "@/lib/tasks";
 import type { McpCaller } from "./auth";
 
 // What an AI assistant can do in SNF Dailies: mostly getting videos and scripts in, and saying who's on them.
@@ -19,7 +20,8 @@ const INSTRUCTIONS = `SNF Dailies is Slate n' Frame's internal tracker for clien
 - "on_camera" is the talent (free text, comma-separated names). "team" is the people from the agency working on it (editor, camera, etc.); they get notified.
 - Scripts are written in the team's format, one part per label: "HOOK: …", "BODY: …", "CTA 1: …", "OPEN LOOP 1: …". Plain text without labels is fine too.
 - Clients, people and shoot days can be referred to by name/date or id. Call list_clients / list_people / list_shoots first when unsure.
-- Write in the language the client's content is in (usually Serbian, latin script).`;
+- Write in the language the client's content is in (usually Serbian, latin script).
+- If filmed footage can't be used (weak talent, bad shot, client rejected it), use return_to_ideas with a reason instead of clearing fields by hand: it keeps the attempt in the video's shoot history and marks it "to reshoot".`;
 
 const PHASE_NAMES = [...PHASES, "published"] as const;
 type PhaseName = (typeof PHASE_NAMES)[number];
@@ -113,7 +115,8 @@ const phasePatch = (p: PhaseName): TaskPatch => {
 
 const VIDEO_COLS = `id, title, content_type, location, profile, on_camera, script, phase, shot_status, publish_date, dropped_at,
   shoot_time, shoot_order, created_at, note, reference_url, drive_url,
-  client:clients(id, name), shoot:shoot_days(id, date, location), task_assignees(profile:profiles(id, full_name))`;
+  client:clients(id, name), shoot:shoot_days(id, date, location), task_assignees(profile:profiles(id, full_name)),
+  shoot_history:video_shoot_history(shoot_date, location, shoot_time, on_camera, shot_status, publish_date, reason, returned_at, returned_by:profiles(full_name))`;
 
 type VideoRow = {
   id: string;
@@ -136,10 +139,23 @@ type VideoRow = {
   client: { id: string; name: string } | null;
   shoot: { id: string; date: string; location: string | null } | null;
   task_assignees: { profile: { id: string; full_name: string } | null }[];
+  shoot_history: ShootAttempt[] | null;
 };
 
 const phaseName = (v: VideoRow) => ((v.phase ?? 0) >= PUBLISHED_PHASE ? "published" : PHASES[v.phase ?? 0]);
 const scriptOf = (v: VideoRow) => (Array.isArray(v.script) ? (v.script as ScriptSection[]) : []);
+const historyOf = (v: VideoRow) => [...(v.shoot_history ?? [])].sort((a, b) => b.returned_at.localeCompare(a.returned_at));
+const attemptOut = (a: ShootAttempt) => ({
+  shoot_date: a.shoot_date,
+  location: a.location,
+  time: a.shoot_time,
+  on_camera: a.on_camera,
+  shot_status: a.shot_status,
+  was_posting: a.publish_date,
+  reason: a.reason,
+  returned_at: a.returned_at,
+  returned_by: a.returned_by?.full_name ?? null,
+});
 
 function shelf(v: VideoRow) {
   if (v.dropped_at) return "dropped";
@@ -163,6 +179,11 @@ function summary(v: VideoRow) {
     shelf: shelf(v),
     shoot: v.shoot ? { id: v.shoot.id, date: v.shoot.date, location: v.shoot.location, time: v.shoot_time, status: v.shot_status } : null,
     publish_date: v.publish_date,
+    reshoot: (() => {
+      const p = pendingReshoot({ ...v, shot_status: v.shot_status as "shot" | null, shoot_id: v.shoot?.id ?? null, shoot_history: historyOf(v) });
+      return p ? { reason: p.reason, filmed_on: p.shoot_date } : null;
+    })(),
+    shoot_attempts: v.shoot_history?.length ?? 0,
     script_start: first ? `${first.label ? `${first.label}: ` : ""}${first.text.slice(0, 140)}` : null,
   };
 }
@@ -359,7 +380,16 @@ export function buildServer(me: McpCaller) {
     async ({ id }) =>
       run(async () => {
         const v = await loadVideo(id);
-        return { ...summary(v), script_start: undefined, script: scriptOf(v), script_text: sectionsToText(scriptOf(v)), note: v.note, reference_url: v.reference_url, drive_url: v.drive_url };
+        return {
+          ...summary(v),
+          script_start: undefined,
+          script: scriptOf(v),
+          script_text: sectionsToText(scriptOf(v)),
+          note: v.note,
+          reference_url: v.reference_url,
+          drive_url: v.drive_url,
+          shoot_history: historyOf(v).map(attemptOut),
+        };
       }),
   );
 
@@ -412,6 +442,32 @@ export function buildServer(me: McpCaller) {
         }
         changed();
         return { client: c.name, shoot: s ? { id: s.id, date: s.date } : null, created };
+      }),
+  );
+
+  server.registerTool(
+    "return_to_ideas",
+    {
+      title: "Return a video to ideas (reshoot)",
+      description:
+        "For a video that was put on a shoot day, filmed or scheduled but whose footage can't be used. Sends it back to the Ideas shelf (phase script, off its shoot day, no posting date), keeps this attempt in its shoot history with the reason, marks it 'to reshoot', and tells the people on it the edit is off. Script, approvals and team stay.",
+      inputSchema: {
+        id: z.string().describe("Video id."),
+        reason: z.string().min(1).max(500).describe("Why it needs a reshoot, e.g. 'weak talent', 'client rejected the shot'."),
+      },
+      annotations: { destructiveHint: false, idempotentHint: false },
+    },
+    async ({ id, reason }) =>
+      run(async () => {
+        const v = await loadVideo(id);
+        if (!canReturnToIdeas({ ...v, shot_status: v.shot_status as "shot" | null, shoot_id: v.shoot?.id ?? null })) {
+          throw new ToolError(`"${v.title}" is ${v.dropped_at ? "dropped" : (v.phase ?? 0) >= PUBLISHED_PHASE ? "already published" : "already an idea"}; nothing to return.`);
+        }
+        const res = await returnToIdeas(db, v.id, reason, me.userId);
+        if (!res.ok) throw new ToolError(res.error);
+        changed();
+        const fresh = await loadVideo(v.id);
+        return { ...summary(fresh), shoot_history: historyOf(fresh).map(attemptOut) };
       }),
   );
 

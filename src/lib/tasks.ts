@@ -84,6 +84,21 @@ export type Task = {
   subtask_done: number;
   /** The client's latest word on the script, from the portal. */
   script_decision: ScriptDecision | null;
+  /** Earlier shoots whose footage couldn't be used (newest first). See "return to ideas". */
+  shoot_history: ShootAttempt[];
+};
+
+/** One filmed (or scheduled) attempt that was sent back to ideas, as it was at that moment. */
+export type ShootAttempt = {
+  shoot_date: IsoDate | null;
+  location: string | null;
+  shoot_time: string | null;
+  on_camera: string | null;
+  shot_status: string | null;
+  publish_date: IsoDate | null;
+  reason: string;
+  returned_at: string;
+  returned_by: { full_name: string } | null;
 };
 
 export type ScriptDecision = { status: "approved" | "changes"; approver_name: string; comment: string | null; created_at: string };
@@ -102,17 +117,19 @@ export const TASK_SELECT = `
   publish_date, published_at, dropped_at, shoot_id, shoot_time, shoot_order, shot_status,
   shoot:shoot_days(id, date, location),
   subtasks:tasks!parent_id(status),
-  approvals(kind, status, approver_name, comment, created_at)
+  approvals(kind, status, approver_name, comment, created_at),
+  shoot_history:video_shoot_history(shoot_date, location, shoot_time, on_camera, shot_status, publish_date, reason, returned_at, returned_by:profiles(full_name))
 `;
 
-export type RawTask = Omit<Task, "assignees" | "subtask_count" | "subtask_done" | "script_decision"> & {
+export type RawTask = Omit<Task, "assignees" | "subtask_count" | "subtask_done" | "script_decision" | "shoot_history"> & {
+  shoot_history?: ShootAttempt[] | null;
   task_assignees: { profile: Person | null }[];
   subtasks: { status: TaskStatus }[] | null;
   approvals?: (ScriptDecision & { kind: string })[] | null;
 };
 
 export function toTask(raw: RawTask): Task {
-  const { task_assignees, subtasks, approvals, ...rest } = raw;
+  const { task_assignees, subtasks, approvals, shoot_history, ...rest } = raw;
   const decision = (approvals ?? []).filter((a) => a.kind === "script").sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
   return {
     ...rest,
@@ -122,6 +139,7 @@ export function toTask(raw: RawTask): Task {
     script_decision: decision
       ? { status: decision.status, approver_name: decision.approver_name, comment: decision.comment, created_at: decision.created_at }
       : null,
+    shoot_history: [...(shoot_history ?? [])].sort((a, b) => b.returned_at.localeCompare(a.returned_at)),
     assignees: task_assignees
       .map((a) => a.profile)
       .filter((p): p is Person => p !== null)
@@ -130,6 +148,17 @@ export function toTask(raw: RawTask): Task {
 }
 
 export const isDone = (t: Pick<Task, "status">) => t.status === "done";
+
+type ShootState = Pick<Task, "dropped_at" | "phase" | "shot_status" | "shoot_id" | "publish_date">;
+const isIdea = (t: ShootState) =>
+  !t.dropped_at && !t.publish_date && !t.shoot_id && (t.phase ?? 0) < 2 && t.shot_status !== "shot";
+
+/** A video that's on a shoot day, filmed or scheduled, and so can be sent back to ideas for a reshoot. */
+export const canReturnToIdeas = (t: ShootState) => !t.dropped_at && (t.phase ?? 0) < PUBLISHED_PHASE && !isIdea(t);
+
+/** The attempt to reshoot, when the video is back among the ideas after a shoot that didn't work out. */
+export const pendingReshoot = (t: ShootState & Pick<Task, "shoot_history">): ShootAttempt | null =>
+  isIdea(t) ? (t.shoot_history[0] ?? null) : null;
 
 export function taskOverdue(t: Task, today: IsoDate) {
   return isOverdue(t.due_date, today, isDone(t));

@@ -7,11 +7,12 @@ import { addSubtask, listSubtasks, updateTask, type TaskPatch } from "@/app/(app
 import { Avatar } from "@/components/ui/Avatar";
 import type { Lookups } from "@/lib/data";
 import { formatDate, weekdayIndex, type IsoDate } from "@/lib/dates";
-import { PHASES, PUBLISHED_PHASE, SCRIPT_SECTIONS, type ScriptSection, type Task } from "@/lib/tasks";
+import { canReturnToIdeas, pendingReshoot, PHASES, PUBLISHED_PHASE, SCRIPT_SECTIONS, type ScriptSection, type Task } from "@/lib/tasks";
 import { Pill } from "./bits";
 import { DatePicker } from "./DatePicker";
 import { assignablePeople } from "./fields";
 import { TaskLink } from "./links";
+import { ReshootBadge, ReturnToIdeas, ShootHistory } from "./Reshoot";
 import { ReviewSection } from "./ReviewSection";
 import { ScriptDecisionBadge } from "./ScriptDecisionBadge";
 
@@ -25,6 +26,7 @@ export function VideoSection({
   disabled,
   save,
   onChanged,
+  onReshoot,
   part = "all",
 }: {
   task: Task;
@@ -33,6 +35,8 @@ export function VideoSection({
   disabled: boolean;
   save: Save;
   onChanged: () => void;
+  /** After "return to ideas" (defaults to onChanged). */
+  onReshoot?: () => void;
   /** The task window shows settings on the left ("fields") and the script and notes on the right ("text"). */
   part?: "all" | "fields" | "text";
 }) {
@@ -111,16 +115,21 @@ export function VideoSection({
           </span>
         ) : (
           !disabled && (
-            <button
-              type="button"
-              onClick={() => save({ dropped_at: today }, { dropped_at: today, status: "done" })}
-              className="cursor-pointer self-start text-[13px] text-ink3 underline-offset-2 hover:text-ink2 hover:underline"
-            >
-              {t("phase.drop")}
-            </button>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              {canReturnToIdeas(task) && <ReturnToIdeas taskId={task.id} onDone={onReshoot ?? onChanged} />}
+              <button
+                type="button"
+                onClick={() => save({ dropped_at: today }, { dropped_at: today, status: "done" })}
+                className="cursor-pointer self-start text-[13px] text-ink3 underline-offset-2 hover:text-ink2 hover:underline"
+              >
+                {t("phase.drop")}
+              </button>
+            </div>
           )
         )}
+        {pendingReshoot(task) && <ReshootBadge attempt={pendingReshoot(task)!} />}
       </div>
+      <ShootHistory attempts={task.shoot_history} />
 
       {/* Facts grid */}
       <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">

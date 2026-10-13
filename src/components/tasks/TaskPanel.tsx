@@ -135,6 +135,12 @@ function PanelBody({
     });
   };
 
+  // Back to ideas for a reshoot: show it right away; the attempt arrives with the reload (see shoot_history below).
+  const reshot = () => {
+    setTask((cur) => ({ ...cur, phase: 0, status: "todo", shot_status: "to_shoot", shoot_id: null, shoot: null, shoot_time: null, shoot_order: null, publish_date: null, due_date: null }));
+    onChanged();
+  };
+
   const saveAssignees = (ids: string[]) => {
     setTask((cur) => ({ ...cur, assignees: lookups.people.filter((p) => ids.includes(p.id)) }));
     startTransition(async () => {
@@ -204,7 +210,7 @@ function PanelBody({
         />
 
         {task.kind === "video" && (
-          <VideoSection part="fields" task={task} lookups={lookups} today={today} disabled={disabled} save={save} onChanged={onChanged} />
+          <VideoSection part="fields" task={{ ...task, shoot_history: detail.task.shoot_history }} lookups={lookups} today={today} disabled={disabled} save={save} onChanged={onChanged} onReshoot={reshot} />
         )}
 
         <div className="flex flex-col">

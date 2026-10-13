@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { requireProfile } from "@/lib/auth";
 import { notify } from "@/lib/notify";
+import { returnToIdeas } from "@/lib/reshoot";
 import { createClient } from "@/lib/supabase/server";
 import { clean, DATE_RE, handOffToEditor, type TaskPatch } from "@/lib/task-patch";
 import { TASK_SELECT, toTask, type RawTask, type ShotStatus, type Task, type TaskStatus } from "@/lib/tasks";
@@ -234,6 +235,15 @@ export async function listSubtasks(parentId: string): Promise<Task[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("tasks").select(TASK_SELECT).eq("parent_id", parentId).order("created_at").returns<RawTask[]>();
   return (data ?? []).map(toTask);
+}
+
+/** Reshoot: the footage can't be used, so the video goes back to ideas with the attempt kept in its history. */
+export async function returnVideoToIdeas(id: string, reason: string): Promise<ActionResult> {
+  const me = await requireProfile();
+  const res = await returnToIdeas(await createClient(), id, reason, me.id);
+  if (!res.ok) return res;
+  refresh();
+  return { ok: true, data: null };
 }
 
 /** On set: mark a video shot / not shot (crew can do this without full edit rights). */

@@ -416,6 +416,10 @@
       "client_changes": {
         "title": "Client requested changes",
         "hint": "A client asks for changes on a video or script you're on."
+      },
+      "edit_cancelled": {
+        "title": "Edit cancelled",
+        "hint": "A video you're on was sent back for a reshoot."
       }
     },
     "customColor": "Pick any colour",
@@ -872,5 +876,19 @@
     "cropHint": "Drag to move it inside the circle.",
     "save": "Save",
     "cancel": "Cancel"
+  },
+  "reshoot": {
+    "action": "Return to ideas (reshoot)",
+    "reasonLabel": "Why does it need a reshoot?",
+    "reasonPh": "e.g. weak talent, client rejected the shot",
+    "hint": "The video comes off its shoot day and posting date and goes back to Ideas. This attempt stays in its history, and the people on the video are notified.",
+    "confirm": "Return to ideas",
+    "cancel": "Cancel",
+    "badge": "To reshoot",
+    "history": "Shoot history",
+    "attempt": "Attempt {n}",
+    "noDate": "no shoot date",
+    "wasPosting": "Was posting {date}",
+    "returned": "Sent back by {name}, {date}"
   }
 }

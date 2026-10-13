@@ -416,6 +416,10 @@
       "client_changes": {
         "title": "Klijent traži izmene",
         "hint": "Klijent traži izmene na videu ili skripti na kojoj si."
+      },
+      "edit_cancelled": {
+        "title": "Montaža otkazana",
+        "hint": "Video na kom si vraćen je na ponovno snimanje."
       }
     },
     "customColor": "Izaberi bilo koju boju",
@@ -872,5 +876,19 @@
     "cropHint": "Prevuci sliku da je pomeriš u krugu.",
     "save": "Sačuvaj",
     "cancel": "Otkaži"
+  },
+  "reshoot": {
+    "action": "Vrati u ideje (ponovno snimanje)",
+    "reasonLabel": "Zašto ponovo snimamo?",
+    "reasonPh": "npr. loš sagovornik, klijent odbio kadar",
+    "hint": "Video se skida sa snimanja i datuma objave i vraća u Ideje. Ovaj pokušaj ostaje u istoriji, a ljudi na videu dobijaju obaveštenje.",
+    "confirm": "Vrati u ideje",
+    "cancel": "Otkaži",
+    "badge": "Za ponovno snimanje",
+    "history": "Istorija snimanja",
+    "attempt": "{n}. pokušaj",
+    "noDate": "bez datuma snimanja",
+    "wasPosting": "Objava bila {date}",
+    "returned": "Vratio/la {name}, {date}"
   }
 }
