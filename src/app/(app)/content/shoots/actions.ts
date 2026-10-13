@@ -68,13 +68,25 @@ export async function deleteShoot(id: string) {
 export async function addVideosToShoot(shootId: string, items: { id: string; time: string | null }[]) {
   await requireProfile();
   const supabase = await createClient();
-  for (const [i, item] of items.entries()) {
-    const { error } = await supabase
-      .from("tasks")
-      .update({ shoot_id: shootId, shoot_time: item.time && /^\d{2}:\d{2}$/.test(item.time) ? item.time : null, shoot_order: i, shot_status: "to_shoot" })
-      .eq("id", item.id);
-    if (error) return { error: error.message };
-  }
+  // New videos go to the end of the running order (numbering from 0 put them among the first ones).
+  const { data: last } = await supabase
+    .from("tasks")
+    .select("shoot_order")
+    .eq("shoot_id", shootId)
+    .not("shoot_order", "is", null)
+    .order("shoot_order", { ascending: false })
+    .limit(1);
+  const start = (last?.[0]?.shoot_order ?? -1) + 1;
+  const results = await Promise.all(
+    items.map((item, i) =>
+      supabase
+        .from("tasks")
+        .update({ shoot_id: shootId, shoot_time: item.time && /^\d{2}:\d{2}$/.test(item.time) ? item.time : null, shoot_order: start + i, shot_status: "to_shoot" })
+        .eq("id", item.id),
+    ),
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) return { error: failed.error.message };
   revalidatePath("/", "layout");
   return { error: null };
 }
@@ -97,10 +109,10 @@ export async function setSignupLink(shootId: string, on: boolean): Promise<{ tok
 export async function reorderShoot(shootId: string, ids: string[]): Promise<{ error: string | null }> {
   await requireProfile();
   const supabase = await createClient();
-  for (const [i, id] of ids.entries()) {
-    const { error } = await supabase.from("tasks").update({ shoot_order: i }).eq("id", id).eq("shoot_id", shootId);
-    if (error) return { error: error.message };
-  }
+  // All at once: one by one took seconds on a full day, and a refresh in between showed a half-old order.
+  const results = await Promise.all(ids.map((id, i) => supabase.from("tasks").update({ shoot_order: i }).eq("id", id).eq("shoot_id", shootId)));
+  const failed = results.find((r) => r.error);
+  if (failed?.error) return { error: failed.error.message };
   revalidatePath(`/content/shoots/${shootId}`);
   return { error: null };
 }

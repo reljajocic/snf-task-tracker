@@ -142,12 +142,15 @@ export function ShootBoard({
         {canManage ? (
           // Editable right here (phones too): a native time picker on tap.
           <label className={`inline-flex items-center ${v.shoot_time ? "text-ink" : "text-ink3"}`} onClick={(e) => e.stopPropagation()}>
+            {/* Saved when the picker closes, not on every segment (that re-sorted the list mid-edit). */}
             <input
+              key={v.shoot_time ?? ""}
               type="time"
               step={300}
               defaultValue={v.shoot_time ?? ""}
               aria-label={t("shoots.time")}
-              onChange={(e) => saveTime(v, e.target.value)}
+              onBlur={(e) => saveTime(v, e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
               className={`min-w-[4.5rem] cursor-pointer rounded-md border border-line2 bg-transparent px-1.5 py-1 font-medium text-inherit outline-none focus:border-accent ${size === "sm" ? "text-[13px]" : "text-[14px]"}`}
             />
           </label>
