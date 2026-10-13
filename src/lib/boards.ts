@@ -1,4 +1,5 @@
 import "server-only";
+import { reportError } from "@/lib/errors";
 import { createAdminClient, createClient } from "@/lib/supabase/server";
 
 // Moodboards: one Excalidraw scene per project. The team reads and writes through RLS (and live
@@ -44,9 +45,16 @@ export async function getProjectBoard(projectId: string): Promise<BoardData | nu
   const first = await supabase.from("boards").select(COLS).eq("project_id", projectId).maybeSingle<Row>();
   if (first.data) return toBoard(first.data);
   // Make it unless it exists (two requests at once, e.g. a prefetch and the click, both land here).
-  await supabase.from("boards").upsert({ project_id: projectId }, { onConflict: "project_id", ignoreDuplicates: true });
+  const made = await supabase.from("boards").upsert({ project_id: projectId }, { onConflict: "project_id", ignoreDuplicates: true });
   const again = await supabase.from("boards").select(COLS).eq("project_id", projectId).maybeSingle<Row>();
-  return again.data ? toBoard(again.data) : null;
+  if (again.data) return toBoard(again.data);
+  // Shouldn't happen for someone who can open the project: leave a trace to find out why.
+  await reportError({
+    source: "server",
+    message: `Moodboard not opened: ${[first.error?.message, made.error?.message, again.error?.message].filter(Boolean).join(" | ") || "no row after create"}`,
+    path: `/projects/${projectId}/board`,
+  });
+  return null;
 }
 
 /** Boards of this client the portal may show (the board lets the client see or edit). */
