@@ -43,9 +43,8 @@ export async function getProjectBoard(projectId: string): Promise<BoardData | nu
   const supabase = await createClient();
   const first = await supabase.from("boards").select(COLS).eq("project_id", projectId).maybeSingle<Row>();
   if (first.data) return toBoard(first.data);
-  const { error } = await supabase.from("boards").insert({ project_id: projectId });
-  // Someone else may have made it a moment ago (unique project_id); either way, read it back.
-  if (error && !/duplicate/i.test(error.message)) return null;
+  // Make it unless it exists (two requests at once, e.g. a prefetch and the click, both land here).
+  await supabase.from("boards").upsert({ project_id: projectId }, { onConflict: "project_id", ignoreDuplicates: true });
   const again = await supabase.from("boards").select(COLS).eq("project_id", projectId).maybeSingle<Row>();
   return again.data ? toBoard(again.data) : null;
 }
