@@ -798,7 +798,11 @@
     "sortViewOnly": "Just for viewing — the running order stays as it is.",
     "orderByTime": "Set running order by time",
     "moveUp": "Move up",
-    "moveDown": "Move down"
+    "moveDown": "Move down",
+    "scriptsFull": "Whole scripts",
+    "scriptsShort": "Just the start",
+    "scriptMore": "whole script",
+    "scriptLess": "shorten"
   },
   "bank": {
     "title": "Video bank",

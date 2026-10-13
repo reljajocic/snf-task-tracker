@@ -41,6 +41,14 @@ export function ShootSheet({
   const [, startTransition] = useTransition();
   const [adding, setAdding] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
+  // Scripts: whole (default) or just the start, for the whole sheet; each row can flip it.
+  const [fullScripts, setFullScripts] = useState(true);
+  const [scriptFlip, setScriptFlip] = useState<Record<string, boolean>>({});
+  const scriptFull = (id: string) => (scriptFlip[id] ? !fullScripts : fullScripts);
+  const setAllScripts = (full: boolean) => {
+    setFullScripts(full);
+    setScriptFlip({});
+  };
   // "manual" is the saved running order (arrows move videos); the others only change the view.
   const [sort, setSort] = useState<"manual" | "time" | "status" | "person" | "type">("manual");
   const [ordered, reorder] = useOptimistic(videos, (cur, ids: string[]) => ids.map((id) => cur.find((v) => v.id === id)!).filter(Boolean));
@@ -138,6 +146,18 @@ export function ShootSheet({
           ))}
         </div>
         {sort !== "manual" && <span className="text-[13px] text-ink3">{t("sortViewOnly")}</span>}
+        <div className="inline-flex gap-0.5 rounded-[7px] border border-line2 p-[3px]">
+          {([true, false] as const).map((full) => (
+            <button
+              key={String(full)}
+              type="button"
+              onClick={() => setAllScripts(full)}
+              className={`h-8 cursor-pointer rounded-[5px] px-3 text-[13px] font-medium ${fullScripts === full && !Object.keys(scriptFlip).length ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
+            >
+              {t(full ? "scriptsFull" : "scriptsShort")}
+            </button>
+          ))}
+        </div>
         {editable && ordered.some((v) => v.shoot_time) && (
           <button
             type="button"
@@ -233,8 +253,17 @@ export function ShootSheet({
                         disabled={!editable}
                         placeholder="HOOK: …"
                         onSave={(x) => save(v.id, { script: textToSections(x) })}
-                        render={() => <ScriptPreview sections={v.script} clamp />}
+                        render={() => <ScriptPreview sections={v.script} clamp short={!scriptFull(v.id)} />}
                       />
+                      {v.script.filter((sec) => sec.text.trim()).length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => setScriptFlip((cur) => ({ ...cur, [v.id]: !cur[v.id] }))}
+                          className="cursor-pointer px-2 pb-1 text-[13px] font-medium text-rust-ink hover:underline"
+                        >
+                          {scriptFull(v.id) ? `▴ ${t("scriptLess")}` : `▾ ${t("scriptMore")}`}
+                        </button>
+                      )}
                     </td>
                     <td className="px-1 py-1">
                       <TextCell
@@ -272,8 +301,8 @@ export function ShootSheet({
                     <tr className="border-b border-line bg-chip">
                       <td />
                       <td colSpan={7} className="px-2 pb-5 pt-1">
-                        <div className="grid grid-cols-[minmax(0,1fr)_260px] gap-8">
-                          <ScriptPreview sections={v.script} />
+                        <div className="flex max-w-[720px] flex-col gap-3">
+                          {!scriptFull(v.id) && <ScriptPreview sections={v.script} />}
                           <div className="flex flex-col gap-3 text-[14px]">
                             {v.reference_url && <LinkPreview url={v.reference_url} full />}
                             {v.note && <Linkified text={v.note} />}
@@ -301,12 +330,23 @@ export function ShootSheet({
   );
 }
 
-/** HOOK / CTA / BODY with the label set off in the accent color. */
-/** `clamp`: the compact in-row style (whole script, smaller type). */
-export function ScriptPreview({ sections, clamp = false }: { sections: ScriptSection[]; clamp?: boolean }) {
+/**
+ * HOOK / CTA / BODY with the label set off in the accent color.
+ * `clamp`: the compact in-row style; `short`: just the first part, two lines.
+ */
+export function ScriptPreview({ sections, clamp = false, short = false }: { sections: ScriptSection[]; clamp?: boolean; short?: boolean }) {
   const t = useTranslations("shootSheet");
   const filled = sections.filter((s) => s.text.trim() || s.label.trim());
   if (!filled.length) return <span className="text-[14px] text-ink3">{t("empty")}</span>;
+  if (short) {
+    const s = filled[0];
+    return (
+      <div className="line-clamp-2 text-[14px] leading-snug">
+        {s.label && <span className="mr-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">{s.label}</span>}
+        <span className="text-ink2">{s.text}</span>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-2">
       {filled.map((s, i) => (

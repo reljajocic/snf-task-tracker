@@ -798,7 +798,11 @@
     "sortViewOnly": "Samo za pregled — redosled snimanja ostaje kakav je.",
     "orderByTime": "Poređaj redosled po vremenu",
     "moveUp": "Pomeri gore",
-    "moveDown": "Pomeri dole"
+    "moveDown": "Pomeri dole",
+    "scriptsFull": "Cele skripte",
+    "scriptsShort": "Samo početak",
+    "scriptMore": "cela skripta",
+    "scriptLess": "skrati"
   },
   "bank": {
     "title": "Banka videa",
