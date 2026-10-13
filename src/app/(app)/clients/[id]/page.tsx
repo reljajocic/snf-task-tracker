@@ -112,7 +112,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                   <TaskLink
                     key={x.id}
                     id={x.id}
-                    className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-line px-[18px] py-3.5 last:border-b-0 hover:bg-chip lg:grid-cols-[minmax(0,1fr)_100px_60px_120px] wide:grid-cols-[minmax(0,1fr)_100px_150px_60px_120px] ${x.status === "done" ? "opacity-60" : ""}`}
+                    className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-line px-[18px] py-3.5 last:border-b-0 hover:bg-hover lg:grid-cols-[minmax(0,1fr)_100px_60px_120px] wide:grid-cols-[minmax(0,1fr)_100px_150px_60px_120px] ${x.status === "done" ? "opacity-60" : ""}`}
                   >
                     <div className="flex min-w-0 flex-col gap-[5px]">
                       <span className={`text-[15px] font-medium leading-snug ${x.status === "done" ? "line-through" : ""}`}>{x.title}</span>

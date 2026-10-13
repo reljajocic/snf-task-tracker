@@ -73,7 +73,7 @@ export default async function TaskListPage({ searchParams }: PageProps<"/tasks">
         {rows.map((x) => {
           const done = x.status === "done";
           return (
-            <TaskLink key={x.id} id={x.id} className={`${GRID} items-center border-b border-line px-4 py-3 hover:bg-chip ${done ? "opacity-60" : ""}`}>
+            <TaskLink key={x.id} id={x.id} className={`${GRID} items-center border-b border-line px-4 py-3 hover:bg-hover ${done ? "opacity-60" : ""}`}>
               <span className={`truncate text-[15px] font-medium leading-snug ${done ? "line-through" : ""}`}>{x.title}</span>
               <span className="truncate text-[14px] leading-tight text-ink2">{x.client?.name ?? t("task.noClient")}</span>
               <span className="hidden truncate text-[14px] leading-tight text-ink2 xl:block">{x.type ? t(`taskType.${x.type}`) : "—"}</span>

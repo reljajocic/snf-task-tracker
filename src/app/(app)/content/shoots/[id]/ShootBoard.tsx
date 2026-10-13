@@ -378,7 +378,7 @@ export function ShootBoard({
                     onClick={() => setSelected(v.id)}
                     onKeyDown={(e) => e.key === "Enter" && setSelected(v.id)}
                     className={`grid cursor-pointer grid-cols-[30px_minmax(0,1fr)_56px_76px] items-center gap-3.5 border-t border-line px-3.5 py-3 first:border-t-0 ${
-                      sel?.id === v.id ? "bg-chip" : "hover:bg-chip"
+                      sel?.id === v.id ? "bg-chip" : "hover:bg-hover"
                     }`}
                   >
                     {check(v)}
@@ -527,7 +527,7 @@ function AddVideos({ shootId, clientId, candidates, onDone, onClose }: { shootId
           <span className="display text-[15px]">{t("pickVideos")}</span>
           <span className="text-[13px] text-ink3">{t("pickHint")}</span>
         </div>
-        <button type="button" aria-label={t("close")} title={t("close")} onClick={onClose} className="size-8 flex-none cursor-pointer rounded-md text-[20px] text-ink2 hover:bg-chip hover:text-ink">
+        <button type="button" aria-label={t("close")} title={t("close")} onClick={onClose} className="size-8 flex-none cursor-pointer rounded-md text-[20px] text-ink2 hover:bg-hover hover:text-ink">
           ×
         </button>
       </div>

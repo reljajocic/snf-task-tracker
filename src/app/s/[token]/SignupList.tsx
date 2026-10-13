@@ -64,7 +64,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
           <a
             key={v.id}
             href={`#v-${v.id}`}
-            className={`flex items-center gap-3 px-4 py-2 text-[15px] hover:bg-line/40 lg:px-5 ${isMine(v) ? "font-semibold" : ""}`}
+            className={`flex items-center gap-3 px-4 py-2 text-[15px] hover:bg-hover lg:px-5 ${isMine(v) ? "font-semibold" : ""}`}
           >
             <span className="w-[42px] flex-none tabular-nums text-ink3">{v.time ?? `#${i + 1}`}</span>
             <span className={`min-w-0 flex-1 truncate ${v.status === "not_shot" ? "text-ink3 line-through" : ""}`}>{v.title}</span>

@@ -148,7 +148,7 @@ export function ScheduleTable({
                       <button
                         type="button"
                         onClick={() => setOpen(isOpen ? null : v.id)}
-                        className={`${GRID} hidden cursor-pointer items-center px-4 py-[13px] text-left hover:bg-chip lg:grid ${s === "not_published" ? "bg-red-bg" : ""}`}
+                        className={`${GRID} hidden cursor-pointer items-center px-4 py-[13px] text-left hover:bg-hover lg:grid ${s === "not_published" ? "bg-red-bg" : ""}`}
                       >
                         <span className="flex gap-2 whitespace-nowrap text-[14px] font-medium">
                           <span className="w-[30px] text-ink3">{day(r.date)}</span>
@@ -232,7 +232,7 @@ export function ScheduleTable({
           {unscheduled.length ? (
             <div className="snf-stack">
               {unscheduled.map((v) => (
-                <TaskLink key={v.id} id={v.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3.5 border-t border-line px-4 py-[13px] first:border-t-0 hover:bg-chip lg:grid-cols-[minmax(0,1fr)_64px_150px_110px_140px]">
+                <TaskLink key={v.id} id={v.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3.5 border-t border-line px-4 py-[13px] first:border-t-0 hover:bg-hover lg:grid-cols-[minmax(0,1fr)_64px_150px_110px_140px]">
                   <span className="truncate text-[15px] font-medium">{v.title}</span>
                   <span className="hidden lg:block">
                     {v.content_type && <span className="rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">{v.content_type}</span>}

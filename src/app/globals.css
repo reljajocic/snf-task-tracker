@@ -18,6 +18,7 @@
   --ink2: rgba(244, 243, 237, 0.74);
   --ink3: rgba(244, 243, 237, 0.56);
   --chip: rgba(244, 243, 237, 0.07);
+  --hover: rgba(244, 243, 237, 0.035); /* row/item hover: a hint, lighter than a selected chip */
   --red-bg: rgba(224, 71, 58, 0.18);
   --red-ink: #f58a78;
   --red-line: rgba(224, 71, 58, 0.55);
@@ -73,6 +74,7 @@
   --ink2: rgba(47, 45, 46, 0.82);
   --ink3: rgba(47, 45, 46, 0.68);
   --chip: rgba(47, 45, 46, 0.05);
+  --hover: rgba(47, 45, 46, 0.03);
   --red-bg: rgba(224, 71, 58, 0.12);
   --red-ink: #b3301f;
   --red-line: rgba(179, 48, 31, 0.45);
@@ -113,6 +115,7 @@
   --color-ink2: var(--ink2);
   --color-ink3: var(--ink3);
   --color-chip: var(--chip);
+  --color-hover: var(--hover);
   --color-red-bg: var(--red-bg);
   --color-red-ink: var(--red-ink);
   --color-red-line: var(--red-line);
@@ -193,10 +196,7 @@ body {
   color: #1c1a1b;
 }
 :is(button, a).bg-accent:not(:disabled):hover {
-  background-color: var(--accent-hover);
-}
-:root[data-theme="light"] :is(button, a).bg-accent:not(:disabled):hover {
-  background-color: #ee8560;
+  filter: brightness(1.05);
 }
 
 /* On the light theme the brand rust is too light for text; words use the deeper rust. */
@@ -208,6 +208,25 @@ body {
 .bg-pop {
   -webkit-backdrop-filter: blur(22px) saturate(1.5);
   backdrop-filter: blur(22px) saturate(1.5);
+}
+
+/* Hover and focus changes ease in instead of snapping. Base layer, so components with their own
+   transition classes keep them. */
+@layer base {
+  a,
+  button,
+  [role="button"],
+  summary,
+  input,
+  select,
+  textarea {
+    transition:
+      color 160ms var(--ease-standard),
+      background-color 160ms var(--ease-standard),
+      border-color 160ms var(--ease-standard),
+      opacity 160ms var(--ease-standard),
+      filter 160ms var(--ease-standard);
+  }
 }
 
 /* Phones zoom into any field whose text is under 16px (and the page jumps around while typing),

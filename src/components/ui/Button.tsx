@@ -1,19 +1,19 @@
 import Link from "next/link";
 import type { ComponentProps } from "react";
 
-// Port of the design system's <Button>: uppercase DM Sans 500, tracked label,
-// 10px radius, rust gradient primary with a big soft glow that brightens on hover. No scale on press.
+// Port of the design system's <Button>: uppercase DM Sans 500, tracked label, 10px radius,
+// flat rust primary that lifts a touch on hover (see globals.css). No scale on press.
 type Variant = "primary" | "secondary" | "ghost";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-md border font-medium uppercase tracking-[0.14em] transition-colors duration-[var(--dur-fast)] ease-[var(--ease-standard)] cursor-pointer disabled:cursor-not-allowed disabled:opacity-45";
+  "inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-md border font-medium uppercase tracking-[0.14em] transition-[color,background-color,border-color,filter] duration-[var(--dur-fast)] ease-[var(--ease-standard)] cursor-pointer disabled:cursor-not-allowed disabled:opacity-45";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-accent border-transparent text-charcoal hover:brightness-110 active:brightness-95",
+    "bg-accent border-transparent text-charcoal active:brightness-95",
   secondary:
-    "bg-transparent border-[var(--btn-secondary-line)] text-ink hover:border-ink",
+    "bg-transparent border-[var(--btn-secondary-line)] text-ink hover:border-ink3",
   ghost: "bg-transparent border-transparent text-ink2 hover:text-ink px-1",
 };
 

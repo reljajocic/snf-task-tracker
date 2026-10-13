@@ -70,7 +70,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   const selectCls = "h-9 cursor-pointer appearance-none rounded-full border border-line2 bg-transparent px-3.5 text-[13px] font-medium text-ink2 outline-none hover:text-ink";
   const chip = (active: boolean) =>
     `h-8 cursor-pointer whitespace-nowrap rounded-full border px-3 text-[13px] font-semibold tracking-[0.04em] ${active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`;
-  const action = "h-8 cursor-pointer whitespace-nowrap rounded-md border border-line2 bg-transparent px-2.5 text-[13px] font-medium text-ink2 hover:border-ink hover:text-ink disabled:opacity-50";
+  const action = "h-8 cursor-pointer whitespace-nowrap rounded-md border border-line2 bg-transparent px-2.5 text-[13px] font-medium text-ink2 hover:border-ink3 hover:text-ink disabled:opacity-50";
 
   const meta = (v: Task) => {
     if (tab === "dropped") return v.dropped_at ? t("droppedOn", { date: formatDate(v.dropped_at) }) : "";

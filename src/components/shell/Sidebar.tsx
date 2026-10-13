@@ -64,7 +64,7 @@ export function Sidebar({ profile, initialCollapsed }: { profile: Profile; initi
           aria-label={toggleLabel}
           title={toggleLabel}
           aria-expanded={!collapsed}
-          className={`grid size-8 flex-none cursor-pointer place-items-center rounded-md text-ink3 hover:bg-chip hover:text-ink ${collapsed ? "" : "ml-auto"}`}
+          className={`grid size-8 flex-none cursor-pointer place-items-center rounded-md text-ink3 hover:bg-hover hover:text-ink ${collapsed ? "" : "ml-auto"}`}
         >
           {collapsed ? NAV_ICONS.expand : NAV_ICONS.collapse}
         </button>

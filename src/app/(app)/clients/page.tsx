@@ -101,7 +101,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
           <span className="hidden xl:block">{t("clients.col.since")}</span>
         </div>
         {rows.map(({ client: c, open, late, next }) => (
-          <Link key={c.id} href={`/clients/${c.id}`} className={`${GRID} items-center border-b border-line p-4 hover:bg-chip`}>
+          <Link key={c.id} href={`/clients/${c.id}`} className={`${GRID} items-center border-b border-line p-4 hover:bg-hover`}>
             <div className="flex min-w-0 items-center gap-3">
               <ClientMark client={c} size={38} />
               <div className="flex min-w-0 flex-col gap-1">

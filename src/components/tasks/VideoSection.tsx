@@ -59,7 +59,7 @@ export function VideoSection({
             <button
               type="button"
               onClick={() => save({ phase: next }, { phase: next })}
-              className="h-[34px] cursor-pointer whitespace-nowrap rounded-md border border-line2 px-3 text-[13px] font-medium text-ink hover:border-ink"
+              className="h-[34px] cursor-pointer whitespace-nowrap rounded-md border border-line2 px-3 text-[13px] font-medium text-ink hover:border-ink3"
             >
               {next === PUBLISHED_PHASE ? t("phase.markPublished") : t("phase.moveTo", { phase: t(`phase.${PHASES[next]}`) })} →
             </button>

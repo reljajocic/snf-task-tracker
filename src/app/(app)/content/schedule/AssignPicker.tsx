@@ -87,7 +87,7 @@ export function AssignPicker({ videos, onPick }: { videos: Task[]; onPick: (id: 
                       setOpen(false);
                       onPick(v.id);
                     }}
-                    className="flex cursor-pointer flex-col gap-1.5 border-t border-line px-3.5 py-3 text-left first:border-t-0 hover:bg-chip"
+                    className="flex cursor-pointer flex-col gap-1.5 border-t border-line px-3.5 py-3 text-left first:border-t-0 hover:bg-hover"
                   >
                     <span className="flex items-center gap-2">
                       {v.content_type && (

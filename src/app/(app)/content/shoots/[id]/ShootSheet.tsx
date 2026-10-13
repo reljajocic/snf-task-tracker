@@ -142,7 +142,7 @@ export function ShootSheet({
           <button
             type="button"
             onClick={orderByTime}
-            className="ml-auto h-8 cursor-pointer rounded-md border border-line2 px-3 text-[13px] font-medium text-ink2 hover:border-ink hover:text-ink"
+            className="ml-auto h-8 cursor-pointer rounded-md border border-line2 px-3 text-[13px] font-medium text-ink2 hover:border-ink3 hover:text-ink"
           >
             {t("orderByTime")}
           </button>
@@ -436,7 +436,7 @@ function TextCell({
             setEditing(true);
           }
         }}
-        className={`min-h-[34px] rounded px-2 py-1.5 ${disabled ? "" : "cursor-text hover:bg-chip"}`}
+        className={`min-h-[34px] rounded px-2 py-1.5 ${disabled ? "" : "cursor-text hover:bg-hover"}`}
       >
         {render(value)}
       </div>

@@ -20,7 +20,7 @@ export function ShootEvent({ shoot, label, variant = "card" }: { shoot: ShootDay
   return (
     <Link
       href={`/content/shoots/${shoot.id}`}
-      className="flex items-center gap-3.5 rounded-lg border border-line border-l-[3px] border-l-accent bg-surf px-4 py-3 hover:bg-chip"
+      className="flex items-center gap-3.5 rounded-lg border border-line border-l-[3px] border-l-accent bg-surf px-4 py-3 hover:bg-hover"
     >
       <span className="grid size-9 flex-none place-items-center rounded-full bg-rust-bg text-rust-ink">{NAV_ICONS.shoots}</span>
       <span className="flex min-w-0 flex-1 flex-col gap-1">

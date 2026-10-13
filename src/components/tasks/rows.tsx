@@ -18,7 +18,7 @@ export function TaskRow({ task, today, plainDate = false }: { task: Task; today:
   return (
     <TaskLink
       id={task.id}
-      className={`${ROW_GRID} border-t border-line px-[18px] py-3.5 first:border-t-0 hover:bg-chip ${late && !plainDate ? "bg-red-bg hover:bg-red-bg" : ""}`}
+      className={`${ROW_GRID} border-t border-line px-[18px] py-3.5 first:border-t-0 hover:bg-hover ${late && !plainDate ? "bg-red-bg hover:bg-red-bg" : ""}`}
     >
       <div className="flex min-w-0 flex-col gap-[5px]">
         <span className="text-[15px] font-medium leading-snug">{task.title}</span>

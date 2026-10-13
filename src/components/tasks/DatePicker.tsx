@@ -76,7 +76,7 @@ export function MonthGrid({
                   ? "border-accent bg-accent text-charcoal"
                   : isToday
                     ? "border-accent text-accent"
-                    : `border-transparent hover:bg-chip ${inMonth(d) ? "text-ink" : "text-ink3"}`
+                    : `border-transparent hover:bg-hover ${inMonth(d) ? "text-ink" : "text-ink3"}`
               }`}
             >
               {Number(d.slice(8, 10))}

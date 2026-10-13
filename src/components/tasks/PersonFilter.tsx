@@ -29,7 +29,7 @@ export function PersonFilter({ people, value, hrefFor }: { people: Person[]; val
 
   const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const shown = people.filter((p) => norm(p.full_name).includes(norm(q.trim())));
-  const item = "flex h-10 items-center gap-2.5 rounded-md px-2.5 text-[14px] font-medium hover:bg-chip";
+  const item = "flex h-10 items-center gap-2.5 rounded-md px-2.5 text-[14px] font-medium hover:bg-hover";
 
   return (
     <div ref={ref} className="relative">
