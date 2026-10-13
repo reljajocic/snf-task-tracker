@@ -516,7 +516,8 @@ export function buildServer(me: McpCaller) {
             .select("id");
           if (error) throw error;
           if (!data?.length) throw new ToolError("You can't edit this video.");
-          if (fields.publish_date) await handOffToEditor(db, v.id, fields.publish_date, me.userId);
+          const dated = fields.publish_date ?? (fields.publish_date === undefined ? v.publish_date : null);
+          if (dated && (fields.publish_date || fields.shot_status === "shot" || (fields.phase ?? 0) >= 2)) await handOffToEditor(db, v.id, dated, me.userId);
         }
 
         const current = v.task_assignees.map((a) => a.profile?.id).filter((x): x is string => !!x);

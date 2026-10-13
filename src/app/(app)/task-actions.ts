@@ -248,10 +248,15 @@ export async function returnVideoToIdeas(id: string, reason: string): Promise<Ac
 
 /** On set: mark a video shot / not shot (crew can do this without full edit rights). */
 export async function setShotStatus(taskId: string, status: ShotStatus): Promise<ActionResult> {
-  await requireProfile();
+  const me = await requireProfile();
   const supabase = await createClient();
   const { error } = await supabase.rpc("mark_shot", { tid: taskId, new_status: status });
   if (error) return { ok: false, error: error.message };
+  // Filmed and already dated: the editor takes it over now (the crew steps off it).
+  if (status === "shot") {
+    const { data } = await supabase.from("tasks").select("publish_date").eq("id", taskId).maybeSingle();
+    if (data?.publish_date) await handOffToEditor(supabase, taskId, data.publish_date, me.id);
+  }
   refresh();
   return { ok: true, data: null };
 }

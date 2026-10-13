@@ -26,4 +26,14 @@ describe("editor rules", () => {
     expect(pickEditor(rules, "uros", "2026-10-06", "PROMO")).toBe("uros");
     expect(pickEditor([], null, "2026-10-06", null)).toBeNull();
   });
+
+  it("a rule with no days and no types covers everything else", () => {
+    const vivi = parseEditorRules([{ editor_id: "natasa", days: [], types: [] }]);
+    expect(pickEditor(vivi, "relja", "2026-10-06", "REEL")).toBe("natasa");
+    expect(pickEditor(vivi, "relja", "2026-10-06", null)).toBe("natasa");
+    // A more specific rule still wins.
+    const mixed = parseEditorRules([{ editor_id: "natasa", days: [], types: [] }, { editor_id: "marko", days: [], types: ["POST"] }]);
+    expect(pickEditor(mixed, "relja", "2026-10-06", "POST")).toBe("marko");
+    expect(pickEditor(mixed, "relja", "2026-10-06", "REEL")).toBe("natasa");
+  });
 });

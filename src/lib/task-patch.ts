@@ -84,17 +84,21 @@ export function clean(patch: TaskPatch): TaskPatch {
 
 /**
  * A video got a posting date: the client's editor for that day/type (see editor-rules) gets the edit work (if not already on it),
- * with a deadline the day before posting unless one is set.
+ * with a deadline the day before posting unless one is set. Once the video is filmed, the crew of its shoot day steps off it
+ * (unless they're the editor), so it's in the editor's tasks and no longer in theirs. Also run when a dated video is marked shot.
  */
 export async function handOffToEditor(supabase: SupabaseClient<Database>, taskId: string, publishDate: string, actorId: string) {
   const { data: task } = await supabase
     .from("tasks")
-    .select("kind, due_date, content_type, client:clients(default_editor_id, editor_rules), task_assignees(user_id)")
+    .select("kind, due_date, content_type, phase, shot_status, shoot_id, client:clients(default_editor_id, editor_rules), task_assignees(user_id)")
     .eq("id", taskId)
     .single<{
       kind: string;
       due_date: string | null;
       content_type: string | null;
+      phase: number | null;
+      shot_status: string | null;
+      shoot_id: string | null;
       client: { default_editor_id: string | null; editor_rules: unknown } | null;
       task_assignees: { user_id: string }[];
     }>();
@@ -102,8 +106,15 @@ export async function handOffToEditor(supabase: SupabaseClient<Database>, taskId
     task?.client && pickEditor(parseEditorRules(task.client.editor_rules), task.client.default_editor_id, publishDate, task.content_type);
   if (!task || task.kind !== "video" || !editor) return;
   if (!task.due_date) await supabase.from("tasks").update({ due_date: addDays(publishDate, -1) }).eq("id", taskId);
-  if (task.task_assignees.some((a) => a.user_id === editor)) return;
-  await supabase.from("task_assignees").insert({ task_id: taskId, user_id: editor });
-  after(() => notify({ event: "task_assigned", taskId, recipientIds: [editor], actorId }));
+  if (!task.task_assignees.some((a) => a.user_id === editor)) {
+    await supabase.from("task_assignees").insert({ task_id: taskId, user_id: editor });
+    after(() => notify({ event: "task_assigned", taskId, recipientIds: [editor], actorId }));
+  }
+  const filmed = task.shot_status === "shot" || (task.phase ?? 0) >= 2;
+  if (filmed && task.shoot_id) {
+    const { data: crew } = await supabase.from("shoot_crew").select("user_id").eq("shoot_id", task.shoot_id);
+    const off = (crew ?? []).map((c) => c.user_id).filter((u) => u !== editor && task.task_assignees.some((a) => a.user_id === u));
+    if (off.length) await supabase.from("task_assignees").delete().eq("task_id", taskId).in("user_id", off);
+  }
 }
 

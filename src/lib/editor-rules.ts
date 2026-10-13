@@ -20,7 +20,8 @@ export function parseEditorRules(raw: unknown): EditorRule[] {
 
 /**
  * The posting day decides first (the schedule is built around editors' days), the content
- * type breaks ties and covers off-days; the client's default editor is the fallback.
+ * type breaks ties and covers off-days. A rule with no days and no types covers everything
+ * the other rules don't ("Nataša edits all of Vivi Baby"); the client's default editor is the fallback.
  */
 export function pickEditor(
   rules: EditorRule[],
@@ -32,7 +33,8 @@ export function pickEditor(
   const type = contentType?.toUpperCase() ?? "";
   let best: { id: string; score: number } | null = null;
   for (const r of rules) {
-    const score = (r.days.includes(day) ? 2 : 0) + (type && r.types.includes(type) ? 1 : 0);
+    const catchAll = !r.days.length && !r.types.length;
+    const score = catchAll ? 0.5 : (r.days.includes(day) ? 2 : 0) + (type && r.types.includes(type) ? 1 : 0);
     if (score > 0 && (!best || score > best.score)) best = { id: r.editor_id, score };
   }
   return best?.id ?? fallback;
