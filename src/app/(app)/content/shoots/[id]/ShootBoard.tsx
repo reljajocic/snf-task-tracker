@@ -66,6 +66,16 @@ export function ShootBoard({
   const [selected, setSelected] = useState<string | null>(videos[0]?.id ?? null);
   const [adding, setAdding] = useState(false);
   const [showDone, setShowDone] = useState(false);
+  // Phones: scripts open/closed per video, with "show all / hide all" on top. Videos up now start open.
+  const [scriptMode, setScriptMode] = useState<"auto" | "all" | "none">("auto");
+  const [scriptOverride, setScriptOverride] = useState<Record<string, boolean>>({});
+  const scriptOpen = (id: string, byDefault: boolean) => scriptOverride[id] ?? (scriptMode === "all" ? true : scriptMode === "none" ? false : byDefault);
+  const toggleScript = (id: string, byDefault: boolean) => setScriptOverride((cur) => ({ ...cur, [id]: !scriptOpen(id, byDefault) }));
+  const setAllScripts = (mode: "all" | "none") => {
+    setScriptMode(mode);
+    setScriptOverride({});
+  };
+  const hasScript = (v: Task) => v.script.some((sec) => sec.text.trim());
 
   const slots = groupSlots(items).map((s) => {
     const names = [...new Set(s.items.map((v) => v.on_camera).filter(Boolean))].join(", ");
@@ -122,6 +132,34 @@ export function ShootBoard({
     );
 
   const scriptText = (v: Task) => v.script.map((s) => s.text).filter(Boolean).join(" ");
+
+  // Read on set: one block per part of the script (HOOK, OPEN LOOP 1, BODY, CTA…).
+  const scriptBlock = (v: Task) => (
+    <div className="flex flex-col gap-2.5">
+      {v.script
+        .filter((sec) => sec.text.trim())
+        .map((sec, i) => (
+          <div key={i} className="flex flex-col gap-1.5 border-l-2 border-accent/60 pl-3">
+            {sec.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-accent">{sec.label}</span>}
+            <span className="whitespace-pre-wrap text-[16px] leading-relaxed text-ink">{sec.text}</span>
+          </div>
+        ))}
+    </div>
+  );
+  const scriptToggle = (v: Task, byDefault: boolean) =>
+    hasScript(v) && (
+      <button
+        type="button"
+        aria-expanded={scriptOpen(v.id, byDefault)}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleScript(v.id, byDefault);
+        }}
+        className="flex min-h-9 cursor-pointer items-center gap-1.5 self-start text-[14px] font-semibold text-rust-ink"
+      >
+        {t("shoots.script")} {scriptOpen(v.id, byDefault) ? "▴" : "▾"}
+      </button>
+    );
 
   const saveTime = (v: Task, value: string) => {
     if (value === (v.shoot_time ?? "")) return;
@@ -251,6 +289,20 @@ export function ShootBoard({
       {/* Mobile: on set (2e) */}
       <div className="flex flex-col gap-[22px] px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-5 lg:hidden">
         <CallTimes times={deriveCallTimes(items)} />
+        {items.some(hasScript) && (
+          <div className="flex gap-2">
+            {(["all", "none"] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setAllScripts(m)}
+                className={`h-10 flex-1 cursor-pointer rounded-md border text-[14px] font-medium ${scriptMode === m ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"}`}
+              >
+                {t(m === "all" ? "shoots.showScripts" : "shoots.hideScripts")}
+              </button>
+            ))}
+          </div>
+        )}
         {nowSlot && (
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3 px-1">
@@ -270,20 +322,9 @@ export function ShootBoard({
                 </div>
                 {whoWhen(v)}
                 <ScriptDecisionBadge decision={v.script_decision} full />
-                {v.script.some((sec) => sec.text.trim()) && (
-                  // Read on set: one block per part of the script (HOOK, OPEN LOOP 1, BODY, CTA…).
-                  <div className="flex flex-col gap-2.5">
-                    {v.script
-                      .filter((sec) => sec.text.trim())
-                      .map((sec, i) => (
-                        <div key={i} className="flex flex-col gap-1.5 border-l-2 border-accent/60 pl-3">
-                          {sec.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-accent">{sec.label}</span>}
-                          <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">{sec.text}</span>
-                        </div>
-                      ))}
-                  </div>
-                )}
-                {v.note && <span className="text-[13px] font-medium text-[var(--waiting-ink)]">{v.note}</span>}
+                {scriptToggle(v, true)}
+                {hasScript(v) && scriptOpen(v.id, true) && scriptBlock(v)}
+                {v.note && <span className="text-[14px] font-medium text-[var(--waiting-ink)]">{v.note}</span>}
                 {v.reference_url && (
                   <a href={v.reference_url.startsWith("http") ? v.reference_url : `https://${v.reference_url}`} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-rust-ink">
                     {t("shoots.reference")}
@@ -307,14 +348,18 @@ export function ShootBoard({
                     <span className="ml-auto text-[13px] font-medium text-ink3">{s.items.filter(isDone).length}/{s.items.length}</span>
                   </div>
                   {s.items.map((v) => (
-                    <div key={v.id} className="flex min-h-11 items-center gap-3 rounded-xl border border-line bg-surf px-4 py-3">
-                      {check(v, 32)}
-                      <div className="flex min-w-0 flex-col gap-1">
-                        <span className="text-[15px] font-medium leading-snug">{v.title}</span>
-                        {whoWhen(v, "sm")}
-                        <ScriptDecisionBadge decision={v.script_decision} />
-                        {v.note && <span className="line-clamp-3 text-[13px] font-medium text-[var(--waiting-ink)]">{v.note}</span>}
+                    <div key={v.id} className="flex flex-col gap-3 rounded-xl border border-line bg-surf px-4 py-3">
+                      <div className="flex min-h-11 items-center gap-3">
+                        {check(v, 32)}
+                        <div className="flex min-w-0 flex-col gap-1">
+                          <span className="text-[16px] font-medium leading-snug">{v.title}</span>
+                          {whoWhen(v, "sm")}
+                          <ScriptDecisionBadge decision={v.script_decision} />
+                          {v.note && <span className="line-clamp-3 text-[14px] font-medium text-[var(--waiting-ink)]">{v.note}</span>}
+                          {scriptToggle(v, false)}
+                        </div>
                       </div>
+                      {hasScript(v) && scriptOpen(v.id, false) && scriptBlock(v)}
                     </div>
                   ))}
                 </div>

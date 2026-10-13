@@ -15,7 +15,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
   const [profile, cookieStore, lookups] = await Promise.all([requireProfile(), cookies(), getLookups()]);
 
   return (
-    <div className="snf-canvas flex min-h-dvh text-ink">
+    <div className="snf-canvas snf-app flex min-h-dvh text-ink">
       <Sidebar profile={profile} initialCollapsed={cookieStore.get(SIDEBAR_COOKIE)?.value === "collapsed"} />
       {/* Others' changes show up on their own (every minute, and when you come back to the tab). */}
       <AutoRefresh seconds={60} />

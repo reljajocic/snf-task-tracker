@@ -631,7 +631,10 @@
     "signupHint": "Pošalji ga ljudima kod klijenta: upisuju ime pored videa koje snimaju (bez prijave).",
     "noTime": "Bez vremena",
     "noPerson": "Još niko",
-    "shootDay": "Snimanje"
+    "shootDay": "Snimanje",
+    "script": "Skripta",
+    "showScripts": "Prikaži sve skripte",
+    "hideScripts": "Sakrij skripte"
   },
   "portalSettings": {
     "title": "Portal za klijenta",

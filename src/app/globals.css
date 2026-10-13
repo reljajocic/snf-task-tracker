@@ -229,6 +229,26 @@ body {
   }
 }
 
+/* Phones, inside the app (the client portal already reads well): one step bigger for small text and
+   darker secondary grey, so lists and the task window read like the portal does. Desktop is unchanged. */
+@media (max-width: 1023px) {
+  .snf-app {
+    --ink3: rgba(244, 243, 237, 0.66);
+  }
+  :root[data-theme="light"] .snf-app {
+    --ink3: rgba(47, 45, 46, 0.76);
+  }
+  .snf-app .text-\[12px\] {
+    font-size: 13px;
+  }
+  .snf-app .text-\[13px\] {
+    font-size: 14px;
+  }
+  .snf-app .text-\[14px\] {
+    font-size: 15px;
+  }
+}
+
 /* Phones zoom into any field whose text is under 16px (and the page jumps around while typing),
    so fields stay at 16px+ below the desktop breakpoint. */
 @media (max-width: 1023px) {
