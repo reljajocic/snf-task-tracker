@@ -2,33 +2,28 @@
 
 /* Slate n' Frame tokens — see docs/design/README.md ("Design tokeni").
    Dark is the default theme; light is opt-in via <html data-theme="light">.
-   Surfaces are "liquid glass" like the cards on slatenframe.com (.snf-glass): translucent
-   off-white over a dark canvas with a warm glow, a thin light edge and a soft sheen. */
+   Quiet on purpose: a flat canvas, flat cards with a hairline, one rust accent. Blur is kept only
+   for things that float over content (bars, popovers). Text colours meet WCAG AA in both themes. */
 :root {
   --canvas: #121011;
-  --glow-warm: rgba(234, 105, 58, 0.34);
-  --glow-amber: rgba(214, 140, 62, 0.16);
-  --glow-cool: rgba(130, 120, 175, 0.2);
-  --glow-deep: rgba(198, 85, 44, 0.18);
   --bg: #1f1d1e; /* opaque panels: task panel, modals */
   --side: rgba(21, 19, 20, 0.62);
   --surf: rgba(244, 243, 237, 0.06);
-  --glass-edge: rgba(244, 243, 237, 0.16);
-  --glass-shadow: inset 0 1px 0 rgba(244, 243, 237, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15), 0 12px 40px rgba(0, 0, 0, 0.35);
+  --card-edge: rgba(244, 243, 237, 0.1);
   --surf2: rgba(244, 243, 237, 0.1);
-  --pop: rgba(36, 33, 34, 0.9); /* popovers and menus: glass, but readable over content */
-  --sheen: linear-gradient(150deg, rgba(244, 243, 237, 0.1), rgba(244, 243, 237, 0.015) 45%, rgba(244, 243, 237, 0.03));
+  --pop: rgba(36, 33, 34, 0.94); /* popovers and menus: readable over content */
   --line: rgba(244, 243, 237, 0.09);
   --line2: rgba(244, 243, 237, 0.17);
   --ink: #f4f3ed;
-  --ink2: rgba(244, 243, 237, 0.7);
-  --ink3: rgba(244, 243, 237, 0.48);
+  --ink2: rgba(244, 243, 237, 0.74);
+  --ink3: rgba(244, 243, 237, 0.56);
   --chip: rgba(244, 243, 237, 0.07);
   --red-bg: rgba(224, 71, 58, 0.18);
   --red-ink: #f58a78;
   --red-line: rgba(224, 71, 58, 0.55);
   --rust-bg: rgba(234, 105, 58, 0.16);
   --rust-ink: #f09a78;
+  --waiting-ink: #d6a93e; /* amber as text (notes); the dot colour is --status-waiting */
   --seg: #f4f3ed;
   --seg-ink: #2f2d2e;
   --logo-filter: none;
@@ -39,8 +34,6 @@
   --accent-active: #c6552c;
   --overlay: rgba(12, 11, 12, 0.6);
   --shadow-overlay: 0 18px 48px rgba(0, 0, 0, 0.45);
-  --shadow-glow: 0 0 0 1px rgba(255, 190, 160, 0.25) inset, 0 10px 30px rgba(234, 105, 58, 0.45), 0 0 90px 10px rgba(234, 105, 58, 0.35);
-  --accent-fill: linear-gradient(135deg, #f39a6f 0%, #ea693a 45%, #c6552c 100%);
   --shadow-focus: 0 0 0 3px rgba(234, 105, 58, 0.35);
 
   /* Semantic colors, identical in both themes */
@@ -68,29 +61,24 @@
 
 :root[data-theme="light"] {
   --canvas: #ece9e1;
-  --glow-warm: rgba(234, 105, 58, 0.26);
-  --glow-amber: rgba(230, 170, 90, 0.18);
-  --glow-cool: rgba(140, 130, 190, 0.16);
-  --glow-deep: rgba(234, 105, 58, 0.1);
   --bg: #f7f6f1;
   --side: rgba(247, 246, 241, 0.7);
   --surf: rgba(255, 255, 255, 0.62);
   --surf2: rgba(255, 255, 255, 0.85);
-  --pop: rgba(255, 255, 255, 0.94);
-  --glass-edge: rgba(47, 45, 46, 0.12);
-  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 10px 30px rgba(47, 45, 46, 0.08);
-  --sheen: linear-gradient(150deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 60%);
+  --pop: rgba(255, 255, 255, 0.97);
+  --card-edge: rgba(47, 45, 46, 0.12);
   --line: rgba(47, 45, 46, 0.1);
   --line2: rgba(47, 45, 46, 0.2);
   --ink: #2f2d2e;
-  --ink2: rgba(47, 45, 46, 0.72);
-  --ink3: rgba(47, 45, 46, 0.52);
+  --ink2: rgba(47, 45, 46, 0.82);
+  --ink3: rgba(47, 45, 46, 0.68);
   --chip: rgba(47, 45, 46, 0.05);
   --red-bg: rgba(224, 71, 58, 0.12);
   --red-ink: #b3301f;
   --red-line: rgba(179, 48, 31, 0.45);
   --rust-bg: rgba(234, 105, 58, 0.14);
   --rust-ink: #9e4021;
+  --waiting-ink: #866010;
   --seg: #2f2d2e;
   --seg-ink: #f4f3ed;
   --logo-filter: brightness(0.19);
@@ -151,83 +139,69 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* The app canvas: dark with a warm glow top-right and a cool one bottom-left, so glass has
-   something to show through. Fixed, so it doesn't scroll away. */
+/* The app canvas: one flat colour. */
 .snf-canvas {
   background-color: var(--canvas);
-  background-image:
-    radial-gradient(1000px 760px at 96% -8%, var(--glow-warm), transparent 62%),
-    radial-gradient(760px 560px at 42% 46%, var(--glow-amber), transparent 65%),
-    radial-gradient(1000px 800px at -8% 108%, var(--glow-cool), transparent 62%),
-    radial-gradient(700px 500px at 104% 104%, var(--glow-deep), transparent 60%);
-  background-attachment: fixed;
 }
 
-/* Glass: cards get a soft sheen; bars and popovers blur what's behind them. (Blur only on
-   elements that are themselves positioned: a backdrop-filter would trap fixed children.) */
-.bg-surf {
-  background-image: var(--sheen);
-}
-/* Cards (a glass surface with the default hairline) get the glass edge and depth; surfaces with
-   their own border colour or shadow (selected, accent) keep it. */
+/* Cards: a flat surface with a hairline. */
 .bg-surf.border-line {
-  border-color: var(--glass-edge);
-  box-shadow: var(--glass-shadow);
-  -webkit-backdrop-filter: blur(24px) saturate(1.7);
-  backdrop-filter: blur(24px) saturate(1.7);
+  border-color: var(--card-edge);
 }
-/* A list of separate glass cards (videos, posts, tasks) instead of one block with dividers. */
+/* A list of separate cards (videos, posts, tasks) instead of one block with dividers. */
 @layer components {
   .snf-stack {
     display: flex;
     flex-direction: column;
-    gap: 0.625rem;
+    gap: 0.5rem;
   }
   .snf-stack > * {
     border-radius: var(--radius-lg);
     background-color: var(--surf);
-    background-image: var(--sheen);
-    box-shadow: var(--glass-shadow);
-    -webkit-backdrop-filter: blur(24px) saturate(1.7);
-    backdrop-filter: blur(24px) saturate(1.7);
     overflow: hidden;
   }
 }
 /* Rows keep their own colours (late, hover); only the old divider lines give way to a full edge. */
 .snf-stack > * {
-  border: 1px solid var(--glass-edge) !important;
+  border: 1px solid var(--card-edge) !important;
 }
 
-/* The same for table rows (the shoot sheet): each row a glass card, columns still aligned. */
+/* The same for table rows (the shoot sheet): each row a card, columns still aligned. */
 .snf-rows {
   border-collapse: separate !important;
   border-spacing: 0 0.5rem;
 }
 .snf-rows > tbody > tr > td {
   background-color: var(--surf);
-  border-top: 1px solid var(--glass-edge);
-  border-bottom: 1px solid var(--glass-edge);
+  border-top: 1px solid var(--card-edge);
+  border-bottom: 1px solid var(--card-edge);
 }
 .snf-rows > tbody > tr > td:first-child {
-  border-left: 1px solid var(--glass-edge);
+  border-left: 1px solid var(--card-edge);
   border-radius: var(--radius-lg) 0 0 var(--radius-lg);
 }
 .snf-rows > tbody > tr > td:last-child {
-  border-right: 1px solid var(--glass-edge);
+  border-right: 1px solid var(--card-edge);
   border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
 }
 .snf-rows > tbody > tr > td:only-child {
   border-radius: var(--radius-lg);
 }
 
-/* Every rust button (the Button component and one-off ones alike): a gradient fill and a big
-   soft glow, like light spilling onto the canvas. */
+/* Rust buttons (the Button component and one-off ones alike): flat fill, near-black label (5.4:1). */
 :is(button, a).bg-accent:not(:disabled) {
-  background-image: var(--accent-fill);
-  box-shadow: var(--shadow-glow);
+  color: #1c1a1b;
 }
 :is(button, a).bg-accent:not(:disabled):hover {
-  filter: brightness(1.08);
+  background-color: var(--accent-hover);
+}
+:root[data-theme="light"] :is(button, a).bg-accent:not(:disabled):hover {
+  background-color: #ee8560;
+}
+
+/* On the light theme the brand rust is too light for text; words use the deeper rust. */
+:root[data-theme="light"] .text-accent {
+  color: var(--rust-ink);
 }
 
 .bg-side,
@@ -266,16 +240,6 @@ body {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink3);
-}
-
-@keyframes snf-spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes snf-pulse-scale {
-  0%, 100% { transform: scaleY(0.82); opacity: 0.82; }
-  50% { transform: scaleY(1); opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

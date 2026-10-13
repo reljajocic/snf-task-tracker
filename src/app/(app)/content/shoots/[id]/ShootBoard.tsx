@@ -157,7 +157,7 @@ export function ShootBoard({
             {v.shoot_time ?? t("shoots.noTime")}
           </span>
         )}
-        <span className={`inline-flex items-center gap-1.5 ${v.on_camera ? "text-ink" : "text-[var(--status-waiting)]"}`}>
+        <span className={`inline-flex items-center gap-1.5 ${v.on_camera ? "text-ink" : "text-[var(--waiting-ink)]"}`}>
           <PersonIcon size={icon} />
           {v.on_camera ?? t("shoots.noPerson")}
         </span>
@@ -280,7 +280,7 @@ export function ShootBoard({
                       ))}
                   </div>
                 )}
-                {v.note && <span className="text-[13px] font-medium text-[var(--status-waiting)]">{v.note}</span>}
+                {v.note && <span className="text-[13px] font-medium text-[var(--waiting-ink)]">{v.note}</span>}
                 {v.reference_url && (
                   <a href={v.reference_url.startsWith("http") ? v.reference_url : `https://${v.reference_url}`} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-rust-ink">
                     {t("shoots.reference")}
@@ -310,7 +310,7 @@ export function ShootBoard({
                         <span className="text-[15px] font-medium leading-snug">{v.title}</span>
                         {whoWhen(v, "sm")}
                         <ScriptDecisionBadge decision={v.script_decision} />
-                        {v.note && <span className="line-clamp-3 text-[13px] font-medium text-[var(--status-waiting)]">{v.note}</span>}
+                        {v.note && <span className="line-clamp-3 text-[13px] font-medium text-[var(--waiting-ink)]">{v.note}</span>}
                       </div>
                     </div>
                   ))}
@@ -388,7 +388,7 @@ export function ShootBoard({
                       <ScriptDecisionBadge decision={v.script_decision} />
                       {scriptText(v) && <span className="truncate text-[13px] text-ink3">{scriptText(v)}</span>}
                       {/* Under the title, two lines at most; the whole note is in the panel on the right. */}
-                      {v.note && <span className="line-clamp-2 text-[12.5px] font-medium leading-snug text-[var(--status-waiting)]">{v.note}</span>}
+                      {v.note && <span className="line-clamp-2 text-[12.5px] font-medium leading-snug text-[var(--waiting-ink)]">{v.note}</span>}
                     </div>
                     {typeTag(v) || <span />}
                     <div className="flex flex-col items-start gap-1">
@@ -427,7 +427,7 @@ export function ShootBoard({
                   {t("shoots.reference")}
                 </a>
               )}
-              {sel.note && <span className="text-[14px] font-medium text-[var(--status-waiting)]">{sel.note}</span>}
+              {sel.note && <span className="text-[14px] font-medium text-[var(--waiting-ink)]">{sel.note}</span>}
               {shotButtons(sel)}
               {canManage && (
                 <button

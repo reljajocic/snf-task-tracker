@@ -10,11 +10,10 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
     <div className="relative grid min-h-dvh bg-ink-black text-offwhite lg:grid-cols-[1.25fr_1fr]">
       {/* Brand panel (desktop) / backdrop (mobile) */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden lg:pointer-events-auto lg:relative lg:flex lg:flex-col lg:justify-between lg:px-14 lg:py-12">
-        <div className="absolute left-1/2 top-[150px] -ml-[260px] size-[520px] max-lg:[@media(max-height:760px)]:top-[40px] max-lg:[@media(max-height:760px)]:scale-75 bg-[radial-gradient(closest-side,rgba(234,105,58,0.28),rgba(234,105,58,0)_70%)] lg:left-auto lg:-right-[120px] lg:top-1/2 lg:-mt-[380px] lg:ml-0 lg:size-[760px] lg:bg-[radial-gradient(closest-side,rgba(234,105,58,0.30),rgba(234,105,58,0)_70%)]" />
         <img
           src="/brand/aperture-rust.png"
           alt=""
-          className="absolute left-1/2 top-[190px] -ml-[120px] size-[240px] max-lg:[@media(max-height:760px)]:top-[110px] max-lg:[@media(max-height:760px)]:size-[180px] max-lg:[@media(max-height:760px)]:-ml-[90px] animate-[snf-spin-slow_60s_linear_infinite] object-contain lg:left-auto lg:right-10 lg:top-1/2 lg:-mt-[210px] lg:ml-0 lg:size-[420px]"
+          className="absolute left-1/2 top-[190px] -ml-[120px] size-[240px] max-lg:[@media(max-height:760px)]:top-[110px] max-lg:[@media(max-height:760px)]:size-[180px] max-lg:[@media(max-height:760px)]:-ml-[90px] object-contain lg:left-auto lg:right-10 lg:top-1/2 lg:-mt-[210px] lg:ml-0 lg:size-[420px]"
         />
         <div className="absolute inset-0 bg-[url(/brand/grain.png)] bg-[length:180px_180px] opacity-[0.09] mix-blend-overlay" />
         <img
@@ -29,7 +28,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       </div>
 
       {/* Form column */}
-      <div className="relative flex min-h-dvh flex-col lg:items-center lg:justify-center lg:border-l lg:border-[rgba(244,243,237,0.12)] lg:bg-[rgba(244,243,237,0.045)] lg:p-14 lg:backdrop-blur-xl">
+      <div className="relative flex min-h-dvh flex-col lg:items-center lg:justify-center lg:border-l lg:border-[rgba(244,243,237,0.12)] lg:bg-[rgba(244,243,237,0.045)] lg:p-14">
         <div className="px-7 pt-[76px] lg:hidden">
           <img src="/brand/logo-off-white.png" alt="Slate n' Frame" className="h-[30px]" />
         </div>

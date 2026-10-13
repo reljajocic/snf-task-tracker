@@ -96,7 +96,7 @@ export function ScriptApprovals({ token, shootId, videos, canDecide }: { token: 
                         setChangesFor(changesFor === v.id ? null : v.id);
                       }}
                       className={`h-9 cursor-pointer rounded-md border px-3 text-[13px] font-medium disabled:opacity-45 ${
-                        state === "changes" ? "border-[var(--status-waiting)] bg-[rgba(214,169,62,0.18)] text-[var(--status-waiting)]" : "border-line2 text-ink2"
+                        state === "changes" ? "border-[var(--status-waiting)] bg-[rgba(214,169,62,0.18)] text-[var(--waiting-ink)]" : "border-line2 text-ink2"
                       }`}
                     >
                       {t("changes")}
@@ -125,7 +125,7 @@ export function ScriptApprovals({ token, shootId, videos, canDecide }: { token: 
                   ) : (
                     <span className="text-[14px] text-ink3">—</span>
                   )}
-                  {v.decision?.comment && <span className="text-[14px] text-[var(--status-waiting)]">“{v.decision.comment}” — {v.decision.approver_name}</span>}
+                  {v.decision?.comment && <span className="text-[14px] text-[var(--waiting-ink)]">“{v.decision.comment}” — {v.decision.approver_name}</span>}
                   {changesFor === v.id && (
                     <div className="flex flex-col gap-2">
                       <textarea

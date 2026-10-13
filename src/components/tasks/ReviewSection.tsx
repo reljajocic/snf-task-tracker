@@ -6,7 +6,7 @@ import { addVersion, loadReview, type ReviewState } from "@/app/(app)/task-actio
 import { formatDate } from "@/lib/dates";
 import type { Task } from "@/lib/tasks";
 
-const DECISION = { approved: "text-[var(--status-done)]", changes: "text-[var(--status-waiting)]" };
+const DECISION = { approved: "text-[var(--status-done)]", changes: "text-[var(--waiting-ink)]" };
 
 /** Versions sent to the client and their decisions; script approval status (inside the video panel). */
 export function ReviewSection({ task, disabled, onChanged }: { task: Task; disabled: boolean; onChanged: () => void }) {

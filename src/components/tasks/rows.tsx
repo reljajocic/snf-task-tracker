@@ -111,7 +111,7 @@ export function WaitingCard({ task, today, large = false }: { task: Task; today:
         {!large && <AvatarStack people={task.assignees} size={26} />}
       </div>
       <div className={`flex justify-between whitespace-nowrap font-medium leading-none ${large ? "text-[14px] font-semibold" : "text-[13px]"}`}>
-        <span className="text-[var(--status-waiting)]">{t("task.waitingFor", { days })}</span>
+        <span className="text-[var(--waiting-ink)]">{t("task.waitingFor", { days })}</span>
         {task.due_date && <span className="font-normal text-ink3">{t("home.dueShort", { date: formatDate(task.due_date) })}</span>}
       </div>
     </TaskLink>

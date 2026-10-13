@@ -14,12 +14,12 @@ export function ScriptDecisionBadge({ decision, full = false }: { decision: Scri
       <span
         title={decision.comment ?? undefined}
         className={`inline-flex w-fit items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-[3px] text-[11.5px] font-semibold leading-none ${
-          approved ? "bg-[rgba(91,155,107,0.16)] text-[var(--status-done)]" : "bg-[rgba(214,169,62,0.18)] text-[var(--status-waiting)]"
+          approved ? "bg-[rgba(91,155,107,0.16)] text-[var(--status-done)]" : "bg-[rgba(214,169,62,0.18)] text-[var(--waiting-ink)]"
         }`}
       >
         {approved ? "✓" : "✎"} {label}
       </span>
-      {full && decision.comment && <span className="text-[13px] leading-snug text-[var(--status-waiting)]">“{decision.comment}”</span>}
+      {full && decision.comment && <span className="text-[13px] leading-snug text-[var(--waiting-ink)]">“{decision.comment}”</span>}
     </span>
   );
 }

@@ -17,7 +17,7 @@ export function ClientMark({
         width: size,
         height: size,
         fontSize: Math.round(size / (text.length > 2 ? 3.6 : 3)),
-        ...(client.color ? { background: client.color, color: inkOn(client.color), boxShadow: `0 6px 22px ${client.color}55` } : {}),
+        ...(client.color ? { background: client.color, color: inkOn(client.color) } : {}),
       }}
     >
       {text}

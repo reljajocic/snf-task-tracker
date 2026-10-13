@@ -47,7 +47,7 @@ export function VideoDecision({ token, taskId, versionId, decision, undoable }: 
     const approved = decision.status === "approved";
     return (
       <div className={`flex flex-col gap-2 rounded-lg border px-5 py-4 ${approved ? "border-[var(--status-done)]" : "border-[var(--status-waiting)]"}`}>
-        <span className={`text-[15px] font-semibold ${approved ? "text-[var(--status-done)]" : "text-[var(--status-waiting)]"}`}>
+        <span className={`text-[15px] font-semibold ${approved ? "text-[var(--status-done)]" : "text-[var(--waiting-ink)]"}`}>
           {approved ? t("approvedBy", { name: decision.approver_name }) : t("changesBy", { name: decision.approver_name })}
         </span>
         {decision.comment && <span className="whitespace-pre-wrap text-[14px] text-ink2">“{decision.comment}”</span>}
