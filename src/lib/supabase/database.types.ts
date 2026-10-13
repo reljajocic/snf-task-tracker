@@ -1075,13 +1075,13 @@ export type Database = {
         Args: { bid: string; incoming: Json; new_files?: Json }
         Returns: Json
       }
-      can_use_board: { Args: { bid: string }; Returns: boolean }
-      can_use_project_board: { Args: { pid: string }; Returns: boolean }
       can_create_task_in: {
         Args: { cid: string; pid: string }
         Returns: boolean
       }
       can_edit_task: { Args: { tid: string }; Returns: boolean }
+      can_use_board: { Args: { bid: string }; Returns: boolean }
+      can_use_project_board: { Args: { pid: string }; Returns: boolean }
       can_view_client: { Args: { cid: string }; Returns: boolean }
       can_view_project: { Args: { pid: string }; Returns: boolean }
       can_view_task: { Args: { tid: string }; Returns: boolean }
