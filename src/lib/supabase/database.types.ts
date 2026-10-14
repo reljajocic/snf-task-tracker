@@ -924,20 +924,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "tasks_editor_id_fkey"
-            columns: ["editor_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tasks_shooter_id_fkey"
-            columns: ["shooter_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "tasks_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
@@ -947,6 +933,13 @@ export type Database = {
           {
             foreignKeyName: "tasks_created_by_fkey"
             columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_editor_id_fkey"
+            columns: ["editor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -970,6 +963,13 @@ export type Database = {
             columns: ["shoot_id"]
             isOneToOne: false
             referencedRelation: "shoot_days"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_shooter_id_fkey"
+            columns: ["shooter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
