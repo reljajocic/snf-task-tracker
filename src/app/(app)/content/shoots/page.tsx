@@ -63,7 +63,7 @@ export default async function ShootsPage({ searchParams }: PageProps<"/content/s
           canCreate ? (
             <div className="flex flex-wrap items-start gap-3">
               <ImportSheet clients={lookups.clients.filter((c) => c.isTeam).map((c) => ({ id: c.id, name: c.name }))} />
-              <Link href="/content/shoots/new" className={buttonClass({ size: "sm" })}>{t("shoots.new")}</Link>
+              <Link href={clientId ? `/content/shoots/new?client=${clientId}` : "/content/shoots/new"} className={buttonClass({ size: "sm" })}>{t("shoots.new")}</Link>
             </div>
           ) : null
         }
