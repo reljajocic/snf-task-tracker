@@ -255,7 +255,7 @@
       "description": "Description",
       "editor": "Editor",
       "shooter": "Films it",
-      "shooterDefault": "the shoot day's crew"
+      "shooterDefault": "the shooting crew"
     },
     "titlePlaceholder": "Task title, e.g. Edit the TikTok video",
     "descriptionPlaceholder": "What exactly needs to be done",
@@ -559,7 +559,7 @@
     "videos": "{count, plural, one {# video} other {# videos}}",
     "shotOf": "{shot} of {total} shot",
     "left": "{count, plural, one {# left} other {# left}}",
-    "crew": "Crew",
+    "crew": "Shooting crew",
     "now": "Now",
     "next": "Next",
     "doneSlots": "Finished slots ({count})",
@@ -586,7 +586,7 @@
       "location": "Location",
       "from": "From",
       "to": "To",
-      "crew": "Crew",
+      "crew": "Shooting crew",
       "notes": "Notes",
       "save": "Save shoot day",
       "delete": "Delete shoot day",

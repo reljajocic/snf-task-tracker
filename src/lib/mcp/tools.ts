@@ -176,7 +176,7 @@ function summary(v: VideoRow) {
     profile: v.profile,
     on_camera: v.on_camera,
     editor: v.editor?.full_name ?? null,
-    shooter: v.shooter?.full_name ?? (v.shoot ? "shoot day's crew" : null),
+    shooter: v.shooter?.full_name ?? (v.shoot ? "shooting crew" : null),
     phase: phaseName(v),
     shelf: shelf(v),
     shoot: v.shoot ? { id: v.shoot.id, date: v.shoot.date, location: v.shoot.location, time: v.shoot_time, status: v.shot_status } : null,

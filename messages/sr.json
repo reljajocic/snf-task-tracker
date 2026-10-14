@@ -255,7 +255,7 @@
       "description": "Opis",
       "editor": "Montira",
       "shooter": "Snima",
-      "shooterDefault": "ekipa sa snimanja"
+      "shooterDefault": "ekipa za snimanje"
     },
     "titlePlaceholder": "Naziv zadatka, npr. Montiraj TikTok video",
     "descriptionPlaceholder": "Šta tačno treba uraditi",
@@ -559,7 +559,7 @@
     "videos": "{count, plural, one {# video} few {# videa} other {# videa}}",
     "shotOf": "{shot} od {total} snimljeno",
     "left": "{count, plural, one {još #} few {još #} other {još #}}",
-    "crew": "Ekipa",
+    "crew": "Ekipa za snimanje",
     "now": "Sada",
     "next": "Sledeće",
     "doneSlots": "Završeni termini ({count})",
@@ -586,7 +586,7 @@
       "location": "Lokacija",
       "from": "Od",
       "to": "Do",
-      "crew": "Ekipa",
+      "crew": "Ekipa za snimanje",
       "notes": "Beleške",
       "save": "Sačuvaj snimanje",
       "delete": "Obriši snimanje",
