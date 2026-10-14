@@ -494,3 +494,18 @@ describe("moodboards", () => {
     ]);
   });
 });
+
+describe("video editor and shooter", () => {
+  it("the editor (and whoever films it) can open and change the video, even from outside the client's team", async () => {
+    const [{ id: v }] = await as<{ id: string }>(
+      ADMIN,
+      "insert into public.tasks (title, kind, client_id, editor_id, shooter_id) values ('Edit me', 'video', $1, $2, $3) returning id",
+      [C2, MEMBER, OUTSIDER],
+    );
+    expect(await as(MEMBER, "select title from public.tasks where id = $1", [v])).toEqual([{ title: "Edit me" }]);
+    expect(await as(MEMBER, "update public.tasks set phase = 3 where id = $1 returning phase", [v])).toEqual([{ phase: 3 }]);
+    expect(await as(OUTSIDER, "select title from public.tasks where id = $1", [v])).toEqual([{ title: "Edit me" }]);
+    await as(ADMIN, "update public.tasks set editor_id = null, shooter_id = null where id = $1", [v]);
+    expect(await as(MEMBER, "select title from public.tasks where id = $1", [v])).toEqual([]);
+  });
+});

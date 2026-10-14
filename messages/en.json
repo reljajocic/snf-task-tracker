@@ -252,7 +252,10 @@
       "estimate": "Estimate",
       "drive": "Google Drive",
       "driveLink": "Google Drive link",
-      "description": "Description"
+      "description": "Description",
+      "editor": "Editor",
+      "shooter": "Films it",
+      "shooterDefault": "the shoot day's crew"
     },
     "titlePlaceholder": "Task title, e.g. Edit the TikTok video",
     "descriptionPlaceholder": "What exactly needs to be done",

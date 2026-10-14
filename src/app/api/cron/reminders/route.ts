@@ -17,14 +17,15 @@ export async function GET(request: NextRequest) {
   const admin = createAdminClient();
   const { data: tasks, error } = await admin
     .from("tasks")
-    .select("id, due_date, task_assignees(user_id)")
+    .select("id, kind, due_date, editor_id, task_assignees(user_id)")
     .in("due_date", [addDays(now, 1), addDays(now, -1)])
     .not("status", "in", "(done,waiting_client)");
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   let sent = 0;
   for (const task of tasks ?? []) {
-    const recipients = (task.task_assignees as { user_id: string }[]).map((a) => a.user_id);
+    // A video's deadline is its editor's; other tasks remind everyone on them.
+    const recipients = task.kind === "video" ? (task.editor_id ? [task.editor_id] : []) : (task.task_assignees as { user_id: string }[]).map((a) => a.user_id);
     if (!recipients.length) continue;
     await notify({
       event: task.due_date === addDays(now, 1) ? "task_due_tomorrow" : "task_overdue",

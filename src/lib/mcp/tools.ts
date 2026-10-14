@@ -17,7 +17,7 @@ import type { McpCaller } from "./auth";
 const INSTRUCTIONS = `SNF Dailies is Slate n' Frame's internal tracker for client video content.
 - A video belongs to a client. It moves through phases: script → shoot → edit → revision (waiting on the client) → publish → published.
 - The video bank holds videos without a posting date: ideas, videos on a shoot day, filmed ones waiting for a date. A posting date makes it scheduled work.
-- "on_camera" is the talent (free text, comma-separated names). "team" is the people from the agency working on it (editor, camera, etc.); they get notified.
+- "on_camera" is the talent (free text, comma-separated names). "editor" is the one team member who edits it (it shows in their tasks; they get notified); it's set automatically by the client's editor rules when the video gets a posting date, unless already set. "shooter" is who films it; empty means the shoot day's crew.
 - Scripts are written in the team's format, one part per label: "HOOK: …", "BODY: …", "CTA 1: …", "OPEN LOOP 1: …". Plain text without labels is fine too.
 - Clients, people and shoot days can be referred to by name/date or id. Call list_clients / list_people / list_shoots first when unsure.
 - Write in the language the client's content is in (usually Serbian, latin script).
@@ -115,7 +115,7 @@ const phasePatch = (p: PhaseName): TaskPatch => {
 
 const VIDEO_COLS = `id, title, content_type, location, profile, on_camera, script, phase, shot_status, publish_date, dropped_at,
   shoot_time, shoot_order, created_at, note, reference_url, drive_url,
-  client:clients(id, name), shoot:shoot_days(id, date, location), task_assignees(profile:profiles(id, full_name)),
+  client:clients(id, name), shoot:shoot_days(id, date, location), editor:profiles!tasks_editor_id_fkey(id, full_name), shooter:profiles!tasks_shooter_id_fkey(id, full_name),
   shoot_history:video_shoot_history(shoot_date, location, shoot_time, on_camera, shot_status, publish_date, reason, returned_at, returned_by:profiles(full_name))`;
 
 type VideoRow = {
@@ -138,7 +138,8 @@ type VideoRow = {
   drive_url: string | null;
   client: { id: string; name: string } | null;
   shoot: { id: string; date: string; location: string | null } | null;
-  task_assignees: { profile: { id: string; full_name: string } | null }[];
+  editor: { id: string; full_name: string } | null;
+  shooter: { id: string; full_name: string } | null;
   shoot_history: ShootAttempt[] | null;
 };
 
@@ -174,7 +175,8 @@ function summary(v: VideoRow) {
     location: v.location,
     profile: v.profile,
     on_camera: v.on_camera,
-    team: v.task_assignees.map((a) => a.profile?.full_name).filter(Boolean),
+    editor: v.editor?.full_name ?? null,
+    shooter: v.shooter?.full_name ?? (v.shoot ? "shoot day's crew" : null),
     phase: phaseName(v),
     shelf: shelf(v),
     shoot: v.shoot ? { id: v.shoot.id, date: v.shoot.date, location: v.shoot.location, time: v.shoot_time, status: v.shot_status } : null,
@@ -220,15 +222,13 @@ export function buildServer(me: McpCaller) {
     if (!data) throw new ToolError(`No video with id ${id} (or you can't see it).`);
     return data;
   };
-  /** Adds people to a video and tells them, like assigning in the app. */
-  const addTeam = async (taskId: string, ids: string[]) => {
-    const { data: have } = await db.from("task_assignees").select("user_id").eq("task_id", taskId);
-    const add = ids.filter((id) => !(have ?? []).some((h) => h.user_id === id));
-    if (!add.length) return;
-    const { error } = await db.from("task_assignees").insert(add.map((user_id) => ({ task_id: taskId, user_id })));
+  /** Sets who edits a video and tells them, like picking the editor in the app. */
+  const setEditor = async (taskId: string, editorId: string | null) => {
+    const { error } = await db.from("tasks").update({ editor_id: editorId }).eq("id", taskId);
     if (error) throw error;
-    after(() => notify({ event: "task_assigned", taskId, recipientIds: add, actorId: me.userId }));
+    if (editorId) after(() => notify({ event: "task_assigned", taskId, recipientIds: [editorId], actorId: me.userId }));
   };
+  const person = async (ref: string | null) => (ref ? (await peopleIds([ref]))[0] : null);
   const nextShootOrder = async (shootId: string) => {
     const { data } = await db.from("tasks").select("shoot_order").eq("shoot_id", shootId).not("shoot_order", "is", null).order("shoot_order", { ascending: false }).limit(1);
     return (data?.[0]?.shoot_order ?? -1) + 1;
@@ -250,7 +250,7 @@ export function buildServer(me: McpCaller) {
     "list_people",
     {
       title: "List team members",
-      description: "Active SNF team members (for the video's team: editor, camera, etc.).",
+      description: "Active SNF team members (for a video's editor and shooter, and shoot crews).",
       inputSchema: {},
       annotations: { readOnlyHint: true },
     },
@@ -342,7 +342,7 @@ export function buildServer(me: McpCaller) {
     {
       title: "List videos",
       description:
-        "A client's videos with phase, shoot, team and the start of the script. shelf: ideas (no shoot yet), shoot (on a shoot day, not filmed), ready (filmed, no posting date), scheduled (has a posting date / published), dropped.",
+        "A client's videos with phase, shoot, editor, shooter and the start of the script. shelf: ideas (no shoot yet), shoot (on a shoot day, not filmed), ready (filmed, no posting date), scheduled (has a posting date / published), dropped.",
       inputSchema: {
         client: z.string().describe("Client name or id."),
         shelf: z.enum(["all", "ideas", "shoot", "ready", "scheduled", "dropped"]).optional().describe("Default: all except dropped."),
@@ -373,7 +373,7 @@ export function buildServer(me: McpCaller) {
     "get_video",
     {
       title: "Get a video",
-      description: "One video with its full script (by part), notes, links, shoot and team.",
+      description: "One video with its full script (by part), notes, links, shoot, editor and shooter.",
       inputSchema: { id: z.string().describe("Video id.") },
       annotations: { readOnlyHint: true },
     },
@@ -398,7 +398,7 @@ export function buildServer(me: McpCaller) {
     {
       title: "Add videos",
       description:
-        "Adds one or more videos (with scripts) to a client's video bank. Optionally puts them on a shoot day, says who's on camera and which team members work on them (they get notified).",
+        "Adds one or more videos (with scripts) to a client's video bank. Optionally puts them on a shoot day, says who's on camera, who edits it (notified) and who films it.",
       inputSchema: {
         client: z.string().describe("Client name or id."),
         shoot: z.string().optional().describe("Shoot day for all of them (id or YYYY-MM-DD). Each goes to the end of the running order."),
@@ -407,7 +407,8 @@ export function buildServer(me: McpCaller) {
             z.object({
               ...videoFields,
               title: z.string().min(1).max(200),
-              team: names.optional().describe("Team members on this video (names, emails or ids), e.g. the editor."),
+              editor: z.string().optional().describe("Who edits it (name, email or id). Usually leave out: the client's editor rules pick one when it gets a posting date."),
+              shooter: z.string().optional().describe("Who films it, if not the shoot day's crew."),
               phase: z.enum(PHASE_NAMES).optional().describe("Default: script (an idea). Use edit for already filmed, published for already posted."),
             }),
           )
@@ -422,13 +423,14 @@ export function buildServer(me: McpCaller) {
         let order = s ? await nextShootOrder(s.id) : 0;
         const created: { id: string; title: string }[] = [];
         for (const v of input.videos) {
-          const team = v.team ? await peopleIds(list(v.team)) : [];
+          const [editorId, shooterId] = await Promise.all([person(v.editor ?? null), person(v.shooter ?? null)]);
           const fields = clean({
             ...toPatch(v),
             ...(v.phase ? phasePatch(v.phase) : {}),
             kind: "video",
             client_id: c.id,
             ...(s ? { shoot_id: s.id } : {}),
+            ...(shooterId ? { shooter_id: shooterId } : {}),
           });
           const { data, error } = await db
             .from("tasks")
@@ -436,7 +438,7 @@ export function buildServer(me: McpCaller) {
             .select("id")
             .single();
           if (error) throw new ToolError(`"${v.title}" wasn't added: ${error.message}. Added before it: ${created.map((x) => x.title).join(", ") || "none"}.`);
-          if (team.length) await addTeam(data.id, team);
+          if (editorId) await setEditor(data.id, editorId);
           if (fields.publish_date) await handOffToEditor(db, data.id, fields.publish_date, me.userId);
           created.push({ id: data.id, title: v.title });
         }
@@ -450,7 +452,7 @@ export function buildServer(me: McpCaller) {
     {
       title: "Return a video to ideas (reshoot)",
       description:
-        "For a video that was put on a shoot day, filmed or scheduled but whose footage can't be used. Sends it back to the Ideas shelf (phase script, off its shoot day, no posting date), keeps this attempt in its shoot history with the reason, marks it 'to reshoot', and tells the people on it the edit is off. Script, approvals and team stay.",
+        "For a video that was put on a shoot day, filmed or scheduled but whose footage can't be used. Sends it back to the Ideas shelf (phase script, off its shoot day, no posting date), keeps this attempt in its shoot history with the reason, marks it 'to reshoot', and tells its editor the edit is off. Script, approvals, editor and shooter stay.",
       inputSchema: {
         id: z.string().describe("Video id."),
         reason: z.string().min(1).max(500).describe("Why it needs a reshoot, e.g. 'weak talent', 'client rejected the shot'."),
@@ -476,16 +478,15 @@ export function buildServer(me: McpCaller) {
     {
       title: "Update a video",
       description:
-        "Changes a video: title, script, talent, labels, shoot day and time, posting date, phase, and its team (set, add or remove people). Only the fields you pass change.",
+        "Changes a video: title, script, talent, labels, shoot day and time, posting date, phase, editor and shooter. Only the fields you pass change.",
       inputSchema: {
         id: z.string().describe("Video id (from list_videos)."),
         ...videoFields,
         shoot: z.string().nullable().optional().describe("Move to a shoot day (id or YYYY-MM-DD); null takes it off its shoot day."),
         phase: z.enum(PHASE_NAMES).optional(),
         shot_status: z.enum(["to_shoot", "shot", "not_shot"]).optional().describe("On the shoot day."),
-        team: names.optional().describe("Replace the whole team with these people."),
-        add_team: names.optional().describe("Add these people (they get notified)."),
-        remove_team: names.optional().describe("Take these people off."),
+        editor: z.string().nullable().optional().describe("Who edits it (name, email or id; they get notified); null clears it."),
+        shooter: z.string().nullable().optional().describe("Who films it; null means the shoot day's crew."),
         dropped: z.boolean().optional().describe("true drops the video (kept in the dropped shelf), false brings it back."),
       },
     },
@@ -495,6 +496,10 @@ export function buildServer(me: McpCaller) {
         const patch: TaskPatch = { ...toPatch(input), ...(input.phase ? phasePatch(input.phase) : {}) };
         if (input.shot_status) patch.shot_status = input.shot_status;
         if (input.dropped !== undefined) patch.dropped_at = input.dropped ? today() : null;
+        // Set before the posting-date hand-off, so an editor named here isn't replaced by the rules.
+        const newEditor = input.editor !== undefined ? await person(input.editor) : undefined;
+        if (newEditor !== undefined) patch.editor_id = newEditor;
+        if (input.shooter !== undefined) patch.shooter_id = await person(input.shooter);
         let shootOrder: number | null | undefined;
         if (input.shoot === null) {
           Object.assign(patch, { shoot_id: null, shoot_time: null, shot_status: "to_shoot" });
@@ -520,20 +525,7 @@ export function buildServer(me: McpCaller) {
           if (dated && (fields.publish_date || fields.shot_status === "shot" || (fields.phase ?? 0) >= 2)) await handOffToEditor(db, v.id, dated, me.userId);
         }
 
-        const current = v.task_assignees.map((a) => a.profile?.id).filter((x): x is string => !!x);
-        let wanted = current;
-        if (input.team !== undefined) wanted = await peopleIds(list(input.team));
-        if (input.add_team) wanted = [...new Set([...wanted, ...(await peopleIds(list(input.add_team)))])];
-        if (input.remove_team) {
-          const out = await peopleIds(list(input.remove_team));
-          wanted = wanted.filter((id) => !out.includes(id));
-        }
-        await addTeam(v.id, wanted);
-        const remove = current.filter((id) => !wanted.includes(id));
-        if (remove.length) {
-          const { error } = await db.from("task_assignees").delete().eq("task_id", v.id).in("user_id", remove);
-          if (error) throw error;
-        }
+        if (newEditor && newEditor !== v.editor?.id) after(() => notify({ event: "task_assigned", taskId: v.id, recipientIds: [newEditor], actorId: me.userId }));
         changed();
         return summary(await loadVideo(v.id));
       }),

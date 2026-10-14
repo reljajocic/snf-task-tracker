@@ -61,6 +61,7 @@ export type Task = {
   client: { id: string; name: string } | null;
   project: { id: string; name: string } | null;
   parent: { id: string; title: string } | null;
+  /** For videos: just the editor (see `editor`); the video is in their tasks and nobody else's. */
   assignees: Person[];
   // Video fields (kind = "video"); null/empty for plain tasks.
   phase: number | null;
@@ -80,6 +81,10 @@ export type Task = {
   shoot_order: number | null;
   shot_status: ShotStatus | null;
   shoot: { id: string; date: IsoDate; location: string | null } | null;
+  /** Who edits the video (one person). */
+  editor: Person | null;
+  /** Who films it, when it isn't the shoot day's crew. */
+  shooter: Person | null;
   subtask_count: number;
   subtask_done: number;
   /** The client's latest word on the script, from the portal. */
@@ -116,6 +121,8 @@ export const TASK_SELECT = `
   phase, content_type, on_camera, location, profile, script, reference_url, note,
   publish_date, published_at, dropped_at, shoot_id, shoot_time, shoot_order, shot_status,
   shoot:shoot_days(id, date, location),
+  editor:profiles!tasks_editor_id_fkey(${PERSON_COLS}),
+  shooter:profiles!tasks_shooter_id_fkey(${PERSON_COLS}),
   subtasks:tasks!parent_id(status),
   approvals(kind, status, approver_name, comment, created_at),
   shoot_history:video_shoot_history(shoot_date, location, shoot_time, on_camera, shot_status, publish_date, reason, returned_at, returned_by:profiles(full_name))
@@ -140,10 +147,15 @@ export function toTask(raw: RawTask): Task {
       ? { status: decision.status, approver_name: decision.approver_name, comment: decision.comment, created_at: decision.created_at }
       : null,
     shoot_history: [...(shoot_history ?? [])].sort((a, b) => b.returned_at.localeCompare(a.returned_at)),
-    assignees: task_assignees
-      .map((a) => a.profile)
-      .filter((p): p is Person => p !== null)
-      .sort((a, b) => a.full_name.localeCompare(b.full_name)),
+    assignees:
+      rest.kind === "video"
+        ? rest.editor
+          ? [rest.editor]
+          : []
+        : task_assignees
+            .map((a) => a.profile)
+            .filter((p): p is Person => p !== null)
+            .sort((a, b) => a.full_name.localeCompare(b.full_name)),
   };
 }
 

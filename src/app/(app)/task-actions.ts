@@ -27,14 +27,18 @@ const STATUS_LABEL: Record<TaskStatus, string> = {
   done: "Done",
 };
 
-/** Assignees + creator: the people who care about changes to a task. */
+/** Assignees (a video's editor) + creator: the people who care about changes to a task. */
 async function watchers(taskId: string): Promise<string[]> {
   const supabase = await createClient();
   const [{ data: task }, { data: assignees }] = await Promise.all([
-    supabase.from("tasks").select("created_by").eq("id", taskId).maybeSingle(),
+    supabase.from("tasks").select("created_by, editor_id").eq("id", taskId).maybeSingle(),
     supabase.from("task_assignees").select("user_id").eq("task_id", taskId),
   ]);
-  return [...(assignees ?? []).map((a) => a.user_id), ...(task?.created_by ? [task.created_by] : [])];
+  return [
+    ...(assignees ?? []).map((a) => a.user_id),
+    ...(task?.editor_id ? [task.editor_id] : []),
+    ...(task?.created_by ? [task.created_by] : []),
+  ];
 }
 
 export async function createTask(
@@ -43,12 +47,18 @@ export async function createTask(
   const me = await requireProfile();
   const fields = clean(input);
   if (!fields.title) return { ok: false, error: "Title is required." };
+  // A video has one editor instead of assignees.
+  const isVideo = fields.kind === "video";
+  if (isVideo && input.assignee_ids.length && fields.editor_id === undefined) fields.editor_id = input.assignee_ids[0];
 
   const supabase = await createClient();
   const { data, error } = await supabase.from("tasks").insert(fields).select("id").single();
   if (error) return { ok: false, error: error.message };
 
-  if (input.assignee_ids.length) {
+  if (isVideo) {
+    const editor = fields.editor_id;
+    if (editor) after(() => notify({ event: "task_assigned", taskId: data.id, recipientIds: [editor], actorId: me.id }));
+  } else if (input.assignee_ids.length) {
     const { error: aErr } = await supabase
       .from("task_assignees")
       .insert(input.assignee_ids.map((user_id) => ({ task_id: data.id, user_id })));
@@ -69,6 +79,10 @@ export async function updateTask(id: string, patch: TaskPatch): Promise<ActionRe
   if (error) return { ok: false, error: error.message };
   if (!data?.length) return { ok: false, error: "You can't edit this task." };
   if (fields.publish_date) await handOffToEditor(supabase, id, fields.publish_date, me.id);
+  if (fields.editor_id) {
+    const editor = fields.editor_id;
+    after(() => notify({ event: "task_assigned", taskId: id, recipientIds: [editor], actorId: me.id }));
+  }
   if (fields.status) {
     const status = fields.status;
     const recipients = await watchers(id);
@@ -81,6 +95,9 @@ export async function updateTask(id: string, patch: TaskPatch): Promise<ActionRe
 export async function setAssignees(id: string, userIds: string[]): Promise<ActionResult> {
   const me = await requireProfile();
   const supabase = await createClient();
+  // Videos: the picker sets the one editor.
+  const { data: kind } = await supabase.from("tasks").select("kind").eq("id", id).maybeSingle();
+  if (kind?.kind === "video") return updateTask(id, { editor_id: userIds.at(-1) ?? null });
   const { data: current, error } = await supabase
     .from("task_assignees")
     .select("user_id")

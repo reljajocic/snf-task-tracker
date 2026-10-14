@@ -818,6 +818,7 @@ export type Database = {
           drive_url: string | null
           dropped_at: string | null
           due_date: string | null
+          editor_id: string | null
           estimate_minutes: number | null
           id: string
           kind: Database["public"]["Enums"]["task_kind"]
@@ -837,6 +838,7 @@ export type Database = {
           shoot_id: string | null
           shoot_order: number | null
           shoot_time: string | null
+          shooter_id: string | null
           shot_status: string | null
           status: Database["public"]["Enums"]["task_status"]
           status_changed_at: string
@@ -854,6 +856,7 @@ export type Database = {
           drive_url?: string | null
           dropped_at?: string | null
           due_date?: string | null
+          editor_id?: string | null
           estimate_minutes?: number | null
           id?: string
           kind?: Database["public"]["Enums"]["task_kind"]
@@ -873,6 +876,7 @@ export type Database = {
           shoot_id?: string | null
           shoot_order?: number | null
           shoot_time?: string | null
+          shooter_id?: string | null
           shot_status?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           status_changed_at?: string
@@ -890,6 +894,7 @@ export type Database = {
           drive_url?: string | null
           dropped_at?: string | null
           due_date?: string | null
+          editor_id?: string | null
           estimate_minutes?: number | null
           id?: string
           kind?: Database["public"]["Enums"]["task_kind"]
@@ -909,6 +914,7 @@ export type Database = {
           shoot_id?: string | null
           shoot_order?: number | null
           shoot_time?: string | null
+          shooter_id?: string | null
           shot_status?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           status_changed_at?: string
@@ -917,6 +923,20 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tasks_editor_id_fkey"
+            columns: ["editor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_shooter_id_fkey"
+            columns: ["shooter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tasks_client_id_fkey"
             columns: ["client_id"]

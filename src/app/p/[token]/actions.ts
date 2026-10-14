@@ -25,12 +25,12 @@ async function context(token: string, taskId: string) {
  */
 async function teamOf(taskId: string) {
   const admin = createAdminClient();
-  const { data: task } = await admin.from("tasks").select("client_id").eq("id", taskId).single();
+  const { data: task } = await admin.from("tasks").select("client_id, editor_id").eq("id", taskId).single();
   const [{ data: assignees }, { data: managers }] = await Promise.all([
     admin.from("task_assignees").select("user_id").eq("task_id", taskId),
     admin.from("client_members").select("user_id").eq("client_id", task?.client_id ?? "").eq("role", "manager"),
   ]);
-  return [...new Set([...(managers ?? []), ...(assignees ?? [])].map((a) => a.user_id))];
+  return [...new Set([...(managers ?? []), ...(assignees ?? [])].map((a) => a.user_id).concat(task?.editor_id ? [task.editor_id] : []))];
 }
 
 function cleanName(name: string) {

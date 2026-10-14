@@ -7,7 +7,7 @@ import type { Database } from "@/lib/supabase/database.types";
 
 // "Return to ideas" (reshoot), shared by the app and the MCP endpoint. The database function records
 // the attempt and resets the video in one step, through RLS as the caller; here we add the reason check
-// and tell the people on the video that the edit is off.
+// and tell the video's editor that the edit is off.
 
 export type ReshootResult = { ok: true } | { ok: false; error: string };
 
@@ -24,15 +24,15 @@ export async function returnToIdeas(supabase: SupabaseClient<Database>, taskId: 
   if (!why) return { ok: false, error: "Say why it needs a reshoot." };
   const { data: before } = await supabase
     .from("tasks")
-    .select("publish_date, phase, task_assignees(user_id)")
+    .select("publish_date, phase, editor_id")
     .eq("id", taskId)
-    .maybeSingle<{ publish_date: string | null; phase: number | null; task_assignees: { user_id: string }[] }>();
+    .maybeSingle<{ publish_date: string | null; phase: number | null; editor_id: string | null }>();
 
   const { error } = await supabase.rpc("return_to_ideas", { tid: taskId, why });
   if (error) return { ok: false, error: MESSAGES.find(([re]) => re.test(error.message))?.[1] ?? error.message };
 
   // Only when there was edit work to cancel: a posting date, or footage already in the edit.
-  const people = (before?.task_assignees ?? []).map((a) => a.user_id);
+  const people = before?.editor_id ? [before.editor_id] : [];
   if (before && people.length && (before.publish_date || (before.phase ?? 0) >= 2)) {
     const was = before.publish_date ? formatDate(before.publish_date) : "";
     after(() => notify({ event: "edit_cancelled", taskId, recipientIds: people, actorId, extra: { reason: why, publish: was } }));

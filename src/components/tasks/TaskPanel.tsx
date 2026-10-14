@@ -224,14 +224,46 @@ function PanelBody({
               </FieldRow>
             </>
           )}
-          <FieldRow label={t("fields.assignees")}>
-            <PeoplePicker
-              people={assignablePeople(lookups, task.client?.id, task.assignees.map((a) => a.id))}
-              value={task.assignees.map((a) => a.id)}
-              disabled={disabled}
-              onChange={saveAssignees}
-            />
-          </FieldRow>
+          {task.kind === "video" ? (
+            <>
+              {/* A video has one editor (it's in their tasks) and, unless set, is filmed by the shoot day's crew. */}
+              <FieldRow label={t("fields.editor")}>
+                <PeoplePicker
+                  people={assignablePeople(lookups, task.client?.id, task.editor ? [task.editor.id] : [])}
+                  value={task.editor ? [task.editor.id] : []}
+                  disabled={disabled}
+                  onChange={(ids) => {
+                    const id = ids.filter((x) => x !== task.editor?.id).at(-1) ?? null;
+                    const person = lookups.people.find((p) => p.id === id) ?? null;
+                    save({ editor_id: id }, { editor: person, assignees: person ? [person] : [] });
+                  }}
+                />
+              </FieldRow>
+              <FieldRow label={t("fields.shooter")}>
+                <div className="flex flex-wrap items-center gap-3">
+                  <PeoplePicker
+                    people={assignablePeople(lookups, task.client?.id, task.shooter ? [task.shooter.id] : [])}
+                    value={task.shooter ? [task.shooter.id] : []}
+                    disabled={disabled}
+                    onChange={(ids) => {
+                      const id = ids.filter((x) => x !== task.shooter?.id).at(-1) ?? null;
+                      save({ shooter_id: id }, { shooter: lookups.people.find((p) => p.id === id) ?? null });
+                    }}
+                  />
+                  {!task.shooter && <span className="text-[13px] text-ink3">{t("fields.shooterDefault")}</span>}
+                </div>
+              </FieldRow>
+            </>
+          ) : (
+            <FieldRow label={t("fields.assignees")}>
+              <PeoplePicker
+                people={assignablePeople(lookups, task.client?.id, task.assignees.map((a) => a.id))}
+                value={task.assignees.map((a) => a.id)}
+                disabled={disabled}
+                onChange={saveAssignees}
+              />
+            </FieldRow>
+          )}
           {editStage && (
             <>
           <FieldRow label={t("fields.due")}>

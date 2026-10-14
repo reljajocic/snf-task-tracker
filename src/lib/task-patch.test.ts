@@ -43,37 +43,28 @@ const video = (over: Record<string, unknown> = {}) => ({
   kind: "video",
   due_date: null,
   content_type: "REEL",
-  phase: 2,
-  shot_status: "shot",
-  shoot_id: "shoot1",
+  editor_id: null,
   client: { default_editor_id: null, editor_rules: [{ editor_id: NATASA, days: [], types: [] }] },
-  task_assignees: [{ user_id: MARKO }, { user_id: UROS }],
   ...over,
 });
 
 describe("hand-off to the editor", () => {
-  it("gives a filmed video to the editor and takes the shoot crew off it", async () => {
-    const { db, writes } = fakeDb({ tasks: [video()], shoot_crew: [{ user_id: MARKO }] });
+  it("makes the client's editor the video's one editor, with a deadline the day before posting", async () => {
+    const { db, writes } = fakeDb({ tasks: [video()] });
     await handOffToEditor(db, "v1", "2026-10-20", "me");
-    expect(writes.find((w) => w.table === "task_assignees" && w.op === "insert")?.rows).toEqual({ task_id: "v1", user_id: NATASA });
-    // Marko filmed it: off. Uroš wasn't crew: stays.
-    expect(writes.find((w) => w.table === "task_assignees" && w.op === "delete")?.in).toEqual([MARKO]);
-    expect(writes.find((w) => w.table === "tasks")?.rows).toEqual({ due_date: "2026-10-19" });
+    expect(writes.filter((w) => w.table === "tasks").map((w) => w.rows)).toEqual([{ due_date: "2026-10-19" }, { editor_id: NATASA }]);
+    expect(writes.some((w) => w.table === "task_assignees")).toBe(false);
   });
 
-  it("keeps a crew member who is also the editor", async () => {
-    const { db, writes } = fakeDb({
-      tasks: [video({ client: { default_editor_id: null, editor_rules: [{ editor_id: MARKO, days: [], types: [] }] } })],
-      shoot_crew: [{ user_id: MARKO }],
-    });
+  it("keeps an editor someone already picked", async () => {
+    const { db, writes } = fakeDb({ tasks: [video({ editor_id: MARKO, due_date: "2026-10-18" })] });
     await handOffToEditor(db, "v1", "2026-10-20", "me");
-    expect(writes.some((w) => w.table === "task_assignees" && w.op === "delete")).toBe(false);
+    expect(writes).toEqual([]);
   });
 
-  it("leaves the crew on a video that isn't filmed yet", async () => {
-    const { db, writes } = fakeDb({ tasks: [video({ phase: 1, shot_status: "to_shoot" })], shoot_crew: [{ user_id: MARKO }] });
+  it("leaves it without an editor when the client has no rule for it", async () => {
+    const { db, writes } = fakeDb({ tasks: [video({ client: { default_editor_id: null, editor_rules: [{ editor_id: UROS, days: [], types: ["POST"] }] } })] });
     await handOffToEditor(db, "v1", "2026-10-20", "me");
-    expect(writes.some((w) => w.op === "delete")).toBe(false);
-    expect(writes.find((w) => w.op === "insert")?.rows).toEqual({ task_id: "v1", user_id: NATASA });
+    expect(writes.map((w) => w.rows)).toEqual([{ due_date: "2026-10-19" }]);
   });
 });

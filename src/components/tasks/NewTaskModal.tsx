@@ -37,7 +37,8 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<"task" | "video">(defaults.kind ?? "task");
   const [where, setWhere] = useState({ client_id: defaults.client_id ?? null, project_id: defaults.project_id ?? null });
-  const [assignees, setAssignees] = useState<string[]>([lookups.me.id]);
+  // Tasks start with me on them; a video has one editor and starts without one (set by the client's rules once it's dated).
+  const [assignees, setAssignees] = useState<string[]>(defaults.kind === "video" ? [] : [lookups.me.id]);
   const [drive, setDrive] = useState("");
   // Task fields
   const [due, setDue] = useState<IsoDate | null>(defaults.due_date ?? null);
@@ -153,8 +154,13 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
       <ClientProjectSelects layout="grid" clients={lookups.clients} clientId={where.client_id} projectId={where.project_id} onChange={setWhere} />
       {needsProject && <p className="text-[13px] text-rust-ink sm:col-span-2">{t("pickProject")}</p>}
       <div className="flex flex-col gap-2 sm:col-span-2">
-        {label(t("fields.assignees"))}
-        <PeoplePicker size="lg" people={assignablePeople(lookups, where.client_id, assignees)} value={assignees} onChange={setAssignees} />
+        {label(t(kind === "video" ? "fields.editor" : "fields.assignees"))}
+        <PeoplePicker
+          size="lg"
+          people={assignablePeople(lookups, where.client_id, assignees)}
+          value={kind === "video" ? assignees.slice(0, 1) : assignees}
+          onChange={(ids) => setAssignees(kind === "video" ? ids.filter((id) => !assignees.includes(id)).slice(-1) : ids)}
+        />
       </div>
     </>
   );

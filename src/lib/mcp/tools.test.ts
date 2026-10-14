@@ -74,11 +74,14 @@ describe("MCP tools", () => {
     ]);
   });
 
-  it("adds videos with the script split into parts, talent and team", async () => {
+  it("adds videos with the script split into parts, talent, editor and shooter", async () => {
     const { client, writes } = await connect({ clients: [CLIENT], profiles: PEOPLE, task_assignees: [] });
     const res = await client.callTool({
       name: "create_videos",
-      arguments: { client: "nolimit", videos: [{ title: "Najbolji split", script: "HOOK: Koji split?\nBODY: Pitamo ljude.", on_camera: ["Djole", "Rajko"], team: "uros", content_type: "fun" }] },
+      arguments: {
+        client: "nolimit",
+        videos: [{ title: "Najbolji split", script: "HOOK: Koji split?\nBODY: Pitamo ljude.", on_camera: ["Djole", "Rajko"], editor: "uros", shooter: "marko", content_type: "fun" }],
+      },
     });
     expect(res.isError).toBeFalsy();
     const task = writes.find((w) => w.table === "tasks" && w.op === "insert")!.rows as Record<string, unknown>;
@@ -93,7 +96,9 @@ describe("MCP tools", () => {
         { label: "BODY", text: "Pitamo ljude." },
       ],
     });
-    expect(writes.find((w) => w.table === "task_assignees")!.rows).toEqual([{ task_id: expect.any(String), user_id: PEOPLE[0].id }]);
+    expect(task.shooter_id).toBe(PEOPLE[1].id);
+    expect(writes.find((w) => w.table === "tasks" && w.op === "update")!.rows).toEqual({ editor_id: PEOPLE[0].id });
+    expect(writes.some((w) => w.table === "task_assignees")).toBe(false);
   });
 
   it("says which names it couldn't match instead of guessing", async () => {
@@ -136,7 +141,8 @@ const VIDEO = {
   drive_url: null,
   client: { id: CLIENT.id, name: CLIENT.name },
   shoot: { id: "s1", date: "2026-09-23", location: "Novo Naselje" },
-  task_assignees: [{ profile: { id: PEOPLE[0].id, full_name: PEOPLE[0].full_name } }],
+  editor: { id: PEOPLE[0].id, full_name: PEOPLE[0].full_name },
+  shooter: null,
   shoot_history: [],
 };
 

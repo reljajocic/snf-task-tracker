@@ -252,7 +252,10 @@
       "estimate": "Procena",
       "drive": "Google Drive",
       "driveLink": "Google Drive link",
-      "description": "Opis"
+      "description": "Opis",
+      "editor": "Montira",
+      "shooter": "Snima",
+      "shooterDefault": "ekipa sa snimanja"
     },
     "titlePlaceholder": "Naziv zadatka, npr. Montiraj TikTok video",
     "descriptionPlaceholder": "Šta tačno treba uraditi",
