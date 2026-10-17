@@ -34,7 +34,7 @@ export async function inviteMember(_prev: InviteState, form: FormData): Promise<
   return { ok: true, message: "", email };
 }
 
-export async function updateMember(userId: string, patch: { role?: "admin" | "user"; is_active?: boolean }) {
+export async function updateMember(userId: string, patch: { role?: "admin" | "user"; is_active?: boolean; is_partner?: boolean }) {
   const me = await requireAdmin();
   if (userId === me.id) return { error: "You can't change your own role or access." };
   const { createClient } = await import("@/lib/supabase/server");

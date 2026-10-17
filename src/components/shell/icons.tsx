@@ -60,6 +60,12 @@ export const NAV_ICONS = {
       <path d="M11.5 8.5h5v8h-5M6 7h3M6 10h3M6 13h3" />
     </Icon>
   ),
+  invoices: (
+    <Icon>
+      <path d="M5 2.8h7.5L15.5 6v11.2H5z" />
+      <path d="M12.5 2.8V6h3M7.8 9.5h4.9M7.8 12.3h4.9M7.8 15h2.6" />
+    </Icon>
+  ),
   team: (
     <Icon>
       <circle cx="7.5" cy="7" r="2.8" />

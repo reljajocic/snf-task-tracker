@@ -8,7 +8,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import type { Profile } from "@/lib/auth";
 import { SIDEBAR_COOKIE } from "@/lib/theme";
 import { NAV_ICONS } from "./icons";
-import { ADMIN_NAV, CONTENT_NAV, SIDEBAR_NAV, isActive, type NavItem } from "./nav";
+import { ADMIN_NAV, CONTENT_NAV, INVOICES_NAV, SIDEBAR_NAV, isActive, type NavItem } from "./nav";
 
 function NavLink({ item, active, label, collapsed }: { item: NavItem; active: boolean; label: string; collapsed: boolean }) {
   return (
@@ -28,7 +28,7 @@ function NavLink({ item, active, label, collapsed }: { item: NavItem; active: bo
 }
 
 /** Desktop sidebar: 240px, or a 72px icon rail when collapsed (remembered in a cookie). */
-export function Sidebar({ profile, initialCollapsed }: { profile: Profile; initialCollapsed: boolean }) {
+export function Sidebar({ profile, initialCollapsed, invoices }: { profile: Profile; initialCollapsed: boolean; invoices: boolean }) {
   const t = useTranslations();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(initialCollapsed);
@@ -71,7 +71,7 @@ export function Sidebar({ profile, initialCollapsed }: { profile: Profile; initi
       </div>
 
       <nav className="flex flex-col gap-0.5">
-        {SIDEBAR_NAV.map((item) => (
+        {[...SIDEBAR_NAV, ...(invoices ? [INVOICES_NAV] : [])].map((item) => (
           <NavLink key={item.href} item={item} active={isActive(pathname, item)} label={t(`nav.${item.key}`)} collapsed={collapsed} />
         ))}
         {collapsed ? <div className="mx-3 my-3 border-t border-line" /> : <div className="eyebrow px-3 pb-2 pt-5">{t("nav.contentGroup")}</div>}

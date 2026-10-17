@@ -21,6 +21,9 @@ export const CONTENT_NAV: NavItem[] = [
 
 export const ADMIN_NAV: NavItem[] = [{ href: "/team", key: "team", icon: "team" }];
 
+// Partners, and client managers picked to handle a client's invoices.
+export const INVOICES_NAV: NavItem = { href: "/invoices", key: "invoices", icon: "invoices" };
+
 // Mobile bottom bar: four places; Tasks and Content switch views with tabs at the top.
 export const MOBILE_NAV: NavItem[] = [
   { href: "/", key: "home", icon: "home" },

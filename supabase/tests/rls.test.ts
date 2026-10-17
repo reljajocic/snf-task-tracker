@@ -509,3 +509,95 @@ describe("video editor and shooter", () => {
     expect(await as(MEMBER, "select title from public.tasks where id = $1", [v])).toEqual([]);
   });
 });
+
+describe("invoices", () => {
+  const PARTNER = "00000000-0000-0000-0000-0000000000a1";
+  let issuer: string;
+  let buyer1: string;
+  let buyer2: string;
+
+  beforeAll(async () => {
+    await db.exec(`
+      select set_config('request.jwt.claim.sub', '', false);
+      insert into auth.users values ('${PARTNER}', 'relja@snf.test', '{"full_name":"Relja"}');
+      update public.profiles set is_partner = true where id = '${PARTNER}';
+    `);
+    [{ id: issuer }] = await as<{ id: string }>(PARTNER, "insert into public.invoice_issuers (name) values ('Marko PR') returning id");
+    [{ id: buyer1 }] = await as<{ id: string }>(PARTNER, "insert into public.invoice_buyers (name, client_id) values ('C1 doo', $1) returning id", [C1]);
+    [{ id: buyer2 }] = await as<{ id: string }>(PARTNER, "insert into public.invoice_buyers (name, client_id) values ('C2 doo', $1) returning id", [C2]);
+  });
+
+  const items = (price: number) => JSON.stringify([{ description: "Održavanje", quantity: 1, price }]);
+  const draft = (uid: string, buyer: string, price = 100) =>
+    as<{ id: string; client_id: string; total_rsd: string; seq: number | null }>(
+      uid,
+      "insert into public.invoices (issuer_id, buyer_id, items, issued_on) values ($1, $2, $3::jsonb, '2026-10-18') returning id, client_id, total_rsd, seq",
+      [issuer, buyer, items(price)],
+    );
+
+  it("number on issue: next per issuer and year, then fixed; drafts have none", async () => {
+    const [a] = await draft(PARTNER, buyer1);
+    const [b] = await draft(PARTNER, buyer2);
+    expect([a.seq, a.client_id]).toEqual([null, C1]);
+    expect(await as(PARTNER, "update public.invoices set status = 'issued' where id = $1 returning year, seq", [b.id])).toEqual([{ year: 2026, seq: 1 }]);
+    expect(await as(PARTNER, "update public.invoices set status = 'issued' where id = $1 returning year, seq", [a.id])).toEqual([{ year: 2026, seq: 2 }]);
+    await expect(as(PARTNER, "update public.invoices set seq = 9 where id = $1", [a.id])).rejects.toThrow(/keeps its number/);
+    // What was printed stays, even when the buyer's details change later.
+    await as(PARTNER, "update public.invoice_buyers set name = 'C1 renamed' where id = $1", [buyer1]);
+    expect(await as(PARTNER, "select buyer_snapshot->>'name' as name, issuer_snapshot->>'name' as issuer from public.invoices where id = $1", [a.id])).toEqual([
+      { name: "C1 doo", issuer: "Marko PR" },
+    ]);
+    await expect(as(PARTNER, "update public.invoices set status = 'draft' where id = $1", [a.id])).rejects.toThrow(/back to a draft/);
+    // Issued ones can't be deleted, only cancelled.
+    expect(await as(PARTNER, "delete from public.invoices where id = $1 returning id", [a.id])).toEqual([]);
+    expect(await as(PARTNER, "update public.invoices set status = 'cancelled' where id = $1 returning seq", [a.id])).toEqual([{ seq: 2 }]);
+  });
+
+  it("totals come from the items, in euros at the NBS rate", async () => {
+    const [{ id }] = await draft(PARTNER, buyer1, 150);
+    expect(
+      await as(PARTNER, "update public.invoices set currency = 'EUR', eur_rate = 117.3883 where id = $1 returning total_rsd", [id]),
+    ).toEqual([{ total_rsd: "17608.25" }]);
+  });
+
+  it("partners see everything; a client manager only once picked, and only that client's invoices", async () => {
+    const [inv] = await draft(PARTNER, buyer1);
+    await as(PARTNER, "insert into public.invoice_shares values ($1, $2, 50)", [inv.id, PARTNER]);
+    await as(PARTNER, "insert into public.expenses (description, amount) values ('Knjigovođa', 4720)");
+
+    const count = async (uid: string, table: string) =>
+      Number((await as<{ n: string }>(uid, `select count(*) as n from public.${table}`))[0].n);
+    expect(await count(PARTNER, "invoices")).toBeGreaterThan(0);
+    expect(await count(MANAGER, "invoices")).toBe(0);
+
+    // A manager can't let themselves in…
+    await expect(
+      as(MANAGER, "update public.client_members set sees_invoices = true where client_id = $1 and user_id = $2", [C1, MANAGER]),
+    ).rejects.toThrow(/Only a partner/);
+    await expect(as(MANAGER, "select public.set_sees_invoices($1, $2, true)", [C1, MANAGER])).rejects.toThrow(/Only a partner/);
+    // …a partner can.
+    await as(PARTNER, "select public.set_sees_invoices($1, $2, true)", [C1, MANAGER]);
+
+    const seen = await as<{ client_id: string }>(MANAGER, "select distinct client_id from public.invoices");
+    expect(seen).toEqual([{ client_id: C1 }]);
+    expect(await count(MANAGER, "invoice_buyers")).toBe(1);
+    expect(await count(MANAGER, "invoice_issuers")).toBe(1);
+    expect(await count(MANAGER, "invoice_shares")).toBe(0);
+    expect(await count(MANAGER, "expenses")).toBe(0);
+    // Picked managers bill their own client, not others.
+    expect((await draft(MANAGER, buyer1))[0].client_id).toBe(C1);
+    await expect(draft(MANAGER, buyer2)).rejects.toThrow(/row-level security/);
+
+    // Team members and outsiders see none of it, even when set on a member row.
+    await db.exec("select set_config('request.jwt.claim.sub', '', false)");
+    await db.query("update public.client_members set sees_invoices = true where client_id = $1 and user_id = $2", [C1, MEMBER]);
+    for (const uid of [MEMBER, OUTSIDER]) {
+      expect(await count(uid, "invoices")).toBe(0);
+      expect(await count(uid, "expenses")).toBe(0);
+    }
+  });
+
+  it("nobody makes themselves a partner", async () => {
+    await expect(as(MEMBER, "update public.profiles set is_partner = true where id = $1", [MEMBER])).rejects.toThrow(/Only an admin/);
+  });
+});

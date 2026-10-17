@@ -12,9 +12,9 @@ export default async function TeamPage() {
   const supabase = await createClient();
   const { data } = await supabase
     .from("profiles")
-    .select("id, email, full_name, initials, avatar_bg, avatar_fg, avatar_url, role, theme, is_active")
+    .select("id, email, full_name, initials, avatar_bg, avatar_fg, avatar_url, role, theme, is_active, is_partner")
     .order("full_name");
-  const people = (data ?? []) as Profile[];
+  const people = (data ?? []) as (Profile & { is_partner: boolean })[];
 
   return (
     <>
@@ -37,7 +37,7 @@ export default async function TeamPage() {
                   {p.role === "admin" ? t("roleAdmin") : t("roleUser")}
                 </span>
               ) : (
-                <MemberControls userId={p.id} role={p.role} active={p.is_active} />
+                <MemberControls userId={p.id} role={p.role} active={p.is_active} partner={p.is_partner} />
               )}
             </li>
           ))}

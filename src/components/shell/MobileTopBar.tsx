@@ -7,7 +7,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import type { Profile } from "@/lib/auth";
 
 /** Mobile header (design 1b): logo, avatar with a small account menu (theme lives in Settings). */
-export function MobileTopBar({ profile }: { profile: Profile }) {
+export function MobileTopBar({ profile, invoices }: { profile: Profile; invoices: boolean }) {
   const t = useTranslations();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -31,6 +31,11 @@ export function MobileTopBar({ profile }: { profile: Profile }) {
         {open && (
           <div className="absolute right-0 top-12 z-40 flex w-52 flex-col rounded-lg border border-line2 bg-pop p-1.5 shadow-[var(--shadow-overlay)]">
             <span className="truncate px-3 py-2 text-[13px] text-ink3">{profile.email}</span>
+            {invoices && (
+              <Link href="/invoices" onClick={() => setOpen(false)} className="rounded-md px-3 py-2.5 text-[15px] hover:bg-hover">
+                {t("nav.invoices")}
+              </Link>
+            )}
             <Link href="/settings" onClick={() => setOpen(false)} className="rounded-md px-3 py-2.5 text-[15px] hover:bg-hover">
               {t("nav.settings")}
             </Link>

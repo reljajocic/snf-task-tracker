@@ -185,18 +185,21 @@ export type Database = {
       }
       client_members: {
         Row: {
+          sees_invoices: boolean
           client_id: string
           created_at: string
           role: Database["public"]["Enums"]["client_role"]
           user_id: string
         }
         Insert: {
+          sees_invoices?: boolean
           client_id: string
           created_at?: string
           role?: Database["public"]["Enums"]["client_role"]
           user_id: string
         }
         Update: {
+          sees_invoices?: boolean
           client_id?: string
           created_at?: string
           role?: Database["public"]["Enums"]["client_role"]
@@ -356,6 +359,207 @@ export type Database = {
           },
         ]
       }
+      expenses: {
+        Row: {
+          amount: number
+          client_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          doc_url: string | null
+          id: string
+          profile_id: string | null
+          spent_on: string
+          supplier: string | null
+        }
+        Insert: {
+          amount: number
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          doc_url?: string | null
+          id?: string
+          profile_id?: string | null
+          spent_on?: string
+          supplier?: string | null
+        }
+        Update: {
+          amount?: number
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          doc_url?: string | null
+          id?: string
+          profile_id?: string | null
+          spent_on?: string
+          supplier?: string | null
+        }
+        Relationships: []
+      }
+      invoice_buyers: {
+        Row: {
+          address: string
+          client_id: string | null
+          created_at: string
+          id: string
+          mb: string
+          name: string
+          pib: string
+        }
+        Insert: {
+          address?: string
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          mb?: string
+          name: string
+          pib?: string
+        }
+        Update: {
+          address?: string
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          mb?: string
+          name?: string
+          pib?: string
+        }
+        Relationships: []
+      }
+      invoice_issuers: {
+        Row: {
+          account: string
+          address: string
+          created_at: string
+          footer: string
+          id: string
+          is_active: boolean
+          mb: string
+          name: string
+          owner_id: string | null
+          pib: string
+          place: string
+        }
+        Insert: {
+          account?: string
+          address?: string
+          created_at?: string
+          footer?: string
+          id?: string
+          is_active?: boolean
+          mb?: string
+          name: string
+          owner_id?: string | null
+          pib?: string
+          place?: string
+        }
+        Update: {
+          account?: string
+          address?: string
+          created_at?: string
+          footer?: string
+          id?: string
+          is_active?: boolean
+          mb?: string
+          name?: string
+          owner_id?: string | null
+          pib?: string
+          place?: string
+        }
+        Relationships: []
+      }
+      invoice_shares: {
+        Row: {
+          amount: number
+          invoice_id: string
+          profile_id: string
+        }
+        Insert: {
+          amount: number
+          invoice_id: string
+          profile_id: string
+        }
+        Update: {
+          amount?: number
+          invoice_id?: string
+          profile_id?: string
+        }
+        Relationships: []
+      }
+      invoices: {
+        Row: {
+          buyer_snapshot: Json | null
+          issuer_snapshot: Json | null
+          buyer_id: string
+          client_id: string | null
+          created_at: string
+          created_by: string | null
+          currency: string
+          due_days: number
+          eur_rate: number | null
+          id: string
+          issued_on: string
+          issuer_id: string
+          items: Json
+          note: string | null
+          paid_on: string | null
+          pdf_url: string | null
+          seq: number | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          total_rsd: number
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          buyer_snapshot?: Json | null
+          issuer_snapshot?: Json | null
+          buyer_id: string
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          due_days?: number
+          eur_rate?: number | null
+          id?: string
+          issued_on?: string
+          issuer_id: string
+          items?: Json
+          note?: string | null
+          paid_on?: string | null
+          pdf_url?: string | null
+          seq?: number | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          total_rsd?: number
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          buyer_snapshot?: Json | null
+          issuer_snapshot?: Json | null
+          buyer_id?: string
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          due_days?: number
+          eur_rate?: number | null
+          id?: string
+          issued_on?: string
+          issuer_id?: string
+          items?: Json
+          note?: string | null
+          paid_on?: string | null
+          pdf_url?: string | null
+          seq?: number | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          total_rsd?: number
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           channel: string
@@ -509,6 +713,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          is_partner: boolean
           avatar_bg: string
           avatar_fg: string
           avatar_url: string | null
@@ -523,6 +728,7 @@ export type Database = {
           theme: string
         }
         Insert: {
+          is_partner?: boolean
           avatar_bg?: string
           avatar_fg?: string
           avatar_url?: string | null
@@ -537,6 +743,7 @@ export type Database = {
           theme?: string
         }
         Update: {
+          is_partner?: boolean
           avatar_bg?: string
           avatar_fg?: string
           avatar_url?: string | null
@@ -1100,6 +1307,8 @@ export type Database = {
         Returns: boolean
       }
       can_edit_task: { Args: { tid: string }; Returns: boolean }
+      can_see_client_invoices: { Args: { cid: string }; Returns: boolean }
+      can_see_finance: { Args: never; Returns: boolean }
       can_use_board: { Args: { bid: string }; Returns: boolean }
       can_use_project_board: { Args: { pid: string }; Returns: boolean }
       can_view_client: { Args: { cid: string }; Returns: boolean }
@@ -1108,6 +1317,7 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_client_manager: { Args: { cid: string }; Returns: boolean }
       is_client_team: { Args: { cid: string }; Returns: boolean }
+      is_partner: { Args: never; Returns: boolean }
       is_project_member: { Args: { pid: string }; Returns: boolean }
       is_shoot_crew: { Args: { sid: string }; Returns: boolean }
       is_task_assignee: { Args: { tid: string }; Returns: boolean }
@@ -1116,6 +1326,10 @@ export type Database = {
         Returns: undefined
       }
       return_to_ideas: { Args: { tid: string; why: string }; Returns: string }
+      set_sees_invoices: {
+        Args: { cid: string; sees: boolean; uid: string }
+        Returns: undefined
+      }
       task_editable: {
         Args: { cid: string; creator: string; tid: string }
         Returns: boolean
@@ -1129,6 +1343,7 @@ export type Database = {
       app_role: "admin" | "user"
       client_role: "manager" | "member"
       client_status: "active" | "prospect" | "paused" | "finished"
+      invoice_status: "draft" | "issued" | "cancelled"
       project_status: "active" | "on_hold" | "completed" | "archived"
       task_kind: "task" | "video" | "subtask"
       task_priority: "low" | "medium" | "high" | "urgent"
@@ -1272,6 +1487,7 @@ export const Constants = {
       app_role: ["admin", "user"],
       client_role: ["manager", "member"],
       client_status: ["active", "prospect", "paused", "finished"],
+      invoice_status: ["draft", "issued", "cancelled"],
       project_status: ["active", "on_hold", "completed", "archived"],
       task_kind: ["task", "video", "subtask"],
       task_priority: ["low", "medium", "high", "urgent"],

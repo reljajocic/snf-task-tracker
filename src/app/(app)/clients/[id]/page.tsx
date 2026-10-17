@@ -12,6 +12,7 @@ import { getLookups, getTasks } from "@/lib/data";
 import { formatDate, today as getToday } from "@/lib/dates";
 import { byDue } from "@/lib/tasks";
 import { SOCIAL_LABEL, socialDisplay, socialUrl } from "@/lib/socials";
+import { getInvoiceAccess } from "@/lib/finance";
 import { ClientTeam } from "./ClientTeam";
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink" };
@@ -20,7 +21,7 @@ const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink"
 export default async function ClientPage({ params, searchParams }: PageProps<"/clients/[id]">) {
   const [{ id }, { tab }, me, lookups, t] = await Promise.all([params, searchParams, requireProfile(), getLookups(), getTranslations()]);
   const showDone = tab === "done";
-  const [data, tasks] = await Promise.all([getClient(id), getTasks({ includeDone: true })]);
+  const [data, tasks, invoiceAccess] = await Promise.all([getClient(id), getTasks({ includeDone: true }), getInvoiceAccess()]);
   if (!data) notFound();
   const { client, projects, members } = data;
   const today = getToday();
@@ -84,6 +85,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
           { href: `/content/schedule?client=${client.id}`, label: t("nav.schedule") },
           { href: `/content/shoots?client=${client.id}`, label: t("nav.shoots") },
           ...(canManage ? [{ href: `/clients/${client.id}/portal`, label: t("portalSettings.title") }] : []),
+          ...(invoiceAccess.finance || invoiceAccess.clientIds.includes(client.id) ? [{ href: `/invoices?client=${client.id}`, label: t("nav.invoices") }] : []),
         ].map((l) => (
           <Link key={l.href} href={l.href} className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
             {l.label} <span className="text-ink3">→</span>
@@ -227,7 +229,8 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
 
           <ClientTeam
             clientId={client.id}
-            members={members.map((m) => ({ ...m.profile, role: m.role }))}
+            members={members.map((m) => ({ ...m.profile, role: m.role, seesInvoices: m.sees_invoices }))}
+            canPickInvoices={invoiceAccess.finance}
             people={lookups.people}
             canManage={canManage}
           />

@@ -61,7 +61,7 @@ export async function getClient(id: string) {
       .order("created_at"),
     supabase
       .from("client_members")
-      .select("role, profile:profiles(id, full_name, initials, avatar_bg, avatar_fg, avatar_url)")
+      .select("role, sees_invoices, profile:profiles(id, full_name, initials, avatar_bg, avatar_fg, avatar_url)")
       .eq("client_id", id),
   ]);
   if (!client.data) return null;
@@ -74,6 +74,7 @@ export async function getClient(id: string) {
     })),
     members: (members.data ?? []) as unknown as {
       role: "manager" | "member";
+      sees_invoices: boolean;
       profile: { id: string; full_name: string; initials: string; avatar_bg: string; avatar_fg: string; avatar_url?: string | null };
     }[],
   };

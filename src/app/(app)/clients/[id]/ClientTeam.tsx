@@ -4,12 +4,13 @@ import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import type { Person } from "@/lib/tasks";
+import { setSeesInvoices } from "../../invoices/actions";
 import { setClientMember } from "../actions";
 
-type Member = Person & { role: "manager" | "member" };
+type Member = Person & { role: "manager" | "member"; seesInvoices: boolean };
 
-/** Who works on this client. Only admins change it (managers/members per client). */
-export function ClientTeam({ clientId, members, people, canManage }: { clientId: string; members: Member[]; people: Person[]; canManage: boolean }) {
+/** Who works on this client. Only admins change it (managers/members per client); partners pick which managers see invoices. */
+export function ClientTeam({ clientId, members, people, canManage, canPickInvoices }: { clientId: string; members: Member[]; people: Person[]; canManage: boolean; canPickInvoices: boolean }) {
   const t = useTranslations("clients");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +21,12 @@ export function ClientTeam({ clientId, members, people, canManage }: { clientId:
       const res = await setClientMember(clientId, userId, role);
       setError(res.error);
       setAdding("");
+    });
+
+  const toggleInvoices = (m: Member) =>
+    startTransition(async () => {
+      const res = await setSeesInvoices(clientId, m.id, !m.seesInvoices);
+      setError(res.error);
     });
 
   const sorted = [...members].sort((a, b) => (a.role === b.role ? a.full_name.localeCompare(b.full_name) : a.role === "manager" ? -1 : 1));
@@ -33,6 +40,17 @@ export function ClientTeam({ clientId, members, people, canManage }: { clientId:
           <div key={m.id} className="flex items-center gap-3 border-b border-line py-2.5 last:border-b-0">
             <Avatar person={m} size={28} />
             <span className="min-w-0 flex-1 truncate text-[14px] font-medium">{m.full_name}</span>
+            {m.role === "manager" && (canPickInvoices || m.seesInvoices) && (
+              <button
+                type="button"
+                disabled={!canPickInvoices || pending}
+                onClick={() => toggleInvoices(m)}
+                title={t("invoicesHint")}
+                className={`rounded-[3px] border px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] enabled:cursor-pointer ${m.seesInvoices ? "border-line2 text-ink" : "border-dashed border-line2 text-ink3"}`}
+              >
+                {m.seesInvoices ? t("seesInvoices") : t("noInvoices")}
+              </button>
+            )}
             <span className={`rounded-[3px] border px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] ${m.role === "manager" ? "border-accent text-rust-ink" : "border-line2 text-ink2"}`}>
               {m.role === "manager" ? t("manager") : t("member")}
             </span>
