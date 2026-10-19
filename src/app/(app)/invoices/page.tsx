@@ -5,7 +5,7 @@ import { AvatarStack } from "@/components/ui/Avatar";
 import { Segmented } from "@/components/ui/Segmented";
 import { getLookups } from "@/lib/data";
 import { formatDate, today as getToday } from "@/lib/dates";
-import { getBuyers, getInvoiceAccess, getInvoices, getPartners, getShares } from "@/lib/finance";
+import { getBuyers, getInvoiceAccess, getInvoices, getPeople, getShares } from "@/lib/finance";
 import { invoiceNumber, money, payState } from "@/lib/invoices";
 import { MarkPaid } from "./MarkPaid";
 import { InvoicesHeader, PayBadge, Stat } from "./parts";
@@ -21,7 +21,7 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/invoice
     getBuyers(),
     getLookups(),
     access.finance ? getShares() : Promise.resolve([]),
-    access.finance ? getPartners() : Promise.resolve([]),
+    access.finance ? getPeople() : Promise.resolve([]),
   ]);
   const today = getToday();
   const show = FILTERS.find((f) => f === params.show) ?? "all";

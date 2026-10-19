@@ -1036,6 +1036,10 @@
     "myNet": "Your net this month",
     "allTime": "All time",
     "monthTotals": "Invoiced {invoiced} · collected {collected} · costs {expenses} RSD",
-    "noEarnings": "Nothing yet."
+    "noEarnings": "Nothing yet.",
+    "viewByMonth": "Month by month",
+    "viewByPerson": "Person by person",
+    "notPartner": "Not a partner: shares no costs",
+    "addPerson": "Add a person…"
   }
 }

@@ -73,6 +73,20 @@ describe("invoices", () => {
     expect(jul.byPartner[M]).toEqual({ invoiced: 35208.5, collected: 35208.5, outstanding: 0, expenses: 3360, net: 31848.5 });
   });
 
+  it("someone outside the partners earns their share but carries no costs", () => {
+    const V = "v";
+    const rows = monthlyEarnings(
+      [inv("a", "2026-10-01", 48174.63, { paid_on: "2026-10-05" })],
+      [{ invoice_id: "a", profile_id: V, amount: 48174.63 }],
+      [exp("2026-10-31", 1000)],
+      [R, M],
+      [V, R],
+    );
+    expect(Object.keys(rows[0].byPartner)).toEqual([R, M, V]);
+    expect(rows[0].byPartner[V]).toEqual({ invoiced: 48174.63, collected: 48174.63, outstanding: 0, expenses: 0, net: 48174.63 });
+    expect(rows[0].byPartner[R].expenses).toBe(500);
+  });
+
   it("even split keeps every dinar", () => {
     expect(presetShares(140891.77, [R, M], "even")).toEqual({ [R]: 70445.89, [M]: 70445.88 });
     expect(presetShares(100, [R, M], M)).toEqual({ [R]: 0, [M]: 100 });

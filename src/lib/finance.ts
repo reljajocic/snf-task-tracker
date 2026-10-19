@@ -71,6 +71,20 @@ export async function getPartners(): Promise<Partner[]> {
   return data ?? [];
 }
 
+/** Everyone active who can be given a share of an invoice (partners first); the "Admin" login is left out. */
+export async function getPeople(): Promise<(Partner & { is_partner: boolean })[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("id, full_name, initials, avatar_bg, avatar_fg, avatar_url, is_partner, role")
+    .eq("is_active", true)
+    .order("full_name");
+  return (data ?? [])
+    .filter((p) => p.is_partner || p.role !== "admin")
+    .sort((a, b) => Number(b.is_partner) - Number(a.is_partner))
+    .map((p) => ({ id: p.id, full_name: p.full_name, initials: p.initials, avatar_bg: p.avatar_bg, avatar_fg: p.avatar_fg, avatar_url: p.avatar_url, is_partner: p.is_partner }));
+}
+
 export async function getShares(invoiceId?: string): Promise<Share[]> {
   const supabase = await createClient();
   let q = supabase.from("invoice_shares").select("invoice_id, profile_id, amount");

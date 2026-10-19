@@ -106,17 +106,19 @@ export type MonthRow = { month: string; total: { invoiced: number; collected: nu
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 /**
- * Per month (YYYY-MM, newest first), per partner: invoiced, collected, open, costs and net.
+ * Per month (YYYY-MM, newest first), per person: invoiced, collected, open, costs and net.
  * Invoices count in the month they were issued; costs in the month they were paid.
- * A cost with no person is split evenly between the partners.
+ * People are the partners plus anyone else with a share; a cost with no person is split evenly
+ * between the partners only.
  */
-export function monthlyEarnings(invoices: Invoice[], shares: Share[], expenses: Expense[], partnerIds: string[]): MonthRow[] {
+export function monthlyEarnings(invoices: Invoice[], shares: Share[], expenses: Expense[], partnerIds: string[], others: string[] = []): MonthRow[] {
+  const people = [...partnerIds, ...others.filter((o) => !partnerIds.includes(o))];
   const rows = new Map<string, MonthRow>();
   const row = (month: string) => {
     let r = rows.get(month);
     if (!r) {
       r = { month, total: { invoiced: 0, collected: 0, expenses: 0 }, byPartner: {} };
-      for (const p of partnerIds) r.byPartner[p] = { invoiced: 0, collected: 0, outstanding: 0, expenses: 0, net: 0 };
+      for (const p of people) r.byPartner[p] = { invoiced: 0, collected: 0, outstanding: 0, expenses: 0, net: 0 };
       rows.set(month, r);
     }
     return r;

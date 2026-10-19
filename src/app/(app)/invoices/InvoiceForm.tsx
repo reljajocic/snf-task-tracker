@@ -42,6 +42,7 @@ export function InvoiceForm({
   buyers,
   clients,
   partners,
+  others,
   shares,
   finance,
   today,
@@ -52,6 +53,8 @@ export function InvoiceForm({
   buyers: Buyer[];
   clients: ClientOpt[];
   partners: Partner[];
+  /** Everyone else who can be given a share (they appear once added, or when they already have one). */
+  others: Partner[];
   shares: Record<string, number>;
   finance: boolean;
   today: string;
@@ -75,7 +78,9 @@ export function InvoiceForm({
   const [note, setNote] = useState(invoice?.note ?? "");
   const [paidOn, setPaidOn] = useState(invoice?.paid_on ?? "");
   const [pdfUrl, setPdfUrl] = useState(invoice?.pdf_url ?? "");
-  const [split, setSplit] = useState<Record<string, string>>(Object.fromEntries(partners.map((p) => [p.id, shares[p.id] ? String(shares[p.id]) : ""])));
+  const [added, setAdded] = useState<string[]>(others.filter((o) => shares[o.id]).map((o) => o.id));
+  const sharers = useMemo(() => [...partners, ...others.filter((o) => added.includes(o.id))], [partners, others, added]);
+  const [split, setSplit] = useState<Record<string, string>>(Object.fromEntries([...partners, ...others].map((p) => [p.id, shares[p.id] ? String(shares[p.id]) : ""])));
   const [preset, setPreset] = useState<Preset>("custom");
 
   const isDraft = !invoice || invoice.status === "draft";
@@ -86,8 +91,8 @@ export function InvoiceForm({
   const shownSplit = useMemo(() => {
     if (preset === "custom") return split;
     const next = preset === "none" ? {} : presetShares(total, partners.map((p) => p.id), preset);
-    return Object.fromEntries(partners.map((p) => [p.id, next[p.id] ? String(next[p.id]) : ""]));
-  }, [preset, split, total, partners]);
+    return Object.fromEntries(sharers.map((p) => [p.id, next[p.id] ? String(next[p.id]) : ""]));
+  }, [preset, split, total, partners, sharers]);
   const shareSum = Object.values(shownSplit).reduce((s, v) => s + (Number(v) || 0), 0);
 
   // Euro invoices quote the NBS middle rate of the invoice date.
@@ -281,7 +286,7 @@ export function InvoiceForm({
             ))}
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {partners.map((p) => (
+            {sharers.map((p) => (
               <label key={p.id} className="flex items-center gap-3">
                 <Avatar person={p} size={28} />
                 <span className="min-w-0 flex-1 truncate text-[14px] font-medium">{p.full_name}</span>
@@ -298,6 +303,27 @@ export function InvoiceForm({
               </label>
             ))}
           </div>
+          {others.some((o) => !added.includes(o.id)) && (
+            <select
+              value=""
+              onChange={(e) => {
+                if (!e.target.value) return;
+                setSplit({ ...shownSplit, [e.target.value]: "" });
+                setPreset("custom");
+                setAdded([...added, e.target.value]);
+              }}
+              className={`${selectClass} w-full sm:w-64`}
+            >
+              <option value="">{t("addPerson")}</option>
+              {others
+                .filter((o) => !added.includes(o.id))
+                .map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.full_name}
+                  </option>
+                ))}
+            </select>
+          )}
           <p className={`text-[13px] ${Math.abs(shareSum - total) > 0.01 && shareSum > 0 ? "text-rust-ink" : "text-ink3"}`}>
             {shareSum === 0 ? t("splitEmpty") : Math.abs(shareSum - total) > 0.01 ? t("splitOff", { rest: money(total - shareSum) }) : t("splitOk")}
           </p>

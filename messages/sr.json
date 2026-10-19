@@ -1036,6 +1036,10 @@
     "myNet": "Tvoj neto ovog meseca",
     "allTime": "Ukupno",
     "monthTotals": "Fakturisano {invoiced} · naplaćeno {collected} · troškovi {expenses} RSD",
-    "noEarnings": "Još nema podataka."
+    "noEarnings": "Još nema podataka.",
+    "viewByMonth": "Mesec po mesec",
+    "viewByPerson": "Osoba po osoba",
+    "notPartner": "Nije partner: ne deli troškove",
+    "addPerson": "Dodaj osobu…"
   }
 }
