@@ -13,6 +13,7 @@ import { ClientMark } from "@/components/ClientMark";
 import type { Person } from "@/lib/tasks";
 import { SOCIAL_LABEL, SOCIAL_PLATFORMS, type Social, type SocialPlatform } from "@/lib/socials";
 import { deleteClient, deleteProject, saveClient, saveProject, type FormState } from "./actions";
+import { ask } from "@/components/ui/Dialog";
 
 function Field({ label, hint, children, wide }: { label: string; hint?: string; children: React.ReactNode; wide?: boolean }) {
   return (
@@ -64,11 +65,10 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
               <button
                 type="button"
                 disabled={deleting}
-                onClick={() => {
+                onClick={async () => {
                   // Typing the name guards against deleting a client with its whole history by accident.
-                  const typed = window.prompt(t("clientForm.deleteConfirm", { name: client.name }));
-                  if (typed?.trim() !== client.name.trim()) return;
-                  startDelete(async () => void (await deleteClient(client.id)));
+                  const ok = await ask({ title: t("clientForm.delete"), body: t("clientForm.deleteConfirm", { name: client.name }), typeToConfirm: client.name, confirm: t("clientForm.delete"), danger: true });
+                  if (ok) startDelete(async () => void (await deleteClient(client.id)));
                 }}
                 className="mr-auto h-10 cursor-pointer px-2 text-[13px] font-medium text-red-ink"
               >
@@ -152,7 +152,10 @@ export function ProjectForm({ clientId, project, people }: { clientId: string; p
               <button
                 type="button"
                 disabled={deleting}
-                onClick={() => window.confirm(t("projectForm.deleteConfirm")) && startDelete(async () => void (await deleteProject(project.id, clientId)))}
+                onClick={async () =>
+                  (await ask({ title: t("projectForm.deleteConfirm"), confirm: t("projectForm.delete"), danger: true })) &&
+                  startDelete(async () => void (await deleteProject(project.id, clientId)))
+                }
                 className="mr-auto h-10 cursor-pointer px-2 text-[13px] font-medium text-red-ink"
               >
                 {t("projectForm.delete")}

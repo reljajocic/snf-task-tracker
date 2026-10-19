@@ -6,6 +6,7 @@ import { MobileTopBar } from "@/components/shell/MobileTopBar";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { NewTaskFab } from "@/components/tasks/links";
 import { TaskOverlays } from "@/components/tasks/TaskOverlays";
+import { DialogHost } from "@/components/ui/Dialog";
 import { requireProfile } from "@/lib/auth";
 import { getLookups } from "@/lib/data";
 import { getInvoiceAccess } from "@/lib/finance";
@@ -25,6 +26,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
         {children}
       </main>
       <MobileNav />
+      <DialogHost />
       <Suspense>
         <NewTaskFab />
         <TaskOverlays lookups={lookups} today={today()} />

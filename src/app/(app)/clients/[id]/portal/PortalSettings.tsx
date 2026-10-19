@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 import { inputClass } from "@/components/tasks/fields";
 import { LOCALES, LOCALE_NAME } from "@/lib/locale";
 import { addPortalPerson, rotateToken, setPortalFlag, setPortalLocale, updatePortalPerson, type PortalFlag } from "./actions";
+import { ask } from "@/components/ui/Dialog";
 
 type Portal = { enabled: boolean; show_schedule: boolean; show_shoots: boolean; show_scripts: boolean; show_review: boolean; show_report: boolean; locale: string };
 type PortalPerson = { id: string; label: string; email: string | null; can_approve: boolean };
@@ -86,7 +87,10 @@ export function PortalSettings({
               </div>
               <button
                 type="button"
-                onClick={() => window.confirm(t("rotateConfirm")) && startTransition(async () => { await rotateToken(clientId); router.refresh(); })}
+                onClick={async () =>
+                  (await ask({ title: t("rotateConfirm"), confirm: t("rotateYes"), danger: true })) &&
+                  startTransition(async () => { await rotateToken(clientId); router.refresh(); })
+                }
                 className="cursor-pointer self-start text-[13px] font-medium text-red-ink"
               >
                 {t("rotate")}

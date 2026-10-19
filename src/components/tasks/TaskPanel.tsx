@@ -23,6 +23,7 @@ import { ClientProjectSelects, FieldRow, PeoplePicker, assignablePeople, Priorit
 import { dueLabel } from "@/lib/dates";
 import { VideoSection } from "./VideoSection";
 import { VideoTag } from "./video-bits";
+import { ask } from "@/components/ui/Dialog";
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink2" };
 
@@ -150,8 +151,8 @@ function PanelBody({
     });
   };
 
-  const remove = () => {
-    if (!window.confirm(t("deleteConfirm"))) return;
+  const remove = async () => {
+    if (!(await ask({ title: t("deleteConfirm"), confirm: t("delete"), danger: true }))) return;
     startTransition(async () => {
       const res = await deleteTask(task.id);
       if (!res.ok) return setError(t("saveFailed", { message: res.error }));

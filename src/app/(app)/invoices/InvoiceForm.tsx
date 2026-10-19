@@ -10,6 +10,7 @@ import { Button, buttonClass } from "@/components/ui/Button";
 import { DEFAULT_ITEM, invoiceNumber, money, presetShares, totalRsd, type Buyer, type Currency, type Invoice, type InvoiceItem, type Issuer } from "@/lib/invoices";
 import type { Partner } from "@/lib/finance";
 import { cancelInvoice, deleteDraft, eurRate, saveInvoice, type BuyerInput } from "./actions";
+import { ask } from "@/components/ui/Dialog";
 
 type ClientOpt = { id: string; name: string };
 type Preset = "even" | "custom" | "none" | string; // string = one partner's id
@@ -354,8 +355,8 @@ export function InvoiceForm({
           <button
             type="button"
             disabled={pending}
-            onClick={() => {
-              if (!window.confirm(t("deleteDraftConfirm"))) return;
+            onClick={async () => {
+              if (!(await ask({ title: t("deleteDraftConfirm"), confirm: t("deleteDraft"), danger: true }))) return;
               start(async () => {
                 const res = await deleteDraft(invoice.id);
                 if (res.error) setError(res.error);
@@ -371,8 +372,8 @@ export function InvoiceForm({
           <button
             type="button"
             disabled={pending}
-            onClick={() => {
-              if (!window.confirm(t("cancelConfirm", { number: number ?? "" }))) return;
+            onClick={async () => {
+              if (!(await ask({ title: t("cancelTitle", { number: number ?? "" }), body: t("cancelConfirm", { number: number ?? "" }), confirm: t("cancel"), cancel: t("keep"), danger: true }))) return;
               start(async () => {
                 const res = await cancelInvoice(invoice.id);
                 if (res.error) setError(res.error);
@@ -390,8 +391,8 @@ export function InvoiceForm({
             <Button
               size="sm"
               disabled={pending || !issuerId}
-              onClick={() => {
-                if (window.confirm(t("issueConfirm", { issuer: issuer?.name ?? "" }))) submit(true);
+              onClick={async () => {
+                if (await ask({ title: t("issueTitle"), body: t("issueConfirm", { issuer: issuer?.name ?? "" }), confirm: t("issue") })) submit(true);
               }}
             >
               {t("issue")}

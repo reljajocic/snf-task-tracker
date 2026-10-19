@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import type { ClientOption } from "@/lib/data";
 import type { Person } from "@/lib/tasks";
 import { deleteShoot, saveShoot, type ShootFormState } from "./actions";
+import { ask } from "@/components/ui/Dialog";
 
 export type ShootInitial = {
   id: string;
@@ -80,7 +81,7 @@ export function ShootForm({ clients, people, shoot, defaultDate }: { clients: Cl
           <button
             type="button"
             disabled={deleting}
-            onClick={() => window.confirm(t("deleteConfirm")) && startDelete(async () => void (await deleteShoot(shoot.id)))}
+            onClick={async () => (await ask({ title: t("deleteConfirm"), confirm: t("delete"), danger: true })) && startDelete(async () => void (await deleteShoot(shoot.id)))}
             className="mr-auto h-10 cursor-pointer px-2 text-[13px] font-medium text-red-ink"
           >
             {t("delete")}

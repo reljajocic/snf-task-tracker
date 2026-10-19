@@ -57,7 +57,7 @@ export function money(n: number, decimals = 2): string {
 /** 17. 10. 2026. — how dates read on the invoice. */
 export function invoiceDate(iso: string): string {
   const [y, m, d] = iso.split("-");
-  return `${d}. ${m}. ${y}.`;
+  return `${d}.${m}.${y}.`; // as on the old template: 05.10.2026.
 }
 
 export const itemsTotal = (items: InvoiceItem[]) => items.reduce((s, i) => s + (Number(i.quantity) || 0) * (Number(i.price) || 0), 0);
@@ -179,10 +179,11 @@ export const INVOICE_TEXT = {
   pib: "PIB",
   mb: "Matični broj",
   account: "Tekući račun",
-  cols: ["Redni broj", "Opis usluge", "Količina", "Cena", "Valuta", "Ukupna vrednost"],
+  // As on the old template: the fifth column ("Vrednost") holds the currency.
+  cols: ["Redni broj", "Opis usluge", "Količina", "Cena", "Vrednost", "Ukupna vrednost"],
   total: "Ukupno za uplatu",
   signature: "Potpis izdavaoca",
-  rate: (date: string, rate: string) => `*Srednji kurs za ${date} je ${rate}`,
+  rate: (date: string) => `*Srednji kurs za ${date} je`, // followed by the rate, in bold
 } as const;
 
 /** File name for the saved PDF: 2026-031 Semaco */

@@ -9,6 +9,7 @@ import { formatDate } from "@/lib/dates";
 import type { Partner } from "@/lib/finance";
 import { money, type Expense } from "@/lib/invoices";
 import { deleteExpense, saveExpense, type ExpenseInput } from "../actions";
+import { ask } from "@/components/ui/Dialog";
 
 type ClientOpt = { id: string; name: string };
 
@@ -74,8 +75,8 @@ export function Expenses({ expenses, clients, partners, today, monthLabels }: { 
               <button
                 type="button"
                 disabled={pending}
-                onClick={() =>
-                  window.confirm(t("deleteExpenseConfirm")) &&
+                onClick={async () =>
+                  (await ask({ title: t("deleteExpenseConfirm"), confirm: t("delete"), danger: true })) &&
                   start(async () => {
                     await deleteExpense(form.id!);
                     reset();

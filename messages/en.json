@@ -10,7 +10,8 @@
     "menu": "Menu",
     "errorTitle": "Something went wrong",
     "errorText": "This part of the page didn't load. We've been told about it. Try again, and if it keeps happening, let us know.",
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "ok": "OK"
   },
   "theme": {
     "toLight": "Light theme",
@@ -677,7 +678,8 @@
     "disabledNote": "The portal is off. Turn it on to share the link.",
     "link": "Portal",
     "language": "Portal language",
-    "languageHint": "What the client reads the portal in."
+    "languageHint": "What the client reads the portal in.",
+    "rotateYes": "Make a new link"
   },
   "versions": {
     "title": "Versions for client review",
@@ -1003,10 +1005,10 @@
     "pdfUrlHint": "Link to the saved PDF, for the record.",
     "deleteDraftConfirm": "Delete this draft?",
     "deleteDraft": "Delete draft",
-    "cancelConfirm": "Cancel invoice {number}? The number stays taken and the amount stops counting.",
+    "cancelConfirm": "The number stays taken and the amount stops counting.",
     "cancel": "Cancel invoice",
     "saveDraft": "Save draft",
-    "issueConfirm": "Issue the invoice (issuer: {issuer})? It gets the next number, which never changes.",
+    "issueConfirm": "Issuer: {issuer}. It gets the next number, which never changes.",
     "issue": "Issue invoice",
     "save": "Save",
     "noIssuer": "No issuer yet. Ask an admin to add one.",
@@ -1040,6 +1042,9 @@
     "viewByMonth": "Month by month",
     "viewByPerson": "Person by person",
     "notPartner": "Not a partner: shares no costs",
-    "addPerson": "Add a person…"
+    "addPerson": "Add a person…",
+    "issueTitle": "Issue the invoice?",
+    "cancelTitle": "Cancel invoice {number}?",
+    "keep": "Keep it"
   }
 }

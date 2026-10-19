@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { updateMember } from "./actions";
+import { tell } from "@/components/ui/Dialog";
 
 export function MemberControls({ userId, role, active, partner }: { userId: string; role: "admin" | "user"; active: boolean; partner: boolean }) {
   const t = useTranslations("team");
@@ -10,7 +11,7 @@ export function MemberControls({ userId, role, active, partner }: { userId: stri
   const run = (patch: { role?: "admin" | "user"; is_active?: boolean; is_partner?: boolean }) =>
     startTransition(async () => {
       const res = await updateMember(userId, patch);
-      if (res.error) window.alert(res.error);
+      if (res.error) await tell({ title: res.error });
     });
 
   return (

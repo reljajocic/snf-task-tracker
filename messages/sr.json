@@ -10,7 +10,8 @@
     "menu": "Meni",
     "errorTitle": "Nešto nije u redu",
     "errorText": "Ovaj deo stranice se nije učitao. Već smo obavešteni. Probaj ponovo, a ako se ponavlja, javi nam.",
-    "tryAgain": "Probaj ponovo"
+    "tryAgain": "Probaj ponovo",
+    "ok": "U redu"
   },
   "theme": {
     "toLight": "Svetla tema",
@@ -677,7 +678,8 @@
     "disabledNote": "Portal je isključen. Uključi ga da bi podelio link.",
     "link": "Portal",
     "language": "Jezik portala",
-    "languageHint": "Na kom jeziku klijent čita portal."
+    "languageHint": "Na kom jeziku klijent čita portal.",
+    "rotateYes": "Napravi novi link"
   },
   "versions": {
     "title": "Verzije za pregled klijenta",
@@ -1003,10 +1005,10 @@
     "pdfUrlHint": "Link do sačuvanog PDF-a, za evidenciju.",
     "deleteDraftConfirm": "Obrisati ovaj nacrt?",
     "deleteDraft": "Obriši nacrt",
-    "cancelConfirm": "Stornirati fakturu {number}? Broj ostaje zauzet, iznos se više ne računa.",
+    "cancelConfirm": "Broj ostaje zauzet, iznos se više ne računa.",
     "cancel": "Storniraj",
     "saveDraft": "Sačuvaj nacrt",
-    "issueConfirm": "Izdati fakturu (izdavalac: {issuer})? Dobiće sledeći broj, koji se posle ne menja.",
+    "issueConfirm": "Izdavalac: {issuer}. Dobiće sledeći broj, koji se posle ne menja.",
     "issue": "Izdaj fakturu",
     "save": "Sačuvaj",
     "noIssuer": "Nema izdavaoca. Javi adminu da ga doda.",
@@ -1040,6 +1042,9 @@
     "viewByMonth": "Mesec po mesec",
     "viewByPerson": "Osoba po osoba",
     "notPartner": "Nije partner: ne deli troškove",
-    "addPerson": "Dodaj osobu…"
+    "addPerson": "Dodaj osobu…",
+    "issueTitle": "Izdati fakturu?",
+    "cancelTitle": "Stornirati fakturu {number}?",
+    "keep": "Ostavi je"
   }
 }
