@@ -185,24 +185,24 @@ export type Database = {
       }
       client_members: {
         Row: {
-          sees_invoices: boolean
           client_id: string
           created_at: string
           role: Database["public"]["Enums"]["client_role"]
+          sees_invoices: boolean
           user_id: string
         }
         Insert: {
-          sees_invoices?: boolean
           client_id: string
           created_at?: string
           role?: Database["public"]["Enums"]["client_role"]
+          sees_invoices?: boolean
           user_id: string
         }
         Update: {
-          sees_invoices?: boolean
           client_id?: string
           created_at?: string
           role?: Database["public"]["Enums"]["client_role"]
+          sees_invoices?: boolean
           user_id?: string
         }
         Relationships: [
@@ -396,7 +396,29 @@ export type Database = {
           spent_on?: string
           supplier?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invoice_buyers: {
         Row: {
@@ -426,7 +448,15 @@ export type Database = {
           name?: string
           pib?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "invoice_buyers_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invoice_issuers: {
         Row: {
@@ -468,7 +498,15 @@ export type Database = {
           pib?: string
           place?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "invoice_issuers_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invoice_shares: {
         Row: {
@@ -486,13 +524,27 @@ export type Database = {
           invoice_id?: string
           profile_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "invoice_shares_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_shares_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invoices: {
         Row: {
-          buyer_snapshot: Json | null
-          issuer_snapshot: Json | null
           buyer_id: string
+          buyer_snapshot: Json | null
           client_id: string | null
           created_at: string
           created_by: string | null
@@ -502,6 +554,7 @@ export type Database = {
           id: string
           issued_on: string
           issuer_id: string
+          issuer_snapshot: Json | null
           items: Json
           note: string | null
           paid_on: string | null
@@ -513,9 +566,8 @@ export type Database = {
           year: number | null
         }
         Insert: {
-          buyer_snapshot?: Json | null
-          issuer_snapshot?: Json | null
           buyer_id: string
+          buyer_snapshot?: Json | null
           client_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -525,6 +577,7 @@ export type Database = {
           id?: string
           issued_on?: string
           issuer_id: string
+          issuer_snapshot?: Json | null
           items?: Json
           note?: string | null
           paid_on?: string | null
@@ -536,9 +589,8 @@ export type Database = {
           year?: number | null
         }
         Update: {
-          buyer_snapshot?: Json | null
-          issuer_snapshot?: Json | null
           buyer_id?: string
+          buyer_snapshot?: Json | null
           client_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -548,6 +600,7 @@ export type Database = {
           id?: string
           issued_on?: string
           issuer_id?: string
+          issuer_snapshot?: Json | null
           items?: Json
           note?: string | null
           paid_on?: string | null
@@ -558,7 +611,36 @@ export type Database = {
           updated_at?: string
           year?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "invoices_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "invoice_buyers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_issuer_id_fkey"
+            columns: ["issuer_id"]
+            isOneToOne: false
+            referencedRelation: "invoice_issuers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notification_preferences: {
         Row: {
@@ -713,7 +795,6 @@ export type Database = {
       }
       profiles: {
         Row: {
-          is_partner: boolean
           avatar_bg: string
           avatar_fg: string
           avatar_url: string | null
@@ -723,12 +804,12 @@ export type Database = {
           id: string
           initials: string
           is_active: boolean
+          is_partner: boolean
           locale: string
           role: Database["public"]["Enums"]["app_role"]
           theme: string
         }
         Insert: {
-          is_partner?: boolean
           avatar_bg?: string
           avatar_fg?: string
           avatar_url?: string | null
@@ -738,12 +819,12 @@ export type Database = {
           id: string
           initials?: string
           is_active?: boolean
+          is_partner?: boolean
           locale?: string
           role?: Database["public"]["Enums"]["app_role"]
           theme?: string
         }
         Update: {
-          is_partner?: boolean
           avatar_bg?: string
           avatar_fg?: string
           avatar_url?: string | null
@@ -753,6 +834,7 @@ export type Database = {
           id?: string
           initials?: string
           is_active?: boolean
+          is_partner?: boolean
           locale?: string
           role?: Database["public"]["Enums"]["app_role"]
           theme?: string
