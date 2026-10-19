@@ -597,6 +597,16 @@ describe("invoices", () => {
     }
   });
 
+  it("the issuer's signature: read by whoever prints its invoices, set only by partners", async () => {
+    const png = "data:image/png;base64,iVBORw0KGgo=";
+    await as(PARTNER, "insert into public.invoice_signatures (issuer_id, image) values ($1, $2)", [issuer, png]);
+    // MANAGER was picked for C1's invoices in the test above.
+    expect(await as(MANAGER, "select image from public.invoice_signatures where issuer_id = $1", [issuer])).toEqual([{ image: png }]);
+    expect(await as(MANAGER, "update public.invoice_signatures set image = $2 where issuer_id = $1 returning issuer_id", [issuer, png])).toEqual([]);
+    for (const uid of [MEMBER, OUTSIDER]) expect(await as(uid, "select image from public.invoice_signatures")).toEqual([]);
+    await expect(as(PARTNER, "update public.invoice_signatures set image = 'https://x' where issuer_id = $1", [issuer])).rejects.toThrow(/check constraint/);
+  });
+
   it("nobody makes themselves a partner", async () => {
     await expect(as(MEMBER, "update public.profiles set is_partner = true where id = $1", [MEMBER])).rejects.toThrow(/Only an admin/);
   });

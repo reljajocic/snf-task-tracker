@@ -541,6 +541,32 @@ export type Database = {
           },
         ]
       }
+      invoice_signatures: {
+        Row: {
+          image: string
+          issuer_id: string
+          updated_at: string
+        }
+        Insert: {
+          image: string
+          issuer_id: string
+          updated_at?: string
+        }
+        Update: {
+          image?: string
+          issuer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_signatures_issuer_id_fkey"
+            columns: ["issuer_id"]
+            isOneToOne: true
+            referencedRelation: "invoice_issuers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoices: {
         Row: {
           buyer_id: string

@@ -57,6 +57,13 @@ export async function getIssuers(): Promise<Issuer[]> {
   return data ?? [];
 }
 
+/** The issuer's signature as a data URL (RLS: whoever may print its invoices), or null. */
+export async function getSignature(issuerId: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("invoice_signatures").select("image").eq("issuer_id", issuerId).maybeSingle();
+  return data?.image ?? null;
+}
+
 export type Partner = { id: string; full_name: string; initials: string; avatar_bg: string; avatar_fg: string; avatar_url: string | null };
 
 /** People who share the earnings (RLS: anyone may read profiles). */

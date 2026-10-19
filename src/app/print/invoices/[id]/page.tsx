@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { getBuyers, getInvoice, getInvoiceAccess, getIssuers } from "@/lib/finance";
+import { getBuyers, getInvoice, getInvoiceAccess, getIssuers, getSignature } from "@/lib/finance";
 import { INVOICE_TEXT as T, invoiceDate, invoiceFileName, invoiceNumber, money, rsd } from "@/lib/invoices";
 import { PrintBar } from "./PrintBar";
 
@@ -13,8 +13,9 @@ async function load(id: string) {
   const [invoice, issuers, buyers] = await Promise.all([getInvoice(id), getIssuers(), getBuyers()]);
   if (!invoice) notFound();
   const issuer = { ...issuers.find((i) => i.id === invoice.issuer_id), ...invoice.issuer_snapshot };
+  const signature = await getSignature(invoice.issuer_id);
   const buyer = { ...buyers.find((b) => b.id === invoice.buyer_id), ...invoice.buyer_snapshot };
-  return { invoice, issuer, buyer };
+  return { invoice, issuer, buyer, signature };
 }
 
 export async function generateMetadata({ params }: PageProps<"/print/invoices/[id]">): Promise<Metadata> {
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: PageProps<"/print/invoices/[i
 
 export default async function PrintInvoicePage({ params }: PageProps<"/print/invoices/[id]">) {
   const { id } = await params;
-  const { invoice, issuer, buyer } = await load(id);
+  const { invoice, issuer, buyer, signature } = await load(id);
   const number = invoiceNumber(invoice);
   const rate = invoice.eur_rate;
 
@@ -103,7 +104,10 @@ export default async function PrintInvoicePage({ params }: PageProps<"/print/inv
         </p>
 
         <p className="mt-[11mm] text-[19px]">{T.signature}:</p>
-        <p className="mt-[24mm] w-[52mm] border-t border-black" />
+        {/* The signature sits on the line, as it was signed. */}
+        <div className="relative mt-[3mm] h-[24mm] w-[62mm] border-b border-black">
+          {signature && <img src={signature} alt="" className="absolute bottom-[1mm] left-[1mm] h-[21mm] w-auto max-w-[60mm] object-contain object-left-bottom" />}
+        </div>
 
         <footer className="mt-[6mm] flex flex-col text-[12.5px] italic leading-[1.45]">
           {issuer.footer && <p>{issuer.footer}</p>}
