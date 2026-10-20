@@ -1417,6 +1417,7 @@ export type Database = {
       can_edit_task: { Args: { tid: string }; Returns: boolean }
       can_see_client_invoices: { Args: { cid: string }; Returns: boolean }
       can_see_finance: { Args: never; Returns: boolean }
+      can_see_person: { Args: { pid: string }; Returns: boolean }
       can_use_board: { Args: { bid: string }; Returns: boolean }
       can_use_project_board: { Args: { pid: string }; Returns: boolean }
       can_view_client: { Args: { cid: string }; Returns: boolean }
