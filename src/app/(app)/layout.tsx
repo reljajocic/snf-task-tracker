@@ -25,10 +25,10 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
         <MobileTopBar profile={profile} invoices={invoiceAccess.any} />
         {children}
       </main>
-      <MobileNav />
+      <MobileNav admin={profile.role === "admin"} />
       <DialogHost />
       <Suspense>
-        <NewTaskFab />
+        {profile.role !== "admin" && <NewTaskFab />}
         <TaskOverlays lookups={lookups} today={today()} />
       </Suspense>
     </div>

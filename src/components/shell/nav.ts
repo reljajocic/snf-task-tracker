@@ -19,7 +19,12 @@ export const CONTENT_NAV: NavItem[] = [
   { href: "/content/videos", key: "videos", icon: "videos" },
 ];
 
-export const ADMIN_NAV: NavItem[] = [{ href: "/team", key: "team", icon: "team" }];
+// The admin login only oversees: its overview, the clients (settings, portal), the team (and invoices, see Sidebar).
+export const ADMIN_ONLY_NAV: NavItem[] = [
+  { href: "/", key: "dashboard", icon: "home" },
+  { href: "/clients", key: "clients", icon: "clients" },
+  { href: "/team", key: "team", icon: "team" },
+];
 
 // Partners, and client managers picked to handle a client's invoices.
 export const INVOICES_NAV: NavItem = { href: "/invoices", key: "invoices", icon: "invoices" };

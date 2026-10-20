@@ -8,7 +8,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import type { Profile } from "@/lib/auth";
 import { SIDEBAR_COOKIE } from "@/lib/theme";
 import { NAV_ICONS } from "./icons";
-import { ADMIN_NAV, CONTENT_NAV, INVOICES_NAV, SIDEBAR_NAV, isActive, type NavItem } from "./nav";
+import { ADMIN_ONLY_NAV, CONTENT_NAV, INVOICES_NAV, SIDEBAR_NAV, isActive, type NavItem } from "./nav";
 
 function NavLink({ item, active, label, collapsed }: { item: NavItem; active: boolean; label: string; collapsed: boolean }) {
   return (
@@ -70,22 +70,19 @@ export function Sidebar({ profile, initialCollapsed, invoices }: { profile: Prof
         </button>
       </div>
 
+      {/* The admin login only oversees: no tasks or content, just the overview and what it runs. */}
       <nav className="flex flex-col gap-0.5">
-        {[...SIDEBAR_NAV, ...(invoices ? [INVOICES_NAV] : [])].map((item) => (
+        {(profile.role === "admin" ? [...ADMIN_ONLY_NAV, ...(invoices ? [INVOICES_NAV] : [])] : [...SIDEBAR_NAV, ...(invoices ? [INVOICES_NAV] : [])]).map((item) => (
           <NavLink key={item.href} item={item} active={isActive(pathname, item)} label={t(`nav.${item.key}`)} collapsed={collapsed} />
         ))}
-        {collapsed ? <div className="mx-3 my-3 border-t border-line" /> : <div className="eyebrow px-3 pb-2 pt-5">{t("nav.contentGroup")}</div>}
-        {CONTENT_NAV.map((item) => (
-          <NavLink key={item.href} item={item} active={isActive(pathname, item)} label={t(`nav.${item.key}`)} collapsed={collapsed} />
-        ))}
+        {profile.role !== "admin" && (collapsed ? <div className="mx-3 my-3 border-t border-line" /> : <div className="eyebrow px-3 pb-2 pt-5">{t("nav.contentGroup")}</div>)}
+        {profile.role !== "admin" &&
+          CONTENT_NAV.map((item) => (
+            <NavLink key={item.href} item={item} active={isActive(pathname, item)} label={t(`nav.${item.key}`)} collapsed={collapsed} />
+          ))}
       </nav>
 
       <div className="mt-auto flex flex-col gap-3">
-        {/* Team and settings sit with the account, out of the day-to-day menu. */}
-        {profile.role === "admin" &&
-          ADMIN_NAV.map((item) => (
-            <NavLink key={item.href} item={item} active={isActive(pathname, item)} label={t(`nav.${item.key}`)} collapsed={collapsed} />
-          ))}
         <div className={`flex items-center gap-2.5 ${collapsed ? "flex-col" : "px-1"}`}>
           <Link
             href="/settings"

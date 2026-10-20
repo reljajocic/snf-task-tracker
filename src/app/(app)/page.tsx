@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
+import { AdminDashboard } from "./AdminDashboard";
 import { RowList, TaskCardMobile, TaskRow, TaskRowMobile, WaitingCard } from "@/components/tasks/rows";
 import { Avatar } from "@/components/ui/Avatar";
 import { Segmented } from "@/components/ui/Segmented";
@@ -13,6 +14,7 @@ import { byDue, taskOverdue, type Task } from "@/lib/tasks";
 // 1a / 1b. What Home shows: members their own tasks; a client's managers all of that client's work;
 // the admin everything. "Mine / All" (for those who oversee) narrows the sections to their own.
 export default async function HomePage({ searchParams }: PageProps<"/">) {
+  if ((await requireProfile()).role === "admin") return <AdminDashboard />;
   const [{ scope }, me, tasks, lookups, t, allShoots] = await Promise.all([
     searchParams,
     requireProfile(),

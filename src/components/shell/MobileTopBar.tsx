@@ -39,11 +39,6 @@ export function MobileTopBar({ profile, invoices }: { profile: Profile; invoices
             <Link href="/settings" onClick={() => setOpen(false)} className="rounded-md px-3 py-2.5 text-[15px] hover:bg-hover">
               {t("nav.settings")}
             </Link>
-            {profile.role === "admin" && (
-              <Link href="/team" onClick={() => setOpen(false)} className="rounded-md px-3 py-2.5 text-[15px] hover:bg-hover">
-                {t("nav.team")}
-              </Link>
-            )}
             <form action="/auth/signout" method="post">
               <button type="submit" className="w-full cursor-pointer rounded-md px-3 py-2.5 text-left text-[15px] text-red-ink hover:bg-hover">
                 {t("common.signOut")}

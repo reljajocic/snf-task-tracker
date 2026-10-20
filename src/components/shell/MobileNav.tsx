@@ -4,16 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { NAV_ICONS } from "./icons";
-import { MOBILE_NAV, isActive } from "./nav";
+import { ADMIN_ONLY_NAV, MOBILE_NAV, isActive } from "./nav";
 
 /** Mobile bottom bar, 68px + the home-indicator area: orange 18×3 marker, icon and label; the active tab is accented. */
-export function MobileNav() {
+export function MobileNav({ admin = false }: { admin?: boolean }) {
   const t = useTranslations("nav");
   const pathname = usePathname();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[calc(68px+env(safe-area-inset-bottom))] border-t border-line bg-side pb-[env(safe-area-inset-bottom)] lg:hidden">
-      {MOBILE_NAV.map((item) => {
+      {(admin ? ADMIN_ONLY_NAV : MOBILE_NAV).map((item) => {
         const active = isActive(pathname, item);
         return (
           <Link

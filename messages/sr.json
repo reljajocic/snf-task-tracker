@@ -36,7 +36,8 @@
     "collapse": "Skupi meni",
     "expand": "Raširi meni",
     "videos": "Banka videa",
-    "invoices": "Fakture"
+    "invoices": "Fakture",
+    "dashboard": "Pregled"
   },
   "weekday": {
     "long": "{day, select, 0 {Ponedeljak} 1 {Utorak} 2 {Sreda} 3 {Četvrtak} 4 {Petak} 5 {Subota} other {Nedelja}}",
@@ -1049,5 +1050,28 @@
     "issueTitle": "Izdati fakturu?",
     "cancelTitle": "Stornirati fakturu {number}?",
     "keep": "Ostavi je"
+  },
+  "admin": {
+    "title": "Pregled",
+    "activeClients": "Aktivni klijenti",
+    "openWork": "Otvoren posao",
+    "late": "Kasni",
+    "waitingClient": "Čeka klijenta",
+    "doneWeek": "Završeno za 7 dana",
+    "clients": "Klijenti",
+    "clientsHint": "Otvoreno, kasni, čeka klijenta, videi po fazi",
+    "colOpen": "Otvoreno",
+    "colLate": "Kasni",
+    "colWaiting": "Čeka",
+    "colDoneWeek": "Gotovo 7d",
+    "colNextShoot": "Sledeće snimanje",
+    "colNextPost": "Sledeća objava",
+    "mobileLine": "{open} otvoreno · {late} kasni · {waiting} čeka",
+    "team": "Tim",
+    "activity": "Skorije",
+    "activityHint": "Poslednjih 7 dana i portal",
+    "created": "Novo: {title}",
+    "done": "Završeno: {title} ({who})",
+    "nothing": "Ovde nema ništa."
   }
 }

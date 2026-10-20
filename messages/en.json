@@ -36,7 +36,8 @@
     "collapse": "Collapse menu",
     "expand": "Expand menu",
     "videos": "Video bank",
-    "invoices": "Invoices"
+    "invoices": "Invoices",
+    "dashboard": "Overview"
   },
   "weekday": {
     "long": "{day, select, 0 {Monday} 1 {Tuesday} 2 {Wednesday} 3 {Thursday} 4 {Friday} 5 {Saturday} other {Sunday}}",
@@ -1049,5 +1050,28 @@
     "issueTitle": "Issue the invoice?",
     "cancelTitle": "Cancel invoice {number}?",
     "keep": "Keep it"
+  },
+  "admin": {
+    "title": "Overview",
+    "activeClients": "Active clients",
+    "openWork": "Open work",
+    "late": "Late",
+    "waitingClient": "Waiting on client",
+    "doneWeek": "Done in 7 days",
+    "clients": "Clients",
+    "clientsHint": "Open work, late, waiting on the client, videos per phase",
+    "colOpen": "Open",
+    "colLate": "Late",
+    "colWaiting": "Waiting",
+    "colDoneWeek": "Done 7d",
+    "colNextShoot": "Next shoot",
+    "colNextPost": "Next post",
+    "mobileLine": "{open} open · {late} late · {waiting} waiting",
+    "team": "Team",
+    "activity": "Lately",
+    "activityHint": "Last 7 days and the portal",
+    "created": "New: {title}",
+    "done": "Done: {title} ({who})",
+    "nothing": "Nothing here."
   }
 }
