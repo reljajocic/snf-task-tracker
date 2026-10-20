@@ -84,6 +84,39 @@ export async function decideVideo(
   return { ok: true, approvalId: data.id };
 }
 
+/**
+ * "Request a change" on any video the client can see (approved, scheduled, even published): a note to the team.
+ * Before anything is filmed it's a note on the script; after, on the cut, and an approved cut goes back to editing
+ * (a published one stays published, the team decides what to do).
+ */
+export async function requestChange(token: string, taskId: string, name: string, comment: string): Promise<PortalResult> {
+  const ctx = await context(token, taskId);
+  if (!ctx || (!ctx.portal.show.review && !ctx.portal.show.schedule)) return { ok: false, error: "Not available." };
+  const approver = cleanName(name);
+  if (!approver) return { ok: false, error: "Please enter your name." };
+  if (!comment.trim()) return { ok: false, error: "Please describe what to change." };
+  const { video } = ctx;
+  const latest = video.versions[0];
+  const onCut = !!latest || video.phase >= 2 || video.shot_status === "shot";
+
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("approvals")
+    .insert({ task_id: taskId, kind: onCut ? "video" : "script", version_id: onCut ? (latest?.id ?? null) : null, status: "changes", approver_name: approver, comment: comment.trim() })
+    .select("id")
+    .single();
+  if (error) return { ok: false, error: error.message };
+  if (onCut && video.phase >= 3 && video.phase < 5) await admin.from("tasks").update({ phase: 2 }).eq("id", taskId);
+
+  const recipients = await teamOf(taskId);
+  after(async () => {
+    await admin.from("portal_activity").insert({ client_id: ctx.portal.clientId, message: `${approver} asked for a change to “${video.title}”` });
+    await notify({ event: "client_changes", taskId, recipientIds: recipients, extra: { by: approver, what: onCut ? "video" : "script", comment: comment.trim() } });
+  });
+  revalidatePath(`/p/${token}`, "layout");
+  return { ok: true, approvalId: data.id };
+}
+
 async function decideScriptInner(token: string, taskId: string, decision: "approved" | "changes", approver: string, comment: string) {
   const ctx = await context(token, taskId);
   if (!ctx || !ctx.portal.show.scripts) return { ok: false as const, error: "Not available." };

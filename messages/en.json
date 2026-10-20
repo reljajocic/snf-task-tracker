@@ -772,7 +772,10 @@
     "notFoundTitle": "Link not valid",
     "notFoundText": "This portal link doesn't work any more. Ask Slate n' Frame for the current one.",
     "viewCalendar": "Calendar",
-    "viewList": "List"
+    "viewList": "List",
+    "requestChange": "Request a change",
+    "requestChangeHint": "Already approved or scheduled? Tell us what to change and the team gets it right away.",
+    "changeSent": "Sent. The team has your note."
   },
   "shootSheet": {
     "status": "Status",

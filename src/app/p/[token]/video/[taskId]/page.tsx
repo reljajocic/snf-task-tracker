@@ -5,7 +5,7 @@ import { embedUrl } from "@/lib/embed";
 import { formatDate, weekdayIndex } from "@/lib/dates";
 import { canUndo, getPortal, getPortalVideos, portalStatus, PORTAL_STATUS_COLOR } from "@/lib/portal";
 import { Poster } from "../../bits";
-import { VideoDecision } from "./VideoDecision";
+import { RequestChange, VideoDecision } from "./VideoDecision";
 
 // 7c (desktop) / 7f (mobile): watch a cut and approve it or ask for changes. Any video in the schedule opens here too,
 // to read its script before there is a cut.
@@ -106,6 +106,8 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
         )}
 
         {isLatest && decides && <VideoDecision token={token} taskId={video.id} versionId={shown?.id ?? null} decision={decision} undoable={canUndo(decision)} />}
+        {/* Not waiting on them (approved, scheduled, published): they can still ask for a change. */}
+        {isLatest && !(decides && !decision) && <RequestChange token={token} taskId={video.id} />}
       </div>
     </div>
   );

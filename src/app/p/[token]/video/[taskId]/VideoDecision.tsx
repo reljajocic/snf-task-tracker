@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import type { Decision } from "@/lib/portal";
-import { decideVideo, undoDecision } from "../../actions";
+import { decideVideo, requestChange, undoDecision } from "../../actions";
 import { useApprover } from "../../useApprover";
 
 export function NameField({ name, setName }: { name: string; setName: (v: string) => void }) {
@@ -98,6 +98,60 @@ export function VideoDecision({ token, taskId, versionId, decision, undoable }: 
           </button>
         </div>
       )}
+      {error && <span role="alert" className="text-[14px] text-red-ink">{error}</span>}
+    </div>
+  );
+}
+
+/** For a video that isn't waiting on the client (approved, scheduled, published): ask for a change anyway. */
+export function RequestChange({ token, taskId }: { token: string; taskId: string }) {
+  const t = useTranslations("portal");
+  const router = useRouter();
+  const [name, setName] = useApprover();
+  const [open, setOpen] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [comment, setComment] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  const send = () =>
+    startTransition(async () => {
+      const res = await requestChange(token, taskId, name, comment);
+      if (!res.ok) return setError(res.error);
+      setError(null);
+      setOpen(false);
+      setComment("");
+      setSent(true);
+      router.refresh();
+    });
+
+  if (sent) return <span className="rounded-lg border border-[var(--status-waiting)] px-5 py-4 text-[15px] font-medium text-[var(--waiting-ink)]">{t("changeSent")}</span>;
+  if (!open)
+    return (
+      <button type="button" onClick={() => setOpen(true)} className="h-12 cursor-pointer self-start rounded-md border border-line2 px-5 text-[15px] font-medium text-ink hover:border-ink3">
+        {t("requestChange")}
+      </button>
+    );
+  return (
+    <div className="flex flex-col gap-4">
+      <span className="text-[14px] text-ink2">{t("requestChangeHint")}</span>
+      <NameField name={name} setName={setName} />
+      <textarea
+        autoFocus
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        rows={4}
+        placeholder={t("changesPlaceholder")}
+        className="resize-y rounded-md border border-accent bg-transparent px-4 py-3.5 text-[15px] leading-normal text-ink outline-none"
+      />
+      <div className="flex gap-3">
+        <button type="button" disabled={pending || !comment.trim() || !name.trim()} onClick={send} className="h-12 cursor-pointer rounded-md bg-accent px-[22px] text-[15px] font-semibold text-charcoal disabled:opacity-45">
+          {t("send")}
+        </button>
+        <button type="button" onClick={() => setOpen(false)} className="h-12 cursor-pointer px-3 text-[15px] text-ink2">
+          {t("cancel")}
+        </button>
+      </div>
       {error && <span role="alert" className="text-[14px] text-red-ink">{error}</span>}
     </div>
   );

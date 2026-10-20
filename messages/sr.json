@@ -772,7 +772,10 @@
     "notFoundTitle": "Link ne važi",
     "notFoundText": "Ovaj link do portala više ne radi. Zatražite aktuelni od Slate n' Frame-a.",
     "viewCalendar": "Kalendar",
-    "viewList": "Lista"
+    "viewList": "Lista",
+    "requestChange": "Zatraži izmenu",
+    "requestChangeHint": "Video je već odobren ili u rasporedu? Napišite šta da promenimo i tim odmah dobija poruku.",
+    "changeSent": "Poslato. Tim je dobio vašu poruku."
   },
   "shootSheet": {
     "status": "Status",
