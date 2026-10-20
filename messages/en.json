@@ -1070,8 +1070,14 @@
     "team": "Team",
     "activity": "Lately",
     "activityHint": "Last 7 days and the portal",
-    "created": "New: {title}",
-    "done": "Done: {title} ({who})",
-    "nothing": "Nothing here."
+    "done": "{title} · {who}",
+    "nothing": "Nothing here.",
+    "kind": {
+      "approved": "Client approved",
+      "changes": "Client wants changes",
+      "sent": "Sent to client",
+      "created": "New",
+      "done": "Done"
+    }
   }
 }

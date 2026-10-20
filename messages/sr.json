@@ -1070,8 +1070,14 @@
     "team": "Tim",
     "activity": "Skorije",
     "activityHint": "Poslednjih 7 dana i portal",
-    "created": "Novo: {title}",
-    "done": "Završeno: {title} ({who})",
-    "nothing": "Ovde nema ništa."
+    "done": "{title} · {who}",
+    "nothing": "Ovde nema ništa.",
+    "kind": {
+      "approved": "Klijent odobrio",
+      "changes": "Klijent traži izmene",
+      "sent": "Poslato klijentu",
+      "created": "Novo",
+      "done": "Završeno"
+    }
   }
 }

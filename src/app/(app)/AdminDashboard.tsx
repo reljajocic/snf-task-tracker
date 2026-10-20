@@ -8,6 +8,18 @@ import { addDays, formatDate, formatShortDate, today as getToday, weekdayIndex }
 import { createClient } from "@/lib/supabase/server";
 import { PHASES, PUBLISHED_PHASE, taskOverdue, type Task } from "@/lib/tasks";
 
+// What happened, by colour: the client's word from the portal (approved / asked for changes), a cut sent to them,
+// new work, finished work.
+const KINDS = ["approved", "changes", "sent", "created", "done"] as const;
+type Kind = (typeof KINDS)[number];
+const KIND_COLOR: Record<Kind, string> = {
+  approved: "var(--accent)",
+  changes: "var(--status-waiting)",
+  sent: "var(--status-todo)",
+  created: "var(--status-in-progress)",
+  done: "var(--status-done)",
+};
+
 // The admin's home: a read-out of the whole studio, not a to-do list. Every client (work open, late,
 // waiting on the client, videos per phase, next shoot and post), the team's load, and what happened lately.
 export async function AdminDashboard() {
@@ -56,15 +68,23 @@ export async function AdminDashboard() {
     .sort((a, b) => b.late - a.late || b.open - a.open);
 
   // Lately: the clients' word from the portal, new work and finished work, newest first.
-  type Event = { at: string; text: string; who?: string; href?: string };
+  type Event = { at: string; kind: Kind; text: string; who?: string; href?: string };
   const events: Event[] = [
-    ...(portal ?? []).map((a) => ({ at: a.created_at, text: a.message, who: a.client?.name, href: a.client ? `/clients/${a.client.id}` : undefined })),
+    // Portal messages are written as "<name> approved …", "<name> asked for …" (the portal's actions)
+    // and "Version n of … sent for review" (task-actions).
+    ...(portal ?? []).map((a) => ({
+      at: a.created_at,
+      kind: (/sent for review/.test(a.message) ? "sent" : / approved /.test(a.message) ? "approved" : "changes") as Kind,
+      text: a.message,
+      who: a.client?.name,
+      href: a.client ? `/clients/${a.client.id}` : undefined,
+    })),
     ...tasks
       .filter((x) => x.created_at.slice(0, 10) >= weekAgo && x.kind !== "subtask")
-      .map((x) => ({ at: x.created_at, text: t("admin.created", { title: x.title }), who: x.client?.name, href: `?task=${x.id}` })),
+      .map((x) => ({ at: x.created_at, kind: "created" as Kind, text: x.title, who: x.client?.name, href: `?task=${x.id}` })),
     ...doneThisWeek
       .filter((x) => x.kind !== "subtask")
-      .map((x) => ({ at: x.completed_at!, text: t("admin.done", { title: x.title, who: x.assignees.map((a) => a.full_name.split(" ")[0]).join(", ") || "—" }), who: x.client?.name, href: `?task=${x.id}` })),
+      .map((x) => ({ at: x.completed_at!, kind: "done" as Kind, text: t("admin.done", { title: x.title, who: x.assignees.map((a) => a.full_name.split(" ")[0]).join(", ") || "—" }), who: x.client?.name, href: `?task=${x.id}` })),
   ]
     .sort((a, b) => b.at.localeCompare(a.at))
     .slice(0, 25);
@@ -173,22 +193,33 @@ export async function AdminDashboard() {
 
           <section className="flex flex-col gap-3">
             {h2(t("admin.activity"), t("admin.activityHint"))}
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+              {KINDS.map((k) => (
+                <span key={k} className="flex items-center gap-1.5 text-[12px] font-medium text-ink2">
+                  <span className="size-2 rounded-full" style={{ background: KIND_COLOR[k] }} />
+                  {t(`admin.kind.${k}`)}
+                </span>
+              ))}
+            </div>
             <div className="snf-stack">
               {events.map((e, i) => {
                 const body = (
                   <>
                     <span className="w-[52px] flex-none pt-px text-[12px] tabular-nums text-ink3">{when(e.at)}</span>
                     <span className="flex min-w-0 flex-col gap-0.5">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: KIND_COLOR[e.kind] }}>
+                        {t(`admin.kind.${e.kind}`)}
+                      </span>
                       <span className="text-[14px] leading-snug text-ink">{e.text}</span>
                       {e.who && <span className="truncate text-[12px] text-ink3">{e.who}</span>}
                     </span>
                   </>
                 );
-                const cls = "flex gap-3 border-b border-line px-[18px] py-3 last:border-b-0";
+                const cls = "flex gap-3 border-b border-l-[3px] border-b-line px-[18px] py-3 last:border-b-0";
                 return e.href ? (
-                  <Link key={i} href={e.href} className={`${cls} hover:bg-hover`}>{body}</Link>
+                  <Link key={i} href={e.href} className={`${cls} hover:bg-hover`} style={{ borderLeftColor: KIND_COLOR[e.kind] }}>{body}</Link>
                 ) : (
-                  <div key={i} className={cls}>{body}</div>
+                  <div key={i} className={cls} style={{ borderLeftColor: KIND_COLOR[e.kind] }}>{body}</div>
                 );
               })}
               {!events.length && <p className="px-[18px] py-5 text-[14px] text-ink3">{t("admin.nothing")}</p>}
