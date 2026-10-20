@@ -64,8 +64,8 @@ export async function AdminDashboard() {
         done: doneThisWeek.filter((x) => x.assignees.some((a) => a.id === p.id)).length,
       };
     })
-    .filter((s) => s.open > 0 || s.done > 0)
-    .sort((a, b) => b.late - a.late || b.open - a.open);
+    // Everyone active, also those with nothing on right now (that's worth seeing too).
+    .sort((a, b) => b.late - a.late || b.open - a.open || a.person.full_name.localeCompare(b.person.full_name));
 
   // Lately: the clients' word from the portal, new work and finished work, newest first.
   type Event = { at: string; kind: Kind; text: string; who?: string; href?: string };
