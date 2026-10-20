@@ -7,15 +7,17 @@ import { canUndo, getPortal, getPortalVideos, portalStatus, PORTAL_STATUS_COLOR 
 import { Poster } from "../../bits";
 import { VideoDecision } from "./VideoDecision";
 
-// 7c (desktop) / 7f (mobile): watch a cut and approve it or ask for changes.
+// 7c (desktop) / 7f (mobile): watch a cut and approve it or ask for changes. Any video in the schedule opens here too,
+// to read its script before there is a cut.
 export default async function PortalVideo({ params, searchParams }: PageProps<"/p/[token]/video/[taskId]">) {
   const [{ token, taskId }, { v: versionParam }] = await Promise.all([params, searchParams]);
   const portal = (await getPortal(token))!;
   const t = await getTranslations({ locale: portal.locale });
-  if (!portal.show.review) notFound();
+  if (!portal.show.review && !portal.show.schedule) notFound();
   const video = (await getPortalVideos(portal.clientId, { id: taskId }))[0];
+  if (!video) notFound();
   // Sent for approval without a version (Revision in the app): the client still decides, watching via Drive.
-  if (!video || (!video.versions.length && video.phase !== 3 && !video.looseDecision)) notFound();
+  const decides = portal.show.review && (video.versions.length > 0 || video.phase === 3 || !!video.looseDecision);
 
   const shown = video.versions.find((x) => String(x.version) === versionParam) ?? video.versions[0] ?? null;
   const isLatest = !shown || shown.id === video.versions[0].id;
@@ -80,7 +82,7 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
           {facts.length > 0 && <span className="text-[15px] leading-normal text-ink2">{facts.join(" · ")}</span>}
         </div>
 
-        {video.script.length > 0 && (
+        {portal.show.scripts && video.script.length > 0 && (
           <div className="flex flex-col gap-3 rounded-lg border border-line px-[22px] py-5">
             <span className="eyebrow">{t("portal.script")}</span>
             {video.script.map((s, i) => (
@@ -103,7 +105,7 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
           </div>
         )}
 
-        {isLatest && <VideoDecision token={token} taskId={video.id} versionId={shown?.id ?? null} decision={decision} undoable={canUndo(decision)} />}
+        {isLatest && decides && <VideoDecision token={token} taskId={video.id} versionId={shown?.id ?? null} decision={decision} undoable={canUndo(decision)} />}
       </div>
     </div>
   );

@@ -94,7 +94,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
             {nextPosts.length ? (
               <div className="snf-stack">
                 {nextPosts.map((v) => (
-                  <div key={v.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-t border-line bg-surf px-[18px] py-3.5 first:border-t-0 md:grid-cols-[140px_minmax(0,1fr)_60px_190px]">
+                  <Link key={v.id} href={`${base}/video/${v.id}`} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-t border-line bg-surf px-[18px] py-3.5 first:border-t-0 hover:bg-hover md:grid-cols-[140px_minmax(0,1fr)_60px_190px]">
                     <span className="hidden gap-2 whitespace-nowrap text-[14px] font-medium md:flex">
                       <span className="w-[30px] text-ink3">{day(v.publish_date!)}</span>
                       {formatDate(v.publish_date!)}
@@ -108,7 +108,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                     </div>
                     <span className="hidden md:block">{v.content_type && <TypeTag>{v.content_type}</TypeTag>}</span>
                     <PortalStatusLabel status={portalStatus(v)} />
-                  </div>
+                  </Link>
                 ))}
               </div>
             ) : (

@@ -80,10 +80,10 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
                           <span className="hidden min-w-0 break-words lg:line-clamp-2">{v.title}</span>
                         </span>
                       );
-                      return status === "awaiting" && portal.show.review ? (
-                        <Link key={v.id} href={`/p/${token}/video/${v.id}`}>{chip}</Link>
-                      ) : (
-                        <span key={v.id}>{chip}</span>
+                      return (
+                        <Link key={v.id} href={`/p/${token}/video/${v.id}`} className="hover:opacity-80">
+                          {chip}
+                        </Link>
                       );
                     })}
                   </div>
@@ -141,10 +141,11 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
               const cls = `grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-t border-line px-4 py-[13px] first:border-t-0 md:grid-cols-[150px_minmax(0,1fr)_64px_250px] ${
                 status === "awaiting" ? "bg-rust-bg" : ""
               }`;
-              return status === "awaiting" && portal.show.review ? (
-                <Link key={v.id} href={`/p/${token}/video/${v.id}`} className={cls}>{row}</Link>
-              ) : (
-                <div key={v.id} className={cls}>{row}</div>
+              // Every post opens: a cut to review, or its script.
+              return (
+                <Link key={v.id} href={`/p/${token}/video/${v.id}`} className={`${cls} hover:bg-hover`}>
+                  {row}
+                </Link>
               );
             })}
           </div>
