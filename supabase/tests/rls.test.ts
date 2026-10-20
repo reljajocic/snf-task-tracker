@@ -611,3 +611,35 @@ describe("invoices", () => {
     await expect(as(MEMBER, "update public.profiles set is_partner = true where id = $1", [MEMBER])).rejects.toThrow(/Only an admin/);
   });
 });
+
+describe("people", () => {
+  const FRIEND = "00000000-0000-0000-0000-0000000000f1";
+  const FRIEND2 = "00000000-0000-0000-0000-0000000000f2";
+  const names = async (uid: string) => (await as<{ full_name: string }>(uid, "select full_name from public.profiles order by full_name")).map((p) => p.full_name);
+
+  beforeAll(async () => {
+    await db.exec(`
+      select set_config('request.jwt.claim.sub', '', false);
+      insert into auth.users values
+        ('${FRIEND}', 'friend@other.test', '{"full_name":"Friend"}'),
+        ('${FRIEND2}', 'friend2@other.test', '{"full_name":"Friend partner"}');
+    `);
+  });
+
+  it("someone on their own clients sees only themselves and whoever they work with", async () => {
+    expect(await names(FRIEND)).toEqual(["Friend"]);
+    // Their own client, with their own person on it.
+    await as(FRIEND, "insert into public.clients (name) values ('Friend co')");
+    const [{ id }] = await as<{ id: string }>(FRIEND, "select id from public.clients where name = 'Friend co'");
+    await as(FRIEND, "insert into public.client_members (client_id, user_id, role) values ($1, $2, 'member')", [id, FRIEND2]);
+    expect(await names(FRIEND)).toEqual(["Friend", "Friend partner"]);
+    // The studio's people don't see them either.
+    expect(await names(MEMBER)).not.toContain("Friend");
+  });
+
+  it("the team sees each other through shared clients; the admin and partners see everyone", async () => {
+    expect(await names(MEMBER)).toEqual(expect.arrayContaining(["Marko", "Uroš"]));
+    expect(await names(ADMIN)).toEqual(expect.arrayContaining(["Friend", "Marko", "Uroš"]));
+    expect(await names("00000000-0000-0000-0000-0000000000a1")).toEqual(expect.arrayContaining(["Friend", "Marko"]));
+  });
+});
