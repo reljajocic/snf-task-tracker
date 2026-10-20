@@ -24,6 +24,7 @@ import { dueLabel } from "@/lib/dates";
 import { VideoSection } from "./VideoSection";
 import { VideoTag } from "./video-bits";
 import { ask } from "@/components/ui/Dialog";
+import { safeHref } from "@/lib/safe-url";
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink2" };
 
@@ -325,7 +326,7 @@ function PanelBody({
               className="min-w-0 flex-1 border-0 bg-transparent text-[14px] text-ink outline-none placeholder:text-ink3"
             />
             {task.drive_url && (
-              <a href={task.drive_url} target="_blank" rel="noreferrer" className="flex h-[34px] items-center whitespace-nowrap rounded-[5px] bg-chip px-3 text-[13px] font-medium text-ink">
+              <a href={safeHref(task.drive_url)} target="_blank" rel="noreferrer" className="flex h-[34px] items-center whitespace-nowrap rounded-[5px] bg-chip px-3 text-[13px] font-medium text-ink">
                 {t("open")}
               </a>
             )}

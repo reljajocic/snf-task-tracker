@@ -17,6 +17,7 @@ import { addVideosToShoot, removeFromShoot, reorderShoot, setSignupLink } from "
 import { byShootOrder, byShootTime, deriveCallTimes, idsByTime } from "@/lib/script-text";
 import { CallTimes } from "./ShootTools";
 import { ShootSheet } from "./ShootSheet";
+import { safeHref } from "@/lib/safe-url";
 
 type Slot = { time: string; onCamera: string; items: Task[] };
 
@@ -326,7 +327,7 @@ export function ShootBoard({
                 {hasScript(v) && scriptOpen(v.id, true) && scriptBlock(v)}
                 {v.note && <span className="text-[14px] font-medium text-[var(--waiting-ink)]">{v.note}</span>}
                 {v.reference_url && (
-                  <a href={v.reference_url.startsWith("http") ? v.reference_url : `https://${v.reference_url}`} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-rust-ink">
+                  <a href={safeHref(v.reference_url)} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-rust-ink">
                     {t("shoots.reference")}
                   </a>
                 )}
@@ -471,7 +472,7 @@ export function ShootBoard({
                 <span className="text-[14px] text-ink3">{t("shoots.noScript")}</span>
               )}
               {sel.reference_url && (
-                <a href={sel.reference_url.startsWith("http") ? sel.reference_url : `https://${sel.reference_url}`} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-rust-ink">
+                <a href={safeHref(sel.reference_url)} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-rust-ink">
                   {t("shoots.reference")}
                 </a>
               )}

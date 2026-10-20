@@ -33,6 +33,22 @@ async function teamOf(taskId: string) {
   return [...new Set([...(managers ?? []), ...(assignees ?? [])].map((a) => a.user_id).concat(task?.editor_id ? [task.editor_id] : []))];
 }
 
+/**
+ * Flood guard: the portal has no login, so whoever holds the link could fire decisions in a loop (each one
+ * emails the team). A real client makes a handful in ten minutes; past this many, wait.
+ */
+const BURST = { windowMs: 10 * 60_000, max: 40 };
+async function tooMany(clientId: string) {
+  const since = new Date(Date.now() - BURST.windowMs).toISOString();
+  const { count } = await createAdminClient()
+    .from("approvals")
+    .select("id, task:tasks!inner(client_id)", { count: "exact", head: true })
+    .eq("task.client_id", clientId)
+    .gte("created_at", since);
+  return (count ?? 0) >= BURST.max;
+}
+const SLOW_DOWN = "Too many requests at once. Please wait a few minutes and try again.";
+
 function cleanName(name: string) {
   return name.trim().slice(0, 80);
 }
@@ -47,9 +63,11 @@ export async function decideVideo(
 ): Promise<PortalResult> {
   const ctx = await context(token, taskId);
   if (!ctx || !ctx.portal.show.review) return { ok: false, error: "Not available." };
+  if (await tooMany(ctx.portal.clientId)) return { ok: false, error: SLOW_DOWN };
   const approver = cleanName(name);
   if (!approver) return { ok: false, error: "Please enter your name." };
   if (decision === "changes" && !comment.trim()) return { ok: false, error: "Please describe what to change." };
+  comment = comment.slice(0, 4000);
   const latest = ctx.video.versions[0];
   // With versions, decide on the newest; without any, only while it's waiting on the client.
   if (versionId ? !latest || latest.id !== versionId : latest || ctx.video.phase !== 3) {
@@ -92,9 +110,11 @@ export async function decideVideo(
 export async function requestChange(token: string, taskId: string, name: string, comment: string): Promise<PortalResult> {
   const ctx = await context(token, taskId);
   if (!ctx || (!ctx.portal.show.review && !ctx.portal.show.schedule)) return { ok: false, error: "Not available." };
+  if (await tooMany(ctx.portal.clientId)) return { ok: false, error: SLOW_DOWN };
   const approver = cleanName(name);
   if (!approver) return { ok: false, error: "Please enter your name." };
   if (!comment.trim()) return { ok: false, error: "Please describe what to change." };
+  comment = comment.slice(0, 4000);
   const { video } = ctx;
   const latest = video.versions[0];
   const onCut = !!latest || video.phase >= 2 || video.shot_status === "shot";
@@ -120,6 +140,7 @@ export async function requestChange(token: string, taskId: string, name: string,
 async function decideScriptInner(token: string, taskId: string, decision: "approved" | "changes", approver: string, comment: string) {
   const ctx = await context(token, taskId);
   if (!ctx || !ctx.portal.show.scripts) return { ok: false as const, error: "Not available." };
+  if (await tooMany(ctx.portal.clientId)) return { ok: false as const, error: SLOW_DOWN };
   const admin = createAdminClient();
   const { data, error } = await admin
     .from("approvals")
@@ -134,6 +155,7 @@ export async function decideScript(token: string, taskId: string, decision: "app
   const approver = cleanName(name);
   if (!approver) return { ok: false, error: "Please enter your name." };
   if (decision === "changes" && !comment.trim()) return { ok: false, error: "Please describe what to change." };
+  comment = comment.slice(0, 4000);
   const res = await decideScriptInner(token, taskId, decision, approver, comment);
   if (!res.ok) return res;
   const title = res.ctx.video.title;
@@ -153,6 +175,7 @@ export async function decideScript(token: string, taskId: string, decision: "app
 export async function approveAllScripts(token: string, shootId: string, name: string): Promise<PortalResult> {
   const portal = await getPortal(token);
   if (!portal || !portal.show.scripts) return { ok: false, error: "Not available." };
+  if (await tooMany(portal.clientId)) return { ok: false, error: SLOW_DOWN };
   const approver = cleanName(name);
   if (!approver) return { ok: false, error: "Please enter your name." };
   const videos = (await getPortalVideos(portal.clientId, { shootId })).filter((v) => !v.scriptDecision);
@@ -181,17 +204,18 @@ export async function undoDecision(token: string, approvalId: string): Promise<P
   const portal = await getPortal(token);
   if (!portal) return { ok: false, error: "Not available." };
   const admin = createAdminClient();
-  const { data: a } = await admin.from("approvals").select("id, task_id, kind, created_at, task:tasks(client_id)").eq("id", approvalId).maybeSingle<{
+  const { data: a } = await admin.from("approvals").select("id, task_id, kind, created_at, task:tasks(client_id, phase)").eq("id", approvalId).maybeSingle<{
     id: string;
     task_id: string;
     kind: string;
     created_at: string;
-    task: { client_id: string } | null;
+    task: { client_id: string; phase: number | null } | null;
   }>();
   if (!a || a.task?.client_id !== portal.clientId) return { ok: false, error: "Not found." };
   if (Date.now() - new Date(a.created_at).getTime() > UNDO_WINDOW_MS) return { ok: false, error: "Too late to undo." };
   await admin.from("approvals").delete().eq("id", a.id);
-  if (a.kind === "video") await admin.from("tasks").update({ phase: 3 }).eq("id", a.task_id);
+  // Back to waiting on the client, but never pull a published video back.
+  if (a.kind === "video" && (a.task?.phase ?? 0) < 5) await admin.from("tasks").update({ phase: 3 }).eq("id", a.task_id);
   revalidatePath(`/p/${token}`, "layout");
   return { ok: true };
 }

@@ -15,6 +15,7 @@ import { TaskLink } from "./links";
 import { ReshootBadge, ReturnToIdeas, ShootHistory } from "./Reshoot";
 import { ReviewSection } from "./ReviewSection";
 import { ScriptDecisionBadge } from "./ScriptDecisionBadge";
+import { safeHref } from "@/lib/safe-url";
 
 type Save = (patch: TaskPatch, optimistic?: Partial<Task>) => void;
 
@@ -217,7 +218,7 @@ export function VideoSection({
             />
             {task.reference_url && (
               <a
-                href={task.reference_url.startsWith("http") ? task.reference_url : `https://${task.reference_url}`}
+                href={safeHref(task.reference_url)}
                 target="_blank"
                 rel="noreferrer"
                 className="flex h-[30px] items-center rounded-[5px] bg-chip px-2.5 text-[13px] font-medium"

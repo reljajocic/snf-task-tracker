@@ -9,6 +9,7 @@ import { TIME_ZONE } from "@/lib/config";
 import type { Task } from "@/lib/tasks";
 import { Segmented } from "@/components/ui/Segmented";
 import { ShootBoard } from "./ShootBoard";
+import { safeHref } from "@/lib/safe-url";
 
 // 2d (desktop) / 2e (mobile, on set)
 export default async function ShootPage({ params, searchParams }: PageProps<"/content/shoots/[id]">) {
@@ -51,7 +52,7 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
             ]}
           />
           {day.drive_url && (
-            <a href={day.drive_url} target="_blank" rel="noreferrer" className="flex h-[42px] items-center rounded-[7px] border border-line2 px-3.5 text-[14px] font-medium">
+            <a href={safeHref(day.drive_url)} target="_blank" rel="noreferrer" className="flex h-[42px] items-center rounded-[7px] border border-line2 px-3.5 text-[14px] font-medium">
               {t("shoots.footage")}
             </a>
           )}

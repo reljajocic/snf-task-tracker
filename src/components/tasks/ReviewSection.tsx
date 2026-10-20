@@ -5,6 +5,7 @@ import { useEffect, useState, useTransition } from "react";
 import { addVersion, loadReview, type ReviewState } from "@/app/(app)/task-actions";
 import { formatDate } from "@/lib/dates";
 import type { Task } from "@/lib/tasks";
+import { safeHref } from "@/lib/safe-url";
 
 const DECISION = { approved: "text-[var(--status-done)]", changes: "text-[var(--waiting-ink)]" };
 
@@ -50,7 +51,7 @@ export function ReviewSection({ task, disabled, onChanged }: { task: Task; disab
           {review.versions.map((v) => (
             <div key={v.id} className="flex flex-col gap-1 border-b border-line px-3.5 py-2.5 last:border-b-0">
               <div className="flex items-center justify-between gap-3">
-                <a href={v.url} target="_blank" rel="noreferrer" className="text-[14px] font-medium hover:underline">
+                <a href={safeHref(v.url)} target="_blank" rel="noreferrer" className="text-[14px] font-medium hover:underline">
                   {t("versions.version", { n: v.version })} ↗
                 </a>
                 <span className="text-[12px] text-ink3">{formatDate(v.created_at.slice(0, 10))}</span>

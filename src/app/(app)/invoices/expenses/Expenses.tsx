@@ -10,6 +10,7 @@ import type { Partner } from "@/lib/finance";
 import { money, type Expense } from "@/lib/invoices";
 import { deleteExpense, saveExpense, type ExpenseInput } from "../actions";
 import { ask } from "@/components/ui/Dialog";
+import { safeHref } from "@/lib/safe-url";
 
 type ClientOpt = { id: string; name: string };
 
@@ -118,7 +119,7 @@ export function Expenses({ expenses, clients, partners, today, monthLabels }: { 
                         <span className="truncate text-[13px] text-ink3">
                           {e.supplier}
                           {e.doc_url && (
-                            <a href={e.doc_url} target="_blank" rel="noreferrer" onClick={(ev) => ev.stopPropagation()} className="ml-2 text-rust-ink hover:underline">
+                            <a href={safeHref(e.doc_url)} target="_blank" rel="noreferrer" onClick={(ev) => ev.stopPropagation()} className="ml-2 text-rust-ink hover:underline">
                               {t("doc")}
                             </a>
                           )}

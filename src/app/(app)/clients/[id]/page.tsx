@@ -14,6 +14,7 @@ import { byDue } from "@/lib/tasks";
 import { SOCIAL_LABEL, socialDisplay, socialUrl } from "@/lib/socials";
 import { getInvoiceAccess } from "@/lib/finance";
 import { ClientTeam } from "./ClientTeam";
+import { safeHref } from "@/lib/safe-url";
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink" };
 
@@ -92,7 +93,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
           </Link>
         ))}
         {client.drive_url && (
-          <a href={client.drive_url} target="_blank" rel="noreferrer" className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
+          <a href={safeHref(client.drive_url)} target="_blank" rel="noreferrer" className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
             {t("clients.drive")}
           </a>
         )}

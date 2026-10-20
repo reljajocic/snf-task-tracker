@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { addDays, today } from "@/lib/dates";
 import { notify } from "@/lib/notify";
@@ -9,7 +10,10 @@ import { createAdminClient } from "@/lib/supabase/server";
 // Protected by CRON_SECRET (Authorization: Bearer <secret>).
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+  const given = Buffer.from(request.headers.get("authorization") ?? "");
+  const expected = Buffer.from(`Bearer ${secret ?? ""}`);
+  // Constant-time compare, so the secret can't be guessed byte by byte from response times.
+  if (!secret || given.length !== expected.length || !timingSafeEqual(given, expected)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

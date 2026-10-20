@@ -6,6 +6,7 @@ import { formatDate, weekdayIndex } from "@/lib/dates";
 import { canUndo, getPortal, getPortalVideos, portalStatus, PORTAL_STATUS_COLOR } from "@/lib/portal";
 import { Poster } from "../../bits";
 import { RequestChange, VideoDecision } from "./VideoDecision";
+import { safeHref } from "@/lib/safe-url";
 
 // 7c (desktop) / 7f (mobile): watch a cut and approve it or ask for changes. Any video in the schedule opens here too,
 // to read its script before there is a cut.
@@ -47,7 +48,7 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
               <span className="text-[14px] font-medium text-offwhite">{t("portal.noVideo")}</span>
             </div>
           ) : (
-            <a href={url} target="_blank" rel="noreferrer" className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+            <a href={safeHref(url)} target="_blank" rel="noreferrer" className="absolute inset-0 flex flex-col items-center justify-center gap-3">
               <Poster className="size-[76px] rounded-full text-[24px]" />
               <span className="text-[14px] font-medium text-offwhite">{t("portal.openVideo")}</span>
             </a>
