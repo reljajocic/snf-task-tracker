@@ -147,6 +147,8 @@ export type ExpenseInput = {
   client_id: string | null;
   profile_id: string | null;
   doc_url: string | null;
+  invoice_no: string | null;
+  paid_on: string | null;
 };
 
 export async function saveExpense(input: ExpenseInput) {
@@ -162,6 +164,8 @@ export async function saveExpense(input: ExpenseInput) {
     client_id: input.client_id || null,
     profile_id: input.profile_id || null,
     doc_url: clean(input.doc_url) || null,
+    invoice_no: clean(input.invoice_no) || null,
+    paid_on: input.paid_on && ISO.test(input.paid_on) ? input.paid_on : null,
   };
   const { error } = input.id
     ? await supabase.from("expenses").update(fields).eq("id", input.id)

@@ -104,7 +104,7 @@ export async function getExpenses(): Promise<Expense[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("expenses")
-    .select("id, spent_on, description, amount, supplier, client_id, profile_id, doc_url")
+    .select("id, spent_on, description, amount, supplier, client_id, profile_id, doc_url, invoice_no, paid_on")
     .order("spent_on", { ascending: false })
     .order("created_at", { ascending: false });
   return (data ?? []).map((e) => ({ ...e, amount: num(e.amount) }));

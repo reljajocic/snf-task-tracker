@@ -1051,7 +1051,15 @@
     "cancelTitle": "Stornirati fakturu {number}?",
     "keep": "Ostavi je",
     "expenseWhatMissing": "Za šta je trošak?",
-    "expenseAmountInvalid": "Upiši iznos, npr. 4.720 ili 4720,50."
+    "expenseAmountInvalid": "Upiši iznos, npr. 4.720 ili 4720,50.",
+    "receivedNo": "Broj primljene fakture",
+    "receivedPaidOn": "Plaćeno (prazno = za plaćanje)",
+    "receivedLine": "Faktura {no}",
+    "receivedPaid": "plaćena {date}",
+    "receivedUnpaid": "nije plaćena",
+    "viewAllCosts": "Svi troškovi",
+    "viewReceived": "Primljene fakture",
+    "viewReceivedUnpaid": "Primljene fakture · {n} za plaćanje"
   },
   "admin": {
     "title": "Pregled",

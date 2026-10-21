@@ -1051,7 +1051,15 @@
     "cancelTitle": "Cancel invoice {number}?",
     "keep": "Keep it",
     "expenseWhatMissing": "What was the cost for?",
-    "expenseAmountInvalid": "Enter the amount, e.g. 4.720 or 4720,50."
+    "expenseAmountInvalid": "Enter the amount, e.g. 4.720 or 4720,50.",
+    "receivedNo": "Supplier's invoice no.",
+    "receivedPaidOn": "Paid on (empty = to pay)",
+    "receivedLine": "Invoice {no}",
+    "receivedPaid": "paid {date}",
+    "receivedUnpaid": "not paid yet",
+    "viewAllCosts": "All costs",
+    "viewReceived": "Received invoices",
+    "viewReceivedUnpaid": "Received invoices · {n} to pay"
   },
   "admin": {
     "title": "Overview",

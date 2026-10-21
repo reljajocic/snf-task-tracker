@@ -40,6 +40,10 @@ export type Expense = {
   client_id: string | null;
   profile_id: string | null;
   doc_url: string | null;
+  /** The supplier's invoice number, when the cost came with one (a received invoice). */
+  invoice_no: string | null;
+  /** When we paid it; a received invoice without it is still to pay. */
+  paid_on: string | null;
 };
 
 export const DEFAULT_ITEM = "Održavanje Veb Portala";

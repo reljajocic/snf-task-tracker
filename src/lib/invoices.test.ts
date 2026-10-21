@@ -33,6 +33,8 @@ const exp = (spent_on: string, amount: number, profile_id: string | null = null)
   client_id: null,
   profile_id,
   doc_url: null,
+  invoice_no: null,
+  paid_on: null,
 });
 
 describe("invoices", () => {

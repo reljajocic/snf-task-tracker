@@ -14,7 +14,7 @@ import { safeHref } from "@/lib/safe-url";
 
 type ClientOpt = { id: string; name: string };
 
-const blank = (today: string): ExpenseInput => ({ id: null, spent_on: today, description: "", amount: 0, supplier: "", client_id: null, profile_id: null, doc_url: "" });
+const blank = (today: string): ExpenseInput => ({ id: null, spent_on: today, description: "", amount: 0, supplier: "", client_id: null, profile_id: null, doc_url: "", invoice_no: "", paid_on: null });
 
 /** Costs by month: add one at the top, click a row to change it. */
 export function Expenses({ expenses, clients, partners, today, monthLabels }: { expenses: Expense[]; clients: ClientOpt[]; partners: Partner[]; today: string; monthLabels: Record<string, string> }) {
@@ -26,7 +26,7 @@ export function Expenses({ expenses, clients, partners, today, monthLabels }: { 
   const [pending, start] = useTransition();
 
   const edit = (e: Expense) => {
-    setForm({ ...e, supplier: e.supplier ?? "", doc_url: e.doc_url ?? "" });
+    setForm({ ...e, supplier: e.supplier ?? "", doc_url: e.doc_url ?? "", invoice_no: e.invoice_no ?? "" });
     setAmount(String(e.amount));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -74,7 +74,13 @@ export function Expenses({ expenses, clients, partners, today, monthLabels }: { 
           {partners.map((p) => <option key={p.id} value={p.id}>{t("onlyFor", { name: p.full_name })}</option>)}
         </select>
         <input aria-label={t("docUrl")} placeholder={t("docUrl")} value={form.doc_url ?? ""} onChange={(e) => setForm({ ...form, doc_url: e.target.value })} className={`${inputClass} col-span-2 lg:order-7 lg:col-span-1`} />
-        <div className="col-span-2 flex items-center justify-end gap-3 lg:order-8 lg:col-span-1">
+        {/* A received invoice: the supplier's number, and the day it was paid (empty = still to pay). */}
+        <input aria-label={t("receivedNo")} placeholder={t("receivedNo")} value={form.invoice_no ?? ""} onChange={(e) => setForm({ ...form, invoice_no: e.target.value })} className={`${inputClass} lg:order-8`} />
+        <label className="flex flex-col gap-1 lg:order-9">
+          <span className="text-[12px] text-ink3">{t("receivedPaidOn")}</span>
+          <input type="date" value={form.paid_on ?? ""} onChange={(e) => setForm({ ...form, paid_on: e.target.value || null })} className={inputClass} />
+        </label>
+        <div className="col-span-2 flex items-center justify-end gap-3 lg:order-10 lg:col-span-2">
           {error && <span role="alert" className="mr-auto text-[13px] text-red-ink">{error}</span>}
           {form.id && (
             <>
@@ -120,8 +126,13 @@ export function Expenses({ expenses, clients, partners, today, monthLabels }: { 
                     <span className="hidden text-[14px] tabular-nums text-ink3 lg:block">{formatDate(e.spent_on)}</span>
                     <span className="flex min-w-0 flex-col gap-[3px]">
                       <span className="truncate text-[15px] font-medium">{e.description}</span>
-                      {(e.supplier || e.doc_url) && (
+                      {(e.supplier || e.doc_url || e.invoice_no) && (
                         <span className="truncate text-[13px] text-ink3">
+                          {e.invoice_no && (
+                            <span className={`mr-2 font-medium ${e.paid_on ? "text-ink2" : "text-red-ink"}`}>
+                              {t("receivedLine", { no: e.invoice_no })} · {e.paid_on ? t("receivedPaid", { date: formatDate(e.paid_on) }) : t("receivedUnpaid")}
+                            </span>
+                          )}
                           {e.supplier}
                           {e.doc_url && (
                             <a href={safeHref(e.doc_url)} target="_blank" rel="noreferrer" onClick={(ev) => ev.stopPropagation()} className="ml-2 text-rust-ink hover:underline">
