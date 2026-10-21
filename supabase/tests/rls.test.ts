@@ -658,3 +658,18 @@ describe("deadlines", () => {
     expect(await as(ADMIN, "update public.tasks set publish_date = null where id = $1 returning due_date::text", [id])).toEqual([{ due_date: "2026-10-21" }]);
   });
 });
+
+describe("subscriptions", () => {
+  const PARTNER = "00000000-0000-0000-0000-0000000000a1";
+
+  it("partners keep them; each month becomes a cost on its day, once; nobody else sees them", async () => {
+    await as(PARTNER, "insert into public.subscriptions (name, amount, day_of_month, starts_on) values ('Higgsfield', 6000, 31, '2026-01-15')");
+    expect(await as(PARTNER, "select public.post_subscriptions('2026-03-10') as n")).toEqual([{ n: 2 }]); // Jan 31, Feb 28
+    expect(await as(PARTNER, "select public.post_subscriptions('2026-03-31') as n")).toEqual([{ n: 1 }]); // Mar 31, nothing doubled
+    expect(
+      (await as<{ d: string }>(PARTNER, "select spent_on::text as d from public.expenses where description = 'Higgsfield' order by 1")).map((r) => r.d),
+    ).toEqual(["2026-01-31", "2026-02-28", "2026-03-31"]);
+    expect(await as(MEMBER, "select name from public.subscriptions")).toEqual([]);
+    await expect(as(MEMBER, "select public.post_subscriptions('2026-04-30')")).rejects.toThrow(/Only a partner/);
+  });
+});

@@ -10,30 +10,11 @@ import { Button, buttonClass } from "@/components/ui/Button";
 import { DEFAULT_ITEM, invoiceNumber, money, parseAmount, presetShares, totalRsd, type Buyer, type Currency, type Invoice, type InvoiceItem, type Issuer } from "@/lib/invoices";
 import type { Partner } from "@/lib/finance";
 import { cancelInvoice, deleteDraft, eurRate, saveInvoice, type BuyerInput } from "./actions";
+import { Field, Section } from "./form-bits";
 import { ask } from "@/components/ui/Dialog";
 
 type ClientOpt = { id: string; name: string };
 type Preset = "even" | "custom" | "none" | string; // string = one partner's id
-
-function Field({ label, children, wide, hint }: { label: string; children: React.ReactNode; wide?: boolean; hint?: string }) {
-  return (
-    <label className={`flex min-w-0 flex-col gap-2 ${wide ? "sm:col-span-2" : ""}`}>
-      <span className="text-[13px] font-medium text-ink3">{label}</span>
-      {children}
-      {hint && <span className="text-[12px] text-ink3">{hint}</span>}
-    </label>
-  );
-}
-
-const Section = ({ title, children, aside }: { title: string; children: React.ReactNode; aside?: React.ReactNode }) => (
-  <section className="flex flex-col gap-4 border-t border-line pt-5">
-    <div className="flex items-center justify-between gap-3">
-      <h2 className="display text-[18px] leading-[1.1]">{title}</h2>
-      {aside}
-    </div>
-    {children}
-  </section>
-);
 
 const emptyBuyer = (clientId: string | null): BuyerInput => ({ id: null, name: "", address: "", pib: "", mb: "", client_id: clientId });
 
@@ -136,7 +117,9 @@ export function InvoiceForm({
         issue,
       });
       if (res.error) return setError(res.error);
+      // Saved: an issued invoice goes back to its page; a draft stays open to keep writing.
       if (!invoice && res.id) router.replace(`/invoices/${res.id}`);
+      else if (invoice && (issue || invoice.status !== "draft")) router.push(`/invoices/${invoice.id}`);
       else router.refresh();
     });
   };
@@ -145,7 +128,9 @@ export function InvoiceForm({
 
   return (
     <div className="flex max-w-[860px] flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
-      <Link href="/invoices" className="text-[14px] font-medium text-ink3 hover:text-ink">‹ {t("title")}</Link>
+      <Link href={invoice && !isDraft ? `/invoices/${invoice.id}` : "/invoices"} className="text-[14px] font-medium text-ink3 hover:text-ink">
+        ‹ {invoice && !isDraft ? t("numbered", { number: number ?? "" }) : t("title")}
+      </Link>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h1 className="display text-[30px] lg:text-[40px]">{number ? t("numbered", { number }) : invoice ? t("draftTitle") : t("newTitle")}</h1>
         {invoice && !isDraft && (

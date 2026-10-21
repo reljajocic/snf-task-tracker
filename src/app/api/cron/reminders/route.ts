@@ -38,5 +38,7 @@ export async function GET(request: NextRequest) {
     });
     sent++;
   }
-  return NextResponse.json({ ok: true, tasks: sent });
+  // Subscriptions due today (or missed on a day the cron didn't run) become costs.
+  const { data: posted } = await admin.rpc("post_subscriptions", {});
+  return NextResponse.json({ ok: true, tasks: sent, subscriptionCosts: posted ?? 0 });
 }

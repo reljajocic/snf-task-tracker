@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { requireProfile } from "@/lib/auth";
-import type { Buyer, Expense, Invoice, Issuer, Share } from "@/lib/invoices";
+import type { Buyer, Expense, Invoice, Issuer, Share, Subscription } from "@/lib/invoices";
 import { createClient } from "@/lib/supabase/server";
 
 // Loads invoices and the money around them through RLS: partners and admins get everything,
@@ -64,6 +64,15 @@ export async function getSignature(issuerId: string): Promise<string | null> {
   return data?.image ?? null;
 }
 
+/** An invoice with the issuer and buyer as printed on it (the snapshot wins over today's details) and the signature. */
+export async function getInvoiceDocument(id: string) {
+  const [invoice, issuers, buyers] = await Promise.all([getInvoice(id), getIssuers(), getBuyers()]);
+  if (!invoice) return null;
+  const issuer = { ...issuers.find((i) => i.id === invoice.issuer_id), ...invoice.issuer_snapshot };
+  const buyer = { ...buyers.find((b) => b.id === invoice.buyer_id), ...invoice.buyer_snapshot };
+  return { invoice, issuer, buyer, signature: await getSignature(invoice.issuer_id) };
+}
+
 export type Partner = { id: string; full_name: string; initials: string; avatar_bg: string; avatar_fg: string; avatar_url: string | null };
 
 /** People who share the earnings (RLS: anyone may read profiles). */
@@ -100,11 +109,29 @@ export async function getShares(invoiceId?: string): Promise<Share[]> {
   return (data ?? []).map((s) => ({ ...s, amount: num(s.amount) }));
 }
 
+const EXPENSE_COLUMNS = "id, spent_on, description, amount, supplier, client_id, profile_id, doc_url, invoice_no, paid_on, subscription_id";
+
+export async function getExpense(id: string): Promise<Expense | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("expenses").select(EXPENSE_COLUMNS).eq("id", id).maybeSingle();
+  return data ? { ...data, amount: num(data.amount) } : null;
+}
+
+export async function getSubscriptions(): Promise<Subscription[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("subscriptions")
+    .select("id, name, amount, supplier, client_id, profile_id, day_of_month, starts_on, ends_on")
+    .order("ends_on", { nullsFirst: true })
+    .order("name");
+  return (data ?? []).map((s) => ({ ...s, amount: num(s.amount) }));
+}
+
 export async function getExpenses(): Promise<Expense[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("expenses")
-    .select("id, spent_on, description, amount, supplier, client_id, profile_id, doc_url, invoice_no, paid_on")
+    .select(EXPENSE_COLUMNS)
     .order("spent_on", { ascending: false })
     .order("created_at", { ascending: false });
   return (data ?? []).map((e) => ({ ...e, amount: num(e.amount) }));

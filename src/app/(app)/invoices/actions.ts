@@ -167,16 +167,61 @@ export async function saveExpense(input: ExpenseInput) {
     invoice_no: clean(input.invoice_no) || null,
     paid_on: input.paid_on && ISO.test(input.paid_on) ? input.paid_on : null,
   };
-  const { error } = input.id
-    ? await supabase.from("expenses").update(fields).eq("id", input.id)
-    : await supabase.from("expenses").insert({ ...fields, created_by: me.id });
+  const { data, error } = input.id
+    ? await supabase.from("expenses").update(fields).eq("id", input.id).select("id").single()
+    : await supabase.from("expenses").insert({ ...fields, created_by: me.id }).select("id").single();
   done();
-  return { error: error?.message ?? null };
+  return { error: error?.message ?? null, id: data?.id };
 }
 
 export async function deleteExpense(id: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("expenses").delete().eq("id", id);
+  done();
+  return { error: error?.message ?? null };
+}
+
+export type SubscriptionInput = {
+  id: string | null;
+  name: string;
+  amount: number;
+  supplier: string | null;
+  client_id: string | null;
+  profile_id: string | null;
+  day_of_month: number;
+  starts_on: string;
+  ends_on: string | null;
+};
+
+/** Saves a subscription and posts whatever months are due up to today (so a new one shows in the costs at once). */
+export async function saveSubscription(input: SubscriptionInput): Promise<{ error: string | null; id?: string }> {
+  const me = await requireProfile();
+  const supabase = await createClient();
+  if (!clean(input.name)) return { error: "What is it?" };
+  if (!(Number(input.amount) > 0)) return { error: "Amount?" };
+  const fields = {
+    name: clean(input.name),
+    amount: Math.round(Number(input.amount) * 100) / 100,
+    supplier: clean(input.supplier) || null,
+    client_id: input.client_id || null,
+    profile_id: input.profile_id || null,
+    day_of_month: Math.min(31, Math.max(1, Math.round(Number(input.day_of_month) || 1))),
+    starts_on: ISO.test(input.starts_on) ? input.starts_on : new Date().toISOString().slice(0, 10),
+    ends_on: input.ends_on && ISO.test(input.ends_on) ? input.ends_on : null,
+  };
+  const { data, error } = input.id
+    ? await supabase.from("subscriptions").update(fields).eq("id", input.id).select("id").single()
+    : await supabase.from("subscriptions").insert({ ...fields, created_by: me.id }).select("id").single();
+  if (error) return { error: error.message };
+  await supabase.rpc("post_subscriptions", {});
+  done();
+  return { error: null, id: data.id };
+}
+
+/** Stops a subscription from today: nothing more gets posted; what was posted stays. */
+export async function endSubscription(id: string, today: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from("subscriptions").update({ ends_on: today }).eq("id", id);
   done();
   return { error: error?.message ?? null };
 }

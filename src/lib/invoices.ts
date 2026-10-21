@@ -44,6 +44,21 @@ export type Expense = {
   invoice_no: string | null;
   /** When we paid it; a received invoice without it is still to pay. */
   paid_on: string | null;
+  /** Posted by a subscription (one per month), or null for a one-off cost. */
+  subscription_id?: string | null;
+};
+
+/** A cost that comes back every month; each month it's posted as an ordinary cost on its day. */
+export type Subscription = {
+  id: string;
+  name: string;
+  amount: number;
+  supplier: string | null;
+  client_id: string | null;
+  profile_id: string | null;
+  day_of_month: number;
+  starts_on: string;
+  ends_on: string | null;
 };
 
 export const DEFAULT_ITEM = "Održavanje Veb Portala";
