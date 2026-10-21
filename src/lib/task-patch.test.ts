@@ -49,10 +49,10 @@ const video = (over: Record<string, unknown> = {}) => ({
 });
 
 describe("hand-off to the editor", () => {
-  it("makes the client's editor the video's one editor, with a deadline the day before posting", async () => {
+  it("makes the client's editor the video's one editor, with a deadline two days before posting", async () => {
     const { db, writes } = fakeDb({ tasks: [video()] });
     await handOffToEditor(db, "v1", "2026-10-20", "me");
-    expect(writes.filter((w) => w.table === "tasks").map((w) => w.rows)).toEqual([{ due_date: "2026-10-19" }, { editor_id: NATASA }]);
+    expect(writes.filter((w) => w.table === "tasks").map((w) => w.rows)).toEqual([{ due_date: "2026-10-18" }, { editor_id: NATASA }]);
     expect(writes.some((w) => w.table === "task_assignees")).toBe(false);
   });
 
@@ -65,6 +65,6 @@ describe("hand-off to the editor", () => {
   it("leaves it without an editor when the client has no rule for it", async () => {
     const { db, writes } = fakeDb({ tasks: [video({ client: { default_editor_id: null, editor_rules: [{ editor_id: UROS, days: [], types: ["POST"] }] } })] });
     await handOffToEditor(db, "v1", "2026-10-20", "me");
-    expect(writes.map((w) => w.rows)).toEqual([{ due_date: "2026-10-19" }]);
+    expect(writes.map((w) => w.rows)).toEqual([{ due_date: "2026-10-18" }]);
   });
 });

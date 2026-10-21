@@ -349,7 +349,7 @@
     "socialRemove": "Remove profile",
     "socialAdd": "+ Add profile",
     "editorRules": "Editors by posting day and type",
-    "editorRulesHint": "When a video gets a posting date, the editor whose day matches gets the edit task (deadline: the day before). If no day matches, the content type decides.",
+    "editorRulesHint": "When a video gets a posting date, the editor whose day matches gets the edit task (deadline: two days before). If no day matches, the content type decides.",
     "editorRuleTypes": "Types, e.g. INFO, FUN",
     "editorRuleAdd": "+ Add editor",
     "editorRuleRemove": "Remove editor",

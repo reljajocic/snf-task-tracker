@@ -349,7 +349,7 @@
     "socialRemove": "Ukloni profil",
     "socialAdd": "+ Dodaj profil",
     "editorRules": "Editori po danu objave i tipu",
-    "editorRulesHint": "Kad video dobije datum objave, zadatak montaže dobija editor čiji je to dan (rok: dan ranije). Ako se nijedan dan ne poklapa, odlučuje tip sadržaja.",
+    "editorRulesHint": "Kad video dobije datum objave, zadatak montaže dobija editor čiji je to dan (rok: dva dana ranije). Ako se nijedan dan ne poklapa, odlučuje tip sadržaja.",
     "editorRuleTypes": "Tipovi, npr. INFO, FUN",
     "editorRuleAdd": "+ Dodaj editora",
     "editorRuleRemove": "Ukloni editora",

@@ -89,9 +89,12 @@ export function clean(patch: TaskPatch): TaskPatch {
 
 /**
  * A video got a posting date: unless someone already edits it, the client's editor for that day/type
- * (see editor-rules) becomes its editor (and gets it in their tasks), with a deadline the day before
- * posting unless one is set. Also run when a dated video is marked shot.
+ * (see editor-rules) becomes its editor (and gets it in their tasks), with a deadline two days before
+ * posting unless one is set (a day to look it over and fix it before it goes out). Also run when a dated video is marked shot.
  */
+/** How many days before posting an edit is due. */
+export const EDIT_LEAD_DAYS = 2;
+
 export async function handOffToEditor(supabase: SupabaseClient<Database>, taskId: string, publishDate: string, actorId: string) {
   const { data: task } = await supabase
     .from("tasks")
@@ -105,7 +108,7 @@ export async function handOffToEditor(supabase: SupabaseClient<Database>, taskId
       client: { default_editor_id: string | null; editor_rules: unknown } | null;
     }>();
   if (!task || task.kind !== "video") return;
-  if (!task.due_date) await supabase.from("tasks").update({ due_date: addDays(publishDate, -1) }).eq("id", taskId);
+  if (!task.due_date) await supabase.from("tasks").update({ due_date: addDays(publishDate, -EDIT_LEAD_DAYS) }).eq("id", taskId);
   if (task.editor_id) return;
   const editor =
     task.client && pickEditor(parseEditorRules(task.client.editor_rules), task.client.default_editor_id, publishDate, task.content_type);
