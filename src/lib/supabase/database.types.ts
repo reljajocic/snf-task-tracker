@@ -372,6 +372,7 @@ export type Database = {
           paid_on: string | null
           profile_id: string | null
           spent_on: string
+          subscription_id: string | null
           supplier: string | null
         }
         Insert: {
@@ -386,6 +387,7 @@ export type Database = {
           paid_on?: string | null
           profile_id?: string | null
           spent_on?: string
+          subscription_id?: string | null
           supplier?: string | null
         }
         Update: {
@@ -400,6 +402,7 @@ export type Database = {
           paid_on?: string | null
           profile_id?: string | null
           spent_on?: string
+          subscription_id?: string | null
           supplier?: string | null
         }
         Relationships: [
@@ -422,6 +425,13 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
             referencedColumns: ["id"]
           },
         ]
@@ -1053,6 +1063,70 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          amount: number
+          client_id: string | null
+          created_at: string
+          created_by: string | null
+          day_of_month: number
+          ends_on: string | null
+          id: string
+          name: string
+          profile_id: string | null
+          starts_on: string
+          supplier: string | null
+        }
+        Insert: {
+          amount: number
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          day_of_month?: number
+          ends_on?: string | null
+          id?: string
+          name: string
+          profile_id?: string | null
+          starts_on?: string
+          supplier?: string | null
+        }
+        Update: {
+          amount?: number
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          day_of_month?: number
+          ends_on?: string | null
+          id?: string
+          name?: string
+          profile_id?: string | null
+          starts_on?: string
+          supplier?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_assignees: {
         Row: {
           created_at: string
@@ -1440,6 +1514,7 @@ export type Database = {
         Args: { new_status: string; tid: string }
         Returns: undefined
       }
+      post_subscriptions: { Args: { upto?: string }; Returns: number }
       return_to_ideas: { Args: { tid: string; why: string }; Returns: string }
       set_sees_invoices: {
         Args: { cid: string; sees: boolean; uid: string }
