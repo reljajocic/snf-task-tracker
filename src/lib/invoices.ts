@@ -186,6 +186,21 @@ export const INVOICE_TEXT = {
   rate: (date: string) => `*Srednji kurs za ${date} je`, // followed by the rate, in bold
 } as const;
 
+/**
+ * An amount as people type it here: "4720", "4.720", "4.720,50", "4720,5", "17604.38", "4 720". A dot followed by
+ * groups of exactly three digits is a thousands separator (Serbian style); a comma is the decimal point, unless a
+ * dot comes after it ("4,720.50"). NaN when it isn't a number.
+ */
+export function parseAmount(raw: string): number {
+  let s = raw.replace(/[\s\u00a0']/g, "");
+  if (!s) return NaN;
+  const dot = s.lastIndexOf("."), comma = s.lastIndexOf(",");
+  if (dot >= 0 && comma >= 0) s = dot > comma ? s.replace(/,/g, "") : s.replace(/\./g, "").replace(",", ".");
+  else if (comma >= 0) s = s.replace(",", ".");
+  else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+  return /^\d+(\.\d+)?$/.test(s) ? Number(s) : NaN;
+}
+
 /** File name for the saved PDF: 2026-031 Semaco */
 export function invoiceFileName(inv: Pick<Invoice, "year" | "seq">, buyerName: string): string {
   const n = invoiceNumber(inv)?.replace("/", "-") ?? "nacrt";

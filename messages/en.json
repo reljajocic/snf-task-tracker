@@ -1049,7 +1049,9 @@
     "addPerson": "Add a person…",
     "issueTitle": "Issue the invoice?",
     "cancelTitle": "Cancel invoice {number}?",
-    "keep": "Keep it"
+    "keep": "Keep it",
+    "expenseWhatMissing": "What was the cost for?",
+    "expenseAmountInvalid": "Enter the amount, e.g. 4.720 or 4720,50."
   },
   "admin": {
     "title": "Overview",

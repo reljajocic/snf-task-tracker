@@ -7,7 +7,7 @@ import { inputClass, selectClass } from "@/components/tasks/fields";
 import { Button } from "@/components/ui/Button";
 import { formatDate } from "@/lib/dates";
 import type { Partner } from "@/lib/finance";
-import { money, type Expense } from "@/lib/invoices";
+import { money, parseAmount, type Expense } from "@/lib/invoices";
 import { deleteExpense, saveExpense, type ExpenseInput } from "../actions";
 import { ask } from "@/components/ui/Dialog";
 import { safeHref } from "@/lib/safe-url";
@@ -35,13 +35,18 @@ export function Expenses({ expenses, clients, partners, today, monthLabels }: { 
     setAmount("");
     setError(null);
   };
-  const submit = () =>
+  const submit = () => {
+    // Checked here so the message is in the app's language (and "4.720,50" reads as it's meant).
+    const value = parseAmount(amount);
+    if (!form.description.trim()) return setError(t("expenseWhatMissing"));
+    if (!(value > 0)) return setError(t("expenseAmountInvalid"));
     start(async () => {
-      const res = await saveExpense({ ...form, amount: Number(amount.replace(",", ".")) });
+      const res = await saveExpense({ ...form, amount: value });
       if (res.error) return setError(res.error);
       reset();
       router.refresh();
     });
+  };
 
   const months = [...new Set(expenses.map((e) => e.spent_on.slice(0, 7)))];
   const clientName = new Map(clients.map((c) => [c.id, c.name]));

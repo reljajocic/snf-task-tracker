@@ -1049,7 +1049,9 @@
     "addPerson": "Dodaj osobu…",
     "issueTitle": "Izdati fakturu?",
     "cancelTitle": "Stornirati fakturu {number}?",
-    "keep": "Ostavi je"
+    "keep": "Ostavi je",
+    "expenseWhatMissing": "Za šta je trošak?",
+    "expenseAmountInvalid": "Upiši iznos, npr. 4.720 ili 4720,50."
   },
   "admin": {
     "title": "Pregled",

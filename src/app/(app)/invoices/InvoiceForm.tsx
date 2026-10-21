@@ -7,7 +7,7 @@ import { useMemo, useState, useTransition } from "react";
 import { inputClass, selectClass } from "@/components/tasks/fields";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button, buttonClass } from "@/components/ui/Button";
-import { DEFAULT_ITEM, invoiceNumber, money, presetShares, totalRsd, type Buyer, type Currency, type Invoice, type InvoiceItem, type Issuer } from "@/lib/invoices";
+import { DEFAULT_ITEM, invoiceNumber, money, parseAmount, presetShares, totalRsd, type Buyer, type Currency, type Invoice, type InvoiceItem, type Issuer } from "@/lib/invoices";
 import type { Partner } from "@/lib/finance";
 import { cancelInvoice, deleteDraft, eurRate, saveInvoice, type BuyerInput } from "./actions";
 import { ask } from "@/components/ui/Dialog";
@@ -94,7 +94,7 @@ export function InvoiceForm({
     const next = preset === "none" ? {} : presetShares(total, partners.map((p) => p.id), preset);
     return Object.fromEntries(sharers.map((p) => [p.id, next[p.id] ? String(next[p.id]) : ""]));
   }, [preset, split, total, partners, sharers]);
-  const shareSum = Object.values(shownSplit).reduce((s, v) => s + (Number(v) || 0), 0);
+  const shareSum = Object.values(shownSplit).reduce((s, v) => s + (parseAmount(v) || 0), 0);
 
   // Euro invoices quote the NBS middle rate of the invoice date.
   const loadRate = (date: string) => {
@@ -132,7 +132,7 @@ export function InvoiceForm({
         note,
         paid_on: paidOn || null,
         pdf_url: pdfUrl,
-        shares: finance ? Object.fromEntries(Object.entries(shownSplit).map(([k, v]) => [k, Number(v) || 0])) : null,
+        shares: finance ? Object.fromEntries(Object.entries(shownSplit).map(([k, v]) => [k, parseAmount(v) || 0])) : null,
         issue,
       });
       if (res.error) return setError(res.error);
@@ -297,7 +297,7 @@ export function InvoiceForm({
                   placeholder="0"
                   onChange={(e) => {
                     setPreset("custom");
-                    setSplit({ ...shownSplit, [p.id]: e.target.value.replace(",", ".") });
+                    setSplit({ ...shownSplit, [p.id]: e.target.value });
                   }}
                   className={`${inputClass} w-40 text-right`}
                 />

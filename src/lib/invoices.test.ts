@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { invoiceNumber, monthlyEarnings, money, payState, presetShares, totalRsd, type Expense, type Invoice } from "./invoices";
+import { invoiceNumber, monthlyEarnings, money, parseAmount, payState, presetShares, totalRsd, type Expense, type Invoice } from "./invoices";
 
 const R = "relja";
 const M = "marko";
@@ -90,5 +90,19 @@ describe("invoices", () => {
   it("even split keeps every dinar", () => {
     expect(presetShares(140891.77, [R, M], "even")).toEqual({ [R]: 70445.89, [M]: 70445.88 });
     expect(presetShares(100, [R, M], M)).toEqual({ [R]: 0, [M]: 100 });
+  });
+
+  it("reads amounts the way people type them", () => {
+    expect(parseAmount("4720")).toBe(4720);
+    expect(parseAmount("4.720")).toBe(4720);
+    expect(parseAmount("4.720,50")).toBe(4720.5);
+    expect(parseAmount("4720,5")).toBe(4720.5);
+    expect(parseAmount("17604.38")).toBe(17604.38);
+    expect(parseAmount("1.234.567")).toBe(1234567);
+    expect(parseAmount("4 720")).toBe(4720);
+    expect(parseAmount("4,720.50")).toBe(4720.5);
+    expect(parseAmount("")).toBeNaN();
+    expect(parseAmount("abc")).toBeNaN();
+    expect(parseAmount("-5")).toBeNaN();
   });
 });
