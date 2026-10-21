@@ -643,3 +643,18 @@ describe("people", () => {
     expect(await names("00000000-0000-0000-0000-0000000000a1")).toEqual(expect.arrayContaining(["Friend", "Marko"]));
   });
 });
+
+describe("deadlines", () => {
+  it("a video's deadline moves with its posting date, unless the deadline is set in the same change", async () => {
+    const [{ id }] = await as<{ id: string }>(
+      ADMIN,
+      "insert into public.tasks (title, kind, client_id, publish_date, due_date) values ('Moves', 'video', $1, '2026-10-20', '2026-10-18') returning id",
+      [C1],
+    );
+    expect(await as(ADMIN, "update public.tasks set publish_date = '2026-10-22' where id = $1 returning due_date::text", [id])).toEqual([{ due_date: "2026-10-20" }]);
+    expect(await as(ADMIN, "update public.tasks set publish_date = '2026-10-25', due_date = '2026-10-21' where id = $1 returning due_date::text", [id])).toEqual([
+      { due_date: "2026-10-21" },
+    ]);
+    expect(await as(ADMIN, "update public.tasks set publish_date = null where id = $1 returning due_date::text", [id])).toEqual([{ due_date: "2026-10-21" }]);
+  });
+});
