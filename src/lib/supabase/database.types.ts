@@ -368,6 +368,8 @@ export type Database = {
           description: string
           doc_url: string | null
           id: string
+          invoice_no: string | null
+          paid_on: string | null
           profile_id: string | null
           spent_on: string
           supplier: string | null
@@ -380,6 +382,8 @@ export type Database = {
           description: string
           doc_url?: string | null
           id?: string
+          invoice_no?: string | null
+          paid_on?: string | null
           profile_id?: string | null
           spent_on?: string
           supplier?: string | null
@@ -392,6 +396,8 @@ export type Database = {
           description?: string
           doc_url?: string | null
           id?: string
+          invoice_no?: string | null
+          paid_on?: string | null
           profile_id?: string | null
           spent_on?: string
           supplier?: string | null
