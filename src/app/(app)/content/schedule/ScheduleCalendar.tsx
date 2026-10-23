@@ -80,7 +80,7 @@ export function ScheduleCalendar({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 lg:grid-cols-[minmax(0,1fr)_260px] lg:px-10 lg:pb-10">
+    <div className="grid grid-cols-1 gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_260px] lg:px-10 lg:pb-6">
       <div className="flex flex-col">
         <div className="grid grid-cols-[28px_repeat(7,minmax(0,1fr))] pb-2 text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-ink3">
           <span />
@@ -88,7 +88,8 @@ export function ScheduleCalendar({
             <span key={d} className="pl-2">{t("weekday.short", { day: String(d) })}</span>
           ))}
         </div>
-        <div className="grid grid-cols-[28px_repeat(7,minmax(0,1fr))] border-l border-t border-line">
+        {/* Desktop: the month fills the screen like the Calendar page; a busy week grows the page instead of squeezing. */}
+        <div className="grid grid-cols-[28px_repeat(7,minmax(0,1fr))] border-l border-t border-line lg:flex-1 lg:auto-rows-[minmax(120px,auto)]">
           {cells.map((d, i) => {
             const inMonth = d.slice(0, 7) === month.slice(0, 7);
             const list = on(d);
@@ -108,8 +109,9 @@ export function ScheduleCalendar({
                   onDragLeave={() => setOver((o) => (o === d ? null : o))}
                   onDrop={drop(d)}
                   onClick={() => setPicked(d)}
-                  className={`flex min-h-[64px] flex-col gap-1 border-b border-r border-line p-1.5 lg:min-h-[120px] ${
+                  className={`flex min-h-[64px] flex-col gap-1 border-b border-r border-line p-1.5 ${
                     over === d ? "bg-rust-bg" : isPostingDay && inMonth ? "bg-chip" : ""
+                  } ${inMonth ? "" : "[&>*]:opacity-50"
                   } ${picked === d ? "max-lg:ring-1 max-lg:ring-inset max-lg:ring-ink2" : ""}`}
                 >
                   <span
