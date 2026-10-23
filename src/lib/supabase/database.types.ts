@@ -436,6 +436,103 @@ export type Database = {
           },
         ]
       }
+      instagram_accounts: {
+        Row: {
+          client_id: string
+          connected_at: string
+          connected_by: string | null
+          ig_user_id: string
+          sync_error: string | null
+          synced_at: string | null
+          username: string | null
+        }
+        Insert: {
+          client_id: string
+          connected_at?: string
+          connected_by?: string | null
+          ig_user_id: string
+          sync_error?: string | null
+          synced_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          client_id?: string
+          connected_at?: string
+          connected_by?: string | null
+          ig_user_id?: string
+          sync_error?: string | null
+          synced_at?: string | null
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instagram_accounts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "instagram_accounts_connected_by_fkey"
+            columns: ["connected_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      instagram_followers: {
+        Row: {
+          client_id: string
+          day: string
+          followers: number
+        }
+        Insert: {
+          client_id: string
+          day: string
+          followers: number
+        }
+        Update: {
+          client_id?: string
+          day?: string
+          followers?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instagram_followers_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      instagram_tokens: {
+        Row: {
+          access_token: string
+          client_id: string
+          expires_at: string | null
+        }
+        Insert: {
+          access_token: string
+          client_id: string
+          expires_at?: string | null
+        }
+        Update: {
+          access_token?: string
+          client_id?: string
+          expires_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "instagram_tokens_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "instagram_accounts"
+            referencedColumns: ["client_id"]
+          },
+        ]
+      }
       invoice_buyers: {
         Row: {
           address: string
@@ -873,6 +970,50 @@ export type Database = {
             columns: ["published_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_metrics: {
+        Row: {
+          comments: number | null
+          fetched_at: string
+          likes: number | null
+          media_id: string
+          reach: number | null
+          saved: number | null
+          shares: number | null
+          task_id: string
+          views: number | null
+        }
+        Insert: {
+          comments?: number | null
+          fetched_at?: string
+          likes?: number | null
+          media_id: string
+          reach?: number | null
+          saved?: number | null
+          shares?: number | null
+          task_id: string
+          views?: number | null
+        }
+        Update: {
+          comments?: number | null
+          fetched_at?: string
+          likes?: number | null
+          media_id?: string
+          reach?: number | null
+          saved?: number | null
+          shares?: number | null
+          task_id?: string
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_metrics_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: true
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
         ]
