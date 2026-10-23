@@ -519,7 +519,9 @@
       "idea": "Idea",
       "shot": "Already filmed",
       "published": "Already published"
-    }
+    },
+    "postUrl": "Link to the post",
+    "postUrlPlaceholder": "instagram.com/p/… or tiktok.com/…"
   },
   "schedule": {
     "title": "Posting schedule",
@@ -1130,5 +1132,37 @@
       "created": "New",
       "done": "Done"
     }
+  },
+  "report": {
+    "title": "Monthly report",
+    "teamLead": "What the client will see in the portal for this month. Write them a few words, check the numbers and publish; they get an email.",
+    "forClient": "A word for the client",
+    "summaryPlaceholder": "How the month went, what worked, what's next…",
+    "publishedOn": "Published {date}",
+    "notPublished": "Not published — the client doesn't see this month",
+    "saveSummary": "Save",
+    "saved": "Saved",
+    "publish": "Publish to the client",
+    "publishConfirm": "Publish this report to the client?",
+    "publishBody": "It shows in their portal and the people who approve get an email.",
+    "unpublish": "Take it down",
+    "unpublishConfirm": "Take this report down from the portal?",
+    "inNumbers": "The month in numbers",
+    "published": "posts went out",
+    "ofPlanned": "of {n} planned",
+    "onTime": "on time",
+    "percent": "{n}%",
+    "shootDays": "shoot days",
+    "videosShot": "{n} videos filmed",
+    "cutsSent": "cuts sent for review",
+    "approved": "cuts approved",
+    "avgApproval": "approved in {n} days on average",
+    "byType": "By type",
+    "byProfile": "By profile",
+    "posts": "Posts",
+    "viewPost": "View post",
+    "noPosts": "Nothing posted this month.",
+    "other": "Other",
+    "noneYet": "No reports yet. Your monthly report will appear here once it's ready."
   }
 }

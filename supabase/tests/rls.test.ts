@@ -673,3 +673,13 @@ describe("subscriptions", () => {
     await expect(as(MEMBER, "select public.post_subscriptions('2026-04-30')")).rejects.toThrow(/Only a partner/);
   });
 });
+
+describe("portal reports", () => {
+  it("the client's managers publish a month's report; its team reads it; nobody else", async () => {
+    await as(MANAGER, "insert into public.portal_reports (client_id, month, summary, published_at) values ($1, '2026-10', 'Dobar mesec.', now())", [C1]);
+    expect(await as(MEMBER, "select summary from public.portal_reports where client_id = $1", [C1])).toEqual([{ summary: "Dobar mesec." }]);
+    await expect(as(MEMBER, "update public.portal_reports set summary = 'x' where client_id = $1 returning 1", [C1])).resolves.toEqual([]);
+    expect(await as(OUTSIDER, "select summary from public.portal_reports")).toEqual([]);
+    await expect(as(MANAGER, "update public.tasks set post_url = 'javascript:alert(1)' where client_id = $1", [C1])).rejects.toThrow(/check constraint/);
+  });
+});

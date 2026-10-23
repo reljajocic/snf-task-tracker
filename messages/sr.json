@@ -519,7 +519,9 @@
       "idea": "Ideja",
       "shot": "Već snimljeno",
       "published": "Već objavljeno"
-    }
+    },
+    "postUrl": "Link objave",
+    "postUrlPlaceholder": "instagram.com/p/… ili tiktok.com/…"
   },
   "schedule": {
     "title": "Raspored objava",
@@ -1130,5 +1132,37 @@
       "created": "Novo",
       "done": "Završeno"
     }
+  },
+  "report": {
+    "title": "Mesečni izveštaj",
+    "teamLead": "Ovo klijent vidi u portalu za ovaj mesec. Napišite mu par reči, proverite brojke i objavite; dobiće mejl.",
+    "forClient": "Reč za klijenta",
+    "summaryPlaceholder": "Kako je prošao mesec, šta je dobro radilo, šta sledi…",
+    "publishedOn": "Objavljeno {date}",
+    "notPublished": "Nije objavljeno — klijent ne vidi ovaj mesec",
+    "saveSummary": "Sačuvaj",
+    "saved": "Sačuvano",
+    "publish": "Objavi klijentu",
+    "publishConfirm": "Objaviti izveštaj klijentu?",
+    "publishBody": "Pojaviće se u portalu, a osobe koje odobravaju dobiće mejl.",
+    "unpublish": "Skini iz portala",
+    "unpublishConfirm": "Skinuti ovaj izveštaj iz portala?",
+    "inNumbers": "Mesec u brojevima",
+    "published": "objava je izašlo",
+    "ofPlanned": "od {n} planiranih",
+    "onTime": "na vreme",
+    "percent": "{n}%",
+    "shootDays": "dana snimanja",
+    "videosShot": "snimljeno {n} videa",
+    "cutsSent": "montaža poslato na pregled",
+    "approved": "montaža odobreno",
+    "avgApproval": "odobreno za {n} dana u proseku",
+    "byType": "Po tipu",
+    "byProfile": "Po profilu",
+    "posts": "Objave",
+    "viewPost": "Pogledaj objavu",
+    "noPosts": "Ovog meseca nije bilo objava.",
+    "other": "Ostalo",
+    "noneYet": "Još nema izveštaja. Mesečni izveštaj će se pojaviti ovde kad bude spreman."
   }
 }

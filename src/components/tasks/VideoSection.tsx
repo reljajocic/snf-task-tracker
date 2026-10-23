@@ -184,6 +184,21 @@ export function VideoSection({
         </Fact>
       </div>
 
+      {/* Once it's out: the post's link, for the client's monthly report. */}
+      {(task.phase ?? 0) >= 4 && (
+        <label className="flex flex-col gap-2.5">
+          <span className="eyebrow">{t("video.postUrl")}</span>
+          <div className="flex h-[42px] items-center gap-2 rounded-md border border-line2 pl-3 pr-1.5 focus-within:border-accent">
+            <InlineText bare value={task.post_url} placeholder={t("video.postUrlPlaceholder")} disabled={disabled} onSave={(v) => save({ post_url: v }, { post_url: v || null })} />
+            {task.post_url && (
+              <a href={safeHref(task.post_url)} target="_blank" rel="noreferrer" className="flex h-[30px] items-center rounded-[5px] bg-chip px-2.5 text-[13px] font-medium">
+                ↗
+              </a>
+            )}
+          </div>
+        </label>
+      )}
+
       <div className="flex flex-col gap-2.5">
         <span className="eyebrow">{t("video.contentType")}</span>
         <div className="flex flex-wrap gap-1.5">

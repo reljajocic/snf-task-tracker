@@ -6,6 +6,7 @@ import { parseEditorRules, pickEditor } from "@/lib/editor-rules";
 import { notify } from "@/lib/notify";
 import type { Database } from "@/lib/supabase/database.types";
 import { PRIORITIES, STATUSES, TASK_TYPES, type ScriptSection, type ShotStatus, type TaskPriority, type TaskStatus, type TaskType } from "@/lib/tasks";
+import { safeHref } from "@/lib/safe-url";
 
 // Shared by the app's server actions and the MCP endpoint: what a task/video write may contain,
 // and what happens when a video gets a posting date. Writes still go through RLS with the caller's session.
@@ -31,6 +32,7 @@ export type TaskPatch = Partial<{
   profile: string | null;
   script: ScriptSection[];
   reference_url: string | null;
+  post_url: string | null;
   note: string | null;
   publish_date: string | null;
   shoot_id: string | null;
@@ -70,6 +72,11 @@ export function clean(patch: TaskPatch): TaskPatch {
   textField("profile");
   textField("reference_url");
   textField("note");
+  // A web link only (the database refuses anything else); "instagram.com/p/…" gets https://.
+  if (patch.post_url !== undefined) {
+    const href = safeHref(patch.post_url);
+    out.post_url = href && /^https?:/.test(href) ? href : null;
+  }
   if (patch.script !== undefined) {
     out.script = (Array.isArray(patch.script) ? patch.script : [])
       .map((x) => ({ label: String(x.label ?? "").trim().slice(0, 40), text: String(x.text ?? "") }))

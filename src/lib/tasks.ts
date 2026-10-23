@@ -71,6 +71,8 @@ export type Task = {
   profile: string | null;
   script: ScriptSection[];
   reference_url: string | null;
+  /** The post's link once it's out (Instagram, TikTok…), for the client's monthly report. */
+  post_url: string | null;
   note: string | null;
   publish_date: IsoDate | null;
   published_at: IsoDate | null;
@@ -118,7 +120,7 @@ export const TASK_SELECT = `
   project:projects(id, name),
   parent:parent_id(id, title),
   task_assignees(profile:profiles(${PERSON_COLS})),
-  phase, content_type, on_camera, location, profile, script, reference_url, note,
+  phase, content_type, on_camera, location, profile, script, reference_url, post_url, note,
   publish_date, published_at, dropped_at, shoot_id, shoot_time, shoot_order, shot_status,
   shoot:shoot_days(id, date, location),
   editor:profiles!tasks_editor_id_fkey(${PERSON_COLS}),

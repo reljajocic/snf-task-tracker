@@ -86,6 +86,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
           { href: `/content/schedule?client=${client.id}`, label: t("nav.schedule") },
           { href: `/content/shoots?client=${client.id}`, label: t("nav.shoots") },
           ...(canManage ? [{ href: `/clients/${client.id}/portal`, label: t("portalSettings.title") }] : []),
+          { href: `/clients/${client.id}/reports`, label: t("report.title") },
           ...(invoiceAccess.finance || invoiceAccess.clientIds.includes(client.id) ? [{ href: `/invoices?client=${client.id}`, label: t("nav.invoices") }] : []),
         ].map((l) => (
           <Link key={l.href} href={l.href} className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
