@@ -86,7 +86,7 @@ export function ScheduleCalendar({
     <div className="grid grid-cols-1 gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_260px] lg:px-10 lg:pb-6">
       <div className="flex flex-col">
         {months.map((mo, k) => (
-          <div key={mo} className={`flex flex-col ${k === 0 ? "lg:min-h-[calc(100dvh-260px)]" : "pt-8"}`}>
+          <div key={mo} className={`flex flex-col ${k === 0 ? "" : "pt-8"}`}>
             <span className="display pb-2.5 text-[16px] leading-none lg:text-[18px]">
               {t("month.name", { m: String(Number(mo.slice(5, 7))) })} {mo.slice(0, 4)}
             </span>
@@ -96,8 +96,8 @@ export function ScheduleCalendar({
                 <span key={d} className="pl-2">{t("weekday.short", { day: String(d) })}</span>
               ))}
             </div>
-            {/* Desktop: a month fills the screen like the Calendar page; a busy week grows the page instead of squeezing. */}
-            <div className="grid grid-cols-[28px_repeat(7,minmax(0,1fr))] border-l border-t border-line lg:flex-1 lg:auto-rows-[minmax(120px,auto)]">
+            {/* Desktop: every week at least 120px tall (both months alike); a busy week grows instead of squeezing. */}
+            <div className="grid grid-cols-[28px_repeat(7,minmax(0,1fr))] border-l border-t border-line lg:auto-rows-[minmax(120px,auto)]">
               {monthCells(mo).map((d, i) => {
                 const inMonth = d.slice(0, 7) === mo.slice(0, 7);
                 const list = on(d);
