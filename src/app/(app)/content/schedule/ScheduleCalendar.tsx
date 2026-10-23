@@ -8,7 +8,8 @@ import { TaskLink } from "@/components/tasks/links";
 import { addDays, formatDate, isoWeek, startOfWeek, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { POSTING_STATUS_COLOR, postingStatus, type Task } from "@/lib/tasks";
 
-/** 2b: month grid of posts; drag a video from "Shot, no date" (or another day) onto a day. */
+/** 2b: month grids of posts (the chosen month and the next, so the turn of the month is planned in one view);
+ *  drag a video from "Shot, no date" (or another day) onto a day. */
 export function ScheduleCalendar({
   month,
   videos,
@@ -34,11 +35,13 @@ export function ScheduleCalendar({
     cur.map((v) => (v.id === id ? { ...v, publish_date: date } : v)),
   );
 
-  const first = month;
-  const lastDay = addDays(new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 1)).toISOString().slice(0, 10), -1);
-  const start = startOfWeek(first);
-  const weeks = Math.ceil((weekdayIndex(first) + Number(lastDay.slice(8, 10))) / 7);
-  const cells = Array.from({ length: weeks * 7 }, (_, i) => addDays(start, i));
+  const nextMonth = (m: IsoDate) => new Date(Date.UTC(Number(m.slice(0, 4)), Number(m.slice(5, 7)), 1)).toISOString().slice(0, 10);
+  const monthCells = (m: IsoDate) => {
+    const lastDay = addDays(nextMonth(m), -1);
+    const weeks = Math.ceil((weekdayIndex(m) + Number(lastDay.slice(8, 10))) / 7);
+    return Array.from({ length: weeks * 7 }, (_, i) => addDays(startOfWeek(m), i));
+  };
+  const months = [month, nextMonth(month)];
   const on = (d: IsoDate) => items.filter((v) => v.publish_date === d);
   const pool = items.filter((v) => !v.publish_date && (v.phase ?? 0) < 5 && unscheduled.some((u) => u.id === v.id));
 
@@ -82,56 +85,63 @@ export function ScheduleCalendar({
   return (
     <div className="grid grid-cols-1 gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_260px] lg:px-10 lg:pb-6">
       <div className="flex flex-col">
-        <div className="grid grid-cols-[28px_repeat(7,minmax(0,1fr))] pb-2 text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-ink3">
-          <span />
-          {[0, 1, 2, 3, 4, 5, 6].map((d) => (
-            <span key={d} className="pl-2">{t("weekday.short", { day: String(d) })}</span>
-          ))}
-        </div>
-        {/* Desktop: the month fills the screen like the Calendar page; a busy week grows the page instead of squeezing. */}
-        <div className="grid grid-cols-[28px_repeat(7,minmax(0,1fr))] border-l border-t border-line lg:flex-1 lg:auto-rows-[minmax(120px,auto)]">
-          {cells.map((d, i) => {
-            const inMonth = d.slice(0, 7) === month.slice(0, 7);
-            const list = on(d);
-            const isPostingDay = postingDays.includes(weekdayIndex(d));
-            return (
-              <div key={d} className="contents">
-                {i % 7 === 0 && (
-                  <span className="border-b border-r border-line pt-2 text-center text-[12px] font-semibold text-ink3">
-                    {t("calendar.weekShort", { n: isoWeek(d) })}
-                  </span>
-                )}
-                <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setOver(d);
-                  }}
-                  onDragLeave={() => setOver((o) => (o === d ? null : o))}
-                  onDrop={drop(d)}
-                  onClick={() => setPicked(d)}
-                  className={`flex min-h-[64px] flex-col gap-1 border-b border-r border-line p-1.5 ${
-                    over === d ? "bg-rust-bg" : isPostingDay && inMonth ? "bg-chip" : ""
-                  } ${inMonth ? "" : "[&>*]:opacity-50"
-                  } ${picked === d ? "max-lg:ring-1 max-lg:ring-inset max-lg:ring-ink2" : ""}`}
-                >
-                  <span
-                    className={`grid size-6 flex-none place-items-center rounded-full text-[12px] font-semibold ${
-                      d === today ? "bg-accent text-charcoal" : inMonth ? "text-ink" : "text-ink3"
-                    }`}
-                  >
-                    {Number(d.slice(8, 10))}
-                  </span>
-                  <div className="hidden flex-col gap-1 lg:flex">{list.map(chip)}</div>
-                  <div className="flex gap-0.5 lg:hidden">
-                    {list.map((v) => (
-                      <span key={v.id} className="size-1.5 rounded-full" style={{ background: POSTING_STATUS_COLOR[postingStatus(v, today)] }} />
-                    ))}
+        {months.map((mo, k) => (
+          <div key={mo} className={`flex flex-col ${k === 0 ? "lg:min-h-[calc(100dvh-260px)]" : "pt-8"}`}>
+            <span className="display pb-2.5 text-[16px] leading-none lg:text-[18px]">
+              {t("month.name", { m: String(Number(mo.slice(5, 7))) })} {mo.slice(0, 4)}
+            </span>
+            <div className="grid grid-cols-[28px_repeat(7,minmax(0,1fr))] pb-2 text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-ink3">
+              <span />
+              {[0, 1, 2, 3, 4, 5, 6].map((d) => (
+                <span key={d} className="pl-2">{t("weekday.short", { day: String(d) })}</span>
+              ))}
+            </div>
+            {/* Desktop: a month fills the screen like the Calendar page; a busy week grows the page instead of squeezing. */}
+            <div className="grid grid-cols-[28px_repeat(7,minmax(0,1fr))] border-l border-t border-line lg:flex-1 lg:auto-rows-[minmax(120px,auto)]">
+              {monthCells(mo).map((d, i) => {
+                const inMonth = d.slice(0, 7) === mo.slice(0, 7);
+                const list = on(d);
+                const isPostingDay = postingDays.includes(weekdayIndex(d));
+                return (
+                  <div key={d} className="contents">
+                    {i % 7 === 0 && (
+                      <span className="border-b border-r border-line pt-2 text-center text-[12px] font-semibold text-ink3">
+                        {t("calendar.weekShort", { n: isoWeek(d) })}
+                      </span>
+                    )}
+                    <div
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setOver(d);
+                      }}
+                      onDragLeave={() => setOver((o) => (o === d ? null : o))}
+                      onDrop={drop(d)}
+                      onClick={() => setPicked(d)}
+                      className={`flex min-h-[64px] flex-col gap-1 border-b border-r border-line p-1.5 ${
+                        over === d ? "bg-rust-bg" : isPostingDay && inMonth ? "bg-chip" : ""
+                      } ${inMonth ? "" : "[&>*]:opacity-50"
+                      } ${picked === d ? "max-lg:ring-1 max-lg:ring-inset max-lg:ring-ink2" : ""}`}
+                    >
+                      <span
+                        className={`grid size-6 flex-none place-items-center rounded-full text-[12px] font-semibold ${
+                          d === today ? "bg-accent text-charcoal" : inMonth ? "text-ink" : "text-ink3"
+                        }`}
+                      >
+                        {Number(d.slice(8, 10))}
+                      </span>
+                      <div className="hidden flex-col gap-1 lg:flex">{list.map(chip)}</div>
+                      <div className="flex gap-0.5 lg:hidden">
+                        {list.map((v) => (
+                          <span key={v.id} className="size-1.5 rounded-full" style={{ background: POSTING_STATUS_COLOR[postingStatus(v, today)] }} />
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
 
         {/* Mobile: list for the tapped day */}
         <div className="flex flex-col gap-2 pt-4 lg:hidden">

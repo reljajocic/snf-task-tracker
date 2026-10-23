@@ -60,8 +60,8 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     );
   }
 
-  // Table: two months. Calendar: one month (its grid shows whole weeks, so load a week either side).
-  const periodEnd = addDays(shiftMonth(m, view === "table" ? 2 : 1), -1);
+  // Two months, in the table and in the calendar (its grids show whole weeks, so load a week either side).
+  const periodEnd = addDays(shiftMonth(m, 2), -1);
   const videos = (await getClientVideos(client.id, { posting: { from: addDays(startOfWeek(m), -7), to: addDays(periodEnd, 7) } })).filter(
     // Videos without a profile (e.g. meant for both) show in every profile until they're posted somewhere.
     (v) => !profile || !v.profile || v.profile === profile,
