@@ -835,6 +835,48 @@ export type Database = {
           },
         ]
       }
+      portal_reports: {
+        Row: {
+          client_id: string
+          month: string
+          published_at: string | null
+          published_by: string | null
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          month: string
+          published_at?: string | null
+          published_by?: string | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          month?: string
+          published_at?: string | null
+          published_by?: string | null
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_reports_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portal_reports_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_bg: string
@@ -1223,6 +1265,7 @@ export type Database = {
           parent_id: string | null
           phase: number | null
           position: number
+          post_url: string | null
           priority: Database["public"]["Enums"]["task_priority"]
           profile: string | null
           project_id: string | null
@@ -1261,6 +1304,7 @@ export type Database = {
           parent_id?: string | null
           phase?: number | null
           position?: number
+          post_url?: string | null
           priority?: Database["public"]["Enums"]["task_priority"]
           profile?: string | null
           project_id?: string | null
@@ -1299,6 +1343,7 @@ export type Database = {
           parent_id?: string | null
           phase?: number | null
           position?: number
+          post_url?: string | null
           priority?: Database["public"]["Enums"]["task_priority"]
           profile?: string | null
           project_id?: string | null
