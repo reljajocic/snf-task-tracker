@@ -6,21 +6,23 @@ import { getClient } from "@/lib/clients";
 import { formatDate } from "@/lib/dates";
 import { env } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
+import { InstagramPanel } from "./InstagramPanel";
 import { PortalSettings } from "./PortalSettings";
 
 // 7d: our screen for configuring a client's portal.
-export default async function PortalSettingsPage({ params }: PageProps<"/clients/[id]/portal">) {
-  const [{ id }, me, t] = await Promise.all([params, requireProfile(), getTranslations("portalSettings")]);
+export default async function PortalSettingsPage({ params, searchParams }: PageProps<"/clients/[id]/portal">) {
+  const [{ id }, { ig }, me, t] = await Promise.all([params, searchParams, requireProfile(), getTranslations("portalSettings")]);
   const data = await getClient(id);
   if (!data) notFound();
   const canManage = me.role === "admin" || data.members.some((m) => m.profile.id === me.id && m.role === "manager");
   if (!canManage) notFound();
 
   const supabase = await createClient();
-  const [{ data: portal }, { data: people }, { data: activity }] = await Promise.all([
+  const [{ data: portal }, { data: people }, { data: activity }, { data: instagram }] = await Promise.all([
     supabase.from("client_portals").select("*").eq("client_id", id).maybeSingle(),
     supabase.from("portal_people").select("id, label, email, can_approve").eq("client_id", id).order("created_at"),
     supabase.from("portal_activity").select("id, message, created_at").eq("client_id", id).order("created_at", { ascending: false }).limit(12),
+    supabase.from("instagram_accounts").select("username, synced_at, sync_error").eq("client_id", id).maybeSingle(),
   ]);
 
   const url = portal ? `${env.siteUrl}/p/${portal.token}` : null;
@@ -40,6 +42,9 @@ export default async function PortalSettingsPage({ params }: PageProps<"/clients
           </a>
         )}
       </header>
+      <div className="max-w-[760px] px-5 pb-5 lg:px-10">
+        <InstagramPanel clientId={id} account={instagram} status={typeof ig === "string" ? ig : null} />
+      </div>
       <PortalSettings
         clientId={id}
         url={url}

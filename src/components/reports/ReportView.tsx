@@ -38,6 +38,8 @@ export function ReportView({ report, summary, t }: { report: MonthReport; summar
     );
   };
   const w = report.work;
+  const n = (x: number | null) => (x === null ? "—" : x.toLocaleString("sr-RS"));
+  const social = report.social;
 
   return (
     <div className="flex flex-col gap-7">
@@ -63,6 +65,26 @@ export function ReportView({ report, summary, t }: { report: MonthReport; summar
         </div>
       </section>
 
+      {social && (
+        <section className="flex flex-col gap-3">
+          <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{t("onInstagram")}</h2>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+            {stat(n(social.totals.views), t("views"), t("acrossPosts", { n: social.posts }))}
+            {stat(n(social.totals.reach), t("reach"))}
+            {stat(n(social.totals.likes), t("likes"))}
+            {stat(n(social.totals.comments), t("comments"))}
+            {stat(n(social.totals.saved), t("saved"))}
+            {stat(n(social.totals.shares), t("shares"))}
+            {social.followersEnd !== null &&
+              stat(
+                n(social.followersEnd),
+                t("followers"),
+                social.followersStart !== null ? t("followersChange", { n: `${social.followersEnd - social.followersStart >= 0 ? "+" : ""}${(social.followersEnd - social.followersStart).toLocaleString("sr-RS")}` }) : undefined,
+              )}
+          </div>
+        </section>
+      )}
+
       <section className="flex flex-col gap-3">
         <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{t("posts")}</h2>
         {report.posts.length ? (
@@ -78,6 +100,19 @@ export function ReportView({ report, summary, t }: { report: MonthReport; summar
                       <span className="md:hidden">{formatDate(p.date)} · </span>
                       {[p.type, p.profile].filter(Boolean).join(" · ")}
                     </span>
+                    {p.metrics && (
+                      <span className="truncate text-[13px] font-medium text-ink2">
+                        {[
+                          p.metrics.views !== null && t("nViews", { n: n(p.metrics.views) }),
+                          p.metrics.likes !== null && t("nLikes", { n: n(p.metrics.likes) }),
+                          p.metrics.comments !== null && t("nComments", { n: n(p.metrics.comments) }),
+                          p.metrics.saved ? t("nSaved", { n: n(p.metrics.saved) }) : null,
+                          p.metrics.shares ? t("nShares", { n: n(p.metrics.shares) }) : null,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </span>
+                    )}
                   </span>
                   <span className="hidden truncate text-[13px] text-ink2 md:block">{p.profile ?? ""}</span>
                   {href ? (

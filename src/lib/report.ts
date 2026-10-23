@@ -24,9 +24,14 @@ export type MonthReport = {
   onTime: number;
   byType: { label: string; n: number }[];
   byProfile: { label: string; n: number }[];
-  posts: { id: string; title: string; date: string; profile: string | null; type: string | null; url: string | null }[];
+  posts: { id: string; title: string; date: string; profile: string | null; type: string | null; url: string | null; metrics: PostMetrics | null }[];
   work: { shootDays: number; shot: number; cutsSent: number; approved: number; avgApprovalDays: number | null };
+  /** From Instagram, when the client's account is connected and posts carry their link; null otherwise. */
+  social: { totals: PostMetrics; posts: number; followersStart: number | null; followersEnd: number | null } | null;
 };
+
+export type PostMetrics = { views: number | null; reach: number | null; likes: number | null; comments: number | null; saved: number | null; shares: number | null };
+const METRIC_KEYS = ["views", "reach", "likes", "comments", "saved", "shares"] as const;
 
 const DAY = 86_400_000;
 export const nextMonth = (month: string) => {
@@ -45,6 +50,7 @@ export function computeReport(
   videos: ReportVideo[],
   work: { shootDays: number; shot: number; versions: { id: string; created_at: string }[]; approvals: { version_id: string | null; created_at: string }[] },
   none: string,
+  social: { metrics: Map<string, PostMetrics>; followersStart: number | null; followersEnd: number | null } = { metrics: new Map(), followersStart: null, followersEnd: null },
 ): MonthReport {
   const planned = videos.filter((v) => !v.dropped_at && v.publish_date?.startsWith(month));
   const out = planned.filter((v) => (v.phase ?? 0) >= 5);
@@ -60,7 +66,7 @@ export function computeReport(
     byType: tally(out.map((v) => v.content_type), none),
     byProfile: tally(out.map((v) => v.profile), none),
     posts: out
-      .map((v) => ({ id: v.id, title: v.title, date: v.published_at ?? v.publish_date!, profile: v.profile, type: v.content_type, url: v.post_url }))
+      .map((v) => ({ id: v.id, title: v.title, date: v.published_at ?? v.publish_date!, profile: v.profile, type: v.content_type, url: v.post_url, metrics: social.metrics.get(v.id) ?? null }))
       .sort((a, b) => a.date.localeCompare(b.date)),
     work: {
       shootDays: work.shootDays,
@@ -69,6 +75,14 @@ export function computeReport(
       approved: work.approvals.length,
       avgApprovalDays: waits.length ? Math.round((waits.reduce((s, d) => s + d, 0) / waits.length) * 10) / 10 : null,
     },
+    social: (() => {
+      const measured = out.map((v) => social.metrics.get(v.id)).filter((m): m is PostMetrics => !!m);
+      if (!measured.length && social.followersEnd === null) return null;
+      const totals = Object.fromEntries(
+        METRIC_KEYS.map((k) => [k, measured.some((m) => m[k] !== null) ? measured.reduce((sum, m) => sum + (m[k] ?? 0), 0) : null]),
+      ) as PostMetrics;
+      return { totals, posts: measured.length, followersStart: social.followersStart, followersEnd: social.followersEnd };
+    })(),
   };
 }
 
@@ -97,6 +111,15 @@ export async function buildMonthReport(db: SupabaseClient<Database>, clientId: s
       .lt("created_at", to),
   ]);
   const shootIds = (shoots ?? []).map((s) => s.id);
+  // Instagram: the posts' numbers, and followers at the month's start (last reading before it) and end.
+  const ids = (videos ?? []).map((v) => v.id);
+  const [{ data: metrics }, { data: before }, { data: during }] = await Promise.all([
+    ids.length ? db.from("post_metrics").select("task_id, views, reach, likes, comments, saved, shares").in("task_id", ids) : Promise.resolve({ data: [] }),
+    db.from("instagram_followers").select("followers").eq("client_id", clientId).lt("day", from).order("day", { ascending: false }).limit(1),
+    db.from("instagram_followers").select("day, followers").eq("client_id", clientId).gte("day", from).lt("day", to).order("day"),
+  ]);
+  const first = before?.[0]?.followers ?? during?.[0]?.followers ?? null;
+  const last = during?.length ? during[during.length - 1].followers : null;
   const { count: shot } = shootIds.length
     ? await db.from("tasks").select("id", { count: "exact", head: true }).in("shoot_id", shootIds).eq("shot_status", "shot")
     : { count: 0 };
@@ -105,6 +128,7 @@ export async function buildMonthReport(db: SupabaseClient<Database>, clientId: s
     (videos ?? []) as ReportVideo[],
     { shootDays: shootIds.length, shot: shot ?? 0, versions: versions ?? [], approvals: approvals ?? [] },
     none,
+    { metrics: new Map((metrics ?? []).map(({ task_id, ...m }) => [task_id, m])), followersStart: first, followersEnd: last },
   );
 }
 

@@ -683,3 +683,15 @@ describe("portal reports", () => {
     await expect(as(MANAGER, "update public.tasks set post_url = 'javascript:alert(1)' where client_id = $1", [C1])).rejects.toThrow(/check constraint/);
   });
 });
+
+describe("instagram", () => {
+  it("the team sees which account is connected and the numbers; nobody signed in can read a token", async () => {
+    await db.exec("select set_config('request.jwt.claim.sub', '', false)");
+    await db.query("insert into public.instagram_accounts (client_id, ig_user_id, username) values ($1, '1784', 'beric_satovi')", [C1]);
+    await db.query("insert into public.instagram_tokens (client_id, access_token) values ($1, 'IGAA-secret')", [C1]);
+    expect(await as(MEMBER, "select username from public.instagram_accounts")).toEqual([{ username: "beric_satovi" }]);
+    expect(await as(OUTSIDER, "select username from public.instagram_accounts")).toEqual([]);
+    for (const uid of [ADMIN, MANAGER, MEMBER]) await expect(as(uid, "select access_token from public.instagram_tokens")).rejects.toThrow(/permission denied/);
+    await expect(as(MANAGER, "update public.instagram_accounts set username = 'x'")).rejects.toThrow(/permission denied/);
+  });
+});

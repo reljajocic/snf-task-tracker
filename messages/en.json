@@ -1141,7 +1141,7 @@
     "publishedOn": "Published {date}",
     "notPublished": "Not published — the client doesn't see this month",
     "saveSummary": "Save",
-    "saved": "Saved",
+    "saved": "saves",
     "publish": "Publish to the client",
     "publishConfirm": "Publish this report to the client?",
     "publishBody": "It shows in their portal and the people who approve get an email.",
@@ -1163,6 +1163,41 @@
     "viewPost": "View post",
     "noPosts": "Nothing posted this month.",
     "other": "Other",
-    "noneYet": "No reports yet. Your monthly report will appear here once it's ready."
+    "noneYet": "No reports yet. Your monthly report will appear here once it's ready.",
+    "onInstagram": "On Instagram",
+    "views": "views",
+    "reach": "accounts reached",
+    "likes": "likes",
+    "comments": "comments",
+    "shares": "shares",
+    "acrossPosts": "across {n} posts",
+    "followers": "followers",
+    "followersChange": "{n} this month",
+    "nViews": "{n} views",
+    "nLikes": "{n} likes",
+    "nComments": "{n} comments",
+    "nSaved": "{n} saves",
+    "nShares": "{n} shares"
+  },
+  "instagram": {
+    "lead": "Connect the client's Instagram (a Business or Creator account) to bring views, reach and likes of the linked posts, and the followers, into the monthly report. You log in as the client, once.",
+    "connectedLead": "Numbers are read every morning: followers, and every video with a link to its post.",
+    "connect": "Connect Instagram",
+    "reconnect": "Log in again",
+    "sync": "Refresh numbers",
+    "syncing": "Refreshing…",
+    "synced": "Done: numbers for {n} posts.",
+    "syncedAt": "Last read {when}",
+    "lastError": "Last refresh failed: {message}",
+    "connected": "Instagram connected.",
+    "disconnect": "Disconnect",
+    "disconnectConfirm": "Disconnect @{name}?",
+    "disconnectBody": "No more numbers get read; what's already in the reports stays.",
+    "status": {
+      "config": "Instagram isn't set up on the server yet (app keys).",
+      "cancelled": "The login was cancelled.",
+      "denied": "Only the client's managers can connect it.",
+      "failed": "Connecting failed. Is it a Business/Creator account, added as a tester of the app?"
+    }
   }
 }

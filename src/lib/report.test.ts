@@ -35,6 +35,20 @@ describe("monthly report", () => {
       ["b", "2026-10-09", null],
     ]);
     expect(r.work).toEqual({ shootDays: 2, shot: 7, cutsSent: 1, approved: 1, avgApprovalDays: 2 });
+    expect(r.social).toBeNull();
+  });
+
+  it("adds up the posts' Instagram numbers and the followers' change", () => {
+    const m = (views: number, likes: number) => ({ views, reach: null, likes, comments: 1, saved: 0, shares: 2 });
+    const r = computeReport(
+      "2026-10",
+      [v("a", "2026-10-06", { phase: 5 }), v("b", "2026-10-08", { phase: 5 }), v("c", "2026-10-09", { phase: 5 })],
+      { shootDays: 0, shot: 0, versions: [], approvals: [] },
+      "Other",
+      { metrics: new Map([["a", m(1000, 40)], ["b", m(500, 10)]]), followersStart: 1200, followersEnd: 1290 },
+    );
+    expect(r.social).toEqual({ totals: { views: 1500, reach: null, likes: 50, comments: 2, saved: 0, shares: 4 }, posts: 2, followersStart: 1200, followersEnd: 1290 });
+    expect(r.posts.find((p) => p.id === "c")?.metrics).toBeNull();
   });
 
   it("knows the next month across a year", () => {

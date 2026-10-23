@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { addDays, today } from "@/lib/dates";
+import { instagramConfigured, syncAll } from "@/lib/instagram";
 import { notify } from "@/lib/notify";
 import { createAdminClient } from "@/lib/supabase/server";
 
@@ -40,5 +41,7 @@ export async function GET(request: NextRequest) {
   }
   // Subscriptions due today (or missed on a day the cron didn't run) become costs.
   const { data: posted } = await admin.rpc("post_subscriptions", {});
-  return NextResponse.json({ ok: true, tasks: sent, subscriptionCosts: posted ?? 0 });
+  // Instagram numbers for every connected client (followers, and the posts linked to videos).
+  const instagram = instagramConfigured() ? await syncAll() : 0;
+  return NextResponse.json({ ok: true, tasks: sent, subscriptionCosts: posted ?? 0, instagramClients: instagram });
 }

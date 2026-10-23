@@ -1141,7 +1141,7 @@
     "publishedOn": "Objavljeno {date}",
     "notPublished": "Nije objavljeno — klijent ne vidi ovaj mesec",
     "saveSummary": "Sačuvaj",
-    "saved": "Sačuvano",
+    "saved": "sačuvano",
     "publish": "Objavi klijentu",
     "publishConfirm": "Objaviti izveštaj klijentu?",
     "publishBody": "Pojaviće se u portalu, a osobe koje odobravaju dobiće mejl.",
@@ -1163,6 +1163,41 @@
     "viewPost": "Pogledaj objavu",
     "noPosts": "Ovog meseca nije bilo objava.",
     "other": "Ostalo",
-    "noneYet": "Još nema izveštaja. Mesečni izveštaj će se pojaviti ovde kad bude spreman."
+    "noneYet": "Još nema izveštaja. Mesečni izveštaj će se pojaviti ovde kad bude spreman.",
+    "onInstagram": "Na Instagramu",
+    "views": "pregleda",
+    "reach": "dosegnutih naloga",
+    "likes": "lajkova",
+    "comments": "komentara",
+    "shares": "deljenja",
+    "acrossPosts": "na {n} objava",
+    "followers": "pratilaca",
+    "followersChange": "{n} ovog meseca",
+    "nViews": "{n} pregleda",
+    "nLikes": "{n} lajkova",
+    "nComments": "{n} komentara",
+    "nSaved": "{n} sačuvano",
+    "nShares": "{n} deljenja"
+  },
+  "instagram": {
+    "lead": "Povežite klijentov Instagram (Business ili Creator nalog) da u mesečni izveštaj uđu pregledi, doseg i lajkovi objava sa linkom, i pratioci. Prijavljujete se kao klijent, jednom.",
+    "connectedLead": "Brojke se čitaju svako jutro: pratioci i svaki video koji ima link objave.",
+    "connect": "Poveži Instagram",
+    "reconnect": "Prijavi se ponovo",
+    "sync": "Osveži brojke",
+    "syncing": "Osvežavam…",
+    "synced": "Gotovo: brojke za {n} objava.",
+    "syncedAt": "Poslednje čitanje {when}",
+    "lastError": "Poslednje osvežavanje nije uspelo: {message}",
+    "connected": "Instagram je povezan.",
+    "disconnect": "Prekini vezu",
+    "disconnectConfirm": "Prekinuti vezu sa @{name}?",
+    "disconnectBody": "Brojke se više ne čitaju; ono što je već u izveštajima ostaje.",
+    "status": {
+      "config": "Instagram još nije podešen na serveru (ključevi aplikacije).",
+      "cancelled": "Prijava je otkazana.",
+      "denied": "Samo menadžeri klijenta mogu da ga povežu.",
+      "failed": "Povezivanje nije uspelo. Da li je nalog Business/Creator i dodat kao tester aplikacije?"
+    }
   }
 }
