@@ -1199,7 +1199,9 @@
       "cancelled": "The login was cancelled.",
       "denied": "Only the client's managers can connect it.",
       "failed": "Connecting failed. Is it a Business/Creator account, added as a tester of the app?"
-    }
+    },
+    "portalLead": "Connect your Instagram (a Business or Creator account) and your monthly report will also show views, reach, likes and followers. You log in with Instagram; we never see your password.",
+    "portalConnected": "Instagram @{name} is connected. Its numbers appear in the next report."
   },
   "format": {
     "video": "Video",

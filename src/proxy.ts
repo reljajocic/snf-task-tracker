@@ -3,8 +3,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { env } from "@/lib/env";
 
 // Routes reachable without a session.
-// /api/mcp/ checks its own personal key.
-const PUBLIC_PATHS = ["/login", "/auth/", "/api/cron/", "/api/mcp/", "/p/", "/s/"];
+// /api/mcp/ checks its own personal key; /api/instagram/ checks the session or the portal token itself
+// (a client connects their Instagram from the portal, without a login).
+const PUBLIC_PATHS = ["/login", "/auth/", "/api/cron/", "/api/mcp/", "/api/instagram/", "/p/", "/s/"];
 
 /** Refreshes the Supabase session cookie and sends signed-out visitors to /login. */
 export async function proxy(request: NextRequest) {

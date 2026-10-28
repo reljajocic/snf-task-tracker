@@ -1199,7 +1199,9 @@
       "cancelled": "Prijava je otkazana.",
       "denied": "Samo menadžeri klijenta mogu da ga povežu.",
       "failed": "Povezivanje nije uspelo. Da li je nalog Business/Creator i dodat kao tester aplikacije?"
-    }
+    },
+    "portalLead": "Povežite svoj Instagram (Business ili Creator nalog) i u mesečnom izveštaju videćete i preglede, doseg, lajkove i pratioce. Prijavljujete se preko Instagrama; mi nikad ne vidimo vašu lozinku.",
+    "portalConnected": "Instagram @{name} je povezan. Brojke se pojavljuju u sledećem izveštaju."
   },
   "format": {
     "video": "Video",

@@ -21,16 +21,18 @@ export const instagramConfigured = () => Boolean(appId() && appSecret());
 export const redirectUri = () => `${env.siteUrl}/api/instagram/callback`;
 
 // ---------------------------------------------------------------- the login round trip
-// The state carries which client and who started it, signed, so the callback can't be replayed for another
-// client or by someone else, and expires after 15 minutes.
+// The state carries which client and who started it (a team member's id, or "portal" when the client connects
+// from their portal), signed, so the callback can't be replayed for another client, and expires after 15 minutes.
 const sign = (payload: string) => createHmac("sha256", appSecret()).update(payload).digest("base64url");
 
-export function makeState(clientId: string, userId: string) {
-  const payload = Buffer.from(JSON.stringify({ c: clientId, u: userId, t: Date.now() })).toString("base64url");
+export const PORTAL = "portal";
+
+export function makeState(clientId: string, by: string) {
+  const payload = Buffer.from(JSON.stringify({ c: clientId, u: by, t: Date.now() })).toString("base64url");
   return `${payload}.${sign(payload)}`;
 }
 
-export function readState(state: string, userId: string): string | null {
+export function readState(state: string): { clientId: string; by: string } | null {
   const [payload, mac] = state.split(".");
   if (!payload || !mac) return null;
   const expected = Buffer.from(sign(payload));
@@ -38,7 +40,7 @@ export function readState(state: string, userId: string): string | null {
   if (expected.length !== given.length || !timingSafeEqual(expected, given)) return null;
   try {
     const { c, u, t } = JSON.parse(Buffer.from(payload, "base64url").toString()) as { c: string; u: string; t: number };
-    return u === userId && Date.now() - t < 15 * 60_000 ? c : null;
+    return Date.now() - t < 15 * 60_000 ? { clientId: c, by: u } : null;
   } catch {
     return null;
   }
