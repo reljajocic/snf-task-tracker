@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { addDays, formatDate, formatShortDate, isoWeek, startOfWeek, today as getToday, weekdayIndex } from "@/lib/dates";
 import { PORTAL_STATUS_COLOR, getPortal, getPortalVideos, portalStatus } from "@/lib/portal";
-import { PortalStatusLabel, TypeTag } from "../bits";
+import { PortalStatusLabel } from "../bits";
+import { PostTags } from "@/components/tasks/tags";
 
 function shiftMonth(m: string, d: number) {
   const [y, mo] = m.split("-").map(Number);
@@ -131,14 +132,14 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
                       {[v.on_camera, v.location].filter(Boolean).join(" · ")}
                     </span>
                   </div>
-                  <span className="hidden md:block">{v.content_type && <TypeTag>{v.content_type}</TypeTag>}</span>
+                  <span className="hidden md:block"><PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} /></span>
                   <span className="flex items-center gap-3">
                     <PortalStatusLabel status={status} />
                     {status === "awaiting" && <span className="hidden text-[13px] font-semibold text-rust-ink md:inline">{t("portal.review")}</span>}
                   </span>
                 </>
               );
-              const cls = `grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-t border-line px-4 py-[13px] first:border-t-0 md:grid-cols-[150px_minmax(0,1fr)_64px_250px] ${
+              const cls = `grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-t border-line px-4 py-[13px] first:border-t-0 md:grid-cols-[150px_minmax(0,1fr)_170px_250px] ${
                 status === "awaiting" ? "bg-rust-bg" : ""
               }`;
               // Every post opens: a cut to review, or its script.

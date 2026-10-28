@@ -11,12 +11,14 @@ import { ReshootBadge, ReturnToIdeas } from "@/components/tasks/Reshoot";
 import { TaskLink } from "@/components/tasks/links";
 import { formatDate, type IsoDate } from "@/lib/dates";
 import { pendingReshoot, type Task } from "@/lib/tasks";
+import { PostTags } from "@/components/tasks/tags";
 
 type Shoot = { id: string; date: IsoDate; location: string | null };
 
 /** One shelf of the video bank, with the move that takes a video to the next step. */
 export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoot" | "ready" | "dropped"; videos: Task[]; shoots: Shoot[]; today: IsoDate }) {
   const t = useTranslations("bank");
+  const tf = useTranslations("format");
   const router = useRouter();
   const [type, setType] = useState<string | null>(null);
   const [location, setLocation] = useState<string | null>(null);
@@ -149,11 +151,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
                 <TaskLink id={v.id} className="flex min-w-0 flex-1 flex-col gap-1.5 hover:opacity-80">
                   <span className="flex items-center gap-2">
-                    {v.content_type && (
-                      <span className="flex-none rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">
-                        {v.content_type}
-                      </span>
-                    )}
+                    <PostTags format={v.format} type={v.content_type} formatLabel={tf(v.format)} />
                     <span className="min-w-0 truncate text-[15px] font-medium leading-snug text-ink">{v.title}</span>
                   </span>
                   {(v.profile || v.on_camera || v.location || m) && (

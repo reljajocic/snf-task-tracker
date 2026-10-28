@@ -7,6 +7,8 @@ import { updateTask } from "@/app/(app)/task-actions";
 import { TaskLink } from "@/components/tasks/links";
 import { addDays, formatDate, isoWeek, startOfWeek, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { POSTING_STATUS_COLOR, postingStatus, type Task } from "@/lib/tasks";
+import { PostTags } from "@/components/tasks/tags";
+import { FORMAT_COLOR } from "@/lib/formats";
 
 /** 2b: month grids of posts (the chosen month and the next, so the turn of the month is planned in one view);
  *  drag a video from "Shot, no date" (or another day) onto a day. */
@@ -70,11 +72,13 @@ export function ScheduleCalendar({
         id={v.id}
         draggable
         onDragStart={drag(v.id)}
-        className={`flex cursor-grab flex-col gap-1 rounded-[5px] border px-2 py-1.5 active:cursor-grabbing ${s === "not_published" ? "border-red-line bg-red-bg" : "border-line bg-surf"}`}
+        // The left edge in the format's colour: video, photo or carousel at a glance.
+        style={{ borderLeftColor: FORMAT_COLOR[v.format] }}
+        className={`flex cursor-grab flex-col gap-1 rounded-[5px] border border-l-[3px] px-2 py-1.5 active:cursor-grabbing ${s === "not_published" ? "border-red-line bg-red-bg" : "border-line bg-surf"}`}
       >
-        <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] text-ink3">
+        <span className="flex items-center gap-1.5">
           <span className="size-[7px] flex-none rounded-full" style={{ background: POSTING_STATUS_COLOR[s] }} />
-          {v.content_type}
+          <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
         </span>
         <span className="line-clamp-2 text-[12px] font-medium leading-tight">{v.title}</span>
         {v.on_camera && <span className="truncate text-[12px] text-ink3">{v.on_camera}</span>}

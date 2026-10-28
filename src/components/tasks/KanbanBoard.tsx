@@ -32,7 +32,7 @@ function KanbanCard({ task, today, mobile = false }: { task: Task; today: IsoDat
           {task.client?.name ?? t("task.noClient")}
         </span>
         {task.kind === "video" ? (
-          <VideoTag contentType={mobile ? task.content_type : null} />
+          <VideoTag format={task.format} contentType={mobile ? task.content_type : null} />
         ) : (
           task.type && <span className={`flex-none font-medium text-ink3 ${mobile ? "text-[13px]" : "text-[12px]"}`}>{t(`taskType.${task.type}`)}</span>
         )}

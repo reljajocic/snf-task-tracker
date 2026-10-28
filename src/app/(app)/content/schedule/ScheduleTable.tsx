@@ -8,6 +8,7 @@ import { TaskLink } from "@/components/tasks/links";
 import { AssignPicker } from "./AssignPicker";
 import { formatDate, formatShortDate, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { POSTING_STATUS_COLOR, postingStatus, type PostingStatus, type Task } from "@/lib/tasks";
+import { PostTags } from "@/components/tasks/tags";
 
 export type ScheduleWeek = {
   n: number;
@@ -156,9 +157,7 @@ export function ScheduleTable({
                         </span>
                         <span className="truncate text-[15px] font-medium leading-snug">{v.title}</span>
                         <span>
-                          {v.content_type && (
-                            <span className="rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">{v.content_type}</span>
-                          )}
+                          <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
                         </span>
                         <span className="truncate text-[14px] text-ink2">{v.on_camera ?? "—"}</span>
                         <span className="truncate text-[14px] text-ink2">{v.location ?? "—"}</span>
@@ -235,7 +234,7 @@ export function ScheduleTable({
                 <TaskLink key={v.id} id={v.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3.5 border-t border-line px-4 py-[13px] first:border-t-0 hover:bg-hover lg:grid-cols-[minmax(0,1fr)_64px_150px_110px_140px]">
                   <span className="truncate text-[15px] font-medium">{v.title}</span>
                   <span className="hidden lg:block">
-                    {v.content_type && <span className="rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">{v.content_type}</span>}
+                    <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
                   </span>
                   <span className="hidden truncate text-[14px] text-ink2 lg:block">{v.on_camera ?? "—"}</span>
                   <span className="hidden truncate text-[14px] text-ink2 lg:block">{v.location ?? "—"}</span>

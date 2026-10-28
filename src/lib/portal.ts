@@ -61,6 +61,7 @@ export type PortalVideo = {
   id: string;
   title: string;
   content_type: string | null;
+  format: PostFormat;
   on_camera: string | null;
   location: string | null;
   script: ScriptSection[];
@@ -77,6 +78,7 @@ export type PortalVideo = {
 };
 
 import type { PortalStatus } from "@/lib/portal-status";
+import type { PostFormat } from "@/lib/formats";
 export { PORTAL_STATUS_COLOR, type PortalStatus } from "@/lib/portal-status";
 
 export function portalStatus(v: PortalVideo): PortalStatus {
@@ -111,7 +113,7 @@ export async function getPortalVideos(clientId: string, scope: PortalScope): Pro
   let query = createAdminClient()
     .from("tasks")
     .select(
-      `id, title, content_type, on_camera, location, script, publish_date, phase, shot_status, shoot_time, drive_url,
+      `id, title, content_type, format, on_camera, location, script, publish_date, phase, shot_status, shoot_time, drive_url,
        shoot:shoot_days(id, date, location),
        video_versions(id, version, url, note, created_at),
        approvals(id, kind, version_id, status, approver_name, comment, created_at)`,

@@ -16,6 +16,7 @@ import { ReshootBadge, ReturnToIdeas, ShootHistory } from "./Reshoot";
 import { ReviewSection } from "./ReviewSection";
 import { ScriptDecisionBadge } from "./ScriptDecisionBadge";
 import { safeHref } from "@/lib/safe-url";
+import { FORMATS, FORMAT_COLOR, typeColor } from "@/lib/formats";
 
 type Save = (patch: TaskPatch, optimistic?: Partial<Task>) => void;
 
@@ -200,10 +201,23 @@ export function VideoSection({
       )}
 
       <div className="flex flex-col gap-2.5">
+        <span className="eyebrow">{t("video.formatLabel")}</span>
+        <div className="flex flex-wrap gap-1.5">
+          {FORMATS.map((f) => (
+            <Pill key={f} disabled={disabled} selected={task.format === f} onClick={() => save({ format: f }, { format: f })}>
+              <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />
+              {t(`format.${f}`)}
+            </Pill>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2.5">
         <span className="eyebrow">{t("video.contentType")}</span>
         <div className="flex flex-wrap gap-1.5">
           {types.map((ct) => (
             <Pill key={ct} disabled={disabled} selected={task.content_type === ct} onClick={() => save({ content_type: task.content_type === ct ? null : ct }, { content_type: task.content_type === ct ? null : ct })}>
+              <span className="size-2 rounded-full" style={{ background: typeColor(ct) }} />
               {ct}
             </Pill>
           ))}

@@ -181,7 +181,7 @@ function PanelBody({
     <>
       <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4 lg:px-7 lg:py-[18px]">
         <span className="flex min-w-0 items-center gap-2.5">
-          {task.kind === "video" && <VideoTag contentType={task.content_type} size="md" />}
+          {task.kind === "video" && <VideoTag format={task.format} contentType={task.content_type} />}
           <span className="truncate text-[13px] font-medium text-ink3">{header}</span>
         </span>
         <div className="flex items-center gap-1.5">

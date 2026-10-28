@@ -1,20 +1,13 @@
-// Video-specific visuals: the VIDEO tag and the 5-segment phase bar (design 4a).
+// Video-specific visuals: the format tag (video / photo / carousel, with the content type) and the
+// 5-segment phase bar (design 4a).
 import { useTranslations } from "next-intl";
+import type { PostFormat } from "@/lib/formats";
 import { PHASES, phaseInfo, type Task } from "@/lib/tasks";
+import { PostTags } from "./tags";
 
-export function VideoTag({ contentType, size = "sm" }: { contentType?: string | null; size?: "sm" | "md" }) {
-  const t = useTranslations("video");
-  return (
-    <span
-      className={`flex flex-none items-center gap-[5px] whitespace-nowrap rounded-[3px] border border-line2 font-semibold uppercase leading-none tracking-[0.1em] text-ink ${
-        size === "md" ? "px-2 py-[5px] text-[12px]" : "px-1.5 py-1 text-[12px]"
-      }`}
-    >
-      <span className="size-1.5 rounded-[1px] bg-accent" />
-      {t("tag")}
-      {contentType ? ` · ${contentType}` : ""}
-    </span>
-  );
+export function VideoTag({ format, contentType }: { format: PostFormat; contentType?: string | null }) {
+  const t = useTranslations("format");
+  return <PostTags format={format} type={contentType ?? null} formatLabel={t(format)} />;
 }
 
 export function PhaseBar({ task }: { task: Pick<Task, "phase" | "subtask_count"> }) {

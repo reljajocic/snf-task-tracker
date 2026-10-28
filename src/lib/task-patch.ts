@@ -7,6 +7,7 @@ import { notify } from "@/lib/notify";
 import type { Database } from "@/lib/supabase/database.types";
 import { PRIORITIES, STATUSES, TASK_TYPES, type ScriptSection, type ShotStatus, type TaskPriority, type TaskStatus, type TaskType } from "@/lib/tasks";
 import { safeHref } from "@/lib/safe-url";
+import { parseFormat } from "@/lib/formats";
 
 // Shared by the app's server actions and the MCP endpoint: what a task/video write may contain,
 // and what happens when a video gets a posting date. Writes still go through RLS with the caller's session.
@@ -27,6 +28,7 @@ export type TaskPatch = Partial<{
   kind: "task" | "video";
   phase: number;
   content_type: string | null;
+  format: string;
   on_camera: string | null;
   location: string | null;
   profile: string | null;
@@ -67,6 +69,7 @@ export function clean(patch: TaskPatch): TaskPatch {
     if (patch[k] !== undefined) out[k] = patch[k]?.trim() || null;
   };
   textField("content_type");
+  if (patch.format !== undefined) out.format = parseFormat(patch.format);
   textField("on_camera");
   textField("location");
   textField("profile");

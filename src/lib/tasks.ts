@@ -1,4 +1,5 @@
 import { dueLabel, isOverdue, type DueLabel, type IsoDate } from "@/lib/dates";
+import { parseFormat, type PostFormat } from "@/lib/formats";
 
 export const STATUSES = ["todo", "in_progress", "waiting_client", "done"] as const;
 export const PRIORITIES = ["low", "medium", "high", "urgent"] as const;
@@ -66,6 +67,8 @@ export type Task = {
   // Video fields (kind = "video"); null/empty for plain tasks.
   phase: number | null;
   content_type: string | null;
+  /** What the post is: a video, a photo or a carousel. */
+  format: PostFormat;
   on_camera: string | null;
   location: string | null;
   profile: string | null;
@@ -120,7 +123,7 @@ export const TASK_SELECT = `
   project:projects(id, name),
   parent:parent_id(id, title),
   task_assignees(profile:profiles(${PERSON_COLS})),
-  phase, content_type, on_camera, location, profile, script, reference_url, post_url, note,
+  phase, content_type, format, on_camera, location, profile, script, reference_url, post_url, note,
   publish_date, published_at, dropped_at, shoot_id, shoot_time, shoot_order, shot_status,
   shoot:shoot_days(id, date, location),
   editor:profiles!tasks_editor_id_fkey(${PERSON_COLS}),
@@ -143,6 +146,7 @@ export function toTask(raw: RawTask): Task {
   return {
     ...rest,
     script: Array.isArray(rest.script) ? rest.script : [],
+    format: parseFormat(rest.format),
     subtask_count: subtasks?.length ?? 0,
     subtask_done: subtasks?.filter((x) => x.status === "done").length ?? 0,
     script_decision: decision

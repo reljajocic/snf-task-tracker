@@ -4,10 +4,12 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { Task } from "@/lib/tasks";
+import { PostTags } from "@/components/tasks/tags";
 
 /** "+ Assign video" on a free slot: filmed videos with type, who's on camera and a script preview. */
 export function AssignPicker({ videos, onPick }: { videos: Task[]; onPick: (id: string) => void }) {
   const t = useTranslations("schedule");
+  const tf = useTranslations("format");
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<string | null>(null);
   // Rows live in an overflow-hidden card, so the menu is fixed to the viewport, under the button.
@@ -90,11 +92,7 @@ export function AssignPicker({ videos, onPick }: { videos: Task[]; onPick: (id: 
                     className="flex cursor-pointer flex-col gap-1.5 border-t border-line px-3.5 py-3 text-left first:border-t-0 hover:bg-hover"
                   >
                     <span className="flex items-center gap-2">
-                      {v.content_type && (
-                        <span className="flex-none rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">
-                          {v.content_type}
-                        </span>
-                      )}
+                      <PostTags format={v.format} type={v.content_type} formatLabel={tf(v.format)} />
                       <span className="min-w-0 truncate text-[15px] font-medium leading-snug text-ink">{v.title}</span>
                     </span>
                     {(v.on_camera || v.location) && (

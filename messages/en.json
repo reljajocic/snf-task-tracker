@@ -521,7 +521,8 @@
       "published": "Already published"
     },
     "postUrl": "Link to the post",
-    "postUrlPlaceholder": "instagram.com/p/… or tiktok.com/…"
+    "postUrlPlaceholder": "instagram.com/p/… or tiktok.com/…",
+    "formatLabel": "Format"
   },
   "schedule": {
     "title": "Posting schedule",
@@ -1199,5 +1200,10 @@
       "denied": "Only the client's managers can connect it.",
       "failed": "Connecting failed. Is it a Business/Creator account, added as a tester of the app?"
     }
+  },
+  "format": {
+    "video": "Video",
+    "photo": "Photo",
+    "carousel": "Carousel"
   }
 }

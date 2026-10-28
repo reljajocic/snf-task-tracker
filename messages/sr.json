@@ -521,7 +521,8 @@
       "published": "Već objavljeno"
     },
     "postUrl": "Link objave",
-    "postUrlPlaceholder": "instagram.com/p/… ili tiktok.com/…"
+    "postUrlPlaceholder": "instagram.com/p/… ili tiktok.com/…",
+    "formatLabel": "Format"
   },
   "schedule": {
     "title": "Raspored objava",
@@ -1199,5 +1200,10 @@
       "denied": "Samo menadžeri klijenta mogu da ga povežu.",
       "failed": "Povezivanje nije uspelo. Da li je nalog Business/Creator i dodat kao tester aplikacije?"
     }
+  },
+  "format": {
+    "video": "Video",
+    "photo": "Slika",
+    "carousel": "Karusel"
   }
 }

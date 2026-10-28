@@ -12,6 +12,7 @@ import { SCRIPT_SECTIONS, parseEstimate, type ScriptSection, type TaskPriority, 
 import { Pill } from "./bits";
 import { MonthGrid, quickDates } from "./DatePicker";
 import { ClientProjectSelects, PeoplePicker, assignablePeople, PriorityPicker, StatusPicker, TypePicker, inputClass } from "./fields";
+import { FORMATS, FORMAT_COLOR, typeColor, type PostFormat } from "@/lib/formats";
 
 type Defaults = {
   client_id?: string | null;
@@ -33,6 +34,7 @@ type Defaults = {
 export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: Lookups; today: IsoDate; defaults: Defaults; onClose: () => void }) {
   const t = useTranslations("task");
   const tv = useTranslations("video");
+  const tf = useTranslations("format");
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<"task" | "video">(defaults.kind ?? "task");
@@ -50,6 +52,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const [description, setDescription] = useState("");
   // Video fields
   const [contentType, setContentType] = useState<string | null>(null);
+  const [format, setFormat] = useState<PostFormat>("video");
   // Where the new video starts: an idea, already filmed (waiting for a date), or already out.
   const [stage, setStage] = useState<"idea" | "shot" | "published">(defaults.stage ?? "idea");
   const [extraTags, setExtraTags] = useState<string[]>([]);
@@ -89,6 +92,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
               ...where,
               assignee_ids: assignees,
               content_type: contentType,
+              format,
               on_camera: onCamera,
               location,
               profile: client?.profiles.includes(profile) ? profile : null,
@@ -176,10 +180,20 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
             </Pill>
           ))}
         </div>
+        {label(tv("formatLabel"))}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {FORMATS.map((f) => (
+            <Pill key={f} size="lg" selected={format === f} onClick={() => setFormat(f)}>
+              <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />
+              {tf(f)}
+            </Pill>
+          ))}
+        </div>
         {label(tv("contentType"))}
         <div className="flex flex-wrap items-center gap-1.5">
           {tags.map((ct) => (
             <Pill key={ct} size="lg" selected={contentType === ct} onClick={() => setContentType(contentType === ct ? null : ct)}>
+              <span className="size-2 rounded-full" style={{ background: typeColor(ct) }} />
               {ct}
             </Pill>
           ))}

@@ -77,6 +77,7 @@ const videoFields = {
   shoot_time: z.string().regex(/^\d{2}:\d{2}$/).nullable().optional().describe("HH:MM on the shoot day."),
   publish_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional().describe("Posting date YYYY-MM-DD. Gives the edit to the client's editor."),
   reference_url: z.string().max(500).nullable().optional().describe("Reference video link."),
+  format: z.enum(["video", "photo", "carousel"]).optional().describe("What the post is: video (default), photo or carousel."),
   note: z.string().max(2000).nullable().optional().describe("Note for the team (shooting notes etc.)."),
 };
 
@@ -90,6 +91,7 @@ type VideoInput = {
   shoot_time?: string | null;
   publish_date?: string | null;
   reference_url?: string | null;
+  format?: "video" | "photo" | "carousel";
   note?: string | null;
 };
 
@@ -104,6 +106,7 @@ function toPatch(v: VideoInput): TaskPatch {
   if (v.shoot_time !== undefined) patch.shoot_time = v.shoot_time;
   if (v.publish_date !== undefined) patch.publish_date = v.publish_date;
   if (v.reference_url !== undefined) patch.reference_url = v.reference_url;
+  if (v.format !== undefined) patch.format = v.format;
   if (v.note !== undefined) patch.note = v.note;
   return patch;
 }
