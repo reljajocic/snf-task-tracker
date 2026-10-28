@@ -1398,6 +1398,7 @@ export type Database = {
           due_date: string | null
           editor_id: string | null
           estimate_minutes: number | null
+          format: string
           id: string
           kind: Database["public"]["Enums"]["task_kind"]
           location: string | null
@@ -1437,6 +1438,7 @@ export type Database = {
           due_date?: string | null
           editor_id?: string | null
           estimate_minutes?: number | null
+          format?: string
           id?: string
           kind?: Database["public"]["Enums"]["task_kind"]
           location?: string | null
@@ -1476,6 +1478,7 @@ export type Database = {
           due_date?: string | null
           editor_id?: string | null
           estimate_minutes?: number | null
+          format?: string
           id?: string
           kind?: Database["public"]["Enums"]["task_kind"]
           location?: string | null
