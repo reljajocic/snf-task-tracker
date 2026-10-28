@@ -14,9 +14,11 @@ export function FormatTag({ format, label }: { format: PostFormat; label: string
   );
 }
 
+/** The content type stays quiet next to the format: a dot in its colour and small text, no box. */
 export function TypeTag({ type }: { type: string }) {
   return (
-    <span className={base} style={tint(typeColor(type))}>
+    <span className="inline-flex flex-none items-center gap-1 whitespace-nowrap text-[10px] font-semibold uppercase leading-none tracking-[0.06em] text-ink3">
+      <span className="size-1.5 flex-none rounded-full" style={{ background: typeColor(type) }} />
       {type}
     </span>
   );
@@ -25,7 +27,7 @@ export function TypeTag({ type }: { type: string }) {
 /** Format (left out for an ordinary video when `quietVideo`) and type, side by side. */
 export function PostTags({ format, type, formatLabel, quietVideo = false }: { format: PostFormat; type: string | null; formatLabel: string; quietVideo?: boolean }) {
   return (
-    <span className="inline-flex flex-wrap items-center gap-1">
+    <span className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1">
       {!(quietVideo && format === "video") && <FormatTag format={format} label={formatLabel} />}
       {type && <TypeTag type={type} />}
     </span>
