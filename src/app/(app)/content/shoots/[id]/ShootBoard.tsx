@@ -18,6 +18,7 @@ import { byShootOrder, byShootTime, deriveCallTimes, idsByTime } from "@/lib/scr
 import { CallTimes } from "./ShootTools";
 import { ShootSheet } from "./ShootSheet";
 import { safeHref } from "@/lib/safe-url";
+import { PostTags } from "@/components/tasks/tags";
 
 type Slot = { time: string; onCamera: string; items: Task[] };
 
@@ -125,12 +126,12 @@ export function ShootBoard({
     </button>
   );
 
-  const typeTag = (v: Task) =>
-    v.content_type && (
-      <span className="flex-none justify-self-start rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">
-        {v.content_type}
-      </span>
-    );
+  // Format (video / photo / carousel) and content type, in their colours.
+  const typeTag = (v: Task) => (
+    <span className="flex-none justify-self-start">
+      <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
+    </span>
+  );
 
   const scriptText = (v: Task) => v.script.map((s) => s.text).filter(Boolean).join(" ");
 
@@ -564,6 +565,7 @@ function SignupLinkButton({ shootId, token }: { shootId: string; token: string |
 
 function AddVideos({ shootId, clientId, candidates, onDone, onClose }: { shootId: string; clientId: string; candidates: Task[]; onDone: () => void; onClose: () => void }) {
   const t = useTranslations("shoots");
+  const tf = useTranslations("format");
   const tp = useTranslations("phase");
   const [picked, setPicked] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
@@ -603,6 +605,7 @@ function AddVideos({ shootId, clientId, candidates, onDone, onClose }: { shootId
                 <span className="hidden text-[13px] text-ink3 sm:inline">
                   {[
                     tp(PHASES[Math.min(v.phase ?? 0, 4)]),
+                    tf(v.format),
                     v.content_type,
                     v.on_camera,
                     v.shoot ? t("onOtherShoot", { date: formatDate(v.shoot.date) }) : null,

@@ -9,6 +9,7 @@ import { TaskLink } from "@/components/tasks/links";
 import { idsByTime, sectionsToText, textToSections } from "@/lib/script-text";
 import type { ScriptSection, ShotStatus, Task } from "@/lib/tasks";
 import { removeFromShoot, reorderShoot } from "../actions";
+import { FORMATS, FORMAT_COLOR } from "@/lib/formats";
 
 const STATUS_STYLE: Record<ShotStatus, string> = {
   to_shoot: "text-ink2",
@@ -37,6 +38,7 @@ export function ShootSheet({
   editable: boolean;
 }) {
   const t = useTranslations("shootSheet");
+  const tf = useTranslations("format");
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [adding, setAdding] = useState(false);
@@ -240,6 +242,19 @@ export function ShootSheet({
                         onSave={(x) => save(v.id, { content_type: x.toUpperCase() })}
                         className="text-[12px] text-ink3"
                       />
+                      {/* Video, photo or carousel, in its colour. */}
+                      <select
+                        value={v.format}
+                        disabled={!editable}
+                        aria-label={tf(v.format)}
+                        onChange={(e) => save(v.id, { format: e.target.value })}
+                        style={{ color: FORMAT_COLOR[v.format] }}
+                        className="w-full cursor-pointer bg-transparent px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] outline-none disabled:cursor-default"
+                      >
+                        {FORMATS.map((f) => (
+                          <option key={f} value={f}>{tf(f)}</option>
+                        ))}
+                      </select>
                     </td>
                     <td className="px-1 py-1">
                       <InputCell value={v.title} disabled={!editable} onSave={(x) => x.trim() && save(v.id, { title: x })} className="font-semibold" />
