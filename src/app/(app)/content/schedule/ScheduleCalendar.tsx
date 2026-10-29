@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useOptimistic, useState, useTransition, type DragEvent } from "react";
 import { updateTask } from "@/app/(app)/task-actions";
@@ -33,7 +32,6 @@ export function ScheduleCalendar({
   shoots?: ScheduleShoot[];
 }) {
   const t = useTranslations();
-  const router = useRouter();
   const [, startTransition] = useTransition();
   const [over, setOver] = useState<IsoDate | null>(null);
   const [picked, setPicked] = useState<IsoDate>(today.slice(0, 7) === month.slice(0, 7) ? today : month);
@@ -60,7 +58,6 @@ export function ScheduleCalendar({
       move({ id, date });
       const claim = date && profile && ![...videos, ...unscheduled].find((v) => v.id === id)?.profile;
       await updateTask(id, claim ? { publish_date: date, profile } : { publish_date: date });
-      router.refresh();
     });
   };
   const drag = (id: string) => (e: DragEvent) => {

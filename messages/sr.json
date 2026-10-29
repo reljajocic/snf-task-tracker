@@ -226,6 +226,7 @@
     "todo": "Za uraditi",
     "in_progress": "U toku",
     "waiting_client": "Čeka klijenta",
+    "waiting_clientShort": "Čeka",
     "done": "Gotovo"
   },
   "priority": {

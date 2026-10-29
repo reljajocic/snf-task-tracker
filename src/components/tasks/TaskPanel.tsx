@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 import {
@@ -31,7 +30,6 @@ const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink"
 /** Side panel over the current screen (3a), full screen on mobile (3c). Saves on every change. */
 export function TaskPanel({ id, lookups, today, onClose }: { id: string; lookups: Lookups; today: IsoDate; onClose: () => void }) {
   const t = useTranslations("task");
-  const router = useRouter();
   const [detail, setDetail] = useState<TaskDetail | null>(null);
   const [missing, setMissing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +87,6 @@ export function TaskPanel({ id, lookups, today, onClose }: { id: string; lookups
             setError={setError}
             onClose={onClose}
             onChanged={() => {
-              router.refresh();
               void reload();
             }}
           />

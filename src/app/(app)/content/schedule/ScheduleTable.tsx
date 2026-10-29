@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { updateTask } from "@/app/(app)/task-actions";
@@ -39,7 +38,6 @@ export function ScheduleTable({
   profile?: string | null;
 }) {
   const t = useTranslations();
-  const router = useRouter();
   const [open, setOpen] = useState<string | null>(null);
   const [type, setType] = useState("all");
   const [status, setStatus] = useState<"all" | PostingStatus>("all");
@@ -59,7 +57,6 @@ export function ScheduleTable({
     startTransition(async () => {
       const claim = date && profile && !unscheduled.find((v) => v.id === videoId)?.profile;
       await updateTask(videoId, claim ? { publish_date: date, profile } : { publish_date: date });
-      router.refresh();
     });
 
   const day = (d: IsoDate) => t("weekday.short", { day: String(weekdayIndex(d)) });
@@ -208,7 +205,6 @@ export function ScheduleTable({
                                   onClick={() =>
                                     startTransition(async () => {
                                       await updateTask(v.id, { phase: 5 });
-                                      router.refresh();
                                     })
                                   }
                                   className="cursor-pointer text-[var(--status-done)] hover:underline"

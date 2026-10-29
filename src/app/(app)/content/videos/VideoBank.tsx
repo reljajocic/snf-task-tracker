@@ -1,7 +1,6 @@
 "use client";
 
 import { ScriptDecisionBadge } from "@/components/tasks/ScriptDecisionBadge";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { addVideosToShoot, removeFromShoot } from "@/app/(app)/content/shoots/actions";
@@ -22,7 +21,6 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   const t = useTranslations("bank");
   const tf = useTranslations("format");
   const tAll = useTranslations();
-  const router = useRouter();
   const [type, setType] = useState<string | null>(null);
   const [format, setFormat] = useState<PostFormat | null>(null);
   const [location, setLocation] = useState<string | null>(null);
@@ -47,7 +45,6 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
     startTransition(async () => {
       await fn();
       setBusy(null);
-      router.refresh();
     });
   };
 
@@ -243,7 +240,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                   )}
                 </div>
                </div>
-                {(tab === "shoot" || tab === "ready") && <ReturnToIdeas taskId={v.id} onDone={() => router.refresh()} className="self-start" />}
+                {(tab === "shoot" || tab === "ready") && <ReturnToIdeas taskId={v.id} onDone={() => {}} className="self-start" />}
                 {parts(v).length > 0 && (
                   <>
                     {open.has(v.id) && (

@@ -226,6 +226,7 @@
     "todo": "To do",
     "in_progress": "In progress",
     "waiting_client": "Waiting on client",
+    "waiting_clientShort": "Waiting",
     "done": "Done"
   },
   "priority": {

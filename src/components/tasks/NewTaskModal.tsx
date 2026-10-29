@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 import { addClientContentType } from "@/app/(app)/clients/actions";
@@ -36,7 +35,6 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const t = useTranslations("task");
   const tv = useTranslations("video");
   const tf = useTranslations("format");
-  const router = useRouter();
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<"task" | "video">(defaults.kind ?? "task");
   const [where, setWhere] = useState({ client_id: defaults.client_id ?? null, project_id: defaults.project_id ?? null });
@@ -121,7 +119,6 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
       );
       if (!res.ok) return setError(t("saveFailed", { message: res.error }));
       onClose();
-      router.refresh();
     });
 
   const label = (text: string) => <span className="text-[13px] font-medium text-ink3">{text}</span>;

@@ -1,7 +1,6 @@
 "use client";
 
 import { ScriptDecisionBadge } from "@/components/tasks/ScriptDecisionBadge";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useOptimistic, useState, useSyncExternalStore, useTransition } from "react";
@@ -79,7 +78,6 @@ export function ShootBoard({
   nowTime: string;
 }) {
   const t = useTranslations();
-  const router = useRouter();
   const [, startTransition] = useTransition();
   const [unsorted, mark] = useOptimistic(videos, (cur, { id, status }: { id: string; status: ShotStatus }) =>
     cur.map((v) => (v.id === id ? { ...v, shot_status: status } : v)),
@@ -131,7 +129,6 @@ export function ShootBoard({
     startTransition(async () => {
       mark({ id, status });
       await setShotStatus(id, status);
-      router.refresh();
     });
   const toggle = (v: Task) => set(v.id, v.shot_status === "shot" ? "to_shoot" : "shot");
 
@@ -203,7 +200,6 @@ export function ShootBoard({
       // A time puts the video in its place in the running order.
       const next = [...unsorted].sort(byShootOrder).map((x) => (x.id === v.id ? { ...x, shoot_time: value || null } : x));
       await reorderShoot(day.id, idsByTime(next));
-      router.refresh();
     });
   };
 
@@ -331,10 +327,7 @@ export function ShootBoard({
           clientId={day.client?.id ?? ""}
           candidates={candidates}
           onClose={() => setAdding(false)}
-          onDone={() => {
-            setAdding(false);
-            router.refresh();
-          }}
+          onDone={() => setAdding(false)}
         />
       )}
 
@@ -543,7 +536,7 @@ export function ShootBoard({
               {canManage && (
                 <button
                   type="button"
-                  onClick={() => startTransition(async () => { await removeFromShoot(sel.id); router.refresh(); })}
+                  onClick={() => startTransition(async () => { await removeFromShoot(sel.id); })}
                   className="cursor-pointer self-start text-[13px] text-ink3 hover:text-red-ink"
                 >
                   {t("shoots.remove")}
@@ -581,7 +574,6 @@ function PersonIcon({ size }: { size: number }) {
 /** "Sign-up link": makes the talent link for this shoot (once) and copies it; × turns it off. */
 function SignupLinkButton({ shootId, token }: { shootId: string; token: string | null }) {
   const t = useTranslations("shoots");
-  const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [pending, start] = useTransition();
   return (
@@ -596,7 +588,6 @@ function SignupLinkButton({ shootId, token }: { shootId: string; token: string |
             await navigator.clipboard?.writeText(`${window.location.origin}/s/${res.token}`).catch(() => {});
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
-            if (!token) router.refresh();
           })
         }
         className="cursor-pointer whitespace-nowrap text-[14px] font-medium text-ink"
@@ -612,7 +603,6 @@ function SignupLinkButton({ shootId, token }: { shootId: string; token: string |
           onClick={() =>
             start(async () => {
               await setSignupLink(shootId, false);
-              router.refresh();
             })
           }
           className="grid size-6 cursor-pointer place-items-center rounded-full text-[15px] text-ink3 hover:text-red-ink"

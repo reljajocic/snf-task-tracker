@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useOptimistic, useState, useTransition, type DragEvent } from "react";
 import { updateTask } from "@/app/(app)/task-actions";
@@ -52,7 +51,6 @@ function KanbanCard({ task, today, mobile = false }: { task: Task; today: IsoDat
 /** 4a / 4e: four status columns; drag a card to change its status (desktop), tabs on mobile. */
 export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate }) {
   const t = useTranslations();
-  const router = useRouter();
   const [, startTransition] = useTransition();
   const [optimistic, move] = useOptimistic(tasks, (cur, { id, status }: { id: string; status: TaskStatus }) =>
     cur.map((x) => (x.id === id ? { ...x, status } : x)),
@@ -74,7 +72,6 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
     startTransition(async () => {
       move({ id, status });
       await updateTask(id, { status });
-      router.refresh();
     });
   };
 
@@ -89,7 +86,7 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
             scroll
             items={columns.map((c) => ({
               key: c.status,
-              label: t(`status.${c.status}`),
+              label: t(`status.${c.status === "waiting_client" ? "waiting_clientShort" : c.status}`),
               active: tab === c.status,
               onClick: () => setTab(c.status),
               dot: STATUS_COLOR[c.status],
@@ -121,7 +118,7 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
           >
             <div className="flex items-center gap-2.5 px-1 pb-1">
               <span className="size-2.5 rounded-full" style={{ background: STATUS_COLOR[c.status] }} />
-              <span className="whitespace-nowrap text-[14px] font-semibold">{t(`status.${c.status}`)}</span>
+              <span className="whitespace-nowrap text-[14px] font-semibold">{t(`status.${c.status === "waiting_client" ? "waiting_clientShort" : c.status}`)}</span>
               <span className="text-[13px] font-medium text-ink3">{c.cards.length}</span>
             </div>
             <div className="flex flex-col gap-2.5 pb-5">

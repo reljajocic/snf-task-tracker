@@ -12,7 +12,7 @@ export const LIST_FILTER_KEYS = ["who", "client", "status", "priority", "type"] 
 const pillSelect =
   "h-[38px] cursor-pointer appearance-none rounded-full border bg-transparent px-3.5 text-[13px] font-medium outline-none";
 
-/** 5a filter bar (desktop) and 5b people chips + "Filters · N" sheet (mobile). State lives in the URL. */
+/** 5a filter bar (desktop) and the "Filters · N" sheet with people chips on top (mobile). State lives in the URL. */
 export function ListFilters({ people, clients }: { people: Person[]; clients: { id: string; name: string }[] }) {
   const names = shortNames(people);
   const t = useTranslations();
@@ -38,7 +38,7 @@ export function ListFilters({ people, clients }: { people: Person[]; clients: { 
 
   const selects = (
     <>
-      <select aria-label={t("list.allPeople")} value={value("who")} onChange={(e) => set({ who: e.target.value })} className={`${pillSelect} ${tone("who")}`}>
+      <select aria-label={t("list.allPeople")} value={value("who")} onChange={(e) => set({ who: e.target.value })} className={`${pillSelect} ${tone("who")} max-lg:hidden`}>
         <option value="all">{t("list.allPeople")}</option>
         {people.map((p) => (
           <option key={p.id} value={p.id}>{p.full_name}</option>
@@ -94,22 +94,27 @@ export function ListFilters({ people, clients }: { people: Person[]; clients: { 
       </div>
 
       <div className="flex flex-col gap-3 px-5 pb-3 lg:hidden">
-        <Segmented
-          scroll
-          items={[{ id: "all", full_name: t("list.everyone") }, ...people].map((p) => ({
-            key: p.id,
-            label: p.id === "all" ? p.full_name : names[p.id],
-            active: value("who") === p.id,
-            onClick: () => set({ who: p.id }),
-          }))}
-        />
         <div className="flex items-center justify-between">
           <button type="button" onClick={() => setSheet((s) => !s)} className={`h-10 cursor-pointer rounded-full border px-4 text-[14px] font-medium ${active ? "border-ink2 text-ink" : "border-line2 text-ink2"}`}>
             {active ? t("list.filtersN", { count: active }) : t("list.filters")}
           </button>
           {doneToggle}
         </div>
-        {sheet && <div className="flex flex-wrap gap-2 rounded-[10px] border border-line bg-surf p-3">{selects}</div>}
+        {sheet && (
+          <div className="flex flex-col gap-3 rounded-[10px] border border-line bg-surf p-3">
+            {/* Whose work: one tap, like the desktop "All people" menu. */}
+            <Segmented
+              scroll
+              items={[{ id: "all", full_name: t("list.everyone") }, ...people].map((p) => ({
+                key: p.id,
+                label: p.id === "all" ? p.full_name : names[p.id],
+                active: value("who") === p.id,
+                onClick: () => set({ who: p.id }),
+              }))}
+            />
+            <div className="flex flex-wrap gap-2">{selects}</div>
+          </div>
+        )}
       </div>
     </>
   );

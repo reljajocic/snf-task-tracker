@@ -1,7 +1,6 @@
 "use client";
 
 import { ScriptDecisionBadge } from "@/components/tasks/ScriptDecisionBadge";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Fragment, useOptimistic, useState, useTransition } from "react";
 import { createTask, setShotStatus, updateTask, type TaskPatch } from "@/app/(app)/task-actions";
@@ -46,7 +45,6 @@ export function ShootSheet({
 }) {
   const t = useTranslations("shootSheet");
   const tf = useTranslations("format");
-  const router = useRouter();
   const [, startTransition] = useTransition();
   const [adding, setAdding] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
@@ -96,7 +94,6 @@ export function ShootSheet({
     startTransition(async () => {
       reorder(ids);
       await reorderShoot(shootId, withHidden(ids));
-      router.refresh();
     });
   };
 
@@ -108,7 +105,6 @@ export function ShootSheet({
       const ids = idsByTime(ordered.map((x) => (x.id === v.id ? { ...x, shoot_time: time } : x)));
       reorder(ids);
       await reorderShoot(shootId, withHidden(ids));
-      router.refresh();
     });
   };
 
@@ -119,14 +115,12 @@ export function ShootSheet({
     startTransition(async () => {
       reorder(ids);
       await reorderShoot(shootId, withHidden(ids));
-      router.refresh();
     });
   };
 
   const save = (id: string, patch: TaskPatch) =>
     startTransition(async () => {
       await updateTask(id, patch);
-      router.refresh();
     });
 
   const addRow = () => {
@@ -144,7 +138,6 @@ export function ShootSheet({
         on_camera: last?.on_camera ?? null,
       });
       setAdding(false);
-      router.refresh();
     });
   };
 
@@ -222,7 +215,6 @@ export function ShootSheet({
                         onChange={(e) =>
                           startTransition(async () => {
                             await setShotStatus(v.id, e.target.value as ShotStatus);
-                            router.refresh();
                           })
                         }
                         className={`${cell} cursor-pointer text-[12px] font-semibold uppercase tracking-[0.06em] ${STATUS_STYLE[status]}`}
@@ -321,7 +313,7 @@ export function ShootSheet({
                           type="button"
                           aria-label={t("remove")}
                           title={t("remove")}
-                          onClick={() => startTransition(async () => { await removeFromShoot(v.id); router.refresh(); })}
+                          onClick={() => startTransition(async () => { await removeFromShoot(v.id); })}
                           className="cursor-pointer text-[15px] text-ink3 hover:text-red-ink"
                         >
                           ×
