@@ -1703,6 +1703,14 @@ export type Database = {
         Args: { new_status: string; tid: string }
         Returns: undefined
       }
+      my_assigned_task_ids: { Args: never; Returns: string[] }
+      my_client_ids: { Args: never; Returns: string[] }
+      my_crew_shoot_ids: { Args: never; Returns: string[] }
+      my_person_ids: { Args: never; Returns: string[] }
+      my_project_ids: { Args: never; Returns: string[] }
+      my_shoot_ids: { Args: never; Returns: string[] }
+      my_task_ids: { Args: never; Returns: string[] }
+      my_team_client_ids: { Args: never; Returns: string[] }
       post_subscriptions: { Args: { upto?: string }; Returns: number }
       return_to_ideas: { Args: { tid: string; why: string }; Returns: string }
       set_sees_invoices: {
