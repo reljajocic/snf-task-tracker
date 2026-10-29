@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { CONTENT_NAV, isActive } from "@/components/shell/nav";
 
-/** Shoots · Schedule · Video bank: one place, switched from the top (the client carries over). */
+/** Content bank · Shoots · Schedule: one place, switched from the top (the client carries over). */
 export function ContentTabs() {
   const t = useTranslations("nav");
   const pathname = usePathname();

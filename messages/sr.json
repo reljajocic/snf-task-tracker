@@ -11,7 +11,8 @@
     "errorTitle": "Nešto nije u redu",
     "errorText": "Ovaj deo stranice se nije učitao. Već smo obavešteni. Probaj ponovo, a ako se ponavlja, javi nam.",
     "tryAgain": "Probaj ponovo",
-    "ok": "U redu"
+    "ok": "U redu",
+    "back": "Nazad"
   },
   "theme": {
     "toLight": "Svetla tema",
@@ -35,7 +36,7 @@
     "settings": "Podešavanja",
     "collapse": "Skupi meni",
     "expand": "Raširi meni",
-    "videos": "Banka videa",
+    "videos": "Banka sadržaja",
     "invoices": "Fakture",
     "dashboard": "Pregled"
   },
@@ -476,7 +477,7 @@
     "tag": "Video",
     "kind": "Vrsta",
     "task": "Zadatak",
-    "video": "Video",
+    "video": "Objava",
     "contentType": "Content pillar",
     "onCamera": "Pred kamerom",
     "location": "Lokacija",
@@ -528,7 +529,7 @@
     "title": "Raspored objava",
     "table": "Tabela",
     "calendar": "Kalendar",
-    "addVideo": "+ Dodaj video",
+    "addVideo": "+ Dodaj objavu",
     "week": "Nedelja {n}",
     "thisWeek": "Ove nedelje",
     "col": {
@@ -828,7 +829,7 @@
     "noteMore": "cela beleška"
   },
   "bank": {
-    "title": "Banka videa",
+    "title": "Banka sadržaja",
     "new": "+ Novi video",
     "intro": "Sve ideje za videe ovog klijenta, dok ne dobiju datum objave. Tada idu editoru kao zadatak.",
     "tab": {

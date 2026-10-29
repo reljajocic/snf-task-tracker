@@ -12,6 +12,7 @@ import type { Partner } from "@/lib/finance";
 import { cancelInvoice, deleteDraft, eurRate, saveInvoice, type BuyerInput } from "./actions";
 import { Field, Section } from "./form-bits";
 import { ask } from "@/components/ui/Dialog";
+import { PageTitle } from "@/components/shell/PageTitle";
 
 type ClientOpt = { id: string; name: string };
 type Preset = "even" | "custom" | "none" | string; // string = one partner's id
@@ -128,17 +129,17 @@ export function InvoiceForm({
 
   return (
     <div className="flex max-w-[860px] flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
-      <Link href={invoice && !isDraft ? `/invoices/${invoice.id}` : "/invoices"} className="text-[14px] font-medium text-ink3 hover:text-ink">
-        ‹ {invoice && !isDraft ? t("numbered", { number: number ?? "" }) : t("title")}
-      </Link>
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="display text-[30px] lg:text-[40px]">{number ? t("numbered", { number }) : invoice ? t("draftTitle") : t("newTitle")}</h1>
-        {invoice && !isDraft && (
-          <Link href={`/print/invoices/${invoice.id}`} target="_blank" className={buttonClass({ size: "sm", variant: "secondary" })}>
-            {t("pdf")}
-          </Link>
-        )}
-      </div>
+      <PageTitle
+        back={{ href: invoice && !isDraft ? `/invoices/${invoice.id}` : "/invoices", label: invoice && !isDraft ? t("numbered", { number: number ?? "" }) : t("title") }}
+        title={number ? t("numbered", { number }) : invoice ? t("draftTitle") : t("newTitle")}
+        actions={
+          invoice && !isDraft ? (
+            <Link href={`/print/invoices/${invoice.id}`} target="_blank" className={buttonClass({ size: "sm", variant: "secondary" })}>
+              {t("pdf")}
+            </Link>
+          ) : undefined
+        }
+      />
       {cancelled && <p className="rounded-md border border-red-line px-3 py-2 text-[14px] text-red-ink">{t("cancelledNote")}</p>}
 
       <Section title={t("buyer")}>

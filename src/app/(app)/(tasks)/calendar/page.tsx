@@ -11,6 +11,7 @@ import { Segmented } from "@/components/ui/Segmented";
 import { getTasks } from "@/lib/data";
 import { addDays, formatDate, formatShortDate, isoWeek, startOfWeek, today as getToday, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { PRIORITY_COLOR, byDue, type Task } from "@/lib/tasks";
+import { PeriodNav } from "@/components/ui/PeriodNav";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -71,11 +72,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
 
   const navControls = (
     <>
-      <div className="flex h-[42px] items-center whitespace-nowrap rounded-[7px] border border-line2 text-[14px] font-medium">
-        <Link href={href({ d: prev, day: null })} scroll={false} aria-label={t("calendar.prev")} className="px-3 text-ink3 hover:text-ink">‹</Link>
-        <span className="min-w-[150px] text-center">{period}</span>
-        <Link href={href({ d: next, day: null })} scroll={false} aria-label={t("calendar.next")} className="px-3 text-ink3 hover:text-ink">›</Link>
-      </div>
+      <PeriodNav label={period} prevHref={href({ d: prev, day: null })} nextHref={href({ d: next, day: null })} prevLabel={t("calendar.prev")} nextLabel={t("calendar.next")} />
       <Link href={href({ d: today, day: today })} scroll={false} className="flex h-[42px] items-center rounded-[7px] border border-line2 px-3.5 text-[14px] font-medium">
         {t("calendar.today")}
       </Link>

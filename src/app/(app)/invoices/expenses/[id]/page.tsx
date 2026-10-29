@@ -8,6 +8,7 @@ import { embedUrl } from "@/lib/embed";
 import { getExpense, getInvoiceAccess, getPartners, getSubscriptions } from "@/lib/finance";
 import { money } from "@/lib/invoices";
 import { safeHref } from "@/lib/safe-url";
+import { PageTitle } from "@/components/shell/PageTitle";
 
 // One cost to look at: the facts, and the supplier's PDF right on the page when it's a Drive file.
 export default async function ExpenseView({ params }: PageProps<"/invoices/expenses/[id]">) {
@@ -31,14 +32,12 @@ export default async function ExpenseView({ params }: PageProps<"/invoices/expen
 
   return (
     <div className="flex flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
-      <Link href="/invoices/expenses" className="text-[14px] font-medium text-ink3 hover:text-ink">‹ {t("expensesTitle")}</Link>
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-2">
-          <h1 className="display text-[30px] leading-[1] lg:text-[40px]">{expense.description}</h1>
-          <span className="text-[22px] font-semibold tabular-nums">{money(expense.amount)} RSD</span>
-        </div>
-        <Link href={`/invoices/expenses/${expense.id}/edit`} className={buttonClass({ size: "sm" })}>{t("edit")}</Link>
-      </div>
+      <PageTitle
+        back={{ href: "/invoices/expenses", label: t("expensesTitle") }}
+        title={expense.description}
+        sub={<span className="text-[22px] font-semibold tabular-nums">{money(expense.amount)} RSD</span>}
+        actions={<Link href={`/invoices/expenses/${expense.id}/edit`} className={buttonClass({ size: "sm" })}>{t("edit")}</Link>}
+      />
 
       <div className={`grid grid-cols-1 items-start gap-6 ${preview ? "xl:grid-cols-[minmax(0,1fr)_minmax(300px,420px)]" : ""}`}>
         {preview && (

@@ -14,6 +14,7 @@ import type { Person } from "@/lib/tasks";
 import { SOCIAL_LABEL, SOCIAL_PLATFORMS, type Social, type SocialPlatform } from "@/lib/socials";
 import { deleteClient, deleteProject, saveClient, saveProject, type FormState } from "./actions";
 import { ask } from "@/components/ui/Dialog";
+import { PageTitle } from "@/components/shell/PageTitle";
 
 function Field({ label, hint, children, wide }: { label: string; hint?: string; children: React.ReactNode; wide?: boolean }) {
   return (
@@ -36,10 +37,10 @@ function FormShell({
   children: React.ReactNode;
   footer: React.ReactNode;
 }) {
+  const t = useTranslations("common");
   return (
     <div className="flex max-w-[760px] flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
-      <Link href={backHref} className="text-[14px] font-medium text-ink3 hover:text-ink">‹</Link>
-      <h1 className="display text-[30px] lg:text-[40px]">{title}</h1>
+      <PageTitle back={{ href: backHref, label: t("back") }} title={title} />
       <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">{children}</div>
       <div className="flex flex-wrap items-center justify-end gap-3 border-t border-line pt-4">{footer}</div>
     </div>

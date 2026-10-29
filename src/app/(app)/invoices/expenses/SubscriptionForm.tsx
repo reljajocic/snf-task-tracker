@@ -12,6 +12,7 @@ import type { Partner } from "@/lib/finance";
 import { parseAmount, type Subscription } from "@/lib/invoices";
 import { endSubscription, saveSubscription } from "../actions";
 import { Field, Section } from "../form-bits";
+import { PageTitle } from "@/components/shell/PageTitle";
 
 type ClientOpt = { id: string; name: string };
 
@@ -65,12 +66,16 @@ export function SubscriptionForm({ sub, clients, partners, today }: { sub: Subsc
       }}
       className="flex max-w-[760px] flex-col gap-6"
     >
-      <Link href={list} className="text-[14px] font-medium text-ink3 hover:text-ink">‹ {t("subscriptions")}</Link>
-      <div className="flex flex-col gap-2">
-        <h1 className="display text-[30px] lg:text-[40px]">{sub ? sub.name : t("newSubscription")}</h1>
-        <p className="text-[14px] text-ink2">{t("subscriptionLead")}</p>
-        {ended && <p className="text-[14px] font-medium text-ink3">{t("subEnded", { date: formatDate(sub!.ends_on!) })}</p>}
-      </div>
+      <PageTitle
+        back={{ href: list, label: t("subscriptions") }}
+        title={sub ? sub.name : t("newSubscription")}
+        sub={
+          <>
+            <p className="text-[14px] text-ink2">{t("subscriptionLead")}</p>
+            {ended && <p className="text-[14px] font-medium text-ink3">{t("subEnded", { date: formatDate(sub!.ends_on!) })}</p>}
+          </>
+        }
+      />
 
       <Section title={t("subWhat")}>
         <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">

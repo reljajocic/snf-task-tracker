@@ -13,6 +13,7 @@ import { formatDate, type IsoDate } from "@/lib/dates";
 import { pendingReshoot, type Task } from "@/lib/tasks";
 import { PostTags } from "@/components/tasks/tags";
 import { FORMATS, FORMAT_COLOR, type PostFormat } from "@/lib/formats";
+import { Segmented } from "@/components/ui/Segmented";
 
 type Shoot = { id: string; date: IsoDate; location: string | null };
 
@@ -20,6 +21,7 @@ type Shoot = { id: string; date: IsoDate; location: string | null };
 export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoot" | "ready" | "dropped"; videos: Task[]; shoots: Shoot[]; today: IsoDate }) {
   const t = useTranslations("bank");
   const tf = useTranslations("format");
+  const tAll = useTranslations();
   const router = useRouter();
   const [type, setType] = useState<string | null>(null);
   const [format, setFormat] = useState<PostFormat | null>(null);
@@ -116,20 +118,22 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
         )}
         {(q || shootFilter !== "all") && <span className="text-[13px] text-ink3">{t("matching", { count: shown.length })}</span>}
       </div>
-      {(formats.length > 1 || types.length > 1 || locations.length > 1 || profiles.length > 1) && (
+      {/* Post type first, like everywhere else: the quickest way to split the bank. */}
+      {formats.length > 1 && (
+        <Segmented
+          size="sm"
+          items={[null, ...formats].map((f) => ({
+            key: f ?? "all",
+            label: f ? tf(f) : tAll("schedule.allFormats"),
+            active: format === f,
+            onClick: () => setFormat(f),
+            dot: f ? FORMAT_COLOR[f] : undefined,
+            count: f ? videos.filter((v) => v.format === f).length : undefined,
+          }))}
+        />
+      )}
+      {(types.length > 1 || locations.length > 1 || profiles.length > 1) && (
         <div className="flex flex-wrap gap-1.5">
-          {/* Video, photo or carousel first: the quickest way to split the bank. */}
-          {formats.length > 1 && (
-            <>
-              {formats.map((f) => (
-                <button key={f} type="button" onClick={() => setFormat(format === f ? null : f)} className={chip(format === f)}>
-                  <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />
-                  {tf(f)}
-                </button>
-              ))}
-              <span className="mx-1 h-8 w-px bg-line2" />
-            </>
-          )}
           {profiles.length > 1 && (
             <>
               {profiles.map((x) => (

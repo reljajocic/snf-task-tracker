@@ -11,7 +11,8 @@
     "errorTitle": "Something went wrong",
     "errorText": "This part of the page didn't load. We've been told about it. Try again, and if it keeps happening, let us know.",
     "tryAgain": "Try again",
-    "ok": "OK"
+    "ok": "OK",
+    "back": "Back"
   },
   "theme": {
     "toLight": "Light theme",
@@ -35,7 +36,7 @@
     "settings": "Settings",
     "collapse": "Collapse menu",
     "expand": "Expand menu",
-    "videos": "Video bank",
+    "videos": "Content bank",
     "invoices": "Invoices",
     "dashboard": "Overview"
   },
@@ -476,7 +477,7 @@
     "tag": "Video",
     "kind": "Kind",
     "task": "Task",
-    "video": "Video",
+    "video": "Post",
     "contentType": "Content pillar",
     "onCamera": "On camera",
     "location": "Location",
@@ -528,7 +529,7 @@
     "title": "Posting schedule",
     "table": "Table",
     "calendar": "Calendar",
-    "addVideo": "+ Add video",
+    "addVideo": "+ Add post",
     "week": "Week {n}",
     "thisWeek": "This week",
     "col": {
@@ -828,7 +829,7 @@
     "noteMore": "whole note"
   },
   "bank": {
-    "title": "Video bank",
+    "title": "Content bank",
     "new": "+ New video",
     "intro": "Every video idea for this client until it gets a posting date. Then it goes to the editor as a task.",
     "tab": {

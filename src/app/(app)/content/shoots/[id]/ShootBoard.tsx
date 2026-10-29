@@ -20,6 +20,7 @@ import { ShootSheet } from "./ShootSheet";
 import { safeHref } from "@/lib/safe-url";
 import { PostTags } from "@/components/tasks/tags";
 import { FORMAT_COLOR, FORMATS, type PostFormat } from "@/lib/formats";
+import { Segmented } from "@/components/ui/Segmented";
 
 type Slot = { time: string; onCamera: string; items: Task[] };
 
@@ -279,20 +280,17 @@ export function ShootBoard({
   // on set and on the phone, at the top of the list.
   const typePicker =
     formatsHere.length > 1 ? (
-      <div className="inline-flex flex-wrap gap-0.5 rounded-[7px] border border-line2 p-[3px]">
-        {[null, ...formatsHere].map((f) => (
-          <button
-            key={f ?? "all"}
-            type="button"
-            aria-pressed={only === f}
-            onClick={() => pickType(f)}
-            className={`flex h-8 cursor-pointer items-center gap-1.5 rounded-[5px] px-3 text-[13px] font-medium ${only === f ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
-          >
-            {f && <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />}
-            {f ? `${t(`format.${f}`)} · ${all.filter((v) => v.format === f).length}` : t("schedule.allFormats")}
-          </button>
-        ))}
-      </div>
+      <Segmented
+        size="sm"
+        items={[null, ...formatsHere].map((f) => ({
+          key: f ?? "all",
+          label: f ? t(`format.${f}`) : t("schedule.allFormats"),
+          active: only === f,
+          onClick: () => pickType(f),
+          dot: f ? FORMAT_COLOR[f] : undefined,
+          count: f ? all.filter((v) => v.format === f).length : undefined,
+        }))}
+      />
     ) : null;
 
   return (

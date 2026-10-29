@@ -11,6 +11,7 @@ import type { Partner } from "@/lib/finance";
 import { parseAmount, type Expense } from "@/lib/invoices";
 import { deleteExpense, saveExpense } from "../actions";
 import { Field, Section } from "../form-bits";
+import { PageTitle } from "@/components/shell/PageTitle";
 
 type ClientOpt = { id: string; name: string };
 
@@ -68,8 +69,7 @@ export function ExpenseForm({ expense, clients, partners, today }: { expense: Ex
       }}
       className="flex max-w-[760px] flex-col gap-6"
     >
-      <Link href={back} className="text-[14px] font-medium text-ink3 hover:text-ink">‹ {expense ? expense.description : t("expensesTitle")}</Link>
-      <h1 className="display text-[30px] lg:text-[40px]">{expense ? t("editExpense") : t("newExpense")}</h1>
+      <PageTitle back={{ href: back, label: expense ? expense.description : t("expensesTitle") }} title={expense ? t("editExpense") : t("newExpense")} />
 
       <Section title={t("expenseWhat")}>
         <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">

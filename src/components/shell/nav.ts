@@ -12,12 +12,16 @@ export const SIDEBAR_NAV: NavItem[] = [
   { href: "/clients", key: "clients", icon: "clients" },
 ];
 
-// "Content" group (design: SADRŽAJ): video bank, posting schedule and shoot days.
+// "Content" group (design: SADRŽAJ), in the order the work goes: the bank of posts (ideas), shoot days,
+// then the posting schedule.
 export const CONTENT_NAV: NavItem[] = [
+  { href: "/content/videos", key: "videos", icon: "videos" },
   { href: "/content/shoots", key: "shoots", icon: "shoots" },
   { href: "/content/schedule", key: "schedule", icon: "schedule" },
-  { href: "/content/videos", key: "videos", icon: "videos" },
 ];
+
+// With the account at the bottom of the sidebar: everyone's own settings.
+export const SETTINGS_NAV: NavItem = { href: "/settings", key: "settings", icon: "settings" };
 
 // The admin login only oversees: its overview, the clients (settings, portal), the team (and invoices, see Sidebar).
 export const ADMIN_ONLY_NAV: NavItem[] = [

@@ -8,7 +8,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import type { Profile } from "@/lib/auth";
 import { SIDEBAR_COOKIE } from "@/lib/theme";
 import { NAV_ICONS } from "./icons";
-import { ADMIN_ONLY_NAV, CONTENT_NAV, INVOICES_NAV, SIDEBAR_NAV, isActive, type NavItem } from "./nav";
+import { ADMIN_ONLY_NAV, CONTENT_NAV, INVOICES_NAV, SIDEBAR_NAV, SETTINGS_NAV, isActive, type NavItem } from "./nav";
 
 function NavLink({ item, active, label, collapsed }: { item: NavItem; active: boolean; label: string; collapsed: boolean }) {
   return (
@@ -83,6 +83,7 @@ export function Sidebar({ profile, initialCollapsed, invoices }: { profile: Prof
       </nav>
 
       <div className="mt-auto flex flex-col gap-3">
+        <NavLink item={SETTINGS_NAV} active={isActive(pathname, SETTINGS_NAV)} label={t("nav.settings")} collapsed={collapsed} />
         <div className={`flex items-center gap-2.5 ${collapsed ? "flex-col" : "px-1"}`}>
           <Link
             href="/settings"

@@ -11,6 +11,7 @@ import { invoiceNumber, money, payState } from "@/lib/invoices";
 import { safeHref } from "@/lib/safe-url";
 import { MarkPaid } from "../MarkPaid";
 import { PayBadge } from "../parts";
+import { PageTitle } from "@/components/shell/PageTitle";
 
 // One invoice to look at: the document itself (as it prints) and, beside it, where it stands: paid or not,
 // when it's due, who it's for, how the money splits. Changing it is a separate step (Edit).
@@ -44,22 +45,22 @@ export default async function InvoiceView({ params }: PageProps<"/invoices/[id]"
 
   return (
     <div className="flex flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
-      <Link href="/invoices" className="text-[14px] font-medium text-ink3 hover:text-ink">‹ {t("title")}</Link>
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-2">
-          <h1 className="display text-[30px] lg:text-[40px]">{t("numbered", { number: number ?? "" })}</h1>
-          <PayBadge state={pay.state} daysLate={pay.daysLate} />
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {(pay.state === "waiting" || pay.state === "overdue") && <MarkPaid id={invoice.id} today={today} />}
-          <Link href={`/print/invoices/${invoice.id}`} target="_blank" className={buttonClass({ size: "sm", variant: "secondary" })}>
-            {t("pdf")}
-          </Link>
-          <Link href={`/invoices/${invoice.id}/edit`} className={buttonClass({ size: "sm" })}>
-            {t("edit")}
-          </Link>
-        </div>
-      </div>
+      <PageTitle
+        back={{ href: "/invoices", label: t("title") }}
+        title={t("numbered", { number: number ?? "" })}
+        sub={<PayBadge state={pay.state} daysLate={pay.daysLate} />}
+        actions={
+          <>
+            {(pay.state === "waiting" || pay.state === "overdue") && <MarkPaid id={invoice.id} today={today} />}
+            <Link href={`/print/invoices/${invoice.id}`} target="_blank" className={buttonClass({ size: "sm", variant: "secondary" })}>
+              {t("pdf")}
+            </Link>
+            <Link href={`/invoices/${invoice.id}/edit`} className={buttonClass({ size: "sm" })}>
+              {t("edit")}
+            </Link>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[auto_minmax(300px,420px)]">
         {/* The document, scaled to fit: 210 mm wide is ~794 px. */}

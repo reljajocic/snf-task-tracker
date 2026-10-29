@@ -6,6 +6,8 @@ import { PORTAL_STATUS_COLOR, getPortal, getPortalVideos, portalStatus } from "@
 import { PortalStatusLabel } from "../bits";
 import { PostTags } from "@/components/tasks/tags";
 import { FORMATS, FORMAT_COLOR } from "@/lib/formats";
+import { Segmented } from "@/components/ui/Segmented";
+import { PeriodNav } from "@/components/ui/PeriodNav";
 
 function shiftMonth(m: string, d: number) {
   const [y, mo] = m.split("-").map(Number);
@@ -34,31 +36,25 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
     return qs ? `${base}?${qs}` : base;
   };
   const formatSwitch = (
-    <div className="inline-flex flex-wrap gap-0.5 self-start rounded-[7px] border border-line2 p-[3px]">
-      {[null, ...FORMATS].map((f) => (
-        <Link
-          key={f ?? "all"}
-          href={link({ format: f })}
-          className={`flex h-9 items-center gap-1.5 rounded-[5px] px-3.5 text-[14px] font-medium ${format === f ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
-        >
-          {f && <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />}
-          {f ? t(`format.${f}`) : t("schedule.allFormats")}
-        </Link>
-      ))}
-    </div>
+    <Segmented
+      items={[null, ...FORMATS].map((f) => ({
+        key: f ?? "all",
+        label: f ? t(`format.${f}`) : t("schedule.allFormats"),
+        href: link({ format: f }),
+        active: format === f,
+        dot: f ? FORMAT_COLOR[f] : undefined,
+      }))}
+    />
   );
   const viewSwitch = (
-    <div className="inline-flex gap-0.5 self-start rounded-[7px] border border-line2 p-[3px]">
-      {(["calendar", "list"] as const).map((k) => (
-        <Link
-          key={k}
-          href={link({ view: k === "calendar" ? null : "list", m: null })}
-          className={`flex h-9 items-center rounded-[5px] px-4 text-[14px] font-medium ${view === k ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
-        >
-          {t(k === "calendar" ? "portal.viewCalendar" : "portal.viewList")}
-        </Link>
-      ))}
-    </div>
+    <Segmented
+      items={(["calendar", "list"] as const).map((k) => ({
+        key: k,
+        label: t(k === "calendar" ? "portal.viewCalendar" : "portal.viewList"),
+        href: link({ view: k === "calendar" ? null : "list", m: null }),
+        active: view === k,
+      }))}
+    />
   );
 
   if (view === "calendar") {
@@ -71,11 +67,7 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
         <div className="flex flex-wrap items-center gap-3">
           {viewSwitch}
           {formatSwitch}
-          <div className="flex h-[42px] items-center rounded-[7px] border border-line2 text-[14px] font-medium">
-            <Link href={link({ m: shiftMonth(month, -1) })} className="px-3 text-ink3 hover:text-ink">‹</Link>
-            <span className="min-w-[140px] text-center">{label}</span>
-            <Link href={link({ m: shiftMonth(month, 1) })} className="px-3 text-ink3 hover:text-ink">›</Link>
-          </div>
+          <PeriodNav label={label} prevHref={link({ m: shiftMonth(month, -1) })} nextHref={link({ m: shiftMonth(month, 1) })} />
         </div>
         <div className="grid grid-cols-7 gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
           {[0, 1, 2, 3, 4, 5, 6].map((d) => (

@@ -13,6 +13,7 @@ import { ClientPicker } from "./ClientPicker";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { ScheduleTable, type ScheduleWeek } from "./ScheduleTable";
 import { FORMATS } from "@/lib/formats";
+import { PeriodNav } from "@/components/ui/PeriodNav";
 
 function monthStart(d: IsoDate) {
   return `${d.slice(0, 7)}-01`;
@@ -135,11 +136,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
 
   const controls = (
     <>
-      <div className="flex h-[42px] items-center whitespace-nowrap rounded-[7px] border border-line2 text-[14px] font-medium">
-        <Link href={href({ m: shiftMonth(m, -1).slice(0, 7) })} scroll={false} className="px-3 text-ink3 hover:text-ink">‹</Link>
-        <span className="min-w-[120px] text-center">{period}</span>
-        <Link href={href({ m: shiftMonth(m, 1).slice(0, 7) })} scroll={false} className="px-3 text-ink3 hover:text-ink">›</Link>
-      </div>
+      <PeriodNav label={period} prevHref={href({ m: shiftMonth(m, -1).slice(0, 7) })} nextHref={href({ m: shiftMonth(m, 1).slice(0, 7) })} />
       <Segmented items={viewSeg} />
       <Link href={addHref} scroll={false} className={buttonClass({ size: "sm", className: "hidden lg:inline-flex" })}>
         {t("schedule.addVideo")}

@@ -10,6 +10,7 @@ import { useApprover } from "../../useApprover";
 import { NameField } from "../../video/[taskId]/VideoDecision";
 import { FORMATS, FORMAT_COLOR, type PostFormat } from "@/lib/formats";
 import { PostTags } from "@/components/tasks/tags";
+import { Segmented } from "@/components/ui/Segmented";
 
 type Item = { id: string; title: string; time: string | null; onCamera: string | null; type: string | null; format: PostFormat; script: ScriptSection[]; decision: Decision | null };
 
@@ -60,19 +61,16 @@ export function ScriptApprovals({
   return (
     <div className="flex flex-col gap-5">
       {formatsHere.length > 1 && (
-        <div className="inline-flex flex-wrap gap-0.5 self-start rounded-[7px] border border-line2 p-[3px]">
-          {[null, ...formatsHere].map((f) => (
-            <button
-              key={f ?? "all"}
-              type="button"
-              onClick={() => setOnly(f)}
-              className={`flex h-9 cursor-pointer items-center gap-1.5 rounded-[5px] px-3.5 text-[14px] font-medium ${only === f ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
-            >
-              {f && <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />}
-              {f ? `${formatLabels[f]} · ${all.filter((v) => v.format === f).length}` : allLabel}
-            </button>
-          ))}
-        </div>
+        <Segmented
+          items={[null, ...formatsHere].map((f) => ({
+            key: f ?? "all",
+            label: f ? formatLabels[f] : allLabel,
+            active: only === f,
+            onClick: () => setOnly(f),
+            dot: f ? FORMAT_COLOR[f] : undefined,
+            count: f ? all.filter((v) => v.format === f).length : undefined,
+          }))}
+        />
       )}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-1 flex-col gap-2 lg:max-w-[520px]">

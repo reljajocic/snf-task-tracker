@@ -13,6 +13,7 @@ import { Pill } from "./bits";
 import { MonthGrid, quickDates } from "./DatePicker";
 import { ClientProjectSelects, PeoplePicker, assignablePeople, PriorityPicker, StatusPicker, TypePicker, inputClass } from "./fields";
 import { FORMATS, FORMAT_COLOR, typeColor, type PostFormat } from "@/lib/formats";
+import { Segmented } from "@/components/ui/Segmented";
 
 type Defaults = {
   client_id?: string | null;
@@ -128,19 +129,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
     "w-full resize-y rounded-md border border-line2 bg-transparent px-3 py-2.5 text-[14px] leading-relaxed text-ink outline-none placeholder:text-ink3 focus:border-accent";
 
   const kindSwitch = (
-    <div className="inline-flex gap-0.5 rounded-[7px] border border-line2 p-[3px]">
-      {(["task", "video"] as const).map((k) => (
-        <button
-          key={k}
-          type="button"
-          aria-pressed={kind === k}
-          onClick={() => setKind(k)}
-          className={`h-8 cursor-pointer rounded-[5px] px-3.5 text-[13px] font-medium ${kind === k ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
-        >
-          {tv(k)}
-        </button>
-      ))}
-    </div>
+    <Segmented size="sm" items={(["task", "video"] as const).map((k) => ({ key: k, label: tv(k), active: kind === k, onClick: () => setKind(k) }))} />
   );
 
   const titleInput = (

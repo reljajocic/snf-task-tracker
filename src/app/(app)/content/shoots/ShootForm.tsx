@@ -9,6 +9,7 @@ import type { ClientOption } from "@/lib/data";
 import type { Person } from "@/lib/tasks";
 import { deleteShoot, saveShoot, type ShootFormState } from "./actions";
 import { ask } from "@/components/ui/Dialog";
+import { PageTitle } from "@/components/shell/PageTitle";
 
 export type ShootInitial = {
   id: string;
@@ -24,6 +25,7 @@ export type ShootInitial = {
 
 export function ShootForm({ clients, people, shoot, defaultDate }: { clients: ClientOption[]; people: Person[]; shoot?: ShootInitial; defaultDate: string }) {
   const t = useTranslations("shoots.form");
+  const tc = useTranslations("common");
   const [state, action, pending] = useActionState<ShootFormState, FormData>(saveShoot, null);
   const [clientId, setClientId] = useState(shoot?.client_id ?? clients[0]?.id ?? "");
   const [crew, setCrew] = useState<string[]>(shoot?.crew ?? []);
@@ -36,8 +38,7 @@ export function ShootForm({ clients, people, shoot, defaultDate }: { clients: Cl
     <form action={action} className="flex max-w-[760px] flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
       {shoot && <input type="hidden" name="id" value={shoot.id} />}
       {crew.map((c) => <input key={c} type="hidden" name="crew" value={c} />)}
-      <Link href={back} className="text-[14px] font-medium text-ink3 hover:text-ink">‹</Link>
-      <h1 className="display text-[30px] lg:text-[40px]">{shoot ? t("editTitle") : t("newTitle")}</h1>
+      <PageTitle back={{ href: back, label: tc("back") }} title={shoot ? t("editTitle") : t("newTitle")} />
       <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">
         <label className="flex flex-col gap-2">
           {label(t("client"))}

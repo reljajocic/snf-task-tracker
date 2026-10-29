@@ -10,6 +10,7 @@ import { idsByTime } from "@/lib/script-text";
 import type { ScriptSection, ShotStatus, Task } from "@/lib/tasks";
 import { removeFromShoot, reorderShoot } from "../actions";
 import { FORMATS, FORMAT_COLOR } from "@/lib/formats";
+import { Segmented } from "@/components/ui/Segmented";
 
 const STATUS_STYLE: Record<ShotStatus, string> = {
   to_shoot: "text-ink2",
@@ -152,31 +153,17 @@ export function ShootSheet({
       <div className="flex flex-wrap items-center gap-2.5">
         {filters}
         <span className="text-[13px] font-medium text-ink3">{t("sortBy")}</span>
-        <div className="inline-flex gap-0.5 rounded-[7px] border border-line2 p-[3px]">
-          {(["manual", "time", "status", "person", "type"] as const).map((k) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => setSort(k)}
-              className={`h-8 cursor-pointer rounded-[5px] px-3 text-[13px] font-medium ${sort === k ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
-            >
-              {t(`sort.${k}`)}
-            </button>
-          ))}
-        </div>
+        <Segmented size="sm" items={(["manual", "time", "status", "person", "type"] as const).map((k) => ({ key: k, label: t(`sort.${k}`), active: sort === k, onClick: () => setSort(k) }))} />
         {sort !== "manual" && <span className="text-[13px] text-ink3">{t("sortViewOnly")}</span>}
-        <div className="inline-flex gap-0.5 rounded-[7px] border border-line2 p-[3px]">
-          {([true, false] as const).map((full) => (
-            <button
-              key={String(full)}
-              type="button"
-              onClick={() => setAllScripts(full)}
-              className={`h-8 cursor-pointer rounded-[5px] px-3 text-[13px] font-medium ${fullScripts === full && !Object.keys(scriptFlip).length ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
-            >
-              {t(full ? "scriptsFull" : "scriptsShort")}
-            </button>
-          ))}
-        </div>
+        <Segmented
+          size="sm"
+          items={([true, false] as const).map((full) => ({
+            key: String(full),
+            label: t(full ? "scriptsFull" : "scriptsShort"),
+            active: fullScripts === full && !Object.keys(scriptFlip).length,
+            onClick: () => setAllScripts(full),
+          }))}
+        />
         {editable && ordered.some((v) => v.shoot_time) && (
           <button
             type="button"
