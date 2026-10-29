@@ -11,6 +11,8 @@ import { Segmented } from "@/components/ui/Segmented";
 import { ShootBoard } from "./ShootBoard";
 import { ShootNav } from "./ShootNav";
 import { safeHref } from "@/lib/safe-url";
+import { PageTitle } from "@/components/shell/PageTitle";
+import { buttonClass } from "@/components/ui/Button";
 
 // 2d (desktop) / 2e (mobile, on set)
 export default async function ShootPage({ params, searchParams }: PageProps<"/content/shoots/[id]">) {
@@ -47,47 +49,44 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Names from the sign-up link and ticks from the crew show up within seconds. */}
       <AutoRefresh seconds={15} />
-      <header className="flex flex-col gap-4 px-5 pb-5 pt-6 lg:flex-row lg:items-end lg:justify-between lg:px-10 lg:pt-9">
-        <div className="flex min-w-0 flex-col gap-3">
-          <Link href="/content/shoots" className="text-[14px] font-medium text-ink3 hover:text-ink">
-            {t("shoots.back")}
-          </Link>
-          <span className="text-[13px] font-medium text-ink2 lg:text-[14px]">
-            {[client.name, day.location].filter(Boolean).join(" · ")}
-            <span className="lg:hidden">
-              {" "}
-              · {t("weekday.long", { day: String(weekdayIndex(day.date)) })}, {formatDate(day.date)}
-            </span>
-          </span>
-          <h1 className="display text-[32px] lg:text-[44px]">{t("video.shoot")}</h1>
-          <ShootNav
-            prev={stepTo(days[at - 1])}
-            next={stepTo(days[at + 1])}
-            scope={{ href: shootHref(day.id, { nav: allClients ? null : "all" }), all: allClients }}
-            labels={{ prev: t("shoots.prevShoot"), next: t("shoots.nextShoot"), all: t("shoots.allClients") }}
-          />
-        </div>
-        <div className="hidden items-center gap-3.5 lg:flex">
-          <Segmented
-            items={[
-              { key: "sheet", label: t("shootSheet.sheet"), href: shootHref(id, { view: null }), active: desktopView === "sheet" },
-              { key: "onset", label: t("shootSheet.onSet"), href: shootHref(id, { view: "onset" }), active: desktopView === "onset" },
-            ]}
-          />
-          {day.drive_url && (
-            <a href={safeHref(day.drive_url)} target="_blank" rel="noreferrer" className="flex h-[42px] items-center rounded-[7px] border border-line2 px-3.5 text-[14px] font-medium">
-              {t("shoots.footage")}
-            </a>
-          )}
-          <span className="flex h-[42px] items-center rounded-[7px] border border-line2 px-3.5 text-[14px] font-medium">
-            {t("weekday.long", { day: String(weekdayIndex(day.date)) })}, {formatDate(day.date)}
-          </span>
-          {canManage && (
-            <Link href={`/content/shoots/${day.id}/edit`} className="flex h-[42px] items-center rounded-[7px] border border-line2 px-4 text-[14px] font-medium">
-              {t("shoots.edit")}
-            </Link>
-          )}
-        </div>
+      {/* One header: the day is the title (‹ › to the shoot before and after), client and place above it,
+          the view and the day's own actions on the right. */}
+      <header className="px-5 pb-5 pt-6 lg:px-10 lg:pt-9">
+        <PageTitle
+          back={{ href: "/content/shoots", label: t("nav.shoots") }}
+          eyebrow={[client.name, day.location].filter(Boolean).join(" · ")}
+          title={`${t("weekday.long", { day: String(weekdayIndex(day.date)) })}, ${formatDate(day.date)}`}
+          sub={
+            <ShootNav
+              prev={stepTo(days[at - 1])}
+              next={stepTo(days[at + 1])}
+              scope={{ href: shootHref(day.id, { nav: allClients ? null : "all" }), all: allClients }}
+              labels={{ prev: t("shoots.prevShoot"), next: t("shoots.nextShoot"), all: t("shoots.allClients") }}
+            />
+          }
+          actions={
+            <>
+              <span className="hidden lg:flex">
+                <Segmented
+                  items={[
+                    { key: "sheet", label: t("shootSheet.sheet"), href: shootHref(id, { view: null }), active: desktopView === "sheet" },
+                    { key: "onset", label: t("shootSheet.onSet"), href: shootHref(id, { view: "onset" }), active: desktopView === "onset" },
+                  ]}
+                />
+              </span>
+              {day.drive_url && (
+                <a href={safeHref(day.drive_url)} target="_blank" rel="noreferrer" className={buttonClass({ size: "sm", variant: "secondary" })}>
+                  {t("shoots.footage")}
+                </a>
+              )}
+              {canManage && (
+                <Link href={`/content/shoots/${day.id}/edit`} className={buttonClass({ size: "sm", variant: "secondary" })}>
+                  {t("shoots.edit")}
+                </Link>
+              )}
+            </>
+          }
+        />
       </header>
       <ShootBoard
         day={day}
