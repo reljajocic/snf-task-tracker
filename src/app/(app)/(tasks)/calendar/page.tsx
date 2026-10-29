@@ -93,7 +93,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
 
   return (
     <>
-      <PageHeader title={t("calendar.title")} eyebrow={t("calendar.eyebrow")} border actions={<span className="hidden items-center gap-3.5 lg:flex">{navControls}</span>} />
+      <PageHeader title={t("calendar.title")} eyebrow={t("calendar.eyebrow")} border phoneTitle={false} actions={<span className="hidden items-center gap-3.5 lg:flex">{navControls}</span>} />
 
       {/* Mobile (5d): segmented + strip or month dots, then the selected day's list */}
       <div className="flex flex-col gap-4 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:hidden">

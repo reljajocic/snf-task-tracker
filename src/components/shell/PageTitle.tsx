@@ -32,7 +32,7 @@ export function PageTitle({
       <div className="flex min-w-0 flex-col gap-2.5">
         {back && <BackLink {...back} />}
         {eyebrow && <span className="text-[14px] font-medium leading-snug text-ink2">{eyebrow}</span>}
-        <h1 className="display text-[32px] leading-[1] lg:text-[44px]">{title}</h1>
+        <h1 className="display text-[28px] leading-[1] lg:text-[44px]">{title}</h1>
         {sub}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-3 lg:flex-none lg:flex-nowrap">{actions}</div>}

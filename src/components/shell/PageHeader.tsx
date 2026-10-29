@@ -9,16 +9,19 @@ export async function PageHeader({
   actions,
   newTask = true,
   border = false,
+  phoneTitle = true,
 }: {
   title: string;
   eyebrow?: ReactNode;
   actions?: ReactNode;
   newTask?: boolean;
   border?: boolean;
+  /** false: phones skip the big title (the screen's tabs already say where you are). */
+  phoneTitle?: boolean;
 }) {
   return (
     <header
-      className={`flex flex-col gap-4 px-5 pb-5 pt-8 lg:flex-row lg:items-end lg:justify-between lg:gap-6 lg:px-10 lg:pb-6 lg:pt-9 ${
+      className={`flex flex-col px-5 lg:flex-row ${phoneTitle ? "gap-4 pb-5 pt-6" : eyebrow ? "gap-2 pb-3 pt-4" : "max-lg:hidden"} lg:items-end lg:justify-between lg:gap-6 lg:px-10 lg:pb-6 lg:pt-9 ${
         border ? "border-line lg:border-b" : ""
       }`}
     >
@@ -28,7 +31,7 @@ export async function PageHeader({
             {eyebrow}
           </span>
         )}
-        <h1 className="display text-[32px] lg:whitespace-nowrap lg:text-[44px]">{title}</h1>
+        <h1 className={`display text-[28px] lg:whitespace-nowrap lg:text-[44px] ${phoneTitle ? "" : "max-lg:sr-only"}`}>{title}</h1>
       </div>
       {(actions || newTask) && (
         <div className="flex flex-wrap items-center gap-3 lg:flex-none lg:flex-nowrap lg:gap-4">

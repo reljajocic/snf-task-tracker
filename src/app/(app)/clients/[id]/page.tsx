@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { PriorityMark, StatusDot, TaskMeta, dueTone } from "@/components/tasks/bits";
+import { PriorityMark, StatusDot, dueTone } from "@/components/tasks/bits";
 import { TaskLink } from "@/components/tasks/links";
 import { AvatarStack } from "@/components/ui/Avatar";
 import { requireProfile } from "@/lib/auth";
@@ -60,9 +60,12 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                   >
                     <div className="flex min-w-0 flex-col gap-[5px]">
                       <span className={`text-[15px] font-medium leading-snug ${x.status === "done" ? "line-through" : ""}`}>{x.title}</span>
-                      <span className="text-[13px] leading-tight text-ink2">
-                        {[x.project?.name, x.type ? t(`taskType.${x.type}`) : null].filter(Boolean).join(" · ") || <TaskMeta task={x} />}
-                      </span>
+                      {/* Project and type only: the client's name is the page's own title. */}
+                      {(x.project || x.type) && (
+                        <span className="text-[13px] leading-tight text-ink2">
+                          {[x.project?.name, x.type ? t(`taskType.${x.type}`) : null].filter(Boolean).join(" · ")}
+                        </span>
+                      )}
                     </div>
                     <span className="hidden lg:block"><PriorityMark priority={x.priority} /></span>
                     <span className="hidden wide:block"><StatusDot status={x.status} /></span>

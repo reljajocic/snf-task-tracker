@@ -44,7 +44,7 @@ export default async function TaskListPage({ searchParams }: PageProps<"/tasks">
 
   return (
     <>
-      <PageHeader title={t("list.title")} eyebrow={t("task.count", { count: rows.length })} />
+      <PageHeader title={t("list.title")} eyebrow={t("task.count", { count: rows.length })} phoneTitle={false} />
       <Suspense>
         <ListFilters people={lookups.people} clients={lookups.clients} />
       </Suspense>

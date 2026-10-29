@@ -28,6 +28,8 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   const [shootFilter, setShootFilter] = useState<string>("all");
   const [sort, setSort] = useState<"newest" | "oldest" | "title">("newest");
   const [q, setQ] = useState("");
+  // Phones: search, sort, shoot and tags sit behind "Filters" so the posts come first.
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [open, setOpen] = useState<Set<string>>(new Set());
   const toggle = (id: string) =>
@@ -72,6 +74,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
     .sort((a, b) =>
       sort === "title" ? a.title.localeCompare(b.title) : sort === "oldest" ? when(a).localeCompare(when(b)) : when(b).localeCompare(when(a)),
     );
+  const activeFilters = [needle, type, location, profile, shootFilter !== "all", sort !== "newest"].filter(Boolean).length;
   // Phones: the two selects share a row under the search field (they used to take a row each).
   const selectCls = "h-9 min-w-0 flex-1 cursor-pointer appearance-none rounded-full border border-line2 bg-transparent px-3.5 text-[13px] font-medium text-ink2 outline-none hover:text-ink sm:flex-none";
   const chip = (active: boolean) =>
@@ -90,32 +93,6 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
 
   return (
     <div className="flex flex-col gap-4 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-5 lg:px-10 lg:pb-12">
-      <div className="flex flex-wrap items-center gap-2">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={t("search")}
-          className="h-9 w-full rounded-full border border-line2 bg-transparent px-4 text-[14px] text-ink outline-none focus:border-accent sm:w-auto sm:min-w-[200px] sm:max-w-[320px] sm:flex-1"
-        />
-        <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} aria-label={t("sort")} className={selectCls}>
-          <option value="newest">{t("sortNewest")}</option>
-          <option value="oldest">{t("sortOldest")}</option>
-          <option value="title">{t("sortTitle")}</option>
-        </select>
-        {shootOptions.length > 0 && (
-          <select value={shootFilter} onChange={(e) => setShootFilter(e.target.value)} aria-label={t("shootFilter")} className={`${selectCls} ${shootFilter !== "all" ? "border-ink2 text-ink" : ""}`}>
-            <option value="all">{t("allShoots")}</option>
-            {shootOptions.map((sh) => (
-              <option key={sh.id} value={sh.id}>
-                {formatDate(sh.date)}
-                {sh.location ? ` · ${sh.location}` : ""}
-              </option>
-            ))}
-            {videos.some((v) => !v.shoot) && <option value="none">{t("noShoot")}</option>}
-          </select>
-        )}
-        {(q || shootFilter !== "all") && <span className="text-[13px] text-ink3">{t("matching", { count: shown.length })}</span>}
-      </div>
       {/* Post type first, like everywhere else: the quickest way to split the bank. */}
       {formats.length > 1 && (
         <Segmented
@@ -131,32 +108,66 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
           }))}
         />
       )}
-      {(types.length > 1 || locations.length > 1 || profiles.length > 1) && (
-        // Phones: one row that slides sideways (wrapped, the chips took three rows before the first post).
-        <div className="no-scrollbar -mx-5 flex gap-1.5 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:px-0">
-          {profiles.length > 1 && (
-            <>
-              {profiles.map((x) => (
-                <button key={x} type="button" onClick={() => setProfile(profile === x ? null : x)} className={chip(profile === x)}>
-                  {x}
-                </button>
+      <div className="flex items-center gap-3 sm:hidden">
+        <button type="button" onClick={() => setFiltersOpen((o) => !o)} className={`h-10 cursor-pointer rounded-full border px-4 text-[14px] font-medium ${activeFilters ? "border-ink2 text-ink" : "border-line2 text-ink2"}`}>
+          {activeFilters ? tAll("list.filtersN", { count: activeFilters }) : tAll("list.filters")}
+        </button>
+        {activeFilters > 0 && <span className="text-[13px] text-ink3">{t("matching", { count: shown.length })}</span>}
+      </div>
+      <div className={`flex-col gap-4 ${filtersOpen ? "flex" : "hidden"} sm:flex`}>
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={t("search")}
+            className="h-9 w-full rounded-full border border-line2 bg-transparent px-4 text-[14px] text-ink outline-none focus:border-accent sm:w-auto sm:min-w-[200px] sm:max-w-[320px] sm:flex-1"
+          />
+          <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} aria-label={t("sort")} className={selectCls}>
+            <option value="newest">{t("sortNewest")}</option>
+            <option value="oldest">{t("sortOldest")}</option>
+            <option value="title">{t("sortTitle")}</option>
+          </select>
+          {shootOptions.length > 0 && (
+            <select value={shootFilter} onChange={(e) => setShootFilter(e.target.value)} aria-label={t("shootFilter")} className={`${selectCls} ${shootFilter !== "all" ? "border-ink2 text-ink" : ""}`}>
+              <option value="all">{t("allShoots")}</option>
+              {shootOptions.map((sh) => (
+                <option key={sh.id} value={sh.id}>
+                  {formatDate(sh.date)}
+                  {sh.location ? ` · ${sh.location}` : ""}
+                </option>
               ))}
-              <span className="mx-1 h-8 w-px bg-line2" />
-            </>
+              {videos.some((v) => !v.shoot) && <option value="none">{t("noShoot")}</option>}
+            </select>
           )}
-          {types.map((x) => (
-            <button key={x} type="button" onClick={() => setType(type === x ? null : x)} className={chip(type === x)}>
-              {x}
-            </button>
-          ))}
-          {types.length > 1 && locations.length > 1 && <span className="mx-1 h-8 w-px bg-line2" />}
-          {locations.map((x) => (
-            <button key={x} type="button" onClick={() => setLocation(location === x ? null : x)} className={chip(location === x)}>
-              {x}
-            </button>
-          ))}
+          {(q || shootFilter !== "all") && <span className="text-[13px] text-ink3">{t("matching", { count: shown.length })}</span>}
         </div>
-      )}
+        {(types.length > 1 || locations.length > 1 || profiles.length > 1) && (
+          // Phones: one row that slides sideways (wrapped, the chips took three rows before the first post).
+          <div className="no-scrollbar -mx-5 flex gap-1.5 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:px-0">
+            {profiles.length > 1 && (
+              <>
+                {profiles.map((x) => (
+                  <button key={x} type="button" onClick={() => setProfile(profile === x ? null : x)} className={chip(profile === x)}>
+                    {x}
+                  </button>
+                ))}
+                <span className="mx-1 h-8 w-px bg-line2" />
+              </>
+            )}
+            {types.map((x) => (
+              <button key={x} type="button" onClick={() => setType(type === x ? null : x)} className={chip(type === x)}>
+                {x}
+              </button>
+            ))}
+            {types.length > 1 && locations.length > 1 && <span className="mx-1 h-8 w-px bg-line2" />}
+            {locations.map((x) => (
+              <button key={x} type="button" onClick={() => setLocation(location === x ? null : x)} className={chip(location === x)}>
+                {x}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
 
       {shown.length === 0 ? (
         <p className="rounded-lg border border-dashed border-line2 px-4 py-10 text-center text-[14px] text-ink3">{t(`empty.${tab}`)}</p>
