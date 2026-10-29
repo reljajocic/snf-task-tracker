@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { buttonClass } from "@/components/ui/Button";
+import { Segmented } from "@/components/ui/Segmented";
 import { requireProfile } from "@/lib/auth";
 import { ClientMark } from "@/components/ClientMark";
 import { CLIENT_STATUSES, CLIENT_STATUS_COLOR, getClients, type ClientStatus } from "@/lib/clients";
@@ -52,20 +53,8 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
   return (
     <>
       <PageHeader title={t("clients.title")} newTask={false} actions={newButton} />
-      <div className="no-scrollbar flex gap-1.5 overflow-x-auto border-b border-line px-5 pb-[18px] lg:px-10">
-        {tabs.map((tb) => (
-          <Link
-            key={tb.key}
-            href={tb.href}
-            scroll={false}
-            className={`flex h-[38px] flex-none items-center gap-2 whitespace-nowrap rounded-full border px-3.5 text-[14px] font-medium ${
-              tb.active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"
-            }`}
-          >
-            {tb.label}
-            <span className="opacity-60">{tb.count}</span>
-          </Link>
-        ))}
+      <div className="border-b border-line px-5 pb-[18px] lg:px-10">
+        <Segmented scroll items={tabs.map((tb) => ({ ...tb, dot: tb.key === "all" ? undefined : CLIENT_STATUS_COLOR[tb.key as ClientStatus] }))} />
       </div>
 
       {/* Mobile cards (6c) */}

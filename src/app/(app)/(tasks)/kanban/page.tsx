@@ -56,9 +56,10 @@ export default async function KanbanPage({ searchParams }: PageProps<"/kanban">)
   return (
     <>
       <PageHeader title={t("kanban.title")} border actions={<span className="hidden gap-3.5 lg:flex"><Segmented items={kindSeg} /><PersonFilter people={people} value={person} hrefFor={personHrefs} /></span>} />
-      <div className="flex flex-col gap-2.5 px-5 pb-1 lg:hidden">
-        <Segmented items={kindSeg} full size="lg" />
-        <Segmented items={mobileSeg} full />
+      {/* Phones: both filters in one row (they used to take two full-width rows before the first card). */}
+      <div className="no-scrollbar flex gap-2 overflow-x-auto px-5 pb-1 lg:hidden">
+        <Segmented items={kindSeg} size="sm" nowrap />
+        <Segmented items={mobileSeg} size="sm" nowrap />
       </div>
       <KanbanBoard tasks={tasks} today={today} />
     </>

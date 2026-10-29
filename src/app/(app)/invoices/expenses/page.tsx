@@ -45,6 +45,7 @@ export default async function ExpensesPage({ searchParams }: PageProps<"/invoice
               { key: "received", label: unpaid ? t("viewReceivedUnpaid", { n: unpaid }) : t("viewReceived"), href: "/invoices/expenses?view=received", active: view === "received" },
               { key: "subscriptions", label: t("subscriptionsCount", { n: activeSubs.length }), href: "/invoices/expenses?view=subscriptions", active: view === "subscriptions" },
             ]}
+            scroll
           />
           <div className="flex gap-2">
             <Link href="/invoices/expenses/subscriptions/new" className={buttonClass({ size: "sm", variant: "secondary" })}>{t("addSubscriptionShort")}</Link>

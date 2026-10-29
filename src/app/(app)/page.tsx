@@ -10,6 +10,7 @@ import { getLookups, getTasks } from "@/lib/data";
 import { ShootEvent } from "@/components/tasks/ShootEvent";
 import { addDays, formatDate, formatShortDate, today as getToday, weekdayIndex } from "@/lib/dates";
 import { byDue, taskOverdue, type Task } from "@/lib/tasks";
+import { shortNames } from "@/lib/short-names";
 
 // 1a / 1b. What Home shows: members their own tasks; a client's managers all of that client's work;
 // the admin everything. "Mine / All" (for those who oversee) narrows the sections to their own.
@@ -250,13 +251,15 @@ async function PeopleStats({
   compact?: boolean;
 }) {
   const t = await getTranslations("home");
+  const names = shortNames(stats.map((s) => s.person));
   return (
-    <div className={`grid gap-2.5 ${compact ? "grid-cols-3" : "grid-cols-[repeat(auto-fill,minmax(130px,1fr))]"}`}>
+    // Phones: one row that slides sideways (three to a row cut the names to "Mar…"); desktop: a grid.
+    <div className={compact ? "no-scrollbar -mx-5 flex gap-2.5 overflow-x-auto px-5" : "grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-2.5"}>
       {stats.map(({ person, count, late }) => (
-        <div key={person.id} className={`flex flex-col border border-line bg-surf ${compact ? "gap-3 rounded-[10px] p-3.5" : "gap-3.5 rounded-lg p-4"}`}>
+        <div key={person.id} className={`flex flex-col border border-line bg-surf ${compact ? "min-w-[120px] flex-none gap-3 rounded-[10px] p-3.5" : "gap-3.5 rounded-lg p-4"}`}>
           <div className="flex min-w-0 items-center gap-2">
             <Avatar person={person} size={compact ? 26 : 24} />
-            <span className={`truncate font-medium text-ink2 ${compact ? "text-[15px]" : "text-[14px]"}`}>{person.full_name.split(" ")[0]}</span>
+            <span className={`truncate font-medium text-ink2 ${compact ? "text-[15px]" : "text-[14px]"}`}>{names[person.id]}</span>
           </div>
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1.5">
             <span className={`display ${compact ? "text-[30px]" : "text-[40px]"} leading-[0.9]`}>{count}</span>

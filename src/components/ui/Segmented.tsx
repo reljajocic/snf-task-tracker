@@ -18,12 +18,26 @@ export type SegmentItem = {
  * The one control for picking one of a few options (design "Moji / Svi", "Mesec / Nedelja", filters):
  * every filter row in the app uses it, so they all look and behave the same.
  */
-export function Segmented({ items, full = false, size = "md", scroll = false }: { items: SegmentItem[]; full?: boolean; size?: "sm" | "md" | "lg"; scroll?: boolean }) {
+export function Segmented({
+  items,
+  full = false,
+  size = "md",
+  scroll = false,
+  nowrap = false,
+}: {
+  items: SegmentItem[];
+  full?: boolean;
+  size?: "sm" | "md" | "lg";
+  /** One row in its own sideways-scrolling strip. */
+  scroll?: boolean;
+  /** One row, never shrinking (for a row of several controls that scrolls as a whole). */
+  nowrap?: boolean;
+}) {
   const sz = size === "lg" ? "h-11 rounded-[7px] px-4 text-[15px]" : size === "sm" ? "h-8 rounded-[5px] px-3 text-[13px]" : "h-9 rounded-[5px] px-4 text-[14px]";
   // scroll: one row that slides sideways when it doesn't fit (phones), instead of wrapping onto a second line.
   const control = (
     <div
-      className={`gap-0.5 border border-line2 p-[3px] ${full ? "grid rounded-[10px] p-1" : `inline-flex rounded-[7px] ${scroll ? "flex-nowrap" : "max-w-full flex-wrap"}`}`}
+      className={`gap-0.5 border border-line2 p-[3px] ${full ? "grid rounded-[10px] p-1" : `inline-flex rounded-[7px] ${scroll || nowrap ? "flex-none flex-nowrap" : "max-w-full flex-wrap"}`}`}
       style={full ? { gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` } : undefined}
     >
       {items.map((it) => {

@@ -75,9 +75,10 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
     .sort((a, b) =>
       sort === "title" ? a.title.localeCompare(b.title) : sort === "oldest" ? when(a).localeCompare(when(b)) : when(b).localeCompare(when(a)),
     );
-  const selectCls = "h-9 cursor-pointer appearance-none rounded-full border border-line2 bg-transparent px-3.5 text-[13px] font-medium text-ink2 outline-none hover:text-ink";
+  // Phones: the two selects share a row under the search field (they used to take a row each).
+  const selectCls = "h-9 min-w-0 flex-1 cursor-pointer appearance-none rounded-full border border-line2 bg-transparent px-3.5 text-[13px] font-medium text-ink2 outline-none hover:text-ink sm:flex-none";
   const chip = (active: boolean) =>
-    `h-8 cursor-pointer whitespace-nowrap rounded-full border px-3 text-[13px] font-semibold tracking-[0.04em] ${active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`;
+    `h-8 flex-none cursor-pointer whitespace-nowrap rounded-full border px-3 text-[13px] font-semibold tracking-[0.04em] ${active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`;
   const action = "h-8 cursor-pointer whitespace-nowrap rounded-md border border-line2 bg-transparent px-2.5 text-[13px] font-medium text-ink2 hover:border-ink3 hover:text-ink disabled:opacity-50";
 
   const meta = (v: Task) => {
@@ -97,7 +98,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder={t("search")}
-          className="h-9 min-w-[200px] flex-1 rounded-full border border-line2 bg-transparent px-4 text-[14px] text-ink outline-none focus:border-accent sm:max-w-[320px]"
+          className="h-9 w-full rounded-full border border-line2 bg-transparent px-4 text-[14px] text-ink outline-none focus:border-accent sm:w-auto sm:min-w-[200px] sm:max-w-[320px] sm:flex-1"
         />
         <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} aria-label={t("sort")} className={selectCls}>
           <option value="newest">{t("sortNewest")}</option>
@@ -122,6 +123,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
       {formats.length > 1 && (
         <Segmented
           size="sm"
+          scroll
           items={[null, ...formats].map((f) => ({
             key: f ?? "all",
             label: f ? tf(f) : tAll("schedule.allFormats"),
@@ -133,7 +135,8 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
         />
       )}
       {(types.length > 1 || locations.length > 1 || profiles.length > 1) && (
-        <div className="flex flex-wrap gap-1.5">
+        // Phones: one row that slides sideways (wrapped, the chips took three rows before the first post).
+        <div className="no-scrollbar -mx-5 flex gap-1.5 overflow-x-auto px-5 sm:mx-0 sm:flex-wrap sm:px-0">
           {profiles.length > 1 && (
             <>
               {profiles.map((x) => (

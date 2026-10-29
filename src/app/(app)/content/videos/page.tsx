@@ -88,14 +88,12 @@ export default async function VideoBankPage({ searchParams }: PageProps<"/conten
         }
       />
       <div className="flex flex-col gap-3 border-b border-line px-5 pb-[18px] lg:px-10">
-        <p className="max-w-[640px] text-[14px] text-ink3">{t("bank.intro")}</p>
+        <p className="hidden max-w-[640px] text-[14px] text-ink3 sm:block">{t("bank.intro")}</p>
         <div className="flex flex-wrap items-center gap-2.5">
           <Suspense>
             <ClientPicker clients={clients.map((c) => ({ id: c.id, name: c.name }))} value={client.id} />
           </Suspense>
-          <div className="no-scrollbar max-w-full overflow-x-auto">
-            <Segmented items={tabs} />
-          </div>
+          <Segmented items={tabs} scroll />
         </div>
       </div>
       <VideoBank key={`${client.id}-${tab}`} tab={tab} videos={groups[tab]} shoots={upcoming} today={today} />

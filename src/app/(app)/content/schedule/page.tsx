@@ -119,6 +119,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
       </Suspense>
       {profiles.length > 0 && (
         <Segmented
+          scroll
           items={[
             ...profiles.map((p) => ({ key: p, label: p, href: href({ profile: p }), active: profile === p })),
             { key: "all", label: t("schedule.allProfiles"), href: href({ profile: "all" }), active: profile === null },
@@ -126,6 +127,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
         />
       )}
       <Segmented
+        scroll
         items={[
           { key: "all", label: t("schedule.allFormats"), href: href({ format: null }), active: format === null },
           ...FORMATS.map((f) => ({ key: f, label: t(`format.${f}`), href: href({ format: f }), active: format === f })),

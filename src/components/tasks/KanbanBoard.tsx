@@ -10,6 +10,7 @@ import { STATUSES, STATUS_COLOR, byDue, type Task, type TaskStatus } from "@/lib
 import { DueChip, dueTone } from "./bits";
 import { TaskLink } from "./links";
 import { PhaseBar, VideoTag } from "./video-bits";
+import { Segmented } from "@/components/ui/Segmented";
 
 function KanbanCard({ task, today, mobile = false }: { task: Task; today: IsoDate; mobile?: boolean }) {
   const t = useTranslations();
@@ -83,21 +84,18 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
     <>
       {/* Mobile: status tabs */}
       <div className="flex flex-col lg:hidden">
-        <div className="no-scrollbar flex flex-none gap-2 overflow-x-auto px-5 py-3.5">
-          {columns.map((c) => (
-            <button
-              key={c.status}
-              type="button"
-              onClick={() => setTab(c.status)}
-              className={`flex h-11 flex-none cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border px-3.5 text-[15px] font-medium ${
-                tab === c.status ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"
-              }`}
-            >
-              <span className="size-[9px] rounded-full" style={{ background: STATUS_COLOR[c.status] }} />
-              {t(`status.${c.status}`)}
-              <span className="opacity-60">{c.cards.length}</span>
-            </button>
-          ))}
+        <div className="px-5 py-3">
+          <Segmented
+            scroll
+            items={columns.map((c) => ({
+              key: c.status,
+              label: t(`status.${c.status}`),
+              active: tab === c.status,
+              onClick: () => setTab(c.status),
+              dot: STATUS_COLOR[c.status],
+              count: c.cards.length,
+            }))}
+          />
         </div>
         <div className="flex flex-col gap-2.5 px-5 pb-[calc(120px+env(safe-area-inset-bottom))]">
           {active.cards.length ? (

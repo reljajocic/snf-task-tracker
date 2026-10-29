@@ -34,12 +34,13 @@ export function Avatar({ person, size = 28 }: { person: Person; size?: number })
 
 export function AvatarStack({ people, size = 28, ring = "var(--surf)" }: { people: Person[]; size?: number; ring?: string }) {
   return (
-    <span className="inline-flex flex-none">
+    // Fixed size and aligned to the top: inside a flex row it would otherwise stretch, and the ring with it.
+    <span className="inline-flex flex-none items-start self-start">
       {people.map((p, i) => (
         <span
           key={p.initials + i}
-          className="flex rounded-full"
-          style={{ marginLeft: i === 0 ? 0 : -8, boxShadow: `0 0 0 2px ${ring}` }}
+          className="flex flex-none rounded-full"
+          style={{ width: size, height: size, marginLeft: i === 0 ? 0 : -8, boxShadow: `0 0 0 2px ${ring}` }}
         >
           <Avatar person={p} size={size} />
         </span>

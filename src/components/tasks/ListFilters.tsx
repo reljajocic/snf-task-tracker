@@ -4,6 +4,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { PRIORITIES, STATUSES, TASK_TYPES, type Person } from "@/lib/tasks";
+import { Segmented } from "@/components/ui/Segmented";
+import { shortNames } from "@/lib/short-names";
 
 export const LIST_FILTER_KEYS = ["who", "client", "status", "priority", "type"] as const;
 
@@ -12,6 +14,7 @@ const pillSelect =
 
 /** 5a filter bar (desktop) and 5b people chips + "Filters · N" sheet (mobile). State lives in the URL. */
 export function ListFilters({ people, clients }: { people: Person[]; clients: { id: string; name: string }[] }) {
+  const names = shortNames(people);
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
@@ -91,16 +94,15 @@ export function ListFilters({ people, clients }: { people: Person[]; clients: { 
       </div>
 
       <div className="flex flex-col gap-3 px-5 pb-3 lg:hidden">
-        <div className="no-scrollbar flex gap-2 overflow-x-auto">
-          {[{ id: "all", full_name: t("list.everyone") }, ...people].map((p) => {
-            const selected = value("who") === p.id;
-            return (
-              <button key={p.id} type="button" onClick={() => set({ who: p.id })} className={`h-10 flex-none cursor-pointer whitespace-nowrap rounded-full border px-4 text-[14px] font-medium ${selected ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"}`}>
-                {p.full_name.split(" ")[0]}
-              </button>
-            );
-          })}
-        </div>
+        <Segmented
+          scroll
+          items={[{ id: "all", full_name: t("list.everyone") }, ...people].map((p) => ({
+            key: p.id,
+            label: p.id === "all" ? p.full_name : names[p.id],
+            active: value("who") === p.id,
+            onClick: () => set({ who: p.id }),
+          }))}
+        />
         <div className="flex items-center justify-between">
           <button type="button" onClick={() => setSheet((s) => !s)} className={`h-10 cursor-pointer rounded-full border px-4 text-[14px] font-medium ${active ? "border-ink2 text-ink" : "border-line2 text-ink2"}`}>
             {active ? t("list.filtersN", { count: active }) : t("list.filters")}
