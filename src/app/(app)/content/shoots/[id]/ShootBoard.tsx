@@ -4,7 +4,7 @@ import { ScriptDecisionBadge } from "@/components/tasks/ScriptDecisionBadge";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useOptimistic, useState, useTransition } from "react";
+import { useOptimistic, useState, useSyncExternalStore, useTransition } from "react";
 import { formatDate } from "@/lib/dates";
 import { setShotStatus } from "@/app/(app)/task-actions";
 import { TaskLink } from "@/components/tasks/links";
@@ -19,6 +19,7 @@ import { CallTimes } from "./ShootTools";
 import { ShootSheet } from "./ShootSheet";
 import { safeHref } from "@/lib/safe-url";
 import { PostTags } from "@/components/tasks/tags";
+import { FORMAT_COLOR, FORMATS, type PostFormat } from "@/lib/formats";
 
 type Slot = { time: string; onCamera: string; items: Task[] };
 
@@ -38,6 +39,32 @@ function groupSlots(videos: Task[]): Slot[] {
 }
 
 const isDone = (v: Task) => v.shot_status === "shot" || v.shot_status === "not_shot";
+
+// Which formats are hidden on the shoot day, kept in this browser (shared by every shoot day).
+const HIDDEN_KEY = "snf-shoot-hidden-formats";
+const subscribeHidden = (cb: () => void) => {
+  window.addEventListener(HIDDEN_KEY, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(HIDDEN_KEY, cb);
+    window.removeEventListener("storage", cb);
+  };
+};
+const readHidden = () => {
+  try {
+    return localStorage.getItem(HIDDEN_KEY) ?? "[]";
+  } catch {
+    return "[]";
+  }
+};
+const parseHidden = (raw: string): PostFormat[] => {
+  try {
+    const v = JSON.parse(raw);
+    return Array.isArray(v) ? v.filter((f): f is PostFormat => FORMATS.includes(f)) : [];
+  } catch {
+    return [];
+  }
+};
 
 export function ShootBoard({
   day,
@@ -64,7 +91,19 @@ export function ShootBoard({
   const [unsorted, mark] = useOptimistic(videos, (cur, { id, status }: { id: string; status: ShotStatus }) =>
     cur.map((v) => (v.id === id ? { ...v, shot_status: status } : v)),
   );
-  const items = [...unsorted].sort(byShootTime);
+  // Show or hide all videos / photos / carousels at once (remembered on this device).
+  const hiddenRaw = useSyncExternalStore(subscribeHidden, readHidden, () => "[]");
+  const hiddenFormats = parseHidden(hiddenRaw);
+  const toggleFormat = (f: PostFormat) => {
+    const next = hiddenFormats.includes(f) ? hiddenFormats.filter((x) => x !== f) : [...hiddenFormats, f];
+    try {
+      localStorage.setItem(HIDDEN_KEY, JSON.stringify(next));
+    } catch {}
+    window.dispatchEvent(new Event(HIDDEN_KEY));
+  };
+  const all = [...unsorted].sort(byShootTime);
+  const items = all.filter((v) => !hiddenFormats.includes(v.format));
+  const formatsHere = FORMATS.filter((f) => all.some((v) => v.format === f));
   const [selected, setSelected] = useState<string | null>(videos[0]?.id ?? null);
   const [adding, setAdding] = useState(false);
   const [showDone, setShowDone] = useState(false);
@@ -83,10 +122,11 @@ export function ShootBoard({
     const names = [...new Set(s.items.map((v) => v.on_camera).filter(Boolean))].join(", ");
     return names ? { ...s, onCamera: names } : s;
   });
-  const shotVideos = items.filter((v) => v.shot_status === "shot");
-  const shot = items.filter((v) => v.shot_status === "shot").length;
-  const pct = items.length ? (shot / items.length) * 100 : 0;
-  const left = items.filter((v) => !isDone(v)).length;
+  // Progress counts the whole day, whatever is hidden.
+  const shotVideos = all.filter((v) => v.shot_status === "shot");
+  const shot = all.filter((v) => v.shot_status === "shot").length;
+  const pct = all.length ? (shot / all.length) * 100 : 0;
+  const left = all.filter((v) => !isDone(v)).length;
 
   // "Now": on the day of the shoot, the latest slot that has started and still has work;
   // otherwise the first slot with anything left.
@@ -237,7 +277,7 @@ export function ShootBoard({
         <div className="h-full rounded-full bg-[var(--status-in-progress)]" style={{ width: `${pct}%` }} />
       </div>
       <span className="whitespace-nowrap text-[14px] font-semibold">
-        <span className="hidden lg:inline">{t("shoots.shotOf", { shot, total: items.length })}</span>
+        <span className="hidden lg:inline">{t("shoots.shotOf", { shot, total: all.length })}</span>
         <span className="lg:hidden">{t("shoots.left", { count: left })}</span>
       </span>
     </div>
@@ -247,6 +287,26 @@ export function ShootBoard({
     <>
       <div className="flex flex-wrap items-center gap-x-7 gap-y-3 border-b border-line px-5 pb-5 lg:px-10">
         {progress}
+        {formatsHere.length > 1 && (
+          <div className="flex flex-wrap gap-1.5">
+            {formatsHere.map((f) => {
+              const on = !hiddenFormats.includes(f);
+              return (
+                <button
+                  key={f}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => toggleFormat(f)}
+                  className={`flex h-9 cursor-pointer items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium ${on ? "border-line2 text-ink" : "border-dashed border-line2 text-ink3 line-through"}`}
+                >
+                  <span className="size-2.5 rounded-full" style={{ background: on ? FORMAT_COLOR[f] : "transparent", boxShadow: `inset 0 0 0 1.5px ${FORMAT_COLOR[f]}` }} />
+                  {t(`format.${f}`)}
+                  <span className="text-ink3">{all.filter((v) => v.format === f).length}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
         {day.starts_at && (
           <span className="hidden whitespace-nowrap text-[14px] font-medium text-ink2 lg:inline">
             {day.starts_at}
@@ -399,7 +459,14 @@ export function ShootBoard({
           <div className="px-10 pt-5">
             <CallTimes times={deriveCallTimes(items)} />
           </div>
-          <ShootSheet shootId={day.id} clientId={day.client?.id ?? ""} videos={[...unsorted].sort(byShootOrder)} tags={tags} editable={canManage} />
+          <ShootSheet
+            shootId={day.id}
+            clientId={day.client?.id ?? ""}
+            videos={[...unsorted].filter((v) => !hiddenFormats.includes(v.format)).sort(byShootOrder)}
+            allIds={hiddenFormats.length ? [...unsorted].sort(byShootOrder).map((v) => v.id) : undefined}
+            tags={tags}
+            editable={canManage}
+          />
         </div>
       )}
 

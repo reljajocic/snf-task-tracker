@@ -28,12 +28,15 @@ export function ShootSheet({
   shootId,
   clientId,
   videos,
+  allIds,
   tags,
   editable,
 }: {
   shootId: string;
   clientId: string;
   videos: Task[];
+  /** The whole day's running order, when some formats are hidden: moves keep the hidden ones in place. */
+  allIds?: string[];
   tags: string[];
   editable: boolean;
 }) {
@@ -72,6 +75,14 @@ export function ShootSheet({
           return key(a).localeCompare(key(b)) || ordered.indexOf(a) - ordered.indexOf(b);
         });
 
+  // The shown videos in their new order, put back into the slots they held in the whole day's order.
+  const withHidden = (shownIds: string[]) => {
+    if (!allIds) return shownIds;
+    const shown = new Set(shownIds);
+    let k = 0;
+    return allIds.map((id) => (shown.has(id) ? shownIds[k++] : id));
+  };
+
   const move = (id: string, dir: -1 | 1) => {
     const ids = ordered.map((v) => v.id);
     const i = ids.indexOf(id);
@@ -80,7 +91,7 @@ export function ShootSheet({
     [ids[i], ids[j]] = [ids[j], ids[i]];
     startTransition(async () => {
       reorder(ids);
-      await reorderShoot(shootId, ids);
+      await reorderShoot(shootId, withHidden(ids));
       router.refresh();
     });
   };
@@ -92,7 +103,7 @@ export function ShootSheet({
       // Entering a time slots the video into time order; arrows can still move it afterwards.
       const ids = idsByTime(ordered.map((x) => (x.id === v.id ? { ...x, shoot_time: time } : x)));
       reorder(ids);
-      await reorderShoot(shootId, ids);
+      await reorderShoot(shootId, withHidden(ids));
       router.refresh();
     });
   };
@@ -103,7 +114,7 @@ export function ShootSheet({
     setSort("manual");
     startTransition(async () => {
       reorder(ids);
-      await reorderShoot(shootId, ids);
+      await reorderShoot(shootId, withHidden(ids));
       router.refresh();
     });
   };
