@@ -90,8 +90,8 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
   const maxCount = Math.max(1, ...clientStats.map((c) => c.count));
 
   const toggle = [
-    { key: "mine", label: t("home.mine"), href: "/?scope=mine", active: mineOnly },
     { key: "all", label: t("home.all"), href: "/?scope=all", active: !mineOnly },
+    { key: "mine", label: t("home.mine"), href: "/?scope=mine", active: mineOnly },
   ];
   const eyebrow = `${t("weekday.long", { day: String(weekdayIndex(today)) })}, ${formatDate(today)}`;
   const lateSummary = t("home.lateSummary", { late: nLate, today: lateAndToday.length - nLate });
@@ -101,11 +101,12 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
 
   return (
     <>
-      <PageHeader title={t("home.title")} eyebrow={eyebrow} border actions={oversees ? <span className="hidden lg:flex"><Segmented items={toggle} /></span> : undefined} />
+      <PageHeader title={t("home.title")} eyebrow={eyebrow} border actions={oversees ? <span className="hidden lg:flex"><Segmented items={toggle} size="sm" /></span> : undefined} />
 
       {/* Mobile */}
       <div className="flex flex-col gap-7 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:hidden">
-        {oversees && <Segmented items={toggle} full size="lg" />}
+        {/* Small: "all" is what you usually want; "mine" is the occasional look. */}
+        {oversees && <span className="-mb-3 self-start"><Segmented items={toggle} size="sm" /></span>}
         <PeopleStats stats={people} compact />
         <section className="flex flex-col gap-3">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
