@@ -832,8 +832,8 @@
   },
   "bank": {
     "title": "Content bank",
-    "new": "+ New video",
-    "intro": "Every video idea for this client until it gets a posting date. Then it goes to the editor as a task.",
+    "new": "+ New post",
+    "intro": "Every post idea for this client (reels, posts, carousels) until it gets a posting date. Then it goes to the editor as a task.",
     "tab": {
       "ideas": "Ideas",
       "shoot": "On a shoot",
@@ -865,7 +865,7 @@
     "shootFilter": "Shoot",
     "allShoots": "All shoots",
     "noShoot": "Not from a shoot",
-    "matching": "{count, plural, one {# video} other {# videos}}"
+    "matching": "{count, plural, one {# post} other {# posts}}"
   },
   "taskViews": {
     "board": "Board",
@@ -1166,7 +1166,7 @@
     "cutsSent": "cuts sent for review",
     "approved": "cuts approved",
     "avgApproval": "approved in {n} days on average",
-    "byType": "By type",
+    "byType": "By content pillar",
     "byProfile": "By profile",
     "posts": "Posts",
     "viewPost": "View post",
@@ -1186,7 +1186,8 @@
     "nLikes": "{n} likes",
     "nComments": "{n} comments",
     "nSaved": "{n} saves",
-    "nShares": "{n} shares"
+    "nShares": "{n} shares",
+    "byFormat": "By post type"
   },
   "instagram": {
     "lead": "Connect the client's Instagram (a Business or Creator account) to bring views, reach and likes of the linked posts, and the followers, into the monthly report. You log in as the client, once.",

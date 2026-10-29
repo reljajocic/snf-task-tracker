@@ -282,6 +282,7 @@ export function ShootBoard({
     formatsHere.length > 1 ? (
       <Segmented
         size="sm"
+        scroll
         items={[null, ...formatsHere].map((f) => ({
           key: f ?? "all",
           label: f ? t(`format.${f}`) : t("schedule.allFormats"),

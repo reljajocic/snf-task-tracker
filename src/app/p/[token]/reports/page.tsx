@@ -60,7 +60,7 @@ export default async function PortalReports({ params, searchParams }: PageProps<
             </div>
           )}
           <h2 className="display text-[22px] leading-none lg:text-[26px]">{label(current.month)}</h2>
-          <ReportView report={await buildMonthReport(db, portal.clientId, current.month, t("other"))} summary={current.summary} t={t} />
+          <ReportView report={await buildMonthReport(db, portal.clientId, current.month, t("other"))} summary={current.summary} t={t} formatLabel={(f) => tAll(`format.${f}`)} />
         </>
       ) : (
         <p className="rounded-lg border border-dashed border-line2 px-4 py-6 text-[15px] text-ink3">{t("noneYet")}</p>

@@ -124,9 +124,10 @@ export function LoginForm({ initialError }: { initialError: "linkExpired" | "ina
             value={code}
             onChange={(e) => setCode(e.target.value)}
             aria-label={t("codeLabel")}
-            className="h-12 w-40 rounded-lg border border-offwhite/36 bg-offwhite/6 px-4 text-[18px] tracking-[0.3em] text-offwhite outline-none focus:border-accent"
+            className="h-12 min-w-0 flex-1 rounded-lg border border-offwhite/36 bg-offwhite/6 px-4 text-[18px] tracking-[0.3em] text-offwhite outline-none focus:border-accent"
           />
-          <Button type="submit" variant="secondary" size="sm" disabled={pending || code.length < 6} className="h-12 text-offwhite">
+          {/* The main action on this screen: the brand button, clearly a button even before the code is in. */}
+          <Button type="submit" size="sm" disabled={pending || code.length < 6} className="h-12 flex-none px-5">
             {t("codeSubmit")}
           </Button>
         </div>

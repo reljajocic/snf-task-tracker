@@ -41,13 +41,13 @@ export default async function ClientReportPage({ params, searchParams }: PagePro
         invoices={invoiceAccess.finance || invoiceAccess.clientIds.includes(id)}
       />
       <div className="flex max-w-[1000px] flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12">
+      {/* The month is picked right here; no second title repeating it. */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="display text-[22px] leading-[1.1] lg:text-[26px]">{label}</h2>
+        <p className="max-w-[560px] text-[14px] text-ink2">{t("teamLead")}</p>
         <PeriodNav label={label} prevHref={`?m=${prevMonth(month)}`} nextHref={`?m=${nextMonth(month)}`} />
       </div>
-      <p className="text-[14px] text-ink2">{t("teamLead")}</p>
       <ReportPublisher clientId={id} month={month} summary={saved?.summary ?? null} publishedAt={saved?.published_at ?? null} canEdit={client.canManage} />
-      <ReportView report={report} summary={null} t={t} />
+      <ReportView report={report} summary={null} t={t} formatLabel={(f) => tAll(`format.${f}`)} />
       </div>
     </div>
   );

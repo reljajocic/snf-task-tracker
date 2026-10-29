@@ -13,6 +13,7 @@ import { SOCIAL_LABEL, socialDisplay, socialUrl } from "@/lib/socials";
 import { getInvoiceAccess } from "@/lib/finance";
 import { ClientHeader } from "./ClientHeader";
 import { ClientTeam } from "./ClientTeam";
+import { Segmented } from "@/components/ui/Segmented";
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink" };
 
@@ -30,17 +31,6 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
   const clientTasks = tasks.filter((x) => x.client?.id === client.id);
   const shown = clientTasks.filter((x) => (showDone ? x.status === "done" : x.status !== "done")).sort(byDue);
 
-  const tabLink = (key: "open" | "done") => (
-    <Link
-      href={key === "open" ? `/clients/${client.id}` : `/clients/${client.id}?tab=done`}
-      scroll={false}
-      className={`flex h-[34px] items-center rounded-full border px-3.5 text-[13px] font-medium ${
-        (key === "done") === showDone ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"
-      }`}
-    >
-      {t(key === "open" ? "clients.openTab" : "clients.doneTab")}
-    </Link>
-  );
   const h2 = (text: string) => <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{text}</h2>;
 
   return (
@@ -52,10 +42,13 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
           <section className="flex flex-col gap-3.5">
             <div className="flex items-center justify-between">
               {h2(t("clients.tasks"))}
-              <div className="flex gap-1.5">
-                {tabLink("open")}
-                {tabLink("done")}
-              </div>
+              <Segmented
+                size="sm"
+                items={[
+                  { key: "open", label: t("clients.openTab"), href: `/clients/${client.id}`, active: !showDone },
+                  { key: "done", label: t("clients.doneTab"), href: `/clients/${client.id}?tab=done`, active: showDone },
+                ]}
+              />
             </div>
             {shown.length ? (
               <div className="snf-stack">

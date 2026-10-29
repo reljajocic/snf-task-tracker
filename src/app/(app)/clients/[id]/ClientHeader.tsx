@@ -62,7 +62,7 @@ export async function ClientHeader({ client, active, canManage, invoices }: { cl
         </div>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-        <Segmented items={tabs} />
+        <Segmented items={tabs} scroll />
         <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] font-medium">
           {links.map((l) => (
             <Link key={l.href} href={l.href} className="text-ink2 hover:text-ink">

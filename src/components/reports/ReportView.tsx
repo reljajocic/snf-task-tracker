@@ -1,6 +1,8 @@
 import { formatDate } from "@/lib/dates";
 import type { MonthReport } from "@/lib/report";
 import { safeHref } from "@/lib/safe-url";
+import { PostTags } from "@/components/tasks/tags";
+import { parseFormat, type PostFormat } from "@/lib/formats";
 
 type T = (key: string, values?: Record<string, string | number>) => string;
 
@@ -8,7 +10,7 @@ type T = (key: string, values?: Record<string, string | number>) => string;
  * A month's report as the client sees it in the portal (and the team sees it before publishing):
  * the team's word, the month in numbers, the work behind it, and every post with its link.
  */
-export function ReportView({ report, summary, t }: { report: MonthReport; summary: string | null; t: T }) {
+export function ReportView({ report, summary, t, formatLabel }: { report: MonthReport; summary: string | null; t: T; formatLabel: (f: PostFormat) => string }) {
   const stat = (value: React.ReactNode, label: string, sub?: string) => (
     <div className="flex min-w-0 flex-col gap-1.5 rounded-lg border border-line bg-surf px-4 py-3.5">
       <span className="display text-[34px] leading-none">{value}</span>
@@ -59,7 +61,8 @@ export function ReportView({ report, summary, t }: { report: MonthReport; summar
           {stat(w.cutsSent, t("cutsSent"))}
           {stat(w.approved, t("approved"), w.avgApprovalDays !== null ? t("avgApproval", { n: w.avgApprovalDays }) : undefined)}
         </div>
-        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+          {bars(t("byFormat"), report.byFormat.map((r) => ({ label: formatLabel(parseFormat(r.label)), n: r.n })))}
           {bars(t("byType"), report.byType)}
           {bars(t("byProfile"), report.byProfile)}
         </div>
@@ -96,9 +99,9 @@ export function ReportView({ report, summary, t }: { report: MonthReport; summar
                   <span className="hidden text-[14px] tabular-nums text-ink3 md:block">{formatDate(p.date)}</span>
                   <span className="flex min-w-0 flex-col gap-[3px]">
                     <span className="truncate text-[15px] font-medium">{p.title}</span>
-                    <span className="truncate text-[13px] text-ink3">
-                      <span className="md:hidden">{formatDate(p.date)} · </span>
-                      {[p.type, p.profile].filter(Boolean).join(" · ")}
+                    <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-ink3">
+                      <span className="md:hidden">{formatDate(p.date)}</span>
+                      <PostTags format={parseFormat(p.format)} type={p.type} formatLabel={formatLabel(parseFormat(p.format))} />
                     </span>
                     {p.metrics && (
                       <span className="truncate text-[13px] font-medium text-ink2">

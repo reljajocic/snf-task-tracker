@@ -12,6 +12,7 @@ export type ReportVideo = {
   published_at: string | null;
   phase: number | null;
   content_type: string | null;
+  format?: string | null;
   profile: string | null;
   post_url: string | null;
   dropped_at: string | null;
@@ -23,8 +24,10 @@ export type MonthReport = {
   published: number;
   onTime: number;
   byType: { label: string; n: number }[];
+  /** Reels, posts, carousels (the label is the format key: video / photo / carousel). */
+  byFormat: { label: string; n: number }[];
   byProfile: { label: string; n: number }[];
-  posts: { id: string; title: string; date: string; profile: string | null; type: string | null; url: string | null; metrics: PostMetrics | null }[];
+  posts: { id: string; title: string; date: string; profile: string | null; type: string | null; format: string; url: string | null; metrics: PostMetrics | null }[];
   work: { shootDays: number; shot: number; cutsSent: number; approved: number; avgApprovalDays: number | null };
   /** From Instagram, when the client's account is connected and posts carry their link; null otherwise. */
   social: { totals: PostMetrics; posts: number; followersStart: number | null; followersEnd: number | null } | null;
@@ -64,9 +67,10 @@ export function computeReport(
     published: out.length,
     onTime: out.filter((v) => !v.published_at || !v.publish_date || v.published_at <= v.publish_date).length,
     byType: tally(out.map((v) => v.content_type), none),
+    byFormat: tally(out.map((v) => v.format ?? "video"), none),
     byProfile: tally(out.map((v) => v.profile), none),
     posts: out
-      .map((v) => ({ id: v.id, title: v.title, date: v.published_at ?? v.publish_date!, profile: v.profile, type: v.content_type, url: v.post_url, metrics: social.metrics.get(v.id) ?? null }))
+      .map((v) => ({ id: v.id, title: v.title, date: v.published_at ?? v.publish_date!, profile: v.profile, type: v.content_type, format: v.format ?? "video", url: v.post_url, metrics: social.metrics.get(v.id) ?? null }))
       .sort((a, b) => a.date.localeCompare(b.date)),
     work: {
       shootDays: work.shootDays,
@@ -93,7 +97,7 @@ export async function buildMonthReport(db: SupabaseClient<Database>, clientId: s
   const [{ data: videos }, { data: shoots }, { data: versions }, { data: approvals }] = await Promise.all([
     db
       .from("tasks")
-      .select("id, title, publish_date, published_at, phase, content_type, profile, post_url, dropped_at")
+      .select("id, title, publish_date, published_at, phase, content_type, format, profile, post_url, dropped_at")
       .eq("client_id", clientId)
       .eq("kind", "video")
       .gte("publish_date", from)

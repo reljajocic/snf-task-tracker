@@ -832,8 +832,8 @@
   },
   "bank": {
     "title": "Banka sadržaja",
-    "new": "+ Novi video",
-    "intro": "Sve ideje za videe ovog klijenta, dok ne dobiju datum objave. Tada idu editoru kao zadatak.",
+    "new": "+ Nova objava",
+    "intro": "Sve ideje za objave ovog klijenta (reelovi, postovi, karuseli), dok ne dobiju datum objave. Tada idu editoru kao zadatak.",
     "tab": {
       "ideas": "Ideje",
       "shoot": "Na snimanju",
@@ -865,7 +865,7 @@
     "shootFilter": "Snimanje",
     "allShoots": "Sva snimanja",
     "noShoot": "Nije sa snimanja",
-    "matching": "{count, plural, one {# video} few {# videa} other {# videa}}"
+    "matching": "{count, plural, one {# objava} few {# objave} other {# objava}}"
   },
   "taskViews": {
     "board": "Tabla",
@@ -1166,7 +1166,7 @@
     "cutsSent": "montaža poslato na pregled",
     "approved": "montaža odobreno",
     "avgApproval": "odobreno za {n} dana u proseku",
-    "byType": "Po tipu",
+    "byType": "Po content pillar-u",
     "byProfile": "Po profilu",
     "posts": "Objave",
     "viewPost": "Pogledaj objavu",
@@ -1186,7 +1186,8 @@
     "nLikes": "{n} lajkova",
     "nComments": "{n} komentara",
     "nSaved": "{n} sačuvano",
-    "nShares": "{n} deljenja"
+    "nShares": "{n} deljenja",
+    "byFormat": "Po tipu objave"
   },
   "instagram": {
     "lead": "Povežite klijentov Instagram (Business ili Creator nalog) da u mesečni izveštaj uđu pregledi, doseg i lajkovi objava sa linkom, i pratioci. Prijavljujete se kao klijent, jednom.",

@@ -7,6 +7,7 @@ import { inputClass } from "@/components/tasks/fields";
 import { LOCALES, LOCALE_NAME } from "@/lib/locale";
 import { addPortalPerson, rotateToken, setPortalFlag, setPortalLocale, updatePortalPerson, type PortalFlag } from "./actions";
 import { ask } from "@/components/ui/Dialog";
+import { Segmented } from "@/components/ui/Segmented";
 
 type Portal = { enabled: boolean; show_schedule: boolean; show_shoots: boolean; show_scripts: boolean; show_review: boolean; show_report: boolean; locale: string };
 type PortalPerson = { id: string; label: string; email: string | null; can_approve: boolean };
@@ -104,25 +105,20 @@ export function PortalSettings({
         <section className={card}>
           {h(t("language"))}
           <span className="text-[14px] leading-normal text-ink2">{t("languageHint")}</span>
-          <div className="flex flex-wrap gap-2">
-            {LOCALES.map((l) => (
-              <button
-                key={l}
-                type="button"
-                aria-pressed={state.locale === l}
-                onClick={() => {
-                  setState((s) => ({ ...s, locale: l }));
-                  startTransition(async () => {
-                    await setPortalLocale(clientId, l);
-                    router.refresh();
-                  });
-                }}
-                className={`h-10 cursor-pointer rounded-full border px-4 text-[14px] font-medium ${state.locale === l ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`}
-              >
-                {LOCALE_NAME[l]}
-              </button>
-            ))}
-          </div>
+          <Segmented
+            items={LOCALES.map((l) => ({
+              key: l,
+              label: LOCALE_NAME[l],
+              active: state.locale === l,
+              onClick: () => {
+                setState((s) => ({ ...s, locale: l }));
+                startTransition(async () => {
+                  await setPortalLocale(clientId, l);
+                  router.refresh();
+                });
+              },
+            }))}
+          />
         </section>
 
         <section className={`${card} gap-1.5`}>
