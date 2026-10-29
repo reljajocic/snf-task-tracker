@@ -821,7 +821,9 @@
     "scriptsFull": "Whole scripts",
     "scriptsShort": "Just the start",
     "scriptMore": "whole script",
-    "scriptLess": "shorten"
+    "scriptLess": "shorten",
+    "addScript": "+ Write the script",
+    "noteMore": "whole note"
   },
   "bank": {
     "title": "Video bank",

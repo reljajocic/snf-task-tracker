@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { Fragment, useOptimistic, useState, useTransition } from "react";
 import { createTask, setShotStatus, updateTask, type TaskPatch } from "@/app/(app)/task-actions";
 import { TaskLink } from "@/components/tasks/links";
-import { idsByTime, sectionsToText, textToSections } from "@/lib/script-text";
+import { idsByTime } from "@/lib/script-text";
 import type { ScriptSection, ShotStatus, Task } from "@/lib/tasks";
 import { removeFromShoot, reorderShoot } from "../actions";
 import { FORMATS, FORMAT_COLOR } from "@/lib/formats";
@@ -270,19 +270,23 @@ export function ShootSheet({
                       </select>
                     </td>
                     <td className="px-1 py-1">
-                      <InputCell value={v.title} disabled={!editable} onSave={(x) => x.trim() && save(v.id, { title: x })} className="font-semibold" />
-                      {v.script_decision && (
-                        <span className="block px-2 pb-1">
-                          <ScriptDecisionBadge decision={v.script_decision} />
+                      {/* Title and script open the video's own editor (the same panel as everywhere), so the
+                          script's parts are edited one by one and never get mixed up in a single text box. */}
+                      <TaskLink id={v.id} className="block rounded-[5px] px-2 py-1 hover:bg-hover">
+                        <span className="block text-[15px] font-semibold leading-snug">{v.title}</span>
+                        {v.script_decision && (
+                          <span className="block pt-1">
+                            <ScriptDecisionBadge decision={v.script_decision} />
+                          </span>
+                        )}
+                        <span className="block pt-1">
+                          {v.script.some((sec) => sec.text.trim()) ? (
+                            <ScriptPreview sections={v.script} clamp short={!scriptFull(v.id)} />
+                          ) : (
+                            <span className="text-[13px] text-ink3">{editable ? t("addScript") : "—"}</span>
+                          )}
                         </span>
-                      )}
-                      <TextCell
-                        value={sectionsToText(v.script)}
-                        disabled={!editable}
-                        placeholder="HOOK: …"
-                        onSave={(x) => save(v.id, { script: textToSections(x) })}
-                        render={() => <ScriptPreview sections={v.script} clamp short={!scriptFull(v.id)} />}
-                      />
+                      </TaskLink>
                       {v.script.filter((sec) => sec.text.trim()).length > 1 && (
                         <button
                           type="button"
@@ -304,12 +308,21 @@ export function ShootSheet({
                       />
                     </td>
                     <td className="px-1 py-1">
+                      {/* The whole note with "Whole scripts", the start of a long one with "Just the start" (▾ for the rest). */}
                       <TextCell value={v.note ?? ""} disabled={!editable} onSave={(x) => save(v.id, { note: x })} render={(val) => (
-                          // The script is what matters on set; a long note stays short here (all of it under +).
-                          <div className="max-h-[110px] overflow-hidden text-[13px] leading-snug [mask-image:linear-gradient(to_bottom,black_65%,transparent)]">
+                          <div className={`text-[13px] leading-snug ${scriptFull(v.id) ? "" : "max-h-[110px] overflow-hidden [mask-image:linear-gradient(to_bottom,black_65%,transparent)]"}`}>
                             <Linkified text={val} />
                           </div>
                         )} />
+                      {!scriptFull(v.id) && (v.note?.length ?? 0) > 160 && (
+                        <button
+                          type="button"
+                          onClick={() => setScriptFlip((cur) => ({ ...cur, [v.id]: !cur[v.id] }))}
+                          className="cursor-pointer px-2 pb-1 text-[13px] font-medium text-rust-ink hover:underline"
+                        >
+                          ▾ {t("noteMore")}
+                        </button>
+                      )}
                     </td>
                     <td className="px-1 py-2">
                       {editable && (

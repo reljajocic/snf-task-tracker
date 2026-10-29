@@ -821,7 +821,9 @@
     "scriptsFull": "Cele skripte",
     "scriptsShort": "Samo početak",
     "scriptMore": "cela skripta",
-    "scriptLess": "skrati"
+    "scriptLess": "skrati",
+    "addScript": "+ Napiši skriptu",
+    "noteMore": "cela beleška"
   },
   "bank": {
     "title": "Banka videa",
