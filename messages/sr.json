@@ -558,7 +558,8 @@
     "noVideos": "Nema videa bez datuma.",
     "more": "+{count}",
     "markPublished": "✓ Označi objavljeno",
-    "allProfiles": "Svi profili"
+    "allProfiles": "Svi profili",
+    "allFormats": "Svi formati"
   },
   "shoots": {
     "title": "Snimanja",

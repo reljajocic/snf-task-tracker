@@ -5,6 +5,7 @@ import { addDays, formatDate, formatShortDate, isoWeek, startOfWeek, today as ge
 import { PORTAL_STATUS_COLOR, getPortal, getPortalVideos, portalStatus } from "@/lib/portal";
 import { PortalStatusLabel } from "../bits";
 import { PostTags } from "@/components/tasks/tags";
+import { FORMATS, FORMAT_COLOR } from "@/lib/formats";
 
 function shiftMonth(m: string, d: number) {
   const [y, mo] = m.split("-").map(Number);
@@ -12,7 +13,7 @@ function shiftMonth(m: string, d: number) {
 }
 
 // 7b: the posting schedule from the client's side (no internal statuses, no "late").
-// Calendar (month, default) or list (from this week on). URL: ?view=list&m=YYYY-MM
+// Calendar (month, default) or list (from this week on), all formats or just one. URL: ?view=list&m=YYYY-MM&format=photo
 export default async function PortalSchedule({ params, searchParams }: PageProps<"/p/[token]/schedule">) {
   const [{ token }, sp] = await Promise.all([params, searchParams]);
   const portal = (await getPortal(token))!;
@@ -23,14 +24,35 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
   const gridStart = startOfWeek(`${month}-01`);
   const from = view === "list" ? startOfWeek(today) : gridStart;
   const [videos, t] = await Promise.all([getPortalVideos(portal.clientId, { from }), getTranslations({ locale: portal.locale })]);
-  const dated = videos.filter((v) => v.publish_date && v.publish_date >= from);
+  const format = FORMATS.find((f) => f === sp.format) ?? null;
+  const dated = videos.filter((v) => v.publish_date && v.publish_date >= from && (!format || v.format === format));
   const base = `/p/${token}/schedule`;
+  // Links keep the view, month and format unless a patch changes them.
+  const link = (patch: Record<string, string | null>) => {
+    const merged: Record<string, string | null> = { view: view === "list" ? "list" : null, m: typeof sp.m === "string" ? sp.m : null, format, ...patch };
+    const qs = new URLSearchParams(Object.entries(merged).filter(([, v]) => v) as [string, string][]).toString();
+    return qs ? `${base}?${qs}` : base;
+  };
+  const formatSwitch = (
+    <div className="inline-flex flex-wrap gap-0.5 self-start rounded-[7px] border border-line2 p-[3px]">
+      {[null, ...FORMATS].map((f) => (
+        <Link
+          key={f ?? "all"}
+          href={link({ format: f })}
+          className={`flex h-9 items-center gap-1.5 rounded-[5px] px-3.5 text-[14px] font-medium ${format === f ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
+        >
+          {f && <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />}
+          {f ? t(`format.${f}`) : t("schedule.allFormats")}
+        </Link>
+      ))}
+    </div>
+  );
   const viewSwitch = (
     <div className="inline-flex gap-0.5 self-start rounded-[7px] border border-line2 p-[3px]">
       {(["calendar", "list"] as const).map((k) => (
         <Link
           key={k}
-          href={k === "calendar" ? base : `${base}?view=list`}
+          href={link({ view: k === "calendar" ? null : "list", m: null })}
           className={`flex h-9 items-center rounded-[5px] px-4 text-[14px] font-medium ${view === k ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
         >
           {t(k === "calendar" ? "portal.viewCalendar" : "portal.viewList")}
@@ -48,10 +70,11 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
         <h1 className="display text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
         <div className="flex flex-wrap items-center gap-3">
           {viewSwitch}
+          {formatSwitch}
           <div className="flex h-[42px] items-center rounded-[7px] border border-line2 text-[14px] font-medium">
-            <Link href={`${base}?m=${shiftMonth(month, -1)}`} className="px-3 text-ink3 hover:text-ink">‹</Link>
+            <Link href={link({ m: shiftMonth(month, -1) })} className="px-3 text-ink3 hover:text-ink">‹</Link>
             <span className="min-w-[140px] text-center">{label}</span>
-            <Link href={`${base}?m=${shiftMonth(month, 1)}`} className="px-3 text-ink3 hover:text-ink">›</Link>
+            <Link href={link({ m: shiftMonth(month, 1) })} className="px-3 text-ink3 hover:text-ink">›</Link>
           </div>
         </div>
         <div className="grid grid-cols-7 gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
@@ -106,7 +129,10 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
   return (
     <div className="flex flex-col gap-2 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
       <h1 className="display pb-2 text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
-      {viewSwitch}
+      <div className="flex flex-wrap items-center gap-3">
+        {viewSwitch}
+        {formatSwitch}
+      </div>
       {[...weeks.entries()].map(([wk, list]) => (
         <div key={wk} className="flex flex-col">
           <div className="flex items-baseline gap-3 px-1 pb-2 pt-[22px] lg:px-4">

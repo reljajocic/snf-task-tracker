@@ -12,6 +12,7 @@ import { TaskLink } from "@/components/tasks/links";
 import { formatDate, type IsoDate } from "@/lib/dates";
 import { pendingReshoot, type Task } from "@/lib/tasks";
 import { PostTags } from "@/components/tasks/tags";
+import { FORMATS, FORMAT_COLOR, type PostFormat } from "@/lib/formats";
 
 type Shoot = { id: string; date: IsoDate; location: string | null };
 
@@ -21,6 +22,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   const tf = useTranslations("format");
   const router = useRouter();
   const [type, setType] = useState<string | null>(null);
+  const [format, setFormat] = useState<PostFormat | null>(null);
   const [location, setLocation] = useState<string | null>(null);
   const [profile, setProfile] = useState<string | null>(null);
   const [shootFilter, setShootFilter] = useState<string>("all");
@@ -48,6 +50,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   };
 
   const types = [...new Set(videos.map((v) => v.content_type).filter(Boolean))] as string[];
+  const formats = FORMATS.filter((f) => videos.some((v) => v.format === f));
   const locations = [...new Set(videos.map((v) => v.location).filter(Boolean))] as string[];
   const profiles = [...new Set(videos.map((v) => v.profile).filter(Boolean))] as string[];
   // Shoot days these videos came from (newest first), for the "which shoot" filter.
@@ -60,6 +63,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   const shown = videos
     .filter(
       (v) =>
+        (!format || v.format === format) &&
         (!type || v.content_type === type) &&
         (!location || v.location === location) &&
         (!profile || v.profile === profile) &&
@@ -112,8 +116,20 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
         )}
         {(q || shootFilter !== "all") && <span className="text-[13px] text-ink3">{t("matching", { count: shown.length })}</span>}
       </div>
-      {(types.length > 1 || locations.length > 1 || profiles.length > 1) && (
+      {(formats.length > 1 || types.length > 1 || locations.length > 1 || profiles.length > 1) && (
         <div className="flex flex-wrap gap-1.5">
+          {/* Video, photo or carousel first: the quickest way to split the bank. */}
+          {formats.length > 1 && (
+            <>
+              {formats.map((f) => (
+                <button key={f} type="button" onClick={() => setFormat(format === f ? null : f)} className={chip(format === f)}>
+                  <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />
+                  {tf(f)}
+                </button>
+              ))}
+              <span className="mx-1 h-8 w-px bg-line2" />
+            </>
+          )}
           {profiles.length > 1 && (
             <>
               {profiles.map((x) => (

@@ -12,6 +12,7 @@ import { postingStatus } from "@/lib/tasks";
 import { ClientPicker } from "./ClientPicker";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { ScheduleTable, type ScheduleWeek } from "./ScheduleTable";
+import { FORMATS } from "@/lib/formats";
 
 function monthStart(d: IsoDate) {
   return `${d.slice(0, 7)}-01`;
@@ -21,7 +22,7 @@ function shiftMonth(d: IsoDate, delta: number): IsoDate {
   return new Date(Date.UTC(y, m - 1 + delta, 1)).toISOString().slice(0, 10);
 }
 
-// 2a / 2b / 2c. URL: ?client=<id>&m=YYYY-MM&view=table|calendar&profile=<name>|all
+// 2a / 2b / 2c. URL: ?client=<id>&m=YYYY-MM&view=table|calendar&profile=<name>|all&format=video|photo|carousel
 export default async function SchedulePage({ searchParams }: PageProps<"/content/schedule">) {
   const [params, lookups, t, remembered] = await Promise.all([searchParams, getLookups(), getTranslations(), rememberedClient()]);
   const today = getToday();
@@ -39,12 +40,16 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
   const profiles = client?.profiles ?? [];
   const profile = profiles.length ? (params.profile === "all" ? null : profiles.find((p) => p === params.profile) ?? profiles[0]) : null;
 
+  // Only videos, only photos or only carousels (all by default).
+  const format = FORMATS.find((f) => f === params.format) ?? null;
+
   const href = (patch: Record<string, string | null>) => {
     const merged: Record<string, string | null> = {
       client: client?.id ?? null,
       m: m.slice(0, 7),
       view: view === "calendar" ? null : view,
       profile: profiles.length ? (profile ?? "all") : null,
+      format,
       ...patch,
     };
     const qs = new URLSearchParams(Object.entries(merged).filter(([, v]) => v) as [string, string][]).toString();
@@ -64,7 +69,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
   const periodEnd = addDays(shiftMonth(m, 2), -1);
   const videos = (await getClientVideos(client.id, { posting: { from: addDays(startOfWeek(m), -7), to: addDays(periodEnd, 7) } })).filter(
     // Videos without a profile (e.g. meant for both) show in every profile until they're posted somewhere.
-    (v) => !profile || !v.profile || v.profile === profile,
+    (v) => (!profile || !v.profile || v.profile === profile) && (!format || v.format === format),
   );
   const byDate = new Map<IsoDate, typeof videos>();
   for (const v of videos) if (v.publish_date) byDate.set(v.publish_date, [...(byDate.get(v.publish_date) ?? []), v]);
@@ -113,6 +118,12 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
           ]}
         />
       )}
+      <Segmented
+        items={[
+          { key: "all", label: t("schedule.allFormats"), href: href({ format: null }), active: format === null },
+          ...FORMATS.map((f) => ({ key: f, label: t(`format.${f}`), href: href({ format: f }), active: format === f })),
+        ]}
+      />
     </>
   );
 
