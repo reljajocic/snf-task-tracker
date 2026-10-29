@@ -66,8 +66,10 @@ export function ShootSheet({
                 ? String(STATUS_RANK[v.shot_status ?? "to_shoot"] ?? 9)
                 : sort === "person"
                   ? (v.on_camera ?? "\uffff").toLowerCase()
-                  : (v.content_type ?? "\uffff").toLowerCase();
-          return key(a).localeCompare(key(b));
+                  : // Type: videos, then photos, then carousels; within each, by content type.
+                    `${FORMATS.indexOf(v.format)}${(v.content_type ?? "\uffff").toLowerCase()}`;
+          // Ties keep the running order.
+          return key(a).localeCompare(key(b)) || ordered.indexOf(a) - ordered.indexOf(b);
         });
 
   const move = (id: string, dir: -1 | 1) => {
