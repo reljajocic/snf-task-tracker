@@ -477,7 +477,7 @@
     "kind": "Vrsta",
     "task": "Zadatak",
     "video": "Video",
-    "contentType": "Tip sadržaja",
+    "contentType": "Content pillar",
     "onCamera": "Pred kamerom",
     "location": "Lokacija",
     "profile": "Profil",
@@ -522,7 +522,7 @@
     },
     "postUrl": "Link objave",
     "postUrlPlaceholder": "instagram.com/p/… ili tiktok.com/…",
-    "formatLabel": "Format"
+    "formatLabel": "Tip objave"
   },
   "schedule": {
     "title": "Raspored objava",
@@ -559,7 +559,7 @@
     "more": "+{count}",
     "markPublished": "✓ Označi objavljeno",
     "allProfiles": "Svi profili",
-    "allFormats": "Svi formati"
+    "allFormats": "Svi tipovi"
   },
   "shoots": {
     "title": "Snimanja",
@@ -1207,8 +1207,8 @@
     "portalConnected": "Instagram @{name} je povezan. Brojke se pojavljuju u sledećem izveštaju."
   },
   "format": {
-    "video": "Video",
-    "photo": "Slika",
+    "video": "Reel",
+    "photo": "Post",
     "carousel": "Karusel"
   }
 }

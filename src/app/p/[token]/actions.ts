@@ -171,14 +171,15 @@ export async function decideScript(token: string, taskId: string, decision: "app
   return { ok: true, approvalId: res.approvalId };
 }
 
-/** "Approve all remaining": every script on the shoot day that isn't approved and has no requested changes. */
-export async function approveAllScripts(token: string, shootId: string, name: string): Promise<PortalResult> {
+/** "Approve all remaining": every script on the shoot day that isn't approved and has no requested changes
+ *  (or only those of the ones shown, when the client filtered the list, e.g. reels only). */
+export async function approveAllScripts(token: string, shootId: string, name: string, onlyIds?: string[]): Promise<PortalResult> {
   const portal = await getPortal(token);
   if (!portal || !portal.show.scripts) return { ok: false, error: "Not available." };
   if (await tooMany(portal.clientId)) return { ok: false, error: SLOW_DOWN };
   const approver = cleanName(name);
   if (!approver) return { ok: false, error: "Please enter your name." };
-  const videos = (await getPortalVideos(portal.clientId, { shootId })).filter((v) => !v.scriptDecision);
+  const videos = (await getPortalVideos(portal.clientId, { shootId })).filter((v) => !v.scriptDecision && (!onlyIds || onlyIds.includes(v.id)));
   if (!videos.length) return { ok: true };
   const admin = createAdminClient();
   const { error } = await admin

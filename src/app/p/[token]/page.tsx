@@ -106,6 +106,9 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                         <span className="md:hidden">{day(v.publish_date!)} {formatDate(v.publish_date!)} · </span>
                         {[v.on_camera, v.location].filter(Boolean).join(" · ")}
                       </span>
+                      <span className="md:hidden">
+                        <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
+                      </span>
                     </div>
                     <span className="hidden md:block"><PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} /></span>
                     <PortalStatusLabel status={portalStatus(v)} />

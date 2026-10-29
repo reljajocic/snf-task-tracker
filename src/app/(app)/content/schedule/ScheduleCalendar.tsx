@@ -9,6 +9,7 @@ import { addDays, formatDate, isoWeek, startOfWeek, weekdayIndex, type IsoDate }
 import { POSTING_STATUS_COLOR, postingStatus, type Task } from "@/lib/tasks";
 import { PostTags } from "@/components/tasks/tags";
 import { FORMAT_COLOR } from "@/lib/formats";
+import { ShootMarker, type ScheduleShoot } from "./ShootMarker";
 
 /** 2b: month grids of posts (the chosen month and the next, so the turn of the month is planned in one view);
  *  drag a video from "Shot, no date" (or another day) onto a day. */
@@ -19,6 +20,7 @@ export function ScheduleCalendar({
   postingDays,
   today,
   profile = null,
+  shoots = [],
 }: {
   month: IsoDate;
   videos: Task[];
@@ -27,6 +29,8 @@ export function ScheduleCalendar({
   today: IsoDate;
   /** The profile being planned: a video without one gets it when it is put on a date. */
   profile?: string | null;
+  /** The client's shoot days, shown on their dates. */
+  shoots?: ScheduleShoot[];
 }) {
   const t = useTranslations();
   const router = useRouter();
@@ -133,8 +137,13 @@ export function ScheduleCalendar({
                       >
                         {Number(d.slice(8, 10))}
                       </span>
-                      <div className="hidden flex-col gap-1 lg:flex">{list.map(chip)}</div>
+                      <div className="hidden flex-col gap-1 lg:flex">
+                    {shoots.filter((sh) => sh.date === d).map((sh) => <ShootMarker key={sh.id} shoot={sh} label={t("shoots.shootDay")} />)}
+                    {list.map(chip)}
+                  </div>
                       <div className="flex gap-0.5 lg:hidden">
+                        {/* Phones: a shoot day is a small orange square next to the posts' dots. */}
+                        {shoots.some((sh) => sh.date === d) && <span className="size-1.5 rounded-[1px] bg-accent" />}
                         {list.map((v) => (
                           <span key={v.id} className="size-1.5 rounded-full" style={{ background: POSTING_STATUS_COLOR[postingStatus(v, today)] }} />
                         ))}
@@ -152,6 +161,7 @@ export function ScheduleCalendar({
           <span className="display text-[16px]">
             {t("weekday.long", { day: String(weekdayIndex(picked)) })}, {formatDate(picked)}
           </span>
+          {shoots.filter((sh) => sh.date === picked).map((sh) => <ShootMarker key={sh.id} shoot={sh} label={t("shoots.shootDay")} />)}
           {on(picked).length ? on(picked).map(chip) : <span className="text-[14px] text-ink3">{t("schedule.freeSlot")}</span>}
         </div>
       </div>

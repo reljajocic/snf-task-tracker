@@ -7,6 +7,7 @@ import { canUndo, getPortal, getPortalVideos, portalStatus, PORTAL_STATUS_COLOR 
 import { Poster } from "../../bits";
 import { RequestChange, VideoDecision } from "./VideoDecision";
 import { safeHref } from "@/lib/safe-url";
+import { PostTags } from "@/components/tasks/tags";
 
 // 7c (desktop) / 7f (mobile): watch a cut and approve it or ask for changes. Any video in the schedule opens here too,
 // to read its script before there is a cut.
@@ -30,7 +31,6 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
     video.publish_date && t("portal.postOn", { date: `${t("weekday.short", { day: String(weekdayIndex(video.publish_date)) })}, ${formatDate(video.publish_date)}` }),
     video.on_camera,
     video.location,
-    video.content_type,
   ].filter(Boolean);
 
   return (
@@ -75,9 +75,12 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
           {t("portal.back")}
         </Link>
         <div className="flex flex-col gap-3.5">
-          <span className="flex items-center gap-2 self-start rounded-full border border-line2 px-3 py-[7px] text-[13px] font-medium">
-            <span className="size-2 rounded-full" style={{ background: PORTAL_STATUS_COLOR[status] }} />
-            {t(`portal.status.${status}`)}
+          <span className="flex flex-wrap items-center gap-2">
+            <span className="flex items-center gap-2 rounded-full border border-line2 px-3 py-[7px] text-[13px] font-medium">
+              <span className="size-2 rounded-full" style={{ background: PORTAL_STATUS_COLOR[status] }} />
+              {t(`portal.status.${status}`)}
+            </span>
+            <PostTags format={video.format} type={video.content_type} formatLabel={t(`format.${video.format}`)} />
           </span>
           <h1 className="display text-[30px] leading-[0.98] lg:text-[40px]">{video.title}</h1>
           {facts.length > 0 && <span className="text-[15px] leading-normal text-ink2">{facts.join(" · ")}</span>}

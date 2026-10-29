@@ -98,9 +98,21 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
                     {posts.map((v) => {
                       const status = portalStatus(v);
                       const chip = (
-                        // Phones: a cell is ~45px wide, so just the status dot (titles are in the list view).
-                        <span title={v.title} className="flex items-center gap-1.5 text-[13px] font-medium leading-tight lg:rounded-md lg:bg-chip lg:px-1.5 lg:py-1">
-                          <span className="size-2 flex-none rounded-full lg:size-1.5" style={{ background: PORTAL_STATUS_COLOR[status] }} />
+                        // Phones: a cell is ~45px wide, so just the status dot, ringed in the format's colour (titles are in
+                        // the list view). Desktop: the format's colour down the left edge and its name above the title.
+                        <span
+                          title={`${t(`format.${v.format}`)} · ${v.title}`}
+                          style={{ borderLeftColor: FORMAT_COLOR[v.format] }}
+                          className="flex items-center gap-1.5 text-[13px] font-medium leading-tight lg:flex-col lg:items-start lg:gap-0.5 lg:rounded-md lg:border-l-[3px] lg:bg-chip lg:px-1.5 lg:py-1"
+                        >
+                          <span
+                            className="size-2 flex-none rounded-full lg:hidden"
+                            style={{ background: PORTAL_STATUS_COLOR[status], boxShadow: `0 0 0 1.5px var(--surf), 0 0 0 3px ${FORMAT_COLOR[v.format]}` }}
+                          />
+                          <span className="hidden items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] lg:flex" style={{ color: FORMAT_COLOR[v.format] }}>
+                            <span className="size-1.5 rounded-full" style={{ background: PORTAL_STATUS_COLOR[status] }} />
+                            {t(`format.${v.format}`)}
+                          </span>
                           <span className="hidden min-w-0 break-words lg:line-clamp-2">{v.title}</span>
                         </span>
                       );
@@ -156,6 +168,9 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
                     <span className="text-[13px] text-ink3">
                       <span className="md:hidden">{formatShortDate(v.publish_date!)} · </span>
                       {[v.on_camera, v.location].filter(Boolean).join(" · ")}
+                    </span>
+                    <span className="md:hidden">
+                      <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
                     </span>
                   </div>
                   <span className="hidden md:block"><PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} /></span>

@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { buttonClass } from "@/components/ui/Button";
 import { Segmented } from "@/components/ui/Segmented";
-import { getClientVideos } from "@/lib/content";
+import { getClientVideos, getShootDays } from "@/lib/content";
 import { getLookups } from "@/lib/data";
 import { rememberedClient } from "@/lib/remembered-client";
 import { addDays, isoWeek, startOfWeek, today as getToday, weekdayIndex, type IsoDate } from "@/lib/dates";
@@ -71,6 +71,11 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     // Videos without a profile (e.g. meant for both) show in every profile until they're posted somewhere.
     (v) => (!profile || !v.profile || v.profile === profile) && (!format || v.format === format),
   );
+  // The client's shoot days in the same stretch, shown on their dates.
+  const loadFrom = addDays(startOfWeek(m), -7);
+  const shoots = (await getShootDays())
+    .filter((s) => s.client?.id === client.id && s.date >= loadFrom && s.date <= addDays(periodEnd, 7))
+    .map((s) => ({ id: s.id, date: s.date, starts_at: s.starts_at, location: s.location }));
   const byDate = new Map<IsoDate, typeof videos>();
   for (const v of videos) if (v.publish_date) byDate.set(v.publish_date, [...(byDate.get(v.publish_date) ?? []), v]);
 
@@ -84,7 +89,8 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
       if (list.length) list.forEach((v) => rows.push({ date: d, video: v }));
       else if (client.postingDays.includes(weekdayIndex(d))) rows.push({ date: d, video: null });
     }
-    if (rows.length) weeks.push({ n: isoWeek(wk), from: wk, to: addDays(wk, 6), current: wk === startOfWeek(today), rows });
+    const weekShoots = shoots.filter((s) => s.date >= wk && s.date <= addDays(wk, 6));
+    if (rows.length || weekShoots.length) weeks.push({ n: isoWeek(wk), from: wk, to: addDays(wk, 6), current: wk === startOfWeek(today), rows, shoots: weekShoots });
   }
 
   // Only filmed videos get a posting date; ideas still to shoot wait for a shoot day.
@@ -157,7 +163,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-2.5 border-b border-line px-5 pb-[18px] lg:px-10">{picker}</div>
-          <ScheduleCalendar month={m} videos={videos} unscheduled={unscheduled} postingDays={client.postingDays} today={today} profile={profile} />
+          <ScheduleCalendar month={m} videos={videos} unscheduled={unscheduled} postingDays={client.postingDays} today={today} profile={profile} shoots={shoots} />
         </>
       )}
     </>

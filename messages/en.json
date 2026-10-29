@@ -477,7 +477,7 @@
     "kind": "Kind",
     "task": "Task",
     "video": "Video",
-    "contentType": "Content type",
+    "contentType": "Content pillar",
     "onCamera": "On camera",
     "location": "Location",
     "profile": "Profile",
@@ -522,7 +522,7 @@
     },
     "postUrl": "Link to the post",
     "postUrlPlaceholder": "instagram.com/p/… or tiktok.com/…",
-    "formatLabel": "Format"
+    "formatLabel": "Post type"
   },
   "schedule": {
     "title": "Posting schedule",
@@ -559,7 +559,7 @@
     "more": "+{count}",
     "markPublished": "✓ Mark published",
     "allProfiles": "All profiles",
-    "allFormats": "All formats"
+    "allFormats": "All post types"
   },
   "shoots": {
     "title": "Shoots",
@@ -1207,8 +1207,8 @@
     "portalConnected": "Instagram @{name} is connected. Its numbers appear in the next report."
   },
   "format": {
-    "video": "Video",
-    "photo": "Photo",
+    "video": "Reel",
+    "photo": "Post",
     "carousel": "Carousel"
   }
 }

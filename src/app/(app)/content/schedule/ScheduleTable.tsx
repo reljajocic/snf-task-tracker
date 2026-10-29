@@ -9,6 +9,7 @@ import { AssignPicker } from "./AssignPicker";
 import { formatDate, formatShortDate, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { POSTING_STATUS_COLOR, postingStatus, type PostingStatus, type Task } from "@/lib/tasks";
 import { PostTags } from "@/components/tasks/tags";
+import { ShootMarker, type ScheduleShoot } from "./ShootMarker";
 
 export type ScheduleWeek = {
   n: number;
@@ -16,6 +17,8 @@ export type ScheduleWeek = {
   to: IsoDate;
   current: boolean;
   rows: { date: IsoDate; video: Task | null }[];
+  /** The client's shoot days that week. */
+  shoots?: ScheduleShoot[];
 };
 
 const GRID = "grid grid-cols-[140px_minmax(0,1fr)_64px_150px_110px_140px_80px] gap-3.5";
@@ -125,6 +128,11 @@ export function ScheduleTable({
                   {formatShortDate(w.from)} – {formatDate(w.to)}
                 </span>
                 {w.current && <span className="whitespace-nowrap text-[12px] font-semibold text-accent">{t("schedule.thisWeek")}</span>}
+                {w.shoots?.map((sh) => (
+                  <span key={sh.id} className="self-center">
+                    <ShootMarker shoot={sh} label={`${t("shoots.shootDay")} ${formatShortDate(sh.date)}`} />
+                  </span>
+                ))}
               </div>
               <div className="snf-stack">
                 {rows.map((r, i) => {

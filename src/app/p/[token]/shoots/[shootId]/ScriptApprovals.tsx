@@ -8,12 +8,32 @@ import type { ScriptSection } from "@/lib/tasks";
 import { approveAllScripts, decideScript } from "../../actions";
 import { useApprover } from "../../useApprover";
 import { NameField } from "../../video/[taskId]/VideoDecision";
+import { FORMATS, FORMAT_COLOR, type PostFormat } from "@/lib/formats";
+import { PostTags } from "@/components/tasks/tags";
 
-type Item = { id: string; title: string; time: string | null; onCamera: string | null; type: string | null; script: ScriptSection[]; decision: Decision | null };
+type Item = { id: string; title: string; time: string | null; onCamera: string | null; type: string | null; format: PostFormat; script: ScriptSection[]; decision: Decision | null };
 
 const STATE_COLOR = { pending: "var(--accent)", approved: "var(--status-done)", changes: "var(--status-waiting)" };
 
-export function ScriptApprovals({ token, shootId, videos, canDecide }: { token: string; shootId: string; videos: Item[]; canDecide: boolean }) {
+export function ScriptApprovals({
+  token,
+  shootId,
+  videos: all,
+  canDecide,
+  formatLabels,
+  allLabel,
+}: {
+  token: string;
+  shootId: string;
+  videos: Item[];
+  canDecide: boolean;
+  formatLabels: Record<PostFormat, string>;
+  allLabel: string;
+}) {
+  // Reels, posts or carousels only (all by default); the list and its counts follow the choice.
+  const [only, setOnly] = useState<PostFormat | null>(null);
+  const formatsHere = FORMATS.filter((f) => all.some((v) => v.format === f));
+  const videos = only ? all.filter((v) => v.format === only) : all;
   const t = useTranslations("portal");
   const router = useRouter();
   const [name, setName] = useApprover();
@@ -39,6 +59,21 @@ export function ScriptApprovals({ token, shootId, videos, canDecide }: { token: 
 
   return (
     <div className="flex flex-col gap-5">
+      {formatsHere.length > 1 && (
+        <div className="inline-flex flex-wrap gap-0.5 self-start rounded-[7px] border border-line2 p-[3px]">
+          {[null, ...formatsHere].map((f) => (
+            <button
+              key={f ?? "all"}
+              type="button"
+              onClick={() => setOnly(f)}
+              className={`flex h-9 cursor-pointer items-center gap-1.5 rounded-[5px] px-3.5 text-[14px] font-medium ${only === f ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
+            >
+              {f && <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />}
+              {f ? `${formatLabels[f]} · ${all.filter((v) => v.format === f).length}` : allLabel}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-1 flex-col gap-2 lg:max-w-[520px]">
           <span className="text-[14px] font-medium">{t("scriptsProgress", { approved, total: videos.length, changes })}</span>
@@ -50,7 +85,7 @@ export function ScriptApprovals({ token, shootId, videos, canDecide }: { token: 
           <button
             type="button"
             disabled={pending || !name.trim()}
-            onClick={() => run(() => approveAllScripts(token, shootId, name))}
+            onClick={() => run(() => approveAllScripts(token, shootId, name, only ? videos.map((v) => v.id) : undefined))}
             className="h-12 cursor-pointer rounded-md bg-accent px-5 text-[14px] font-semibold uppercase tracking-[0.1em] text-charcoal disabled:opacity-45"
           >
             {t("approveAll", { count: remaining })}
@@ -70,7 +105,7 @@ export function ScriptApprovals({ token, shootId, videos, canDecide }: { token: 
           const isOpen = open === v.id;
           return (
             <div key={v.id} className="flex flex-col border-t border-line first:border-t-0">
-              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 md:grid-cols-[60px_minmax(0,1fr)_64px_110px_auto]">
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 md:grid-cols-[60px_minmax(0,1fr)_160px_110px_auto]">
                 <span className="hidden text-[14px] font-semibold md:block">{v.time ?? ""}</span>
                 <button type="button" onClick={() => setOpen(isOpen ? null : v.id)} className="flex min-w-0 cursor-pointer flex-col gap-1 text-left">
                   <span className="text-[15px] font-medium leading-snug">{v.title}</span>
@@ -78,9 +113,12 @@ export function ScriptApprovals({ token, shootId, videos, canDecide }: { token: 
                     <span className="md:hidden">{v.time ? `${v.time} · ` : ""}</span>
                     {v.onCamera ?? ""}
                   </span>
+                  <span className="md:hidden">
+                    <PostTags format={v.format} type={v.type} formatLabel={formatLabels[v.format]} />
+                  </span>
                 </button>
                 <span className="hidden md:block">
-                  {v.type && <span className="rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">{v.type}</span>}
+                  <PostTags format={v.format} type={v.type} formatLabel={formatLabels[v.format]} />
                 </span>
                 <span className="hidden items-center gap-2 text-[13px] font-medium text-ink2 md:flex">
                   <span className="size-2 rounded-full" style={{ background: STATE_COLOR[state] }} />

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { formatDate, weekdayIndex } from "@/lib/dates";
 import { getPortal, getPortalShoots, getPortalVideos } from "@/lib/portal";
 import { ScriptApprovals } from "./ScriptApprovals";
+import { FORMATS, type PostFormat } from "@/lib/formats";
 
 // 7g (desktop) / 7h (mobile): every script of a shoot day; approve one by one or all at once.
 export default async function PortalShoot({ params }: PageProps<"/p/[token]/shoots/[shootId]">) {
@@ -31,12 +32,15 @@ export default async function PortalShoot({ params }: PageProps<"/p/[token]/shoo
           token={token}
           shootId={shootId}
           canDecide={portal.show.scripts}
+          formatLabels={Object.fromEntries(FORMATS.map((f) => [f, t(`format.${f}`)])) as Record<PostFormat, string>}
+          allLabel={t("schedule.allFormats")}
           videos={list.map((v) => ({
             id: v.id,
             title: v.title,
             time: v.shoot_time,
             onCamera: v.on_camera,
             type: v.content_type,
+            format: v.format,
             script: v.script,
             decision: v.scriptDecision,
           }))}
