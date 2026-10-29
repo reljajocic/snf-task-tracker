@@ -275,26 +275,30 @@ export function ShootBoard({
     </div>
   );
 
+  // All post types or one only, like the portal's filter. Sits with the sheet's other filters (Order, scripts);
+  // on set and on the phone, at the top of the list.
+  const typePicker =
+    formatsHere.length > 1 ? (
+      <div className="inline-flex flex-wrap gap-0.5 rounded-[7px] border border-line2 p-[3px]">
+        {[null, ...formatsHere].map((f) => (
+          <button
+            key={f ?? "all"}
+            type="button"
+            aria-pressed={only === f}
+            onClick={() => pickType(f)}
+            className={`flex h-8 cursor-pointer items-center gap-1.5 rounded-[5px] px-3 text-[13px] font-medium ${only === f ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
+          >
+            {f && <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />}
+            {f ? `${t(`format.${f}`)} · ${all.filter((v) => v.format === f).length}` : t("schedule.allFormats")}
+          </button>
+        ))}
+      </div>
+    ) : null;
+
   return (
     <>
       <div className="flex flex-wrap items-center gap-x-7 gap-y-3 border-b border-line px-5 pb-5 lg:px-10">
         {progress}
-        {formatsHere.length > 1 && (
-          <div className="inline-flex flex-wrap gap-0.5 rounded-[7px] border border-line2 p-[3px]">
-            {[null, ...formatsHere].map((f) => (
-              <button
-                key={f ?? "all"}
-                type="button"
-                aria-pressed={only === f}
-                onClick={() => pickType(f)}
-                className={`flex h-8 cursor-pointer items-center gap-1.5 rounded-[5px] px-3 text-[13px] font-medium ${only === f ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
-              >
-                {f && <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />}
-                {f ? `${t(`format.${f}`)} · ${all.filter((v) => v.format === f).length}` : t("schedule.allFormats")}
-              </button>
-            ))}
-          </div>
-        )}
         {day.starts_at && (
           <span className="hidden whitespace-nowrap text-[14px] font-medium text-ink2 lg:inline">
             {day.starts_at}
@@ -338,6 +342,7 @@ export function ShootBoard({
 
       {/* Mobile: on set (2e) */}
       <div className="flex flex-col gap-[22px] px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-5 lg:hidden">
+        {typePicker && <div className="self-start">{typePicker}</div>}
         <CallTimes times={deriveCallTimes(items)} />
         {items.some(hasScript) && (
           <div className="flex gap-2">
@@ -452,6 +457,7 @@ export function ShootBoard({
             clientId={day.client?.id ?? ""}
             videos={[...unsorted].filter((v) => !hiddenFormats.includes(v.format)).sort(byShootOrder)}
             allIds={hiddenFormats.length ? [...unsorted].sort(byShootOrder).map((v) => v.id) : undefined}
+            filters={typePicker}
             tags={tags}
             editable={canManage}
           />
@@ -461,6 +467,7 @@ export function ShootBoard({
       {/* … or the on-set board (2d) */}
       <div className={`hidden min-h-0 flex-1 grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] ${desktopView === "onset" ? "lg:grid" : ""}`}>
         <div className="flex flex-col overflow-auto pb-10 pl-10 pr-8 pt-5">
+          {typePicker && <div className="self-start pb-4">{typePicker}</div>}
           <CallTimes times={deriveCallTimes(items)} />
           {slots.map((s) => (
             <div key={s.time} className="flex flex-col gap-2 pt-5">

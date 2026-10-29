@@ -29,6 +29,7 @@ export function ShootSheet({
   clientId,
   videos,
   allIds,
+  filters,
   tags,
   editable,
 }: {
@@ -37,6 +38,8 @@ export function ShootSheet({
   videos: Task[];
   /** The whole day's running order, when some formats are hidden: moves keep the hidden ones in place. */
   allIds?: string[];
+  /** More filters for the same row (the post type picker). */
+  filters?: React.ReactNode;
   tags: string[];
   editable: boolean;
 }) {
@@ -146,7 +149,8 @@ export function ShootSheet({
 
   return (
     <div className="flex flex-col gap-3 px-10 pb-12 pt-5">
-      <div className="flex items-center gap-2.5">
+      <div className="flex flex-wrap items-center gap-2.5">
+        {filters}
         <span className="text-[13px] font-medium text-ink3">{t("sortBy")}</span>
         <div className="inline-flex gap-0.5 rounded-[7px] border border-line2 p-[3px]">
           {(["manual", "time", "status", "person", "type"] as const).map((k) => (
