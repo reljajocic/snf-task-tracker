@@ -197,7 +197,9 @@
     "editor": "Stalni editor",
     "invoicesHint": "Da li ovaj menadžer vidi i pravi fakture ovog klijenta (bira partner).",
     "seesInvoices": "Fakture",
-    "noInvoices": "Bez faktura"
+    "noInvoices": "Bez faktura",
+    "tabOverview": "Pregled",
+    "tabPortal": "Klijentski portal"
   },
   "team": {
     "title": "Tim",

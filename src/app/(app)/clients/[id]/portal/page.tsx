@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { requireProfile } from "@/lib/auth";
@@ -8,6 +7,9 @@ import { env } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 import { InstagramPanel } from "./InstagramPanel";
 import { PortalSettings } from "./PortalSettings";
+import { ClientHeader } from "../ClientHeader";
+import { buttonClass } from "@/components/ui/Button";
+import { getInvoiceAccess } from "@/lib/finance";
 
 // 7d: our screen for configuring a client's portal.
 export default async function PortalSettingsPage({ params, searchParams }: PageProps<"/clients/[id]/portal">) {
@@ -17,7 +19,7 @@ export default async function PortalSettingsPage({ params, searchParams }: PageP
   const canManage = me.role === "admin" || data.members.some((m) => m.profile.id === me.id && m.role === "manager");
   if (!canManage) notFound();
 
-  const supabase = await createClient();
+  const [supabase, invoiceAccess] = await Promise.all([createClient(), getInvoiceAccess()]);
   const [{ data: portal }, { data: people }, { data: activity }, { data: instagram }] = await Promise.all([
     supabase.from("client_portals").select("*").eq("client_id", id).maybeSingle(),
     supabase.from("portal_people").select("id, label, email, can_approve").eq("client_id", id).order("created_at"),
@@ -29,20 +31,16 @@ export default async function PortalSettingsPage({ params, searchParams }: PageP
 
   return (
     <div className="flex flex-col">
-      <header className="flex flex-col gap-4 px-5 pb-5 pt-6 lg:flex-row lg:items-end lg:justify-between lg:px-10 lg:pt-7">
-        <div className="flex flex-col gap-3.5">
-          <Link href={`/clients/${id}`} className="text-[14px] font-medium text-ink3 hover:text-ink">
-            ‹ {data.client.name}
-          </Link>
-          <h1 className="display text-[32px] lg:text-[44px]">{t("title")}</h1>
-        </div>
+      <ClientHeader client={data.client} active="portal" canManage={canManage} invoices={invoiceAccess.finance || invoiceAccess.clientIds.includes(id)} />
+      <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-6 lg:px-10">
+        <h2 className="display text-[22px] leading-[1.1] lg:text-[26px]">{t("title")}</h2>
         {portal?.enabled && url && (
-          <a href={url} target="_blank" rel="noreferrer" className="flex h-[42px] items-center self-start rounded-[7px] border border-line2 px-4 text-[14px] font-medium lg:self-auto">
-            {t("open")}
+          <a href={url} target="_blank" rel="noreferrer" className={buttonClass({ size: "sm", variant: "secondary" })}>
+            {t("open")} ↗
           </a>
         )}
-      </header>
-      <div className="max-w-[760px] px-5 pb-5 lg:px-10">
+      </div>
+      <div className="max-w-[760px] px-5 pb-5 pt-5 lg:px-10">
         <InstagramPanel clientId={id} account={instagram} status={typeof ig === "string" ? ig : null} />
       </div>
       <PortalSettings

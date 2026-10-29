@@ -1,20 +1,18 @@
-import { ClientMark } from "@/components/ClientMark";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PriorityMark, StatusDot, TaskMeta, dueTone } from "@/components/tasks/bits";
 import { TaskLink } from "@/components/tasks/links";
 import { AvatarStack } from "@/components/ui/Avatar";
-import { buttonClass } from "@/components/ui/Button";
 import { requireProfile } from "@/lib/auth";
-import { CLIENT_STATUS_COLOR, PROJECT_STATUS_COLOR, getClient } from "@/lib/clients";
+import { PROJECT_STATUS_COLOR, getClient } from "@/lib/clients";
 import { getLookups, getTasks } from "@/lib/data";
 import { formatDate, today as getToday } from "@/lib/dates";
 import { byDue } from "@/lib/tasks";
 import { SOCIAL_LABEL, socialDisplay, socialUrl } from "@/lib/socials";
 import { getInvoiceAccess } from "@/lib/finance";
+import { ClientHeader } from "./ClientHeader";
 import { ClientTeam } from "./ClientTeam";
-import { safeHref } from "@/lib/safe-url";
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink" };
 
@@ -32,7 +30,6 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
   const clientTasks = tasks.filter((x) => x.client?.id === client.id);
   const shown = clientTasks.filter((x) => (showDone ? x.status === "done" : x.status !== "done")).sort(byDue);
 
-  const newTaskHref = `?new=1&client=${client.id}`;
   const tabLink = (key: "open" | "done") => (
     <Link
       href={key === "open" ? `/clients/${client.id}` : `/clients/${client.id}?tab=done`}
@@ -48,57 +45,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
 
   return (
     <div className="flex flex-col">
-      <header className="flex flex-col gap-5 border-b border-line px-5 pb-6 pt-6 lg:flex-row lg:items-end lg:justify-between lg:px-10 lg:pt-7">
-        <div className="flex min-w-0 flex-col gap-3.5">
-          <Link href="/clients" className="text-[14px] font-medium text-ink3 hover:text-ink">
-            {t("clients.back")}
-          </Link>
-          <div className="flex items-center gap-4">
-            <ClientMark client={client} size={52} />
-            <h1 className="display text-[32px] lg:text-[44px]">{client.name}</h1>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="flex items-center gap-[7px] whitespace-nowrap rounded-full border border-line2 px-2.5 py-1.5 text-[13px] font-medium leading-none">
-              <span className="size-2 rounded-full" style={{ background: CLIENT_STATUS_COLOR[client.status] }} />
-              {t(`clientStatus.${client.status}`)}
-            </span>
-            {client.services.map((s) => (
-              <span key={s} className="whitespace-nowrap rounded-full bg-chip px-2.5 py-1.5 text-[13px] font-medium leading-none text-ink2">{s}</span>
-            ))}
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          {canManage && (
-            <Link href={`/clients/${client.id}/edit`} className="flex h-[42px] items-center rounded-[7px] border border-line2 px-4 text-[14px] font-medium">
-              {t("clients.edit")}
-            </Link>
-          )}
-          <Link href={newTaskHref} scroll={false} className={buttonClass({ size: "sm", className: "hidden lg:inline-flex" })}>
-            {t("common.newTask")}
-          </Link>
-        </div>
-      </header>
-
-      {/* The client's content first: that's where most of the day goes. */}
-      <nav className="grid grid-cols-2 gap-2 border-b border-line px-5 py-4 sm:flex sm:flex-wrap lg:px-10">
-        {[
-          { href: `/content/videos?client=${client.id}`, label: t("nav.videos") },
-          { href: `/content/schedule?client=${client.id}`, label: t("nav.schedule") },
-          { href: `/content/shoots?client=${client.id}`, label: t("nav.shoots") },
-          ...(canManage ? [{ href: `/clients/${client.id}/portal`, label: t("portalSettings.title") }] : []),
-          { href: `/clients/${client.id}/reports`, label: t("report.title") },
-          ...(invoiceAccess.finance || invoiceAccess.clientIds.includes(client.id) ? [{ href: `/invoices?client=${client.id}`, label: t("nav.invoices") }] : []),
-        ].map((l) => (
-          <Link key={l.href} href={l.href} className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
-            {l.label} <span className="text-ink3">→</span>
-          </Link>
-        ))}
-        {client.drive_url && (
-          <a href={safeHref(client.drive_url)} target="_blank" rel="noreferrer" className="flex h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 text-[15px] font-medium hover:border-line2">
-            {t("clients.drive")}
-          </a>
-        )}
-      </nav>
+      <ClientHeader client={client} active="overview" canManage={canManage} invoices={invoiceAccess.finance || invoiceAccess.clientIds.includes(client.id)} />
 
       <div className="grid grid-cols-1 items-start gap-9 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-7 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10 lg:px-10 lg:pb-10 wide:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex flex-col gap-9">

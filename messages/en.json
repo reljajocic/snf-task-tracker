@@ -197,7 +197,9 @@
     "editor": "Regular editor",
     "invoicesHint": "Whether this manager sees and makes this client's invoices (a partner decides).",
     "seesInvoices": "Invoices",
-    "noInvoices": "No invoices"
+    "noInvoices": "No invoices",
+    "tabOverview": "Overview",
+    "tabPortal": "Client portal"
   },
   "team": {
     "title": "Team",
