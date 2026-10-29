@@ -2,19 +2,28 @@ import { AutoRefresh } from "@/components/AutoRefresh";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { getClientVideos, getShootDay, previousShootDate } from "@/lib/content";
+import { getClientVideos, getShootDay, getShootDays, previousShootDate } from "@/lib/content";
 import { getLookups } from "@/lib/data";
 import { formatDate, today as getToday, weekdayIndex } from "@/lib/dates";
 import { TIME_ZONE } from "@/lib/config";
 import type { Task } from "@/lib/tasks";
 import { Segmented } from "@/components/ui/Segmented";
 import { ShootBoard } from "./ShootBoard";
+import { ShootNav } from "./ShootNav";
 import { safeHref } from "@/lib/safe-url";
 
 // 2d (desktop) / 2e (mobile, on set)
 export default async function ShootPage({ params, searchParams }: PageProps<"/content/shoots/[id]">) {
-  const [{ id }, { view }, lookups, t] = await Promise.all([params, searchParams, getLookups(), getTranslations()]);
+  const [{ id }, { view, nav }, lookups, t] = await Promise.all([params, searchParams, getLookups(), getTranslations()]);
   const desktopView = view === "onset" ? "onset" : "sheet";
+  const allClients = nav === "all";
+  // Links keep the view (sheet / on set) and the reach of the arrows (this client / all clients).
+  const shootHref = (shootId: string, patch: { view?: string | null; nav?: string | null } = {}) => {
+    const q = new URLSearchParams(
+      Object.entries({ view: desktopView === "onset" ? "onset" : null, nav: allClients ? "all" : null, ...patch }).filter(([, v]) => v) as [string, string][],
+    ).toString();
+    return `/content/shoots/${shootId}${q ? `?${q}` : ""}`;
+  };
   const data = await getShootDay(id);
   if (!data || !data.day.client) notFound();
   const { day, videos } = data;
@@ -24,6 +33,14 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
     ? await Promise.all([getClientVideos(client.id, { bank: true }), previousShootDate(client.id, day.date)])
     : [[], null];
   const candidates = shootCandidates(open, day.id, previous);
+
+  // Previous / next shoot day, by date and start time: this client's, or every one you can see.
+  const days = (await getShootDays())
+    .filter((s) => allClients || s.client?.id === client.id)
+    .sort((a, b) => a.date.localeCompare(b.date) || (a.starts_at ?? "").localeCompare(b.starts_at ?? "") || a.id.localeCompare(b.id));
+  const at = days.findIndex((s) => s.id === day.id);
+  const stepTo = (s: (typeof days)[number] | undefined) =>
+    s ? { href: shootHref(s.id), label: [formatDate(s.date), allClients ? s.client?.name : s.location].filter(Boolean).join(" · ") } : null;
   const nowTime = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
 
   return (
@@ -43,12 +60,18 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
             </span>
           </span>
           <h1 className="display text-[32px] lg:text-[44px]">{t("video.shoot")}</h1>
+          <ShootNav
+            prev={stepTo(days[at - 1])}
+            next={stepTo(days[at + 1])}
+            scope={{ href: shootHref(day.id, { nav: allClients ? null : "all" }), all: allClients }}
+            labels={{ prev: t("shoots.prevShoot"), next: t("shoots.nextShoot"), all: t("shoots.allClients") }}
+          />
         </div>
         <div className="hidden items-center gap-3.5 lg:flex">
           <Segmented
             items={[
-              { key: "sheet", label: t("shootSheet.sheet"), href: `/content/shoots/${id}`, active: desktopView === "sheet" },
-              { key: "onset", label: t("shootSheet.onSet"), href: `/content/shoots/${id}?view=onset`, active: desktopView === "onset" },
+              { key: "sheet", label: t("shootSheet.sheet"), href: shootHref(id, { view: null }), active: desktopView === "sheet" },
+              { key: "onset", label: t("shootSheet.onSet"), href: shootHref(id, { view: "onset" }), active: desktopView === "onset" },
             ]}
           />
           {day.drive_url && (

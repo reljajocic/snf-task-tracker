@@ -648,7 +648,9 @@
     "shootDay": "Snimanje",
     "script": "Skripta",
     "showScripts": "Prikaži sve skripte",
-    "hideScripts": "Sakrij skripte"
+    "hideScripts": "Sakrij skripte",
+    "prevShoot": "Prethodno snimanje",
+    "nextShoot": "Sledeće snimanje"
   },
   "portalSettings": {
     "title": "Portal za klijenta",
