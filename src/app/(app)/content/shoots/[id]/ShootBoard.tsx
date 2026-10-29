@@ -40,29 +40,21 @@ function groupSlots(videos: Task[]): Slot[] {
 
 const isDone = (v: Task) => v.shot_status === "shot" || v.shot_status === "not_shot";
 
-// Which formats are hidden on the shoot day, kept in this browser (shared by every shoot day).
-const HIDDEN_KEY = "snf-shoot-hidden-formats";
-const subscribeHidden = (cb: () => void) => {
-  window.addEventListener(HIDDEN_KEY, cb);
+// Which post type the shoot day shows (all, or reels / posts / carousels only), kept in this browser.
+const TYPE_KEY = "snf-shoot-post-type";
+const subscribeType = (cb: () => void) => {
+  window.addEventListener(TYPE_KEY, cb);
   window.addEventListener("storage", cb);
   return () => {
-    window.removeEventListener(HIDDEN_KEY, cb);
+    window.removeEventListener(TYPE_KEY, cb);
     window.removeEventListener("storage", cb);
   };
 };
-const readHidden = () => {
+const readType = () => {
   try {
-    return localStorage.getItem(HIDDEN_KEY) ?? "[]";
+    return localStorage.getItem(TYPE_KEY) ?? "";
   } catch {
-    return "[]";
-  }
-};
-const parseHidden = (raw: string): PostFormat[] => {
-  try {
-    const v = JSON.parse(raw);
-    return Array.isArray(v) ? v.filter((f): f is PostFormat => FORMATS.includes(f)) : [];
-  } catch {
-    return [];
+    return "";
   }
 };
 
@@ -91,15 +83,15 @@ export function ShootBoard({
   const [unsorted, mark] = useOptimistic(videos, (cur, { id, status }: { id: string; status: ShotStatus }) =>
     cur.map((v) => (v.id === id ? { ...v, shot_status: status } : v)),
   );
-  // Show or hide all videos / photos / carousels at once (remembered on this device).
-  const hiddenRaw = useSyncExternalStore(subscribeHidden, readHidden, () => "[]");
-  const hiddenFormats = parseHidden(hiddenRaw);
-  const toggleFormat = (f: PostFormat) => {
-    const next = hiddenFormats.includes(f) ? hiddenFormats.filter((x) => x !== f) : [...hiddenFormats, f];
+  // All post types, or one only (like the portal's filter); remembered on this device.
+  const onlyRaw = useSyncExternalStore(subscribeType, readType, () => "");
+  const only = FORMATS.find((f) => f === onlyRaw) ?? null;
+  const hiddenFormats = only ? FORMATS.filter((f) => f !== only) : [];
+  const pickType = (f: PostFormat | null) => {
     try {
-      localStorage.setItem(HIDDEN_KEY, JSON.stringify(next));
+      localStorage.setItem(TYPE_KEY, f ?? "");
     } catch {}
-    window.dispatchEvent(new Event(HIDDEN_KEY));
+    window.dispatchEvent(new Event(TYPE_KEY));
   };
   const all = [...unsorted].sort(byShootTime);
   const items = all.filter((v) => !hiddenFormats.includes(v.format));
@@ -288,23 +280,19 @@ export function ShootBoard({
       <div className="flex flex-wrap items-center gap-x-7 gap-y-3 border-b border-line px-5 pb-5 lg:px-10">
         {progress}
         {formatsHere.length > 1 && (
-          <div className="flex flex-wrap gap-1.5">
-            {formatsHere.map((f) => {
-              const on = !hiddenFormats.includes(f);
-              return (
-                <button
-                  key={f}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => toggleFormat(f)}
-                  className={`flex h-9 cursor-pointer items-center gap-2 rounded-full border px-3.5 text-[13px] font-medium ${on ? "border-line2 text-ink" : "border-dashed border-line2 text-ink3 line-through"}`}
-                >
-                  <span className="size-2.5 rounded-full" style={{ background: on ? FORMAT_COLOR[f] : "transparent", boxShadow: `inset 0 0 0 1.5px ${FORMAT_COLOR[f]}` }} />
-                  {t(`format.${f}`)}
-                  <span className="text-ink3">{all.filter((v) => v.format === f).length}</span>
-                </button>
-              );
-            })}
+          <div className="inline-flex flex-wrap gap-0.5 rounded-[7px] border border-line2 p-[3px]">
+            {[null, ...formatsHere].map((f) => (
+              <button
+                key={f ?? "all"}
+                type="button"
+                aria-pressed={only === f}
+                onClick={() => pickType(f)}
+                className={`flex h-8 cursor-pointer items-center gap-1.5 rounded-[5px] px-3 text-[13px] font-medium ${only === f ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
+              >
+                {f && <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />}
+                {f ? `${t(`format.${f}`)} · ${all.filter((v) => v.format === f).length}` : t("schedule.allFormats")}
+              </button>
+            ))}
           </div>
         )}
         {day.starts_at && (
