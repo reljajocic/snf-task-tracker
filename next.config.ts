@@ -25,6 +25,9 @@ const nextConfig: NextConfig = {
   experimental: {
     // Moodboard images (already downscaled in the browser); Vercel caps a request at 4.5 MB anyway.
     serverActions: { bodySizeLimit: "4mb" },
+    // Going back to a screen seen in the last 30 s shows it at once instead of asking the server again.
+    // Saving anything clears this (revalidatePath / router.refresh), and AutoRefresh keeps it current.
+    staleTimes: { dynamic: 30 },
   },
 };
 

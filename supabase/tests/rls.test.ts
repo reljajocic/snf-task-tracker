@@ -695,3 +695,31 @@ describe("instagram", () => {
     await expect(as(MANAGER, "update public.instagram_accounts set username = 'x'")).rejects.toThrow(/permission denied/);
   });
 });
+
+describe("fast read rules", () => {
+  // The read policies check sets worked out once per query; they must let through exactly what the
+  // per-row helpers did, for everyone this file signed up (crew, partners, editors included).
+  it("show each person the same tasks, people, shoots and task details as the per-row helpers", async () => {
+    const ids = async (uid: string, sql: string, viaRls: boolean) => {
+      if (viaRls) return (await as<{ id: string }>(uid, sql)).map((r) => r.id);
+      await db.query(`select set_config('request.jwt.claim.sub', $1, false)`, [uid]);
+      return (await db.query<{ id: string }>(sql)).rows.map((r) => r.id);
+    };
+    const users = (await db.query<{ id: string }>("select id from public.profiles")).rows.map((r) => r.id);
+    const cases: [string, string][] = [
+      ["select id from public.tasks order by id",
+       "select id from public.tasks t where public.task_visible(t.id, t.created_by, t.client_id, t.project_id) or public.is_shoot_crew(t.shoot_id) order by id"],
+      ["select id from public.profiles order by id", "select id from public.profiles where public.can_see_person(id) order by id"],
+      ["select id from public.shoot_days order by id",
+       "select id from public.shoot_days where public.can_view_client(client_id) or public.is_shoot_crew(id) order by id"],
+      ["select task_id || ':' || user_id as id from public.task_assignees order by 1",
+       "select task_id || ':' || user_id as id from public.task_assignees where public.can_view_task(task_id) order by 1"],
+      ["select id from public.approvals order by id", "select id from public.approvals where public.can_view_task(task_id) order by id"],
+    ];
+    expect(users.length).toBeGreaterThan(4);
+    for (const uid of users) {
+      for (const [rls, helper] of cases) expect([uid, await ids(uid, rls, true)]).toEqual([uid, await ids(uid, helper, false)]);
+    }
+    await db.exec("select set_config('request.jwt.claim.sub', '', false)");
+  });
+});
