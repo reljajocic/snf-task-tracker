@@ -11,12 +11,14 @@ export function InvoiceDocument({
   buyer,
   signature,
   className = "",
+  id,
 }: {
   invoice: Invoice;
   issuer: Partial<Issuer>;
   buyer: Partial<Buyer>;
   signature: string | null;
   className?: string;
+  id?: string;
 }) {
   const number = invoiceNumber(invoice);
   const rate = invoice.eur_rate;
@@ -30,7 +32,7 @@ export function InvoiceDocument({
   const cell = "border border-black px-[9px] align-middle";
 
   return (
-  <article className={`flex min-h-[297mm] w-[210mm] flex-col bg-white px-[22mm] pb-[20mm] pt-[11mm] text-[14.5px] leading-[1.45] text-black ${className}`} style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+  <article id={id} className={`flex min-h-[297mm] w-[210mm] flex-col bg-white px-[22mm] pb-[20mm] pt-[11mm] text-[14.5px] leading-[1.45] text-black ${className}`} style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
     <header className="flex items-start justify-between gap-6">
       <img src="/brand/invoice-logo.png" alt="Slate n' Frame" className="mt-[1mm] size-[30mm] flex-none" />
       <div className="text-right text-[15px] leading-[1.6]">
