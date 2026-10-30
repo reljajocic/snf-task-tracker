@@ -6,7 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import type { Profile } from "@/lib/auth";
 
-/** Mobile header (design 1b): logo, avatar with a small account menu (theme lives in Settings). */
+/**
+ * Mobile header (design 1b): logo, avatar with a small account menu (theme lives in Settings).
+ * Solid, not frosted glass: on iOS 26 home-screen apps a see-through bar at the top is taken for the system
+ * bar and its own logo and avatar were blurred along with the content under the status bar.
+ */
 export function MobileTopBar({ profile, invoices }: { profile: Profile; invoices: boolean }) {
   const t = useTranslations();
   const [open, setOpen] = useState(false);
@@ -20,7 +24,7 @@ export function MobileTopBar({ profile, invoices }: { profile: Profile; invoices
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-20 flex items-center justify-between bg-side px-5 pb-2.5 pt-[max(12px,calc(env(safe-area-inset-top)+8px))] lg:hidden">
+    <header className="sticky top-0 z-20 flex items-center justify-between bg-[var(--canvas)] px-5 pb-2.5 pt-[max(12px,calc(env(safe-area-inset-top)+8px))] lg:hidden">
       <Link href="/">
         <img src="/brand/logo-off-white.png" alt="Slate n' Frame" className="h-[22px] [filter:var(--logo-filter)]" />
       </Link>
