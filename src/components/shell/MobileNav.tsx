@@ -12,7 +12,7 @@ export function MobileNav({ admin = false }: { admin?: boolean }) {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[calc(68px+env(safe-area-inset-bottom))] border-t border-line bg-side pb-[env(safe-area-inset-bottom)] lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[calc(68px+var(--nav-bottom))] border-t border-line bg-side pb-[var(--nav-bottom)] lg:hidden">
       {(admin ? ADMIN_ONLY_NAV : MOBILE_NAV).map((item) => {
         const active = isActive(pathname, item);
         return (

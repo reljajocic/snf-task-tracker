@@ -20,7 +20,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       <Sidebar profile={profile} initialCollapsed={cookieStore.get(SIDEBAR_COOKIE)?.value === "collapsed"} invoices={invoiceAccess.any} />
       {/* Others' changes show up on their own (every minute, and when you come back to the tab). */}
       <AutoRefresh seconds={60} />
-      <main className="flex min-w-0 flex-1 flex-col pb-[calc(68px+env(safe-area-inset-bottom))] lg:pb-0">
+      <main className="flex min-w-0 flex-1 flex-col pb-[calc(68px+var(--nav-bottom))] lg:pb-0">
         <MobileTopBar profile={profile} invoices={invoiceAccess.any} />
         {children}
       </main>

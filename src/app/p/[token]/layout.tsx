@@ -53,7 +53,7 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
         </div>
       </header>
       <NextIntlClientProvider locale={portal.locale} messages={messages}>
-        <main className="flex flex-1 flex-col pb-[calc(76px+env(safe-area-inset-bottom))] lg:pb-0">{children}</main>
+        <main className="flex flex-1 flex-col pb-[calc(76px+var(--nav-bottom))] lg:pb-0">{children}</main>
       </NextIntlClientProvider>
       <PortalNav tabs={tabs} variant="bottom" />
     </div>

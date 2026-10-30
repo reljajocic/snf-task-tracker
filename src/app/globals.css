@@ -295,3 +295,14 @@ body {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Room under the phone's bottom bar for the home indicator. The installed app doesn't draw under the
+   system bars (no viewport-fit=cover), so iOS reports no inset there: keep a gap of our own. */
+:root {
+  --nav-bottom: env(safe-area-inset-bottom);
+}
+@media (display-mode: standalone) {
+  :root {
+    --nav-bottom: max(env(safe-area-inset-bottom), 18px);
+  }
+}
