@@ -23,16 +23,28 @@ export const metadata: Metadata = {
   // One name on every page (owner's choice), no per-page titles.
   title: "SNF Dailies",
   description: "Internal task tracker for the Slate n' Frame team.",
-  appleWebApp: { capable: true, title: "SNF Dailies", statusBarStyle: "black" },
+  // The installed app starts below the status bar (no viewport-fit=cover): iOS 26 blurs a band under the
+  // clock in home-screen apps, and drawn under it the logo and avatar came out blurred.
+  appleWebApp: { capable: true, title: "SNF Dailies", statusBarStyle: "default" },
 };
 
-export const viewport: Viewport = {
-  // Matches the canvas so the (opaque) status bar blends in on installed apps.
-  themeColor: "#121011",
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-};
+const CANVAS = { dark: "#121011", light: "#ece9e1" };
+
+/** The status bar takes the canvas colour of the theme in use (the device's, when it's "system"). */
+export async function generateViewport(): Promise<Viewport> {
+  const theme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
+  return {
+    themeColor:
+      theme === "system"
+        ? [
+            { media: "(prefers-color-scheme: light)", color: CANVAS.light },
+            { media: "(prefers-color-scheme: dark)", color: CANVAS.dark },
+          ]
+        : CANVAS[theme],
+    width: "device-width",
+    initialScale: 1,
+  };
+}
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const [locale, cookieStore] = await Promise.all([getLocale(), cookies()]);
