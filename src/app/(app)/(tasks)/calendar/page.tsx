@@ -12,6 +12,7 @@ import { getTasks } from "@/lib/data";
 import { addDays, formatDate, formatShortDate, isoWeek, startOfWeek, today as getToday, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { PRIORITY_COLOR, byDue, type Task } from "@/lib/tasks";
 import { PeriodNav } from "@/components/ui/PeriodNav";
+import { TaskPhoneBar } from "../TaskViewTabs";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -93,10 +94,11 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
 
   return (
     <>
-      <PageHeader title={t("calendar.title")} eyebrow={t("calendar.eyebrow")} border phoneTitle={false} actions={<span className="hidden items-center gap-3.5 lg:flex">{navControls}</span>} />
+      <PageHeader title={t("calendar.title")} eyebrow={t("calendar.eyebrow")} border phone="none" actions={<span className="hidden items-center gap-3.5 lg:flex">{navControls}</span>} />
+      <TaskPhoneBar />
 
       {/* Mobile (5d): segmented + strip or month dots, then the selected day's list */}
-      <div className="flex flex-col gap-4 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:hidden">
+      <div className="flex flex-col gap-4 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-3 lg:hidden">
         <div className="flex items-center justify-between gap-2">
           <Segmented items={seg} />
           <div className="flex items-center text-[14px] font-medium">

@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
 import { KanbanBoard } from "@/components/tasks/KanbanBoard";
+import { TaskPhoneBar } from "../TaskViewTabs";
 import { PersonFilter } from "@/components/tasks/PersonFilter";
 import { shortNames } from "@/lib/short-names";
 import { Segmented } from "@/components/ui/Segmented";
@@ -57,16 +58,21 @@ export default async function KanbanPage({ searchParams }: PageProps<"/kanban">)
 
   return (
     <>
-      <PageHeader title={t("kanban.title")} border phoneTitle={false} actions={<span className="hidden gap-3.5 lg:flex"><Segmented items={kindSeg} /><PersonFilter people={people} value={person} hrefFor={personHrefs} /></span>} />
-      <details className="group px-5 pt-4 lg:hidden">
-        <summary className={`inline-flex h-10 cursor-pointer list-none items-center rounded-full border px-4 text-[14px] font-medium [&::-webkit-details-marker]:hidden ${activeFilters ? "border-ink2 text-ink" : "border-line2 text-ink2"}`}>
-          {activeFilters ? t("list.filtersN", { count: activeFilters }) : t("list.filters")}
-        </summary>
-        <div className="mt-3 flex flex-col gap-3 rounded-[10px] border border-line bg-surf p-3">
-          <Segmented items={peopleSeg} size="sm" scroll />
-          <Segmented items={kindSeg} size="sm" scroll />
-        </div>
-      </details>
+      <PageHeader title={t("kanban.title")} border phone="none" actions={<span className="hidden gap-3.5 lg:flex"><Segmented items={kindSeg} /><PersonFilter people={people} value={person} hrefFor={personHrefs} /></span>} />
+      <TaskPhoneBar
+        filters={
+          <details className="static">
+            <summary className={`inline-flex h-9 cursor-pointer list-none items-center rounded-full border px-3.5 text-[13px] font-medium [&::-webkit-details-marker]:hidden ${activeFilters ? "border-ink2 text-ink" : "border-line2 text-ink2"}`}>
+              {activeFilters ? t("list.filtersN", { count: activeFilters }) : t("list.filters")}
+            </summary>
+            {/* Drops down under the whole row, over the cards. */}
+            <div className="absolute inset-x-5 top-full z-20 mt-1 flex flex-col gap-3 rounded-[10px] border border-line2 bg-pop p-3 shadow-[var(--shadow-overlay)]">
+              <Segmented items={peopleSeg} size="sm" scroll />
+              <Segmented items={kindSeg} size="sm" scroll />
+            </div>
+          </details>
+        }
+      />
       <KanbanBoard tasks={tasks} today={today} />
     </>
   );

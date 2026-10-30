@@ -59,6 +59,7 @@ export default async function ShootsPage({ searchParams }: PageProps<"/content/s
       <PageHeader
         title={t("shoots.title")}
         newTask={false}
+        phone="none"
         actions={
           canCreate ? (
             <div className="flex flex-wrap items-start gap-3">
@@ -69,7 +70,7 @@ export default async function ShootsPage({ searchParams }: PageProps<"/content/s
         }
       />
       {withShoots.length > 1 && (
-        <div className="px-5 pb-6 lg:px-10">
+        <div className="px-5 pb-6 max-lg:pt-3 lg:px-10">
           <Suspense>
             <ClientPicker clients={withShoots.map((c) => ({ id: c.id, name: c.name }))} value={clientId ?? "all"} allLabel={t("shoots.allClients")} />
           </Suspense>

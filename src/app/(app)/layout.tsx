@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { MobileNav } from "@/components/shell/MobileNav";
 import { MobileTopBar } from "@/components/shell/MobileTopBar";
 import { Sidebar } from "@/components/shell/Sidebar";
-import { NewTaskFab } from "@/components/tasks/links";
 import { TaskOverlays } from "@/components/tasks/TaskOverlays";
 import { DialogHost } from "@/components/ui/Dialog";
 import { requireProfile } from "@/lib/auth";
@@ -28,7 +27,6 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       <MobileNav admin={profile.role === "admin"} />
       <DialogHost />
       <Suspense>
-        {profile.role !== "admin" && <NewTaskFab />}
         <TaskOverlays lookups={lookups} today={today()} />
       </Suspense>
     </div>

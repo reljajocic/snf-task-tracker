@@ -101,10 +101,10 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
 
   return (
     <>
-      <PageHeader title={t("home.title")} eyebrow={eyebrow} border actions={oversees ? <span className="hidden lg:flex"><Segmented items={toggle} size="sm" /></span> : undefined} />
+      <PageHeader title={t("home.title")} eyebrow={eyebrow} border phone="none" actions={oversees ? <span className="hidden lg:flex"><Segmented items={toggle} size="sm" /></span> : undefined} />
 
       {/* Mobile */}
-      <div className="flex flex-col gap-7 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:hidden">
+      <div className="flex flex-col gap-7 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-5 lg:hidden">
         {/* Small: "all" is what you usually want; "mine" is the occasional look. */}
         {oversees && <span className="-mb-3 self-start"><Segmented items={toggle} size="sm" /></span>}
         <PeopleStats stats={people} compact />

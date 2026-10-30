@@ -14,6 +14,7 @@ import { ScheduleCalendar } from "./ScheduleCalendar";
 import { ScheduleTable, type ScheduleWeek } from "./ScheduleTable";
 import { FORMATS } from "@/lib/formats";
 import { PeriodNav } from "@/components/ui/PeriodNav";
+import { ShownClient } from "../ContentTabs";
 
 function monthStart(d: IsoDate) {
   return `${d.slice(0, 7)}-01`;
@@ -60,7 +61,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
   if (!client) {
     return (
       <>
-        <PageHeader title={t("schedule.title")} newTask={false} />
+        <PageHeader title={t("schedule.title")} newTask={false} phone="none" />
         <p className="px-5 text-[15px] text-ink3 lg:px-10">{t("schedule.noClient")}</p>
       </>
     );
@@ -140,20 +141,25 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     <>
       <PeriodNav label={period} prevHref={href({ m: shiftMonth(m, -1).slice(0, 7) })} nextHref={href({ m: shiftMonth(m, 1).slice(0, 7) })} />
       <Segmented items={viewSeg} />
-      <Link href={addHref} scroll={false} className={buttonClass({ size: "sm", className: "hidden lg:inline-flex" })}>
-        {t("schedule.addVideo")}
-      </Link>
+      {/* Phones add from the "+" next to the content tabs. */}
+      <span className="hidden lg:inline-flex">
+        <Link href={addHref} scroll={false} className={buttonClass({ size: "sm" })}>
+          {t("schedule.addVideo")}
+        </Link>
+      </span>
     </>
   );
 
   return (
     <>
+      <ShownClient id={client.id} />
       <PageHeader
         title={t("schedule.title")}
         newTask={false}
+        phone="none"
         actions={<span className="hidden items-center gap-3.5 lg:flex">{controls}</span>}
       />
-      <div className="flex flex-wrap items-center gap-2.5 px-5 pb-3 lg:hidden">{controls}</div>
+      <div className="flex flex-wrap items-center gap-2.5 px-5 pb-3 pt-3 lg:hidden">{controls}</div>
       {late > 0 && (
         <p className="px-5 pb-3 text-[13px] font-medium text-red-ink lg:px-10">{t("schedule.notPublishedCount", { count: late })}</p>
       )}

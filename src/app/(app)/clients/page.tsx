@@ -52,7 +52,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
 
   return (
     <>
-      <PageHeader title={t("clients.title")} newTask={false} actions={newButton} />
+      <PageHeader title={t("clients.title")} newTask={false} actions={newButton} phone="actions" />
       <div className="border-b border-line px-5 pb-[18px] lg:px-10">
         <Segmented scroll items={tabs.map((tb) => ({ ...tb, dot: tb.key === "all" ? undefined : CLIENT_STATUS_COLOR[tb.key as ClientStatus] }))} />
       </div>

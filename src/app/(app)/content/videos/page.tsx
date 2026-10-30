@@ -11,6 +11,7 @@ import { today as getToday } from "@/lib/dates";
 import type { Task } from "@/lib/tasks";
 import { ClientPicker } from "../schedule/ClientPicker";
 import { VideoBank } from "./VideoBank";
+import { ShownClient } from "../ContentTabs";
 
 // Most-used first: filmed and waiting for a date, then what's on a shoot, then ideas.
 const TABS = ["ready", "shoot", "ideas", "dropped"] as const;
@@ -41,7 +42,7 @@ export default async function VideoBankPage({ searchParams }: PageProps<"/conten
   if (!client) {
     return (
       <>
-        <PageHeader title={t("bank.title")} newTask={false} />
+        <PageHeader title={t("bank.title")} newTask={false} phone="none" />
         <p className="px-5 text-[15px] text-ink3 lg:px-10">{t("schedule.noClient")}</p>
       </>
     );
@@ -78,16 +79,18 @@ export default async function VideoBankPage({ searchParams }: PageProps<"/conten
 
   return (
     <>
+      <ShownClient id={client.id} />
       <PageHeader
         title={t("bank.title")}
         newTask={false}
+        phone="none"
         actions={
           <Link href={`?new=1&kind=video&client=${client.id}${tab === "ready" ? "&stage=shot" : `&tab=${tab}`}`} scroll={false} className={buttonClass({ size: "sm" })}>
             {t("bank.new")}
           </Link>
         }
       />
-      <div className="flex flex-col gap-3 border-b border-line px-5 pb-[18px] lg:px-10">
+      <div className="flex flex-col gap-3 border-b border-line px-5 pb-[18px] max-lg:pt-3 lg:px-10">
         <p className="hidden max-w-[640px] text-[14px] text-ink3 sm:block">{t("bank.intro")}</p>
         <div className="flex flex-wrap items-center gap-2.5">
           <Suspense>
