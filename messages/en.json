@@ -433,8 +433,8 @@
         "hint": "A task you're on moves to another column."
       },
       "task_due_tomorrow": {
-        "title": "Due tomorrow",
-        "hint": "Morning reminder for your tasks due the next day."
+        "title": "Deadline coming up",
+        "hint": "Reminders 3, 2 and 1 day before your task is due, and on the day."
       },
       "task_overdue": {
         "title": "Overdue",

@@ -63,8 +63,12 @@ function describe(event: NotificationEvent, task: TaskInfo, actor: string | null
       return { subject: `Comment on: ${task.title}`, heading: `${who} commented`, lines: [`<b style="color:#F4F3ED">${title}</b>${where}`, `“${escapeHtml(extra.body ?? "")}”`] };
     case "task_status_changed":
       return { subject: `${task.title}: ${extra.status}`, heading: `${who} moved a task to “${escapeHtml(extra.status ?? "")}”`, lines: [`<b style="color:#F4F3ED">${title}</b>${where}`] };
-    case "task_due_tomorrow":
-      return { subject: `Due tomorrow: ${task.title}`, heading: "Due tomorrow", lines: [`<b style="color:#F4F3ED">${title}</b>${where}`, due] };
+    case "task_due_tomorrow": {
+      // The deadline reminder (the event keeps its first name so saved settings still apply): 3, 2, 1 days before and on the day.
+      const days = Number(extra.days ?? 1);
+      const when = days === 0 ? "Due today" : days === 1 ? "Due tomorrow" : `Due in ${days} days`;
+      return { subject: `${when}: ${task.title}`, heading: when, lines: [`<b style="color:#F4F3ED">${title}</b>${where}`, due] };
+    }
     case "task_overdue":
       return { subject: `Overdue: ${task.title}`, heading: "This task is overdue", lines: [`<b style="color:#F4F3ED">${title}</b>${where}`, due] };
     case "client_approved":

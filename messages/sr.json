@@ -433,8 +433,8 @@
         "hint": "Zadatak na kom si pređe u drugu kolonu."
       },
       "task_due_tomorrow": {
-        "title": "Rok sutra",
-        "hint": "Jutarnji podsetnik za zadatke kojima je rok sutra."
+        "title": "Rok se bliži",
+        "hint": "Podsetnik 3, 2 i 1 dan pre roka, i na sam dan roka."
       },
       "task_overdue": {
         "title": "Kasni",
