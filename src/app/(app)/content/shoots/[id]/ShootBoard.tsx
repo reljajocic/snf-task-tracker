@@ -178,6 +178,11 @@ export function ShootBoard({
         ))}
     </div>
   );
+  // The note in full while the script is open (or there is none); two short lines while it's hidden, so the list stays quick to scan.
+  const noteClass = (v: Task, byDefault: boolean) =>
+    !hasScript(v) || scriptOpen(v.id, byDefault)
+      ? "whitespace-pre-wrap text-[14px] font-medium text-[var(--waiting-ink)]"
+      : "line-clamp-2 text-[13px] font-medium leading-snug text-[var(--waiting-ink)]";
   const scriptToggle = (v: Task, byDefault: boolean) =>
     hasScript(v) && (
       <button
@@ -334,22 +339,27 @@ export function ShootBoard({
 
       {/* Mobile: on set (2e) */}
       <div className="flex flex-col gap-[22px] px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-5 lg:hidden">
-        {typePicker && <div className="self-start">{typePicker}</div>}
-        <CallTimes times={deriveCallTimes(items)} />
-        {items.some(hasScript) && (
-          <div className="flex gap-2">
-            {(["all", "none"] as const).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => setAllScripts(m)}
-                className={`h-10 flex-1 cursor-pointer rounded-md border text-[14px] font-medium ${scriptMode === m ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"}`}
-              >
-                {t(m === "all" ? "shoots.showScripts" : "shoots.hideScripts")}
-              </button>
-            ))}
+        {/* The filters stay under the top bar while the list scrolls (looking for a script mid-shoot). */}
+        {(typePicker || items.some(hasScript)) && (
+          <div className="sticky top-[max(58px,calc(env(safe-area-inset-top)+54px))] z-10 -mx-5 -my-3 flex flex-col gap-2.5 border-b border-line bg-[var(--canvas)] px-5 py-3">
+            {typePicker && <div className="self-start">{typePicker}</div>}
+            {items.some(hasScript) && (
+              <div className="flex gap-2">
+                {(["all", "none"] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setAllScripts(m)}
+                    className={`h-10 flex-1 cursor-pointer rounded-md border text-[14px] font-medium ${scriptMode === m ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"}`}
+                  >
+                    {t(m === "all" ? "shoots.showScripts" : "shoots.hideScripts")}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
+        <CallTimes times={deriveCallTimes(items)} />
         {nowSlot && (
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-3 px-1">
@@ -371,7 +381,7 @@ export function ShootBoard({
                 <ScriptDecisionBadge decision={v.script_decision} full />
                 {scriptToggle(v, true)}
                 {hasScript(v) && scriptOpen(v.id, true) && scriptBlock(v)}
-                {v.note && <span className="text-[14px] font-medium text-[var(--waiting-ink)]">{v.note}</span>}
+                {v.note && <span className={noteClass(v, true)}>{v.note}</span>}
                 {v.reference_url && (
                   <a href={safeHref(v.reference_url)} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-rust-ink">
                     {t("shoots.reference")}
@@ -402,7 +412,7 @@ export function ShootBoard({
                           <span className="text-[16px] font-medium leading-snug">{v.title}</span>
                           {whoWhen(v, "sm")}
                           <ScriptDecisionBadge decision={v.script_decision} />
-                          {v.note && <span className="line-clamp-3 text-[14px] font-medium text-[var(--waiting-ink)]">{v.note}</span>}
+                          {v.note && <span className={noteClass(v, false)}>{v.note}</span>}
                           {scriptToggle(v, false)}
                         </div>
                       </div>
