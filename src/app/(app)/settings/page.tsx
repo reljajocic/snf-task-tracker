@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 import type { Preference } from "@/lib/notifications";
 import { createClient } from "@/lib/supabase/server";
 import { AiKeys, type ApiKey } from "./AiKeys";
+import { PushDevice } from "./PushDevice";
 import { LanguageSetting, NotificationSettings, ProfileForm, ThemeSetting } from "./SettingsForms";
 
 export default async function SettingsPage() {
@@ -38,6 +39,7 @@ export default async function SettingsPage() {
         <section className="flex flex-col gap-3.5">
           <h2 className="display text-[20px]">{t("notifications")}</h2>
           <p className="text-[14px] text-ink2">{t("notificationsLead")}</p>
+          <PushDevice />
           <NotificationSettings prefs={(data ?? []) as Preference[]} />
         </section>
         <section className="flex flex-col gap-3.5">

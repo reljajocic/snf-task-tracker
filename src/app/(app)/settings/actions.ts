@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { inkOn, isHexColor } from "@/lib/color";
 import { env } from "@/lib/env";
 import { hashApiToken, newApiToken } from "@/lib/mcp/auth";
+import { sendPush } from "@/lib/push";
 
 export async function saveProfile(_prev: { ok: boolean; error?: string } | null, form: FormData) {
   const me = await requireProfile();
@@ -48,6 +49,31 @@ export async function setPreference(event: NotificationEvent, channel: Notificat
     .from("notification_preferences")
     .upsert({ user_id: me.id, event_type: event, channel, enabled });
   revalidatePath("/settings");
+}
+
+/** This device turns push notifications on (it then notifies me, whoever had it before). */
+export async function savePushDevice(device: { endpoint?: string; keys?: { p256dh?: string; auth?: string } }) {
+  await requireProfile();
+  const { endpoint, keys } = device;
+  if (!endpoint?.startsWith("https://") || !keys?.p256dh || !keys.auth) return { error: "Invalid device." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("save_push_subscription", { p_endpoint: endpoint, p_p256dh: keys.p256dh, p_auth: keys.auth });
+  return error ? { error: error.message } : {};
+}
+
+export async function removePushDevice(endpoint: string) {
+  await requireProfile();
+  const supabase = await createClient();
+  await supabase.from("push_subscriptions").delete().eq("endpoint", endpoint);
+}
+
+/** A test notification to my devices; says how many got it. */
+export async function testPush() {
+  await requireProfile();
+  const supabase = await createClient();
+  const { data } = await supabase.from("push_subscriptions").select("endpoint, p256dh, auth");
+  const { sent } = await sendPush(data ?? [], { title: "SNF Dailies", body: "Notifications work on this device.", url: "/settings", tag: "test" });
+  return sent;
 }
 
 /** A personal AI key (MCP). The key is returned once; only its hash is stored. RLS: your own keys. */

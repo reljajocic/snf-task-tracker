@@ -1,9 +1,10 @@
 import "server-only";
 import { formatDate } from "@/lib/dates";
 import { isEnabled, type NotificationEvent, type Preference } from "@/lib/notifications";
+import { plainText, sendPush, type PushDevice } from "@/lib/push";
 import { createAdminClient } from "@/lib/supabase/server";
 
-// Records notifications in the outbox table and delivers them by email (Resend).
+// Records notifications in the outbox table and delivers them by email (Resend) and push (phones, browsers).
 // Runs with the service role *after* the user's own write succeeded, so it never widens access:
 // recipients are always people who can already see the task (assignees / creator).
 
@@ -116,10 +117,11 @@ export async function notify(opts: {
     if (!recipients.length) return;
     const admin = createAdminClient();
 
-    const [{ data: task }, { data: people }, { data: prefs }, actorRes] = await Promise.all([
+    const [{ data: task }, { data: people }, { data: prefs }, { data: devices }, actorRes] = await Promise.all([
       admin.from("tasks").select("id, title, due_date, client:clients(name)").eq("id", opts.taskId).single<TaskInfo>(),
       admin.from("profiles").select("id, email, is_active").in("id", recipients),
       admin.from("notification_preferences").select("user_id, event_type, channel, enabled").in("user_id", recipients),
+      admin.from("push_subscriptions").select("user_id, endpoint, p256dh, auth").in("user_id", recipients),
       opts.actorId ? admin.from("profiles").select("full_name").eq("id", opts.actorId).single() : Promise.resolve({ data: null }),
     ]);
     if (!task) return;
@@ -135,13 +137,29 @@ export async function notify(opts: {
         .insert({ user_id: person.id, event_type: opts.event, task_id: task.id, actor_id: opts.actorId ?? null, payload: { ...opts.extra, subject: msg.subject } })
         .select("id")
         .single();
-      if (!isEnabled(mine, opts.event, "email")) continue;
-      const sent = await sendEmail(person.email, msg.subject, emailHtml(msg.heading, msg.lines, link, "Open task", "You can turn these emails off in Settings → Notifications."));
-      if (sent && row) await admin.from("notifications").update({ delivered_at: new Date().toISOString() }).eq("id", row.id);
+      const [emailed, pushed] = await Promise.all([
+        isEnabled(mine, opts.event, "email")
+          ? sendEmail(person.email, msg.subject, emailHtml(msg.heading, msg.lines, link, "Open task", "You can turn these emails off in Settings → Notifications."))
+          : false,
+        isEnabled(mine, opts.event, "push") ? pushTo((devices ?? []).filter((d) => d.user_id === person.id), msg, task.id) : false,
+      ]);
+      if ((emailed || pushed) && row) await admin.from("notifications").update({ delivered_at: new Date().toISOString() }).eq("id", row.id);
     }
   } catch (e) {
     console.error("[notify] failed", e);
   }
+}
+
+/** Push to one person's devices; forgets devices that were turned off or expired. */
+async function pushTo(devices: PushDevice[], msg: Message, taskId: string) {
+  const { sent, gone } = await sendPush(devices, {
+    title: plainText(msg.heading),
+    body: msg.lines.map(plainText).filter(Boolean).join("\n"),
+    url: `/?task=${taskId}`,
+    tag: taskId,
+  });
+  if (gone.length) await createAdminClient().from("push_subscriptions").delete().in("endpoint", gone);
+  return sent > 0;
 }
 
 /**

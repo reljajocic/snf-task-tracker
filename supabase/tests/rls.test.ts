@@ -329,6 +329,28 @@ describe("api tokens", () => {
   });
 });
 
+describe("push subscriptions", () => {
+  it("people see and remove only their own devices; a device goes to whoever turned it on last", async () => {
+    await as(MEMBER, "select public.save_push_subscription('https://push.example/a', 'k', 'x')");
+    await expect(as(MEMBER, "insert into public.push_subscriptions (endpoint, p256dh, auth) values ('https://push.example/b', 'k', 'x')")).rejects.toThrow(
+      /permission denied/,
+    );
+    expect(await as(MEMBER, "select endpoint from public.push_subscriptions")).toEqual([{ endpoint: "https://push.example/a" }]);
+    expect(await as(MANAGER, "select endpoint from public.push_subscriptions")).toEqual([]);
+    expect(await as(ADMIN, "select endpoint from public.push_subscriptions")).toEqual([]);
+    await as(MANAGER, "delete from public.push_subscriptions");
+    expect(await as(MEMBER, "select endpoint from public.push_subscriptions")).toEqual([{ endpoint: "https://push.example/a" }]);
+    await expect(as(MEMBER, "update public.push_subscriptions set user_id = $1", [MANAGER])).rejects.toThrow(/permission denied/);
+    // The same phone, now signed in as someone else.
+    await as(MANAGER, "select public.save_push_subscription('https://push.example/a', 'k2', 'x2')");
+    expect(await as(MEMBER, "select endpoint from public.push_subscriptions")).toEqual([]);
+    expect(await as(MANAGER, "select endpoint from public.push_subscriptions")).toEqual([{ endpoint: "https://push.example/a" }]);
+    await expect(as(OUTSIDER, "select public.save_push_subscription('http://insecure', 'k', 'x')")).rejects.toThrow(/check constraint/);
+    await as(MANAGER, "delete from public.push_subscriptions");
+    expect(await as(MANAGER, "select endpoint from public.push_subscriptions")).toEqual([]);
+  });
+});
+
 describe("client portal", () => {
   it("only managers configure the portal; nobody writes approvals through the API", async () => {
     await expect(as(MEMBER, "insert into public.client_portals (client_id, enabled) values ($1, true)", [C1])).rejects.toThrow(

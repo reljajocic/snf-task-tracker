@@ -7,7 +7,7 @@ import { AvatarUpload } from "@/components/AvatarUpload";
 import { Button } from "@/components/ui/Button";
 import { inputClass } from "@/components/tasks/fields";
 import type { Profile } from "@/lib/auth";
-import { NOTIFICATION_EVENTS, isEnabled, type NotificationEvent, type Preference } from "@/lib/notifications";
+import { NOTIFICATION_CHANNELS, NOTIFICATION_EVENTS, isEnabled, type NotificationChannel, type NotificationEvent, type Preference } from "@/lib/notifications";
 import { LOCALES, LOCALE_NAME, type Locale } from "@/lib/locale";
 import { THEMES, THEME_COOKIE, type Theme } from "@/lib/theme";
 import { saveTheme } from "@/components/shell/actions";
@@ -139,32 +139,36 @@ export function NotificationSettings({ prefs }: { prefs: Preference[] }) {
     p,
   ]);
 
-  const toggle = (event: NotificationEvent) => {
-    const enabled = !isEnabled(optimistic, event);
+  const toggle = (event: NotificationEvent, channel: NotificationChannel) => {
+    const enabled = !isEnabled(optimistic, event, channel);
     startTransition(async () => {
-      apply({ event_type: event, channel: "email", enabled });
-      await setPreference(event, "email", enabled);
+      apply({ event_type: event, channel, enabled });
+      await setPreference(event, channel, enabled);
     });
   };
 
   return (
     <div className="flex flex-col rounded-lg border border-line bg-surf">
-      <div className="flex justify-end border-b border-line px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">{t("email")}</div>
-      {NOTIFICATION_EVENTS.map((event) => {
-        const on = isEnabled(optimistic, event);
-        return (
-          <div key={event} className="flex items-center gap-4 border-b border-line px-5 py-3.5 last:border-b-0">
-            <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="text-[15px] font-medium">{t(`events.${event}.title`)}</span>
-              <span className="text-[13px] leading-snug text-ink3">{t(`events.${event}.hint`)}</span>
-            </div>
-            <button type="button" role="switch" aria-checked={on} aria-label={t(`events.${event}.title`)} onClick={() => toggle(event)}
-              className={`relative h-5 w-9 flex-none cursor-pointer rounded-full transition-colors ${on ? "bg-accent" : "bg-line2"}`}>
-              <span className={`absolute top-0.5 size-4 rounded-full bg-offwhite transition-[left] ${on ? "left-[18px]" : "left-0.5"}`} />
-            </button>
+      <div className="flex justify-end gap-4 border-b border-line px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
+        {NOTIFICATION_CHANNELS.map((c) => <span key={c} className="w-9 text-center">{t(c)}</span>)}
+      </div>
+      {NOTIFICATION_EVENTS.map((event) => (
+        <div key={event} className="flex items-center gap-4 border-b border-line px-5 py-3.5 last:border-b-0">
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <span className="text-[15px] font-medium">{t(`events.${event}.title`)}</span>
+            <span className="text-[13px] leading-snug text-ink3">{t(`events.${event}.hint`)}</span>
           </div>
-        );
-      })}
+          {NOTIFICATION_CHANNELS.map((channel) => {
+            const on = isEnabled(optimistic, event, channel);
+            return (
+              <button key={channel} type="button" role="switch" aria-checked={on} aria-label={`${t(`events.${event}.title`)}: ${t(channel)}`} onClick={() => toggle(event, channel)}
+                className={`relative h-5 w-9 flex-none cursor-pointer rounded-full transition-colors ${on ? "bg-accent" : "bg-line2"}`}>
+                <span className={`absolute top-0.5 size-4 rounded-full bg-offwhite transition-[left] ${on ? "left-[18px]" : "left-0.5"}`} />
+              </button>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

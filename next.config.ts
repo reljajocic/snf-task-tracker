@@ -20,7 +20,11 @@ const SECURITY_HEADERS = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: SECURITY_HEADERS }];
+    return [
+      { source: "/:path*", headers: SECURITY_HEADERS },
+      // The service worker is always fetched fresh, so a fix to it reaches phones on their next visit.
+      { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }] },
+    ];
   },
   experimental: {
     // Moodboard images (already downscaled in the browser); Vercel caps a request at 4.5 MB anyway.

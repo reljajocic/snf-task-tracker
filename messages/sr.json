@@ -403,7 +403,21 @@
     "language": "Jezik",
     "languageHint": "Jezik aplikacije za tebe. Mailovi ostaju na engleskom; portal za klijente ima svoj jezik (klijent → Portal za klijenta).",
     "notifications": "Obaveštenja",
-    "notificationsLead": "Izaberi o čemu ti šaljemo email. WhatsApp i Slack mogu kasnije da se dodaju kao kanali.",
+    "notificationsLead": "Izaberi šta ti stiže i kako: notifikacija na telefonu ili računaru, ili mejl.",
+    "push": "Push",
+    "pushBlock": {
+      "title": "Notifikacije na ovom uređaju",
+      "unsupported": "Ovaj browser ne prikazuje notifikacije. Na telefonu koristi Safari (iPhone) ili Chrome (Android).",
+      "homeScreen": "Na iPhone-u notifikacije stižu samo u aplikaciju sa početnog ekrana: u Safariju tapni Share → Add to Home Screen, otvori SNF Dailies odatle i uključi ih ovde.",
+      "blocked": "Notifikacije su blokirane za SNF Dailies. Dozvoli ih u podešavanjima telefona → Notifications (ili u podešavanjima sajta u browseru), pa se vrati.",
+      "off": "Isključene na ovom uređaju. Uključi da dobijaš ono što izabereš pod Push ispod.",
+      "on": "Uključene. Ovaj uređaj dobija ono što izabereš pod Push ispod.",
+      "turnOn": "Uključi",
+      "turnOff": "Isključi",
+      "test": "Pošalji probu",
+      "testSent": "Poslato. Trebalo bi da stigne za par sekundi.",
+      "testFailed": "Ništa nije poslato. Isključi pa ponovo uključi notifikacije."
+    },
     "email": "Email",
     "events": {
       "task_assigned": {

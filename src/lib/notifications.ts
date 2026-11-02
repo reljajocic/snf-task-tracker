@@ -1,5 +1,5 @@
 // Notification event types and their defaults. Shared by the settings screen and the sender.
-// Channels are pluggable: "email" now; WhatsApp/Slack can be added as new channels later.
+// Channels are pluggable: email and push now; WhatsApp/Slack can be added as new channels later.
 
 export const NOTIFICATION_EVENTS = [
   "task_assigned",
@@ -13,10 +13,10 @@ export const NOTIFICATION_EVENTS = [
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 
-export const NOTIFICATION_CHANNELS = ["email"] as const;
+export const NOTIFICATION_CHANNELS = ["push", "email"] as const;
 export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
 
-/** What's on when the user hasn't touched the setting. */
+/** What's on when the user hasn't touched the setting (on every channel; push reaches only devices that turned it on). */
 export const DEFAULT_ENABLED: Record<NotificationEvent, boolean> = {
   task_assigned: true,
   task_commented: true,

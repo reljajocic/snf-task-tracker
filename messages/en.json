@@ -403,7 +403,21 @@
     "language": "Language",
     "languageHint": "The app language for you. Emails stay in English; the client portal has its own language (client → Client portal).",
     "notifications": "Notifications",
-    "notificationsLead": "Choose what we email you about. WhatsApp and Slack can be added as channels later.",
+    "notificationsLead": "Choose what reaches you, and how: a notification on your phone or computer, or an email.",
+    "push": "Push",
+    "pushBlock": {
+      "title": "Notifications on this device",
+      "unsupported": "This browser can't show notifications. On a phone, use Safari (iPhone) or Chrome (Android).",
+      "homeScreen": "On an iPhone, notifications come only to the app on your home screen: in Safari tap Share → Add to Home Screen, open SNF Dailies from there and turn them on here.",
+      "blocked": "Notifications are blocked for SNF Dailies. Allow them in the phone's Settings → Notifications (or the browser's site settings), then come back.",
+      "off": "Off on this device. Turn on to get the events you pick under Push below.",
+      "on": "On. This device gets the events you pick under Push below.",
+      "turnOn": "Turn on",
+      "turnOff": "Turn off",
+      "test": "Send a test",
+      "testSent": "Sent. It should show up in a few seconds.",
+      "testFailed": "Nothing was sent. Turn notifications off and on again."
+    },
     "email": "Email",
     "events": {
       "task_assigned": {
