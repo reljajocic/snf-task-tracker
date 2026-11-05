@@ -177,14 +177,26 @@ export function monthlyEarnings(invoices: Invoice[], shares: Share[], expenses: 
 }
 
 /** Quick splits offered on an invoice (the custom one is typed in). */
+/**
+ * Splits the total by weights (1:1, 2:1, 40:60 …). Amounts are floored to the para and the
+ * leftover goes to the first person with a weight, so the shares always add up to the total.
+ * With `of` (e.g. 100 for percentages) the weights are parts of `of`; the leftover is only
+ * handed out when they add up to it, so a split that doesn't reach 100% shows as not split.
+ */
+export function splitByWeights(total: number, weights: Record<string, number>, of?: number): Record<string, number> {
+  const ids = Object.keys(weights).filter((id) => weights[id] > 0);
+  const sum = ids.reduce((s, id) => s + weights[id], 0);
+  const base = of ?? sum;
+  if (!base || !ids.length) return {};
+  const out: Record<string, number> = {};
+  ids.forEach((id) => (out[id] = Math.floor((total * weights[id] * 100) / base) / 100));
+  if (Math.abs(sum - base) < 1e-9) out[ids[0]] = round2(total - ids.slice(1).reduce((s, id) => s + out[id], 0));
+  return out;
+}
+
 export function presetShares(total: number, partnerIds: string[], preset: "even" | string): Record<string, number> {
-  if (preset === "even") {
-    const each = Math.floor((total / partnerIds.length) * 100) / 100;
-    const out: Record<string, number> = {};
-    partnerIds.forEach((p, i) => (out[p] = i === 0 ? round2(total - each * (partnerIds.length - 1)) : each));
-    return out;
-  }
-  return Object.fromEntries(partnerIds.map((p) => [p, p === preset ? total : 0]));
+  const weights = Object.fromEntries(partnerIds.map((p) => [p, preset === "even" || p === preset ? 1 : 0]));
+  return { ...Object.fromEntries(partnerIds.map((p) => [p, 0])), ...splitByWeights(total, weights) };
 }
 
 /** The invoice itself is a Serbian legal document, so its wording stays Serbian whatever the app language. */

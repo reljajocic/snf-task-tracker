@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { invoiceNumber, monthlyEarnings, money, parseAmount, payState, presetShares, totalRsd, type Expense, type Invoice } from "./invoices";
+import { invoiceNumber, monthlyEarnings, money, parseAmount, payState, presetShares, splitByWeights, totalRsd, type Expense, type Invoice } from "./invoices";
 
 const R = "relja";
 const M = "marko";
@@ -92,6 +92,15 @@ describe("invoices", () => {
   it("even split keeps every dinar", () => {
     expect(presetShares(140891.77, [R, M], "even")).toEqual({ [R]: 70445.89, [M]: 70445.88 });
     expect(presetShares(100, [R, M], M)).toEqual({ [R]: 0, [M]: 100 });
+  });
+
+  it("splits by any ratio and keeps every dinar", () => {
+    expect(splitByWeights(100, { [R]: 1, [M]: 1, u: 1 })).toEqual({ [R]: 33.34, [M]: 33.33, u: 33.33 });
+    expect(splitByWeights(176045.7, { [R]: 2, [M]: 1 })).toEqual({ [R]: 117363.8, [M]: 58681.9 });
+    expect(splitByWeights(1000, { [R]: 40, [M]: 60 }, 100)).toEqual({ [R]: 400, [M]: 600 });
+    // Percentages short of 100 leave the rest unsplit instead of padding someone's share.
+    expect(splitByWeights(1000, { [R]: 40, [M]: 50 }, 100)).toEqual({ [R]: 400, [M]: 500 });
+    expect(splitByWeights(1000, { [R]: 0, [M]: 0 })).toEqual({});
   });
 
   it("reads amounts the way people type them", () => {

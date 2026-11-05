@@ -7,7 +7,7 @@ import { useMemo, useState, useTransition } from "react";
 import { inputClass, selectClass } from "@/components/tasks/fields";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button, buttonClass } from "@/components/ui/Button";
-import { DEFAULT_ITEM, invoiceNumber, money, parseAmount, presetShares, totalRsd, type Buyer, type Currency, type Invoice, type InvoiceItem, type Issuer } from "@/lib/invoices";
+import { DEFAULT_ITEM, invoiceNumber, money, parseAmount, splitByWeights, totalRsd, type Buyer, type Currency, type Invoice, type InvoiceItem, type Issuer } from "@/lib/invoices";
 import type { Partner } from "@/lib/finance";
 import { cancelInvoice, deleteDraft, eurRate, saveInvoice, type BuyerInput } from "./actions";
 import { Field, Section } from "./form-bits";
@@ -15,7 +15,7 @@ import { ask } from "@/components/ui/Dialog";
 import { PageTitle } from "@/components/shell/PageTitle";
 
 type ClientOpt = { id: string; name: string };
-type Preset = "even" | "custom" | "none" | string; // string = one partner's id
+type Preset = "even" | "custom" | "none" | string; // string = one partner's id, "two:<id>" = ⅔ to that partner
 
 const emptyBuyer = (clientId: string | null): BuyerInput => ({ id: null, name: "", address: "", pib: "", mb: "", client_id: clientId });
 
@@ -65,6 +65,9 @@ export function InvoiceForm({
   const sharers = useMemo(() => [...partners, ...others.filter((o) => added.includes(o.id))], [partners, others, added]);
   const [split, setSplit] = useState<Record<string, string>>(Object.fromEntries([...partners, ...others].map((p) => [p.id, shares[p.id] ? String(shares[p.id]) : ""])));
   const [preset, setPreset] = useState<Preset>("custom");
+  // Shares can be typed as amounts or as percentages of the total.
+  const [unit, setUnit] = useState<"rsd" | "pct">("rsd");
+  const [pct, setPct] = useState<Record<string, string>>({});
 
   const isDraft = !invoice || invoice.status === "draft";
   const cancelled = invoice?.status === "cancelled";
@@ -72,10 +75,23 @@ export function InvoiceForm({
   const total = totalRsd(items, currency, Number(rate) || null);
   // A preset follows the total as lines change; typing an amount makes it custom.
   const shownSplit = useMemo(() => {
-    if (preset === "custom") return split;
-    const next = preset === "none" ? {} : presetShares(total, partners.map((p) => p.id), preset);
+    if (preset === "custom" && unit === "rsd") return split;
+    let weights: Record<string, number> = {};
+    let of: number | undefined;
+    if (preset === "custom") {
+      weights = Object.fromEntries(sharers.map((p) => [p.id, parseAmount(pct[p.id] ?? "") || 0]));
+      of = 100;
+    } else if (preset === "even") weights = Object.fromEntries(sharers.map((p) => [p.id, 1]));
+    else if (preset.startsWith("two:")) weights = Object.fromEntries(partners.map((p) => [p.id, p.id === preset.slice(4) ? 2 : 1]));
+    else if (preset !== "none") weights = { [preset]: 1 };
+    const next = splitByWeights(total, weights, of);
     return Object.fromEntries(sharers.map((p) => [p.id, next[p.id] ? String(next[p.id]) : ""]));
-  }, [preset, split, total, partners, sharers]);
+  }, [preset, unit, pct, split, total, partners, sharers]);
+  const pctOf = (amount: string) => {
+    const n = parseAmount(amount);
+    return n && total ? String(Math.round((n / total) * 10000) / 100) : "";
+  };
+  const shownPct = preset === "custom" ? pct : Object.fromEntries(sharers.map((p) => [p.id, pctOf(shownSplit[p.id] ?? "")]));
   const shareSum = Object.values(shownSplit).reduce((s, v) => s + (parseAmount(v) || 0), 0);
 
   // Euro invoices quote the NBS middle rate of the invoice date.
@@ -259,6 +275,7 @@ export function InvoiceForm({
           <div className="flex flex-wrap gap-2">
             {[
               { key: "even", label: t("splitEven") },
+              ...(partners.length === 2 ? partners.map((p) => ({ key: `two:${p.id}`, label: t("splitTwoThirds", { name: p.full_name }) })) : []),
               ...partners.map((p) => ({ key: p.id, label: t("splitAll", { name: p.full_name }) })),
               { key: "none", label: t("splitNone") },
             ].map((o) => (
@@ -271,22 +288,48 @@ export function InvoiceForm({
                 {o.label}
               </button>
             ))}
+            <div className="ml-auto flex h-9 rounded-full border border-line2 p-0.5" role="group" aria-label={t("splitUnit")}>
+              {(["rsd", "pct"] as const).map((u) => (
+                <button
+                  key={u}
+                  type="button"
+                  aria-pressed={unit === u}
+                  onClick={() => {
+                    if (u === unit) return;
+                    if (u === "pct") setPct(shownPct);
+                    else setSplit(shownSplit);
+                    setPreset("custom");
+                    setUnit(u);
+                  }}
+                  className={`cursor-pointer rounded-full px-3 text-[13px] font-medium ${unit === u ? "bg-seg text-seg-ink" : "text-ink2 hover:text-ink"}`}
+                >
+                  {u === "rsd" ? "RSD" : "%"}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {sharers.map((p) => (
               <label key={p.id} className="flex items-center gap-3">
                 <Avatar person={p} size={28} />
-                <span className="min-w-0 flex-1 truncate text-[14px] font-medium">{p.full_name}</span>
-                <input
-                  value={shownSplit[p.id] ?? ""}
-                  inputMode="decimal"
-                  placeholder="0"
-                  onChange={(e) => {
-                    setPreset("custom");
-                    setSplit({ ...shownSplit, [p.id]: e.target.value });
-                  }}
-                  className={`${inputClass} w-40 text-right`}
-                />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[14px] font-medium">{p.full_name}</span>
+                  {unit === "pct" && shownSplit[p.id] && <span className="block truncate text-[12px] text-ink3">{money(parseAmount(shownSplit[p.id]))} RSD</span>}
+                </span>
+                <span className="relative">
+                  <input
+                    value={(unit === "pct" ? shownPct[p.id] : shownSplit[p.id]) ?? ""}
+                    inputMode="decimal"
+                    placeholder="0"
+                    onChange={(e) => {
+                      setPreset("custom");
+                      if (unit === "pct") setPct({ ...shownPct, [p.id]: e.target.value });
+                      else setSplit({ ...shownSplit, [p.id]: e.target.value });
+                    }}
+                    className={`${inputClass} w-40 text-right ${unit === "pct" ? "pr-8" : ""}`}
+                  />
+                  {unit === "pct" && <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[13px] text-ink3">%</span>}
+                </span>
               </label>
             ))}
           </div>
@@ -296,6 +339,7 @@ export function InvoiceForm({
               onChange={(e) => {
                 if (!e.target.value) return;
                 setSplit({ ...shownSplit, [e.target.value]: "" });
+                setPct({ ...shownPct, [e.target.value]: "" });
                 setPreset("custom");
                 setAdded([...added, e.target.value]);
               }}
