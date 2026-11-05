@@ -351,6 +351,30 @@ describe("push subscriptions", () => {
   });
 });
 
+describe("client reminders", () => {
+  it("people keep their own reminders, only on clients they can see", async () => {
+    await as(MEMBER, "insert into public.client_reminders (client_id, title, remind_on, repeat) values ($1, 'Send invoice', '2026-12-01', 'monthly')", [C1]);
+    expect(await as(MEMBER, "select title, repeat from public.client_reminders")).toEqual([{ title: "Send invoice", repeat: "monthly" }]);
+    // Someone else on the same client (even its manager, even an admin) doesn't see or touch them.
+    expect(await as(MANAGER, "select title from public.client_reminders")).toEqual([]);
+    expect(await as(ADMIN, "select title from public.client_reminders")).toEqual([]);
+    await as(MANAGER, "delete from public.client_reminders");
+    expect(await as(MEMBER, "select count(*)::int as n from public.client_reminders")).toEqual([{ n: 1 }]);
+    // No reminders on a client you can't see, and none set up for someone else.
+    await expect(as(MEMBER, "insert into public.client_reminders (client_id, title, remind_on) values ($1, 'x', '2026-12-01')", [C2])).rejects.toThrow(/row-level security/);
+    await expect(
+      as(MEMBER, "insert into public.client_reminders (client_id, user_id, title, remind_on) values ($1, $2, 'x', '2026-12-01')", [C1, MANAGER]),
+    ).rejects.toThrow(/row-level security/);
+    await expect(as(MEMBER, "update public.client_reminders set user_id = $1", [MANAGER])).rejects.toThrow(/row-level security/);
+    await expect(as(MEMBER, "update public.client_reminders set client_id = $1", [C2])).rejects.toThrow(/row-level security/);
+    await expect(as(MEMBER, "insert into public.client_reminders (client_id, title, remind_on, repeat) values ($1, 'x', '2026-12-01', 'daily')", [C1])).rejects.toThrow(
+      /check constraint/,
+    );
+    await as(MEMBER, "delete from public.client_reminders");
+    expect(await as(MEMBER, "select title from public.client_reminders")).toEqual([]);
+  });
+});
+
 describe("client portal", () => {
   it("only managers configure the portal; nobody writes approvals through the API", async () => {
     await expect(as(MEMBER, "insert into public.client_portals (client_id, enabled) values ($1, true)", [C1])).rejects.toThrow(

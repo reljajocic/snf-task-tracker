@@ -10,6 +10,7 @@ export const NOTIFICATION_EVENTS = [
   "client_approved",
   "client_changes",
   "edit_cancelled",
+  "client_reminder",
 ] as const;
 export type NotificationEvent = (typeof NOTIFICATION_EVENTS)[number];
 
@@ -26,6 +27,7 @@ export const DEFAULT_ENABLED: Record<NotificationEvent, boolean> = {
   client_approved: true,
   client_changes: true,
   edit_cancelled: true,
+  client_reminder: true,
 };
 
 export type Preference = { event_type: string; channel: string; enabled: boolean };

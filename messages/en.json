@@ -196,6 +196,17 @@
     "remove": "Remove",
     "makeManager": "Make manager",
     "makeMember": "Make member",
+    "reminders": "Reminders",
+    "reminderDefault": "Send invoice",
+    "reminderWhat": "What to remind you about",
+    "reminderDate": "Date",
+    "reminderOnce": "Once",
+    "reminderMonthly": "Every month",
+    "monthly": "Monthly",
+    "addReminder": "Add reminder",
+    "removeReminder": "Remove reminder",
+    "noReminders": "No reminders.",
+    "remindersHint": "Only you see these. You get a notification on the morning of the day (push is turned on per device in Settings).",
     "teamHint": "Everyone here sees and edits all of this client's work. Managers also run projects, the portal and client settings.",
     "editor": "Regular editor",
     "invoicesHint": "Whether this manager sees and makes this client's invoices (a partner decides).",
@@ -451,6 +462,10 @@
       "edit_cancelled": {
         "title": "Edit cancelled",
         "hint": "A video you're on was sent back for a reshoot."
+      },
+      "client_reminder": {
+        "title": "Client reminders",
+        "hint": "Reminders you set on a client, e.g. to send an invoice."
       }
     },
     "customColor": "Pick any colour",

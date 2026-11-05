@@ -2,12 +2,14 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { addDays, today } from "@/lib/dates";
 import { instagramConfigured, syncAll } from "@/lib/instagram";
-import { notify } from "@/lib/notify";
+import { notify, notifyReminder } from "@/lib/notify";
+import { nextMonthly } from "@/lib/reminders";
 import { createAdminClient } from "@/lib/supabase/server";
 
 // Daily reminders, called once each morning by .github/workflows/reminders.yml:
 //   - deadline reminders for open tasks: 3, 2 and 1 day before, and on the day
 //   - "overdue" once, on the first day a task is late (no daily nagging)
+//   - reminders people set on a client ("send the invoice"), on their day (or the first run after it)
 // Protected by CRON_SECRET (Authorization: Bearer <secret>).
 /** Days before the deadline that get a reminder (0 = on the day). */
 const REMIND_DAYS = [3, 2, 1, 0];
@@ -44,9 +46,25 @@ export async function GET(request: NextRequest) {
     });
     sent++;
   }
+  // Client reminders: a monthly one moves to next month, a one-off is done.
+  const { data: reminders } = await admin
+    .from("client_reminders")
+    .select("id, user_id, client_id, title, remind_on, repeat, client:clients(name)")
+    .is("done_at", null)
+    .lte("remind_on", now);
+  let reminded = 0;
+  for (const r of reminders ?? []) {
+    const client = r.client as unknown as { name: string } | null; // many-to-one: one client
+    await notifyReminder({ reminderId: r.id, userId: r.user_id, clientId: r.client_id, clientName: client?.name ?? "", title: r.title });
+    await admin
+      .from("client_reminders")
+      .update(r.repeat === "monthly" ? { remind_on: nextMonthly(r.remind_on, now) } : { done_at: new Date().toISOString() })
+      .eq("id", r.id);
+    reminded++;
+  }
   // Subscriptions due today (or missed on a day the cron didn't run) become costs.
   const { data: posted } = await admin.rpc("post_subscriptions", {});
   // Instagram numbers for every connected client (followers, and the posts linked to videos).
   const instagram = instagramConfigured() ? await syncAll() : 0;
-  return NextResponse.json({ ok: true, tasks: sent, subscriptionCosts: posted ?? 0, instagramClients: instagram });
+  return NextResponse.json({ ok: true, tasks: sent, reminders: reminded, subscriptionCosts: posted ?? 0, instagramClients: instagram });
 }

@@ -196,6 +196,17 @@
     "remove": "Ukloni",
     "makeManager": "Postavi za menadžera",
     "makeMember": "Postavi za člana",
+    "reminders": "Podsetnici",
+    "reminderDefault": "Pošalji fakturu",
+    "reminderWhat": "Na šta da te podseti",
+    "reminderDate": "Datum",
+    "reminderOnce": "Jednom",
+    "reminderMonthly": "Svakog meseca",
+    "monthly": "Mesečno",
+    "addReminder": "Dodaj podsetnik",
+    "removeReminder": "Ukloni podsetnik",
+    "noReminders": "Nema podsetnika.",
+    "remindersHint": "Vidiš ih samo ti. Obaveštenje stiže ujutru tog dana (push se uključuje po uređaju u Podešavanjima).",
     "teamHint": "Svi ovde vide i menjaju sav rad za ovog klijenta. Menadžeri vode i projekte, portal i podešavanja klijenta.",
     "editor": "Stalni editor",
     "invoicesHint": "Da li ovaj menadžer vidi i pravi fakture ovog klijenta (bira partner).",
@@ -451,6 +462,10 @@
       "edit_cancelled": {
         "title": "Montaža otkazana",
         "hint": "Video na kom si vraćen je na ponovno snimanje."
+      },
+      "client_reminder": {
+        "title": "Podsetnici za klijente",
+        "hint": "Podsetnici koje postaviš na klijentu, npr. da pošalješ fakturu."
       }
     },
     "customColor": "Izaberi bilo koju boju",

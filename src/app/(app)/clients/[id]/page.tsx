@@ -13,6 +13,9 @@ import { SOCIAL_LABEL, socialDisplay, socialUrl } from "@/lib/socials";
 import { getInvoiceAccess } from "@/lib/finance";
 import { ClientHeader } from "./ClientHeader";
 import { ClientTeam } from "./ClientTeam";
+import { ClientReminders } from "./ClientReminders";
+import { createClient } from "@/lib/supabase/server";
+import type { ClientReminder } from "@/lib/reminders";
 import { Segmented } from "@/components/ui/Segmented";
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink" };
@@ -21,7 +24,14 @@ const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink"
 export default async function ClientPage({ params, searchParams }: PageProps<"/clients/[id]">) {
   const [{ id }, { tab }, me, lookups, t] = await Promise.all([params, searchParams, requireProfile(), getLookups(), getTranslations()]);
   const showDone = tab === "done";
-  const [data, tasks, invoiceAccess] = await Promise.all([getClient(id), getTasks({ includeDone: true }), getInvoiceAccess()]);
+  const supabase = await createClient();
+  const [data, tasks, invoiceAccess, { data: reminders }] = await Promise.all([
+    getClient(id),
+    getTasks({ includeDone: true }),
+    getInvoiceAccess(),
+    // RLS: only the viewer's own reminders.
+    supabase.from("client_reminders").select("id, title, remind_on, repeat").eq("client_id", id).is("done_at", null).order("remind_on"),
+  ]);
   if (!data) notFound();
   const { client, projects, members } = data;
   const today = getToday();
@@ -171,6 +181,8 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
             </dl>
             {client.notes && <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink2">{client.notes}</p>}
           </section>
+
+          <ClientReminders clientId={client.id} reminders={(reminders ?? []) as ClientReminder[]} today={today} />
 
           <ClientTeam
             clientId={client.id}

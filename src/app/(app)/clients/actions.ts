@@ -4,6 +4,7 @@ import { parseEditorRules } from "@/lib/editor-rules";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireProfile } from "@/lib/auth";
+import { REMINDER_REPEATS } from "@/lib/reminders";
 import { parseSocials } from "@/lib/socials";
 import { createClient } from "@/lib/supabase/server";
 
@@ -179,4 +180,31 @@ export async function addClientContentType(clientId: string, tag: string) {
   const { error } = await supabase.from("clients").update({ content_types: [...current, value] }).eq("id", clientId);
   revalidatePath("/", "layout");
   return { error: error?.message ?? null };
+}
+
+/** A reminder on a client for the person setting it (RLS: their own, on a client they can see). */
+export async function addClientReminder(clientId: string, input: { title: string; remindOn: string; repeat: string }) {
+  await requireProfile();
+  const title = input.title.trim();
+  if (!title) return { error: "Write what to remind you about." };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(input.remindOn)) return { error: "Pick a date." };
+  const supabase = await createClient();
+  const { error } = await supabase.from("client_reminders").insert({
+    client_id: clientId,
+    title: title.slice(0, 200),
+    remind_on: input.remindOn,
+    repeat: (REMINDER_REPEATS as readonly string[]).includes(input.repeat) ? input.repeat : "none",
+  });
+  if (error) return { error: error.message };
+  revalidatePath(`/clients/${clientId}`);
+  return { error: null };
+}
+
+export async function deleteClientReminder(clientId: string, id: string) {
+  await requireProfile();
+  const supabase = await createClient();
+  const { error } = await supabase.from("client_reminders").delete().eq("id", id);
+  if (error) return { error: error.message };
+  revalidatePath(`/clients/${clientId}`);
+  return { error: null };
 }

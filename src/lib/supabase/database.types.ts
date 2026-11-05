@@ -272,6 +272,54 @@ export type Database = {
           },
         ]
       }
+      client_reminders: {
+        Row: {
+          client_id: string
+          created_at: string
+          done_at: string | null
+          id: string
+          remind_on: string
+          repeat: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          done_at?: string | null
+          id?: string
+          remind_on: string
+          repeat?: string
+          title: string
+          user_id?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          done_at?: string | null
+          id?: string
+          remind_on?: string
+          repeat?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_reminders_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_reminders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           city: string | null

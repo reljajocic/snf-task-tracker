@@ -96,6 +96,9 @@ function describe(event: NotificationEvent, task: TaskInfo, actor: string | null
           extra.publish ? `It was due to post on ${escapeHtml(extra.publish)}; there's nothing to edit for now.` : "There's nothing to edit for now.",
         ],
       };
+    case "client_reminder":
+      // Not about a task: notifyReminder() builds its own message. Kept so every event has a case.
+      return { subject: extra.title ?? "Reminder", heading: escapeHtml(extra.title ?? "Reminder"), lines: [title] };
     case "client_changes":
       return {
         subject: `Changes requested: ${task.title}`,
@@ -145,7 +148,7 @@ export async function notify(opts: {
         isEnabled(mine, opts.event, "email")
           ? sendEmail(person.email, msg.subject, emailHtml(msg.heading, msg.lines, link, "Open task", "You can turn these emails off in Settings → Notifications."))
           : false,
-        isEnabled(mine, opts.event, "push") ? pushTo((devices ?? []).filter((d) => d.user_id === person.id), msg, task.id) : false,
+        isEnabled(mine, opts.event, "push") ? pushTo((devices ?? []).filter((d) => d.user_id === person.id), msg, `/?task=${task.id}`, task.id) : false,
       ]);
       if ((emailed || pushed) && row) await admin.from("notifications").update({ delivered_at: new Date().toISOString() }).eq("id", row.id);
     }
@@ -154,13 +157,48 @@ export async function notify(opts: {
   }
 }
 
+/**
+ * A reminder someone set on a client ("Send invoice"), on its day: push and email to that person,
+ * by their settings. Returns whether it reached them.
+ */
+export async function notifyReminder(opts: { reminderId: string; userId: string; clientId: string; clientName: string; title: string }) {
+  try {
+    const admin = createAdminClient();
+    const [{ data: person }, { data: prefs }, { data: devices }] = await Promise.all([
+      admin.from("profiles").select("id, email, is_active").eq("id", opts.userId).single(),
+      admin.from("notification_preferences").select("user_id, event_type, channel, enabled").eq("user_id", opts.userId),
+      admin.from("push_subscriptions").select("user_id, endpoint, p256dh, auth").eq("user_id", opts.userId),
+    ]);
+    if (!person?.is_active) return false;
+    const mine = (prefs ?? []) as Preference[];
+    const msg: Message = { subject: `${opts.title} · ${opts.clientName}`, heading: escapeHtml(opts.title), lines: [`<b style="color:#F4F3ED">${escapeHtml(opts.clientName)}</b>`] };
+    const path = `/clients/${opts.clientId}`;
+    const { data: row } = await admin
+      .from("notifications")
+      .insert({ user_id: person.id, event_type: "client_reminder", payload: { subject: msg.subject, client_id: opts.clientId, reminder_id: opts.reminderId } })
+      .select("id")
+      .single();
+    const [emailed, pushed] = await Promise.all([
+      isEnabled(mine, "client_reminder", "email")
+        ? sendEmail(person.email, msg.subject, emailHtml(msg.heading, msg.lines, `${siteUrl()}${path}`, "Open client", "You can turn these emails off in Settings → Notifications."))
+        : false,
+      isEnabled(mine, "client_reminder", "push") ? pushTo(devices ?? [], msg, path, `reminder-${opts.reminderId}`) : false,
+    ]);
+    if ((emailed || pushed) && row) await admin.from("notifications").update({ delivered_at: new Date().toISOString() }).eq("id", row.id);
+    return emailed || pushed;
+  } catch (e) {
+    console.error("[notify] reminder failed", e);
+    return false;
+  }
+}
+
 /** Push to one person's devices; forgets devices that were turned off or expired. */
-async function pushTo(devices: PushDevice[], msg: Message, taskId: string) {
+async function pushTo(devices: PushDevice[], msg: Message, url: string, tag: string) {
   const { sent, gone } = await sendPush(devices, {
     title: plainText(msg.heading),
     body: msg.lines.map(plainText).filter(Boolean).join("\n"),
-    url: `/?task=${taskId}`,
-    tag: taskId,
+    url,
+    tag,
   });
   if (gone.length) await createAdminClient().from("push_subscriptions").delete().in("endpoint", gone);
   return sent > 0;
