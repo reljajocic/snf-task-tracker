@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 import type { Decision } from "@/lib/portal";
 import { decideVideo, requestChange, undoDecision } from "../../actions";
 import { useApprover } from "../../useApprover";
+import { DrawnCheck } from "@/components/ui/DrawnCheck";
 
 export function NameField({ name, setName }: { name: string; setName: (v: string) => void }) {
   const t = useTranslations("portal");
@@ -46,8 +47,10 @@ export function VideoDecision({ token, taskId, versionId, decision, undoable }: 
   if (decision) {
     const approved = decision.status === "approved";
     return (
-      <div className={`flex flex-col gap-2 rounded-lg border px-5 py-4 ${approved ? "border-[var(--status-done)]" : "border-[var(--status-waiting)]"}`}>
-        <span className={`text-[15px] font-semibold ${approved ? "text-[var(--status-done)]" : "text-[var(--waiting-ink)]"}`}>
+      // The answer to a decision just made comes in with a drawn tick, so the client knows it went through.
+      <div className={`flex flex-col gap-2 rounded-lg border px-5 py-4 ${approved ? "border-[var(--status-done)]" : "border-[var(--status-waiting)]"} ${lastId === decision.id ? "snf-in" : ""}`}>
+        <span className={`flex items-center gap-2 text-[15px] font-semibold ${approved ? "text-[var(--status-done)]" : "text-[var(--waiting-ink)]"}`}>
+          {lastId === decision.id && <DrawnCheck size={18} />}
           {approved ? t("approvedBy", { name: decision.approver_name }) : t("changesBy", { name: decision.approver_name })}
         </span>
         {decision.comment && <span className="whitespace-pre-wrap text-[14px] text-ink2">“{decision.comment}”</span>}
@@ -125,7 +128,13 @@ export function RequestChange({ token, taskId }: { token: string; taskId: string
       router.refresh();
     });
 
-  if (sent) return <span className="rounded-lg border border-[var(--status-waiting)] px-5 py-4 text-[15px] font-medium text-[var(--waiting-ink)]">{t("changeSent")}</span>;
+  if (sent)
+    return (
+      <span className="snf-in flex items-center gap-2 rounded-lg border border-[var(--status-waiting)] px-5 py-4 text-[15px] font-medium text-[var(--waiting-ink)]">
+        <DrawnCheck size={18} />
+        {t("changeSent")}
+      </span>
+    );
   if (!open)
     return (
       <button type="button" onClick={() => setOpen(true)} className="h-12 cursor-pointer self-start rounded-md border border-line2 px-5 text-[15px] font-medium text-ink hover:border-ink3">

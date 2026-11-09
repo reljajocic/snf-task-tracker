@@ -11,7 +11,7 @@ import { env } from "@/lib/env";
 import { hashApiToken, newApiToken } from "@/lib/mcp/auth";
 import { sendPush } from "@/lib/push";
 
-export async function saveProfile(_prev: { ok: boolean; error?: string } | null, form: FormData) {
+export async function saveProfile(_prev: { ok: boolean; error?: string; at?: number } | null, form: FormData) {
   const me = await requireProfile();
   const fullName = String(form.get("full_name") ?? "").trim();
   const initials = String(form.get("initials") ?? "").trim().toUpperCase().slice(0, 2);
@@ -29,7 +29,8 @@ export async function saveProfile(_prev: { ok: boolean; error?: string } | null,
     .eq("id", me.id);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/", "layout");
-  return { ok: true };
+  // `at` tells the form a new save happened (its "Saved" replays).
+  return { ok: true, at: Date.now() };
 }
 
 export async function setLanguage(value: string) {

@@ -57,6 +57,11 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
   );
   const [over, setOver] = useState<TaskStatus | null>(null);
   const [tab, setTab] = useState<TaskStatus>("todo");
+  // Feedback: a card that just landed in a column (or appeared while you're here, e.g. one you just made)
+  // slides in, and the counts that changed give a short flash.
+  const [seen] = useState(() => new Set(tasks.map((x) => x.id)));
+  const [landed, setLanded] = useState<string | null>(null);
+  const isNew = (id: string) => id === landed || !seen.has(id);
 
   const columns = STATUSES.map((status) => ({
     status,
@@ -69,6 +74,7 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
     const id = e.dataTransfer.getData("text/task-id");
     const task = optimistic.find((x) => x.id === id);
     if (!task || task.status === status) return;
+    setLanded(id);
     startTransition(async () => {
       move({ id, status });
       await updateTask(id, { status });
@@ -96,7 +102,11 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
         </div>
         <div className="flex flex-col gap-2.5 px-5 pb-[calc(120px+env(safe-area-inset-bottom))]">
           {active.cards.length ? (
-            active.cards.map((x) => <KanbanCard key={x.id} task={x} today={today} mobile />)
+            active.cards.map((x) => (
+              <div key={x.id} className={isNew(x.id) ? "snf-in" : undefined}>
+                <KanbanCard task={x} today={today} mobile />
+              </div>
+            ))
           ) : (
             <p className="rounded-[10px] border border-dashed border-line2 px-4 py-8 text-center text-[14px] text-ink3">{t("kanban.empty")}</p>
           )}
@@ -119,11 +129,15 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
             <div className="flex items-center gap-2.5 px-1 pb-1">
               <span className="size-2.5 rounded-full" style={{ background: STATUS_COLOR[c.status] }} />
               <span className="whitespace-nowrap text-[14px] font-semibold">{t(`status.${c.status === "waiting_client" ? "waiting_clientShort" : c.status}`)}</span>
-              <span className="text-[13px] font-medium text-ink3">{c.cards.length}</span>
+              <span key={c.cards.length} className={`text-[13px] font-medium text-ink3 ${landed ? "snf-flash" : ""}`}>
+                {c.cards.length}
+              </span>
             </div>
             <div className="flex flex-col gap-2.5 pb-5">
               {c.cards.map((x) => (
-                <KanbanCard key={x.id} task={x} today={today} />
+                <div key={x.id} className={isNew(x.id) ? "snf-in" : undefined}>
+                  <KanbanCard task={x} today={today} />
+                </div>
               ))}
             </div>
           </div>

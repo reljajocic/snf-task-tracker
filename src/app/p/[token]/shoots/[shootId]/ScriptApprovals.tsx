@@ -11,6 +11,7 @@ import { NameField } from "../../video/[taskId]/VideoDecision";
 import { FORMATS, FORMAT_COLOR, type PostFormat } from "@/lib/formats";
 import { PostTags } from "@/components/tasks/tags";
 import { Segmented } from "@/components/ui/Segmented";
+import { DrawnCheck } from "@/components/ui/DrawnCheck";
 
 type Item = { id: string; title: string; time: string | null; onCamera: string | null; type: string | null; format: PostFormat; script: ScriptSection[]; decision: Decision | null };
 
@@ -43,6 +44,8 @@ export function ScriptApprovals({
   const [comment, setComment] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  // The script just approved: its button pops with a tick once the approval is in.
+  const [justApproved, setJustApproved] = useState<string | null>(null);
 
   const approved = videos.filter((v) => v.decision?.status === "approved").length;
   const changes = videos.filter((v) => v.decision?.status === "changes").length;
@@ -139,12 +142,17 @@ export function ScriptApprovals({
                     </button>
                     <button
                       type="button"
+                      key={state}
                       disabled={pending || !name.trim() || state === "approved"}
-                      onClick={() => run(() => decideScript(token, v.id, "approved", name, ""))}
-                      className={`h-9 cursor-pointer rounded-md border px-3 text-[13px] font-semibold disabled:cursor-default ${
+                      onClick={() => {
+                        setJustApproved(v.id);
+                        run(() => decideScript(token, v.id, "approved", name, ""));
+                      }}
+                      className={`flex h-9 cursor-pointer items-center gap-1.5 rounded-md border px-3 text-[13px] font-semibold disabled:cursor-default ${
                         state === "approved" ? "border-[var(--status-done)] bg-[var(--status-done)] text-ink-black" : "border-line2 text-ink disabled:opacity-45"
-                      }`}
+                      } ${state === "approved" && justApproved === v.id ? "snf-pop" : ""}`}
                     >
+                      {state === "approved" && justApproved === v.id && <DrawnCheck size={13} />}
                       {t("approve")}
                     </button>
                   </span>

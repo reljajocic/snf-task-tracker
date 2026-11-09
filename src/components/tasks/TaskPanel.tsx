@@ -390,6 +390,8 @@ function Comments({ detail, meId, isAdmin, onChanged }: { detail: TaskDetail; me
   const t = useTranslations("task");
   const [body, setBody] = useState("");
   const [pending, startTransition] = useTransition();
+  // Comments that arrive while the panel is open (yours just sent) slide in.
+  const [seen] = useState(() => new Set(detail.comments.map((c) => c.id)));
 
   const send = () =>
     startTransition(async () => {
@@ -406,7 +408,7 @@ function Comments({ detail, meId, isAdmin, onChanged }: { detail: TaskDetail; me
       {detail.comments.length === 0 && <p className="text-[14px] text-ink3">{t("noComments")}</p>}
       <ul className="flex flex-col gap-4">
         {detail.comments.map((c) => (
-          <li key={c.id} className="flex gap-3">
+          <li key={c.id} className={`flex gap-3 ${seen.has(c.id) ? "" : "snf-in"}`}>
             {c.author && <Avatar person={c.author} size={28} />}
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <div className="flex items-baseline gap-2 text-[13px]">

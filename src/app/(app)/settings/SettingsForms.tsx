@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useActionState, useOptimistic, useState, useTransition } from "react";
 import { AvatarUpload } from "@/components/AvatarUpload";
 import { Button } from "@/components/ui/Button";
+import { DrawnCheck } from "@/components/ui/DrawnCheck";
 import { inputClass } from "@/components/tasks/fields";
 import type { Profile } from "@/lib/auth";
 import { NOTIFICATION_CHANNELS, NOTIFICATION_EVENTS, isEnabled, type NotificationChannel, type NotificationEvent, type Preference } from "@/lib/notifications";
@@ -63,7 +64,12 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         </div>
       </fieldset>
       <div className="flex items-center justify-end gap-3">
-        {state?.ok && <span className="text-[13px] text-[var(--status-done)]">{t("saved")}</span>}
+        {state?.ok && (
+          <span key={state.at} className="snf-saved inline-flex items-center gap-1 text-[13px] font-medium text-[var(--status-done)]">
+            <DrawnCheck size={14} />
+            {t("saved")}
+          </span>
+        )}
         {state?.error && <span className="text-[13px] text-red-ink">{state.error}</span>}
         <Button type="submit" size="sm" disabled={pending}>{t("saveProfile")}</Button>
       </div>

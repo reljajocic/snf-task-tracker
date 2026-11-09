@@ -19,6 +19,7 @@ import { ShootSheet } from "./ShootSheet";
 import { safeHref } from "@/lib/safe-url";
 import { PostTags } from "@/components/tasks/tags";
 import { FORMAT_COLOR, FORMATS, type PostFormat } from "@/lib/formats";
+import { DrawnCheck } from "@/components/ui/DrawnCheck";
 import { Segmented } from "@/components/ui/Segmented";
 
 type Slot = { time: string; onCamera: string; items: Task[] };
@@ -98,6 +99,10 @@ export function ShootBoard({
   const [selected, setSelected] = useState<string | null>(videos[0]?.id ?? null);
   const [adding, setAdding] = useState(false);
   const [showDone, setShowDone] = useState(false);
+  // The control last tapped (and how often), so it pops once in answer; a new key replays the animation.
+  const [tap, setTap] = useState<{ id: string; n: number }>({ id: "", n: 0 });
+  const tapped = (id: string) => setTap((cur) => ({ id, n: cur.n + 1 }));
+  const tapKey = (id: string) => (tap.id === id ? `${id}-${tap.n}` : id);
   // Phones: scripts open/closed per video, with "show all / hide all" on top. Videos up now start open.
   const [scriptMode, setScriptMode] = useState<"auto" | "all" | "none">("auto");
   const [scriptOverride, setScriptOverride] = useState<Record<string, boolean>>({});
@@ -139,11 +144,13 @@ export function ShootBoard({
       type="button"
       aria-label={t("shoots.shot")}
       aria-pressed={v.shot_status === "shot"}
+      key={tapKey(`check-${v.id}`)}
       onClick={(e) => {
         e.stopPropagation();
+        tapped(`check-${v.id}`);
         toggle(v);
       }}
-      className="grid flex-none cursor-pointer place-items-center rounded-full border-[1.5px] text-[13px] font-bold text-ink-black"
+      className={`grid flex-none cursor-pointer place-items-center rounded-full border-[1.5px] text-[13px] font-bold text-ink-black ${tap.id === `check-${v.id}` ? "snf-pop" : ""}`}
       style={{
         width: size,
         height: size,
@@ -152,7 +159,7 @@ export function ShootBoard({
         color: v.shot_status === "not_shot" ? "var(--prio-urgent)" : undefined,
       }}
     >
-      {v.shot_status === "shot" ? "✓" : v.shot_status === "not_shot" ? "×" : ""}
+      {v.shot_status === "shot" ? <DrawnCheck size={Math.round(size * 0.55)} /> : v.shot_status === "not_shot" ? "×" : ""}
     </button>
   );
 
@@ -246,19 +253,28 @@ export function ShootBoard({
     <div className="grid grid-cols-[1.4fr_1fr] gap-2">
       <button
         type="button"
-        onClick={() => set(v.id, v.shot_status === "shot" ? "to_shoot" : "shot")}
-        className={`h-14 cursor-pointer rounded-lg border text-[15px] font-semibold ${
+        key={tapKey(`shot-${v.id}`)}
+        onClick={() => {
+          tapped(`shot-${v.id}`);
+          set(v.id, v.shot_status === "shot" ? "to_shoot" : "shot");
+        }}
+        className={`flex h-14 cursor-pointer items-center justify-center gap-2 rounded-lg border text-[15px] font-semibold ${
           v.shot_status === "shot" ? "border-[var(--status-in-progress)] bg-[var(--status-in-progress)] text-ink-black" : "border-line2 text-ink"
-        }`}
+        } ${tap.id === `shot-${v.id}` ? "snf-pop" : ""}`}
       >
+        {v.shot_status === "shot" && <DrawnCheck />}
         {t("shoots.shot")}
       </button>
       <button
         type="button"
-        onClick={() => set(v.id, v.shot_status === "not_shot" ? "to_shoot" : "not_shot")}
+        key={tapKey(`notshot-${v.id}`)}
+        onClick={() => {
+          tapped(`notshot-${v.id}`);
+          set(v.id, v.shot_status === "not_shot" ? "to_shoot" : "not_shot");
+        }}
         className={`h-14 cursor-pointer rounded-lg border text-[15px] font-medium ${
           v.shot_status === "not_shot" ? "border-[var(--prio-urgent)] bg-red-bg text-red-ink" : "border-line2 text-ink2"
-        }`}
+        } ${tap.id === `notshot-${v.id}` ? "snf-pop" : ""}`}
       >
         {t("shoots.notShot")}
       </button>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { ask } from "@/components/ui/Dialog";
 import { formatDate } from "@/lib/dates";
 import { saveReport } from "./actions";
+import { DrawnCheck } from "@/components/ui/DrawnCheck";
 
 /** The team's word for the month and the switch that shows the report to the client. */
 export function ReportPublisher({ clientId, month, summary, publishedAt, canEdit }: { clientId: string; month: string; summary: string | null; publishedAt: string | null; canEdit: boolean }) {
@@ -48,7 +49,12 @@ export function ReportPublisher({ clientId, month, summary, publishedAt, canEdit
       {canEdit && (
         <div className="flex flex-wrap items-center justify-end gap-3">
           {error && <span role="alert" className="mr-auto text-[13px] text-red-ink">{error}</span>}
-          {saved && !error && <span className="mr-auto text-[13px] text-[var(--status-done)]">{t("saved")}</span>}
+          {saved && !error && (
+            <span className="snf-saved mr-auto inline-flex items-center gap-1 text-[13px] font-medium text-[var(--status-done)]">
+              <DrawnCheck size={14} />
+              {t("saved")}
+            </span>
+          )}
           {publishedAt ? (
             <>
               <button
