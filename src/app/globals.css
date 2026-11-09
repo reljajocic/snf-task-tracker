@@ -72,7 +72,7 @@
   --line2: rgba(47, 45, 46, 0.2);
   --ink: #2f2d2e;
   --ink2: rgba(47, 45, 46, 0.82);
-  --ink3: rgba(47, 45, 46, 0.68);
+  --ink3: rgba(47, 45, 46, 0.72); /* 4.5:1 on the cards too, for the small grey text */
   --chip: rgba(47, 45, 46, 0.05);
   --hover: rgba(47, 45, 46, 0.03);
   --red-bg: rgba(224, 71, 58, 0.12);
@@ -140,6 +140,17 @@ body {
 body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  /* Every digit the same width: counts, times, dates and amounts don't jiggle or misalign in columns. */
+  font-variant-numeric: tabular-nums;
+}
+/* Headings break into even lines (no single word left on the last one); paragraphs avoid orphans. */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
 }
 
 /* The app canvas: one flat colour. */

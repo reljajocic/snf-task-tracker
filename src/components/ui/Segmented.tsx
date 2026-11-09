@@ -33,7 +33,8 @@ export function Segmented({
   /** One row, never shrinking (for a row of several controls that scrolls as a whole). */
   nowrap?: boolean;
 }) {
-  const sz = size === "lg" ? "h-11 rounded-[7px] px-4 text-[15px]" : size === "sm" ? "h-8 rounded-[5px] px-3 text-[13px]" : "h-9 rounded-[5px] px-4 text-[14px]";
+  // Inner radius = outer radius − padding, so the active pill sits concentric in its track (7 − 3, 10 − 4).
+  const sz = `${full ? "rounded-[6px]" : "rounded-[4px]"} ${size === "lg" ? "h-11 px-4 text-[15px]" : size === "sm" ? "h-8 px-3 text-[13px]" : "h-9 px-4 text-[14px]"}`;
   // scroll: one row that slides sideways when it doesn't fit (phones), instead of wrapping onto a second line.
   const control = (
     <div
