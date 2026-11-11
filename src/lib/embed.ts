@@ -21,3 +21,24 @@ export function embedUrl(url: string): string | null {
     return null;
   }
 }
+
+const VIDEO_FILE = /\.(mp4|m4v|mov|webm)$/i;
+
+/**
+ * A Dropbox share link to a video file, as a direct file URL the browser's own player can play (raw=1 keeps the
+ * link's key), or null: folders and other files have no player and stay a link to open.
+ */
+export function dropboxVideoUrl(url: string): string | null {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, "");
+    if (host === "dl.dropboxusercontent.com") return VIDEO_FILE.test(u.pathname) ? u.href : null;
+    if (host !== "dropbox.com" || !/^\/(scl\/fi|s)\//.test(u.pathname) || !VIDEO_FILE.test(decodeURIComponent(u.pathname))) return null;
+    u.hostname = "www.dropbox.com";
+    u.searchParams.delete("dl");
+    u.searchParams.set("raw", "1");
+    return u.href;
+  } catch {
+    return null;
+  }
+}

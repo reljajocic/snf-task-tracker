@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { embedUrl } from "@/lib/embed";
+import { dropboxVideoUrl, embedUrl } from "@/lib/embed";
 import { formatDate, weekdayIndex } from "@/lib/dates";
 import { canUndo, getPortal, getPortalVideos, portalStatus, PORTAL_STATUS_COLOR } from "@/lib/portal";
 import { Poster } from "../../bits";
@@ -25,6 +25,8 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
   const isLatest = !shown || shown.id === video.versions[0].id;
   const url = shown?.url ?? video.drive_url;
   const player = url ? embedUrl(url) : null;
+  // A Dropbox video file plays in the browser's own player (Drive, YouTube and Vimeo come as their players).
+  const file = url && !player ? dropboxVideoUrl(url) : null;
   const decision = shown ? shown.decision : video.phase === 3 ? null : video.looseDecision;
   const status = portalStatus(video);
   const facts = [
@@ -42,6 +44,8 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
         <div className="relative aspect-[9/16] w-full max-w-[400px] overflow-hidden rounded-[10px] bg-ink-black">
           {player ? (
             <iframe src={player} title={video.title} allow="autoplay; fullscreen" allowFullScreen className="absolute inset-0 size-full border-0" />
+          ) : file ? (
+            <video src={file} title={video.title} controls playsInline preload="metadata" className="absolute inset-0 size-full bg-ink-black object-contain" />
           ) : !url ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-6 text-center">
               <Poster className="size-[76px] rounded-full text-[24px]" />
