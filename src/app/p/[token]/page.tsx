@@ -73,7 +73,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                       {t("portal.shootOn", { date: formatDate(p.shoot.date), location: p.shoot.location ? `, ${p.shoot.location}` : "" })}
                     </span>
                     <span className="text-[14px] text-ink2">{t("portal.scriptsProgress", { approved: p.approved, total: p.total, changes: p.changes })}</span>
-                    <div className="h-[5px] overflow-hidden rounded-[3px] bg-chip">
+                    <div className="h-[5px] overflow-hidden rounded-xs bg-chip">
                       <div className="h-full bg-[var(--status-done)]" style={{ width: `${(p.approved / p.total) * 100}%` }} />
                     </div>
                     <span className="mt-auto pt-2 text-[14px] font-semibold text-rust-ink">{t("portal.reviewScripts")}</span>

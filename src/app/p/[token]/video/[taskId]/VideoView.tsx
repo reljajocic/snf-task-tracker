@@ -50,7 +50,7 @@ export async function VideoView({ token, taskId, versionParam, inModal = false }
             {t("portal.back")}
           </Link>
         )}
-        <div className="relative aspect-[9/16] w-full max-w-[400px] overflow-hidden rounded-[10px] bg-ink-black">
+        <div className="relative aspect-[9/16] w-full max-w-[400px] overflow-hidden rounded-lg bg-ink-black">
           {player ? (
             <iframe src={player} title={video.title} allow="autoplay; fullscreen" allowFullScreen className="absolute inset-0 size-full border-0" />
           ) : file ? (

@@ -192,7 +192,7 @@ export function VideoSection({
           <div className="flex h-[42px] items-center gap-2 rounded-md border border-line2 pl-3 pr-1.5 focus-within:border-accent">
             <InlineText bare value={task.post_url} placeholder={t("video.postUrlPlaceholder")} disabled={disabled} onSave={(v) => save({ post_url: v }, { post_url: v || null })} />
             {task.post_url && (
-              <a href={safeHref(task.post_url)} target="_blank" rel="noreferrer" className="flex h-[30px] items-center rounded-[5px] bg-chip px-2.5 text-[13px] font-medium">
+              <a href={safeHref(task.post_url)} target="_blank" rel="noreferrer" className="flex h-[30px] items-center rounded-sm bg-chip px-2.5 text-[13px] font-medium">
                 ↗
               </a>
             )}
@@ -256,7 +256,7 @@ export function VideoSection({
                 href={safeHref(task.reference_url)}
                 target="_blank"
                 rel="noreferrer"
-                className="flex h-[30px] items-center rounded-[5px] bg-chip px-2.5 text-[13px] font-medium"
+                className="flex h-[30px] items-center rounded-sm bg-chip px-2.5 text-[13px] font-medium"
               >
                 ↗
               </a>
@@ -385,7 +385,7 @@ function Subtasks({ task, lookups, disabled, onChanged }: { task: Task; lookups:
                       onChanged();
                     })
                   }
-                  className={`grid size-6 cursor-pointer place-items-center rounded-[5px] border-[1.5px] text-[13px] font-bold text-ink-black ${
+                  className={`grid size-6 cursor-pointer place-items-center rounded-sm border-[1.5px] text-[13px] font-bold text-ink-black ${
                     isDone ? "border-[var(--status-done)] bg-[var(--status-done)]" : "border-line2"
                   }`}
                 >

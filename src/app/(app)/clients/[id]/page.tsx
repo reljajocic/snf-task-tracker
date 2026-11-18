@@ -81,7 +81,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                     <span className="hidden wide:block"><StatusDot status={x.status} /></span>
                     <span className="hidden lg:block"><AvatarStack people={x.assignees} size={26} /></span>
                     {x.due_date ? (
-                      <span className={`justify-self-end whitespace-nowrap rounded-[5px] px-[9px] py-1.5 text-[13px] font-semibold leading-none ${TONE[dueTone(x, today)]}`}>
+                      <span className={`justify-self-end whitespace-nowrap rounded-sm px-[9px] py-1.5 text-[13px] font-semibold leading-none ${TONE[dueTone(x, today)]}`}>
                         {formatDate(x.due_date)}
                       </span>
                     ) : (
@@ -122,7 +122,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                       </div>
                       {p.description && <span className="text-[14px] leading-snug text-ink2">{p.description}</span>}
                       <div className="flex flex-col gap-[7px]">
-                        <div className="h-1.5 overflow-hidden rounded-[3px] bg-chip">
+                        <div className="h-1.5 overflow-hidden rounded-xs bg-chip">
                           <div className="h-full bg-[var(--status-done)]" style={{ width: `${pct}%` }} />
                         </div>
                         <div className="flex items-center justify-between">

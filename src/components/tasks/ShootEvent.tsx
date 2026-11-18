@@ -10,7 +10,7 @@ export function ShootEvent({ shoot, label, variant = "card" }: { shoot: ShootDay
     return (
       <Link
         href={`/content/shoots/${shoot.id}`}
-        className="flex min-w-0 items-center gap-1.5 rounded border-l-2 border-accent bg-rust-bg px-[7px] py-[5px] text-[12px] font-semibold leading-tight text-rust-ink"
+        className="flex min-w-0 items-center gap-1.5 rounded-sm border-l-2 border-accent bg-rust-bg px-[7px] py-[5px] text-[12px] font-semibold leading-tight text-rust-ink"
       >
         <span className="flex-none [&_svg]:size-3.5">{NAV_ICONS.shoots}</span>
         <span className="truncate">{[time, shoot.client?.name].filter(Boolean).join(" ")}</span>

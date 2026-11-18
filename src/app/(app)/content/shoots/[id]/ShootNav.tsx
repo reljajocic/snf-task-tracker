@@ -33,7 +33,7 @@ export function ShootNav({ prev, next, scope, labels }: { prev: Step; next: Step
       <Link
         href={s.href}
         title={`${dir === "prev" ? labels.prev : labels.next} (${dir === "prev" ? "←" : "→"})`}
-        className={`flex h-9 min-w-0 items-center gap-1.5 rounded-[7px] border border-line2 px-3 text-[13px] font-medium text-ink2 hover:text-ink ${dir === "next" ? "flex-row-reverse" : ""}`}
+        className={`flex h-9 min-w-0 items-center gap-1.5 rounded-md border border-line2 px-3 text-[13px] font-medium text-ink2 hover:text-ink ${dir === "next" ? "flex-row-reverse" : ""}`}
       >
         <span className="text-ink3">{dir === "prev" ? "‹" : "›"}</span>
         <span className="truncate">{s.label}</span>

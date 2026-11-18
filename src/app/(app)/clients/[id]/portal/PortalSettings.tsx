@@ -81,7 +81,7 @@ export function PortalSettings({
                     setCopied(true);
                     setTimeout(() => setCopied(false), 1600);
                   }}
-                  className="h-9 cursor-pointer rounded-[5px] bg-seg px-3.5 text-[13px] font-medium text-seg-ink"
+                  className="h-9 cursor-pointer rounded-sm bg-seg px-3.5 text-[13px] font-medium text-seg-ink"
                 >
                   {copied ? t("copied") : t("copy")}
                 </button>

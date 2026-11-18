@@ -53,7 +53,7 @@ export function TaskCardMobile({ task, today }: { task: Task; today: IsoDate }) 
   return (
     <TaskLink
       id={task.id}
-      className={`flex flex-col gap-3 rounded-[10px] border bg-surf p-4 ${tone === "late" ? "border-red-line" : "border-line"}`}
+      className={`flex flex-col gap-3 rounded-lg border bg-surf p-4 ${tone === "late" ? "border-red-line" : "border-line"}`}
     >
       <div className="flex justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-1.5">
@@ -81,7 +81,7 @@ export function TaskCardMobile({ task, today }: { task: Task; today: IsoDate }) 
 export function TaskRowMobile({ task }: { task: Task }) {
   const t = useTranslations("task");
   return (
-    <TaskLink id={task.id} className="flex min-h-11 items-center justify-between gap-3 rounded-[10px] border border-line bg-surf px-4 py-3.5">
+    <TaskLink id={task.id} className="flex min-h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 py-3.5">
       <div className="flex min-w-0 flex-col gap-1.5">
         <span className="text-[16px] font-medium leading-snug">{task.title}</span>
         <span className="flex items-center gap-[7px] text-[13px] leading-tight text-ink2">
@@ -101,7 +101,7 @@ export function WaitingCard({ task, today, large = false }: { task: Task; today:
   return (
     <TaskLink
       id={task.id}
-      className={`flex flex-col gap-2.5 border border-line bg-surf ${large ? "rounded-[10px] p-4" : "rounded-lg px-4 py-3.5"}`}
+      className={`flex flex-col gap-2.5 border border-line bg-surf ${large ? "rounded-lg p-4" : "rounded-lg px-4 py-3.5"}`}
     >
       <div className="flex justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-[5px]">

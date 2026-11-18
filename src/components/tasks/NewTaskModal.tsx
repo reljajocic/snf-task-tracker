@@ -356,7 +356,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
           e.preventDefault();
           if (canSave) submit();
         }}
-        className={`relative flex h-full w-full flex-col overflow-hidden bg-bg lg:rounded-[10px] lg:border lg:border-line2 lg:shadow-[0_30px_80px_rgba(0,0,0,0.45)] ${
+        className={`relative flex h-full w-full flex-col overflow-hidden bg-bg lg:rounded-lg lg:border lg:border-line2 lg:shadow-[0_30px_80px_rgba(0,0,0,0.45)] ${
           isVideo ? "lg:h-[calc(100dvh-48px)] lg:w-[min(1200px,calc(100vw-48px))]" : "lg:h-auto lg:max-h-[calc(100dvh-48px)] lg:w-[760px]"
         }`}
       >

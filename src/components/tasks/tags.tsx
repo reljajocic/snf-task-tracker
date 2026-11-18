@@ -4,7 +4,7 @@ import { FORMAT_COLOR, typeColor, type PostFormat } from "@/lib/formats";
 // Labels come from the caller (the portal translates into the client's language, the app into the user's).
 
 const tint = (c: string) => ({ color: c, background: `color-mix(in srgb, ${c} 15%, transparent)`, borderColor: `color-mix(in srgb, ${c} 40%, transparent)` });
-const base = "inline-flex flex-none items-center gap-1 whitespace-nowrap rounded-[3px] border px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em]";
+const base = "inline-flex flex-none items-center gap-1 whitespace-nowrap rounded-xs border px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em]";
 
 export function FormatTag({ format, label }: { format: PostFormat; label: string }) {
   return (

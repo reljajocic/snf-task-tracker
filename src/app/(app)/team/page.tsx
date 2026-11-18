@@ -33,7 +33,7 @@ export default async function TeamPage() {
               </div>
               {!p.is_active && <span className="text-[12px] text-ink3">{t("inactive")}</span>}
               {p.id === me.id ? (
-                <span className="rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink2">
+                <span className="rounded-xs border border-line2 px-1.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink2">
                   {p.role === "admin" ? t("roleAdmin") : t("roleUser")}
                 </span>
               ) : (

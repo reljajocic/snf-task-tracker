@@ -66,7 +66,7 @@ export function TaskPanel({ id, lookups, today, onClose }: { id: string; lookups
       <section
         role="dialog"
         aria-modal="true"
-        className="group/panel absolute inset-0 flex flex-col bg-bg lg:inset-x-8 lg:inset-y-6 lg:mx-auto lg:max-w-[1280px] lg:overflow-hidden lg:rounded-2xl lg:border lg:border-line2 lg:shadow-[0_30px_90px_rgba(0,0,0,0.5)]"
+        className="group/panel absolute inset-0 flex flex-col bg-bg lg:inset-x-8 lg:inset-y-6 lg:mx-auto lg:max-w-[1280px] lg:overflow-hidden lg:rounded-lg lg:border lg:border-line2 lg:shadow-[0_30px_90px_rgba(0,0,0,0.5)]"
       >
         {missing ? (
           <div className="flex flex-1 flex-col items-start gap-4 p-7">
@@ -268,7 +268,7 @@ function PanelBody({
           <FieldRow label={t("fields.due")}>
             <div className="flex flex-wrap items-center gap-2.5">
               <DatePicker value={task.due_date} today={today} disabled={disabled} onChange={(due_date) => save({ due_date }, { due_date })} />
-              {label && <span className={`whitespace-nowrap rounded-[5px] px-2.5 py-2 text-[13px] font-semibold leading-none ${TONE[tone]}`}>{dueText(label)}</span>}
+              {label && <span className={`whitespace-nowrap rounded-sm px-2.5 py-2 text-[13px] font-semibold leading-none ${TONE[tone]}`}>{dueText(label)}</span>}
             </div>
           </FieldRow>
           <FieldRow label={t("fields.estimate")}>
@@ -323,7 +323,7 @@ function PanelBody({
               className="min-w-0 flex-1 border-0 bg-transparent text-[14px] text-ink outline-none placeholder:text-ink3"
             />
             {task.drive_url && (
-              <a href={safeHref(task.drive_url)} target="_blank" rel="noreferrer" className="flex h-[34px] items-center whitespace-nowrap rounded-[5px] bg-chip px-3 text-[13px] font-medium text-ink">
+              <a href={safeHref(task.drive_url)} target="_blank" rel="noreferrer" className="flex h-[34px] items-center whitespace-nowrap rounded-sm bg-chip px-3 text-[13px] font-medium text-ink">
                 {t("open")}
               </a>
             )}
@@ -377,7 +377,7 @@ function PanelBody({
             {done ? t("reopen") : t("markDone")}
           </button>
           {detail.canDelete && (
-            <button type="button" onClick={remove} aria-label={t("delete")} className="h-14 cursor-pointer rounded-lg border border-line2 px-4 text-[13px] text-red-ink">
+            <button type="button" onClick={remove} aria-label={t("delete")} className="h-14 cursor-pointer rounded-md border border-line2 px-4 text-[13px] text-red-ink">
               {t("delete")}
             </button>
           )}

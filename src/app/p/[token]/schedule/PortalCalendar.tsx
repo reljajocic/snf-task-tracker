@@ -142,7 +142,7 @@ export function PortalCalendar({ token, months, today, posts, pool, plans }: { t
               <div
                 key={d}
                 {...(d >= today ? target(d, d) : {})}
-                className={`flex min-h-[56px] flex-col gap-1 rounded-lg border p-1.5 lg:min-h-[108px] lg:p-2 ${d === today ? "border-accent" : "border-line"} ${
+                className={`flex min-h-[56px] flex-col gap-1 rounded-md border p-1.5 lg:min-h-[108px] lg:p-2 ${d === today ? "border-accent" : "border-line"} ${
                   over === d ? "bg-rust-bg" : inMonth ? "bg-surf" : ""
                 } ${inMonth ? "" : "opacity-40"}`}
               >

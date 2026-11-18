@@ -85,7 +85,7 @@ export default async function TaskListPage({ searchParams }: PageProps<"/tasks">
                 <StatusDot status={x.status} />
               </span>
               {x.due_date ? (
-                <span className={`justify-self-start whitespace-nowrap rounded-[5px] px-[9px] py-1.5 text-[13px] font-semibold leading-none ${TONE[dueTone(x, today)]}`}>
+                <span className={`justify-self-start whitespace-nowrap rounded-sm px-[9px] py-1.5 text-[13px] font-semibold leading-none ${TONE[dueTone(x, today)]}`}>
                   {formatDate(x.due_date)}
                 </span>
               ) : (

@@ -31,7 +31,7 @@ export function ReturnToIdeas({ taskId, onDone, className = "" }: { taskId: stri
       onDone();
     });
   return (
-    <div className={`flex w-full flex-col gap-2.5 rounded-md border border-line2 bg-chip p-3.5 ${className}`}>
+    <div className={`flex w-full flex-col gap-2.5 rounded-lg border border-line2 bg-chip p-3.5 ${className}`}>
       <label className="flex flex-col gap-1.5">
         <span className="text-[13px] font-semibold">{t("reasonLabel")}</span>
         <input

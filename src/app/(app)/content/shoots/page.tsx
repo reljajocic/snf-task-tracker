@@ -39,7 +39,7 @@ export default async function ShootsPage({ searchParams }: PageProps<"/content/s
           {d.date === today && <span className="rounded-full bg-rust-bg px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-rust-ink">{t("shoots.now")}</span>}
         </div>
         <div className="flex flex-col gap-2">
-          <div className="h-1.5 overflow-hidden rounded-[3px] bg-chip">
+          <div className="h-1.5 overflow-hidden rounded-xs bg-chip">
             <div className="h-full bg-[var(--status-in-progress)]" style={{ width: `${pct}%` }} />
           </div>
           <div className="flex items-center justify-between">

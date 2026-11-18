@@ -74,7 +74,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
   const navControls = (
     <>
       <PeriodNav label={period} prevHref={href({ d: prev, day: null })} nextHref={href({ d: next, day: null })} prevLabel={t("calendar.prev")} nextLabel={t("calendar.next")} />
-      <Link href={href({ d: today, day: today })} scroll={false} className="flex h-[42px] items-center rounded-[7px] border border-line2 px-3.5 text-[14px] font-medium">
+      <Link href={href({ d: today, day: today })} scroll={false} className="flex h-[42px] items-center rounded-md border border-line2 px-3.5 text-[14px] font-medium">
         {t("calendar.today")}
       </Link>
       <Segmented items={seg} />
@@ -112,7 +112,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
             {weekDays.map((d) => {
               const sel = d === selected;
               return (
-                <Link key={d} href={href({ day: d })} scroll={false} className={`flex flex-col items-center gap-1.5 rounded-[10px] py-2.5 ${sel ? "bg-seg text-seg-ink" : d === today ? "text-accent" : "text-ink"}`}>
+                <Link key={d} href={href({ day: d })} scroll={false} className={`flex flex-col items-center gap-1.5 rounded-lg py-2.5 ${sel ? "bg-seg text-seg-ink" : d === today ? "text-accent" : "text-ink"}`}>
                   <span className={`text-[11px] font-semibold uppercase ${sel ? "" : "text-ink3"}`}>{t("weekday.short", { day: String(weekdayIndex(d)) })}</span>
                   <span className="text-[18px] font-semibold">{Number(d.slice(8, 10))}</span>
                   <span className="flex h-1.5 gap-0.5">
@@ -179,7 +179,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                     const late = dueTone(x, today) === "late";
                     const done = x.status === "done";
                     return (
-                      <TaskLink key={x.id} id={x.id} className={`flex min-w-0 items-center gap-1.5 rounded px-[7px] py-[5px] ${late ? "bg-red-bg" : "bg-surf"} ${done ? "opacity-60" : ""}`}>
+                      <TaskLink key={x.id} id={x.id} className={`flex min-w-0 items-center gap-1.5 rounded-sm px-[7px] py-[5px] ${late ? "bg-red-bg" : "bg-surf"} ${done ? "opacity-60" : ""}`}>
                         <span className="size-[7px] flex-none rounded-[2px]" style={{ background: PRIORITY_COLOR[x.priority] }} />
                         <span className={`truncate text-[12px] font-medium leading-tight ${late ? "text-red-ink" : "text-ink"} ${done ? "line-through" : ""}`}>{x.title}</span>
                       </TaskLink>
@@ -202,7 +202,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
               return (
                 <div key={d} className="flex min-h-[calc(100dvh-230px)] flex-col gap-2 rounded-lg bg-chip px-2 py-2.5">
                   <div className="flex items-center gap-2 px-1 pb-1">
-                    <span className={`whitespace-nowrap rounded-xl px-2 py-[5px] text-[13px] font-semibold leading-none ${isToday ? "bg-accent text-charcoal" : ""}`}>
+                    <span className={`whitespace-nowrap rounded-lg px-2 py-[5px] text-[13px] font-semibold leading-none ${isToday ? "bg-accent text-charcoal" : ""}`}>
                       {t("weekday.short", { day: String(weekdayIndex(d)) })} {formatShortDate(d)}
                     </span>
                     <span className="ml-auto text-[12px] font-medium text-ink3">{list.length}</span>

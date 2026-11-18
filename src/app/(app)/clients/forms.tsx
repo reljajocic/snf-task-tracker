@@ -293,7 +293,7 @@ function EditorRules({ initial, people }: { initial: EditorRule[]; people: Perso
       <span className="text-[13px] font-medium text-ink3">{t("editorRules")}</span>
       <input type="hidden" name="editor_rules" value={JSON.stringify(value)} />
       {rows.map((r, i) => (
-        <div key={i} className="flex flex-col gap-2 rounded-md border border-line p-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div key={i} className="flex flex-col gap-2 rounded-lg border border-line p-3 sm:flex-row sm:flex-wrap sm:items-center">
           <select
             value={r.editor_id}
             onChange={(e) => update(i, { editor_id: e.target.value })}

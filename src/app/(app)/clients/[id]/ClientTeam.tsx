@@ -46,12 +46,12 @@ export function ClientTeam({ clientId, members, people, canManage, canPickInvoic
                 disabled={!canPickInvoices || pending}
                 onClick={() => toggleInvoices(m)}
                 title={t("invoicesHint")}
-                className={`rounded-[3px] border px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] enabled:cursor-pointer ${m.seesInvoices ? "border-line2 text-ink" : "border-dashed border-line2 text-ink3"}`}
+                className={`rounded-xs border px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] enabled:cursor-pointer ${m.seesInvoices ? "border-line2 text-ink" : "border-dashed border-line2 text-ink3"}`}
               >
                 {m.seesInvoices ? t("seesInvoices") : t("noInvoices")}
               </button>
             )}
-            <span className={`rounded-[3px] border px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] ${m.role === "manager" ? "border-accent text-rust-ink" : "border-line2 text-ink2"}`}>
+            <span className={`rounded-xs border px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] ${m.role === "manager" ? "border-accent text-rust-ink" : "border-line2 text-ink2"}`}>
               {m.role === "manager" ? t("manager") : t("member")}
             </span>
             {canManage && (

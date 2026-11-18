@@ -66,7 +66,7 @@ export default async function KanbanPage({ searchParams }: PageProps<"/kanban">)
               {activeFilters ? t("list.filtersN", { count: activeFilters }) : t("list.filters")}
             </summary>
             {/* Drops down under the whole row, over the cards. */}
-            <div className="absolute inset-x-5 top-full z-20 mt-1 flex flex-col gap-3 rounded-[10px] border border-line2 bg-pop p-3 shadow-[var(--shadow-overlay)]">
+            <div className="absolute inset-x-5 top-full z-20 mt-1 flex flex-col gap-3 rounded-lg border border-line2 bg-pop p-3 shadow-[var(--shadow-overlay)]">
               <Segmented items={peopleSeg} size="sm" scroll />
               <Segmented items={kindSeg} size="sm" scroll />
             </div>

@@ -101,7 +101,7 @@ export function ListFilters({ people, clients }: { people: Person[]; clients: { 
           {doneToggle}
         </div>
         {sheet && (
-          <div className="flex flex-col gap-3 rounded-[10px] border border-line bg-surf p-3">
+          <div className="flex flex-col gap-3 rounded-lg border border-line bg-surf p-3">
             {/* Whose work: one tap, like the desktop "All people" menu. */}
             <Segmented
               scroll

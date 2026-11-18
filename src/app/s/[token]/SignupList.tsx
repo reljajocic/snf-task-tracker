@@ -51,14 +51,14 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
       {error && <span role="alert" className="text-[14px] text-red-ink">{error}</span>}
 
       {mineList.length > 0 && (
-        <div className="flex flex-col gap-1 rounded-xl border border-accent bg-surf px-4 py-3.5 lg:px-5">
+        <div className="flex flex-col gap-1 rounded-lg border border-accent bg-surf px-4 py-3.5 lg:px-5">
           <span className="text-[16px] font-semibold">{myTimes[0] ? t("yourCall", { time: myTimes[0] }) : t("yourCallNoTime")}</span>
           <span className="text-[14px] text-ink2">{t("yourVideos", { count: mineList.length })}</span>
         </div>
       )}
 
       {/* The whole day at a glance, one line per video; a tap jumps to its card. */}
-      <div className="flex flex-col rounded-xl border border-line bg-surf py-2">
+      <div className="flex flex-col rounded-lg border border-line bg-surf py-2">
         <span className="px-4 pb-1.5 pt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink3 lg:px-5">{t("overview")}</span>
         {videos.map((v, i) => (
           <a
@@ -101,7 +101,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
             <div
               key={v.id}
               id={`v-${v.id}`}
-              className={`flex scroll-mt-4 flex-col gap-3.5 rounded-xl border bg-surf p-4 transition-opacity lg:p-5 ${mine ? "border-accent" : "border-line"} ${taken ? "opacity-45 grayscale" : ""}`}
+              className={`flex scroll-mt-4 flex-col gap-3.5 rounded-lg border bg-surf p-4 transition-opacity lg:p-5 ${mine ? "border-accent" : "border-line"} ${taken ? "opacity-45 grayscale" : ""}`}
             >
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13px] font-medium text-ink3">
                 <span className="tabular-nums">#{i + 1}</span>
@@ -113,7 +113,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
               </div>
               <div className="flex items-start justify-between gap-3">
                 <span className={`text-[18px] font-medium leading-snug ${v.status === "not_shot" ? "text-ink3 line-through" : ""}`}>{v.title}</span>
-                {v.type && <span className="flex-none rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">{v.type}</span>}
+                {v.type && <span className="flex-none rounded-xs border border-line2 px-1.5 py-1 text-[11px] font-semibold leading-none tracking-[0.08em] text-ink2">{v.type}</span>}
               </div>
 
               {parts.length > 0 && (

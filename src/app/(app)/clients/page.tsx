@@ -60,7 +60,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
       {/* Mobile cards (6c) */}
       <div className="flex flex-col gap-2.5 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 lg:hidden">
         {rows.map(({ client: c, open, late }) => (
-          <Link key={c.id} href={`/clients/${c.id}`} className="flex items-center gap-3 rounded-[10px] border border-line bg-surf p-4">
+          <Link key={c.id} href={`/clients/${c.id}`} className="flex items-center gap-3 rounded-lg border border-line bg-surf p-4">
             <ClientMark client={c} />
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <span className="truncate text-[18px] font-medium leading-tight">{c.name}</span>
@@ -104,7 +104,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
             </span>
             <div className="flex flex-wrap gap-[5px]">
               {c.services.map((s) => (
-                <span key={s} className="whitespace-nowrap rounded-xl border border-line2 px-2 py-[5px] text-[12px] font-medium leading-none text-ink2">{s}</span>
+                <span key={s} className="whitespace-nowrap rounded-lg border border-line2 px-2 py-[5px] text-[12px] font-medium leading-none text-ink2">{s}</span>
               ))}
             </div>
             <div className="flex items-baseline gap-2">

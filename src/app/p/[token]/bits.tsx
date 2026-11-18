@@ -16,7 +16,7 @@ export function PortalStatusLabel({ status }: { status: PortalStatus }) {
 /** Vertical 9:16 poster placeholder with a play glyph (design 7a). */
 export function Poster({ className = "" }: { className?: string }) {
   return (
-    <div className={`grid flex-none place-items-center rounded-[5px] border border-line bg-[linear-gradient(160deg,#3B3839,#1C1A1B)] text-[18px] text-offwhite ${className}`}>
+    <div className={`grid flex-none place-items-center rounded-sm border border-line bg-[linear-gradient(160deg,#3B3839,#1C1A1B)] text-[18px] text-offwhite ${className}`}>
       ▶
     </div>
   );

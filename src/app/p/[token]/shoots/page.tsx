@@ -31,7 +31,7 @@ export default async function PortalShoots({ params }: PageProps<"/p/[token]/sho
                 {portal.show.scripts && total > 0 && (
                   <>
                     <span className="text-[13px] text-ink3">{t("portal.scriptsProgress", { approved, total, changes })}</span>
-                    <div className="h-[5px] overflow-hidden rounded-[3px] bg-chip">
+                    <div className="h-[5px] overflow-hidden rounded-xs bg-chip">
                       <div className="h-full bg-[var(--status-done)]" style={{ width: `${(approved / total) * 100}%` }} />
                     </div>
                   </>

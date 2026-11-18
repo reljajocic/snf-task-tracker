@@ -75,7 +75,7 @@ export function ScheduleCalendar({
         onDragStart={drag(v.id)}
         // The left edge in the format's colour: video, photo or carousel at a glance.
         style={{ borderLeftColor: FORMAT_COLOR[v.format] }}
-        className={`flex cursor-grab flex-col gap-1 rounded-[5px] border border-l-[3px] px-2 py-1.5 active:cursor-grabbing ${s === "not_published" ? "border-red-line bg-red-bg" : "border-line bg-surf"}`}
+        className={`flex cursor-grab flex-col gap-1 rounded-sm border border-l-[3px] px-2 py-1.5 active:cursor-grabbing ${s === "not_published" ? "border-red-line bg-red-bg" : "border-line bg-surf"}`}
       >
         <span className="flex items-center gap-1.5">
           <span className="size-[7px] flex-none rounded-full" style={{ background: POSTING_STATUS_COLOR[s] }} />

@@ -14,7 +14,7 @@ export function ImportSheet({ clients }: { clients: { id: string; name: string }
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="flex h-10 cursor-pointer items-center rounded-[4px] border border-line2 px-4 text-[13px] font-medium uppercase tracking-[0.14em]">
+      <button type="button" onClick={() => setOpen(true)} className="flex h-10 cursor-pointer items-center rounded-sm border border-line2 px-4 text-[13px] font-medium uppercase tracking-[0.14em]">
         {t("button")}
       </button>
     );

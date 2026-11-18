@@ -74,7 +74,7 @@ export function AvatarCropper({
 
   return createPortal(
     <div className="fixed inset-0 z-[70] grid place-items-center bg-[var(--overlay)] p-4" onClick={onCancel}>
-      <div className="flex w-full max-w-[360px] flex-col items-center gap-5 rounded-2xl border border-line2 bg-pop p-6 shadow-[var(--shadow-overlay)]" onClick={(e) => e.stopPropagation()}>
+      <div className="flex w-full max-w-[360px] flex-col items-center gap-5 rounded-lg border border-line2 bg-pop p-6 shadow-[var(--shadow-overlay)]" onClick={(e) => e.stopPropagation()}>
         <span className="display self-start text-[18px]">{t("cropTitle")}</span>
         <div
           className="relative cursor-grab touch-none overflow-hidden rounded-full active:cursor-grabbing"

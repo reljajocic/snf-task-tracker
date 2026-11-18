@@ -82,7 +82,7 @@ function DialogBox({ req }: { req: Req }) {
           e.preventDefault();
           if (!blocked) close(true);
         }}
-        className="relative flex w-full max-w-[440px] flex-col gap-4 rounded-[10px] border border-line2 bg-bg p-6 shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
+        className="relative flex w-full max-w-[440px] flex-col gap-4 rounded-lg border border-line2 bg-bg p-6 shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
       >
         <h2 id="snf-dialog-title" className="text-[17px] font-semibold leading-snug text-ink">
           {req.title}

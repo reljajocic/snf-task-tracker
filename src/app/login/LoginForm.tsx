@@ -73,7 +73,7 @@ export function LoginForm({ initialError }: { initialError: "linkExpired" | "ina
             aria-label={t("emailLabel")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-14 rounded-lg border border-offwhite/36 bg-offwhite/6 px-4 text-[18px] text-offwhite outline-none focus:border-accent lg:h-[52px] lg:rounded-none lg:border-0 lg:border-b lg:border-accent lg:bg-transparent lg:px-0 lg:text-[18px] lg:focus-visible:shadow-none"
+            className="h-14 rounded-md border border-offwhite/36 bg-offwhite/6 px-4 text-[18px] text-offwhite outline-none focus:border-accent lg:h-[52px] lg:rounded-none lg:border-0 lg:border-b lg:border-accent lg:bg-transparent lg:px-0 lg:text-[18px] lg:focus-visible:shadow-none"
           />
         </label>
 
@@ -124,7 +124,7 @@ export function LoginForm({ initialError }: { initialError: "linkExpired" | "ina
             value={code}
             onChange={(e) => setCode(e.target.value)}
             aria-label={t("codeLabel")}
-            className="h-12 min-w-0 flex-1 rounded-lg border border-offwhite/36 bg-offwhite/6 px-4 text-[18px] tracking-[0.3em] text-offwhite outline-none focus:border-accent"
+            className="h-12 min-w-0 flex-1 rounded-md border border-offwhite/36 bg-offwhite/6 px-4 text-[18px] tracking-[0.3em] text-offwhite outline-none focus:border-accent"
           />
           {/* The main action on this screen: the brand button, clearly a button even before the code is in. */}
           <Button type="submit" size="sm" disabled={pending || code.length < 6} className="h-12 flex-none px-5">
@@ -151,7 +151,7 @@ export function LoginForm({ initialError }: { initialError: "linkExpired" | "ina
             setCode("");
             setError(null);
           }}
-          className="h-14 cursor-pointer rounded-lg border border-offwhite/36 text-[15px] font-medium text-offwhite lg:h-11 lg:border-0 lg:px-2 lg:text-[14px] lg:text-offwhite/70"
+          className="h-14 cursor-pointer rounded-md border border-offwhite/36 text-[15px] font-medium text-offwhite lg:h-11 lg:border-0 lg:px-2 lg:text-[14px] lg:text-offwhite/70"
         >
           {t("changeEmail")}
         </button>

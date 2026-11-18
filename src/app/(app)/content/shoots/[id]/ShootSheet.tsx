@@ -17,7 +17,7 @@ const STATUS_STYLE: Record<ShotStatus, string> = {
   not_shot: "text-[var(--prio-urgent)]",
 };
 
-const cell = "w-full min-w-0 rounded border-0 bg-transparent px-2 py-1.5 text-[14px] text-ink outline-none focus:bg-chip focus-visible:shadow-none";
+const cell = "w-full min-w-0 rounded-sm border-0 bg-transparent px-2 py-1.5 text-[14px] text-ink outline-none focus:bg-chip focus-visible:shadow-none";
 
 /**
  * The shoot day as the team's Google Sheet: #, status, time, person, type, title, text, reference, note.
@@ -255,7 +255,7 @@ export function ShootSheet({
                     <td className="px-1 py-1">
                       {/* Title and script open the video's own editor (the same panel as everywhere), so the
                           script's parts are edited one by one and never get mixed up in a single text box. */}
-                      <TaskLink id={v.id} className="block rounded-[5px] px-2 py-1 hover:bg-hover">
+                      <TaskLink id={v.id} className="block rounded-sm px-2 py-1 hover:bg-hover">
                         <span className="block text-[15px] font-semibold leading-snug">{v.title}</span>
                         {v.script_decision && (
                           <span className="block pt-1">
@@ -500,7 +500,7 @@ function TextCell({
             setEditing(true);
           }
         }}
-        className={`min-h-[34px] rounded px-2 py-1.5 ${disabled ? "" : "cursor-text hover:bg-hover"}`}
+        className={`min-h-[34px] rounded-sm px-2 py-1.5 ${disabled ? "" : "cursor-text hover:bg-hover"}`}
       >
         {render(value)}
       </div>

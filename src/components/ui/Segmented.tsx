@@ -34,11 +34,11 @@ export function Segmented({
   nowrap?: boolean;
 }) {
   // Inner radius = outer radius − padding, so the active pill sits concentric in its track (7 − 3, 10 − 4).
-  const sz = `${full ? "rounded-[6px]" : "rounded-[4px]"} ${size === "lg" ? "h-11 px-4 text-[15px]" : size === "sm" ? "h-8 px-3 text-[13px]" : "h-9 px-4 text-[14px]"}`;
+  const sz = `${full ? "rounded-sm" : "rounded-sm"} ${size === "lg" ? "h-11 px-4 text-[15px]" : size === "sm" ? "h-8 px-3 text-[13px]" : "h-9 px-4 text-[14px]"}`;
   // scroll: one row that slides sideways when it doesn't fit (phones), instead of wrapping onto a second line.
   const control = (
     <div
-      className={`gap-0.5 border border-line2 p-[3px] ${full ? "grid rounded-[10px] p-1" : `inline-flex rounded-[7px] ${scroll || nowrap ? "flex-none flex-nowrap" : "max-w-full flex-wrap"}`}`}
+      className={`gap-0.5 border border-line2 p-[3px] ${full ? "grid rounded-md p-1" : `inline-flex rounded-md ${scroll || nowrap ? "flex-none flex-nowrap" : "max-w-full flex-wrap"}`}`}
       style={full ? { gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` } : undefined}
     >
       {items.map((it) => {

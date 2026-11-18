@@ -148,7 +148,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
         </section>
         <section className="flex flex-col gap-3">
           {sectionTitle(t("home.byClient"))}
-          <div className="flex flex-col rounded-[10px] border border-line bg-surf px-4 py-1">
+          <div className="flex flex-col rounded-lg border border-line bg-surf px-4 py-1">
             {clientStats.map((c) => (
               <div key={c.name} className="flex items-center justify-between border-b border-line py-[13px] text-[15px] font-medium last:border-b-0">
                 <span>{c.name}</span>
@@ -218,8 +218,8 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
                 {clientStats.map((c) => (
                   <div key={c.name} className="grid grid-cols-[110px_minmax(0,1fr)_24px] items-center gap-3 border-b border-line py-2.5 last:border-b-0">
                     <span className="truncate text-[14px] font-medium leading-tight">{c.name}</span>
-                    <div className="h-1.5 overflow-hidden rounded-[3px] bg-chip">
-                      <div className="h-full rounded-[3px] bg-ink3" style={{ width: `${(c.count / maxCount) * 100}%` }} />
+                    <div className="h-1.5 overflow-hidden rounded-xs bg-chip">
+                      <div className="h-full rounded-xs bg-ink3" style={{ width: `${(c.count / maxCount) * 100}%` }} />
                     </div>
                     <span className="text-right text-[14px] font-semibold">{c.count}</span>
                   </div>
@@ -257,7 +257,7 @@ async function PeopleStats({
     // Phones: one row that slides sideways (three to a row cut the names to "Mar…"); desktop: a grid.
     <div className={compact ? "no-scrollbar -mx-5 flex gap-2.5 overflow-x-auto px-5" : "grid grid-cols-[repeat(auto-fill,minmax(130px,1fr))] gap-2.5"}>
       {stats.map(({ person, count, late }) => (
-        <div key={person.id} className={`flex flex-col border border-line bg-surf ${compact ? "min-w-[120px] flex-none gap-3 rounded-[10px] p-3.5" : "gap-3.5 rounded-lg p-4"}`}>
+        <div key={person.id} className={`flex flex-col border border-line bg-surf ${compact ? "min-w-[120px] flex-none gap-3 rounded-lg p-3.5" : "gap-3.5 rounded-lg p-4"}`}>
           <div className="flex min-w-0 items-center gap-2">
             <Avatar person={person} size={compact ? 26 : 24} />
             <span className={`truncate font-medium text-ink2 ${compact ? "text-[15px]" : "text-[14px]"}`}>{names[person.id]}</span>

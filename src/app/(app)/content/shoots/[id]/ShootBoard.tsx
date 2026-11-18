@@ -387,7 +387,7 @@ export function ShootBoard({
             {nowSlot.items.map((v, i) => (
               <div
                 key={v.id}
-                className={`flex flex-col gap-3 rounded-xl border bg-surf p-4 ${i === nowSlot.items.findIndex((x) => !isDone(x)) ? "border-accent" : "border-line"}`}
+                className={`flex flex-col gap-3 rounded-lg border bg-surf p-4 ${i === nowSlot.items.findIndex((x) => !isDone(x)) ? "border-accent" : "border-line"}`}
               >
                 <div className="flex items-start justify-between gap-2.5">
                   <TaskLink id={v.id} className="text-[18px] font-medium leading-snug">{v.title}</TaskLink>
@@ -421,7 +421,7 @@ export function ShootBoard({
                     <span className="ml-auto text-[13px] font-medium text-ink3">{s.items.filter(isDone).length}/{s.items.length}</span>
                   </div>
                   {s.items.map((v) => (
-                    <div key={v.id} className="flex flex-col gap-3 rounded-xl border border-line bg-surf px-4 py-3">
+                    <div key={v.id} className="flex flex-col gap-3 rounded-lg border border-line bg-surf px-4 py-3">
                       <div className="flex min-h-11 items-center gap-3">
                         {check(v, 32)}
                         <div className="flex min-w-0 flex-col gap-1">
@@ -444,7 +444,7 @@ export function ShootBoard({
             <button
               type="button"
               onClick={() => setShowDone((s) => !s)}
-              className="flex min-h-[52px] cursor-pointer items-center justify-between rounded-[10px] border border-line px-4 text-[15px] font-medium"
+              className="flex min-h-[52px] cursor-pointer items-center justify-between rounded-lg border border-line px-4 text-[15px] font-medium"
             >
               <span>{t("shoots.doneSlots", { count: slots.length - pending.length })}</span>
               <span className="text-ink3">{showDone ? "▲" : "▼"}</span>
@@ -454,7 +454,7 @@ export function ShootBoard({
                 .filter((s) => !pending.includes(s))
                 .flatMap((s) => s.items)
                 .map((v) => (
-                  <div key={v.id} className="flex min-h-11 items-center gap-3 rounded-xl border border-line bg-surf px-4 py-3">
+                  <div key={v.id} className="flex min-h-11 items-center gap-3 rounded-lg border border-line bg-surf px-4 py-3">
                     {check(v, 32)}
                     <span className="text-[15px] text-ink2">{v.title}</span>
                   </div>

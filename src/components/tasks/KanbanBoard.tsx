@@ -23,7 +23,7 @@ function KanbanCard({ task, today, mobile = false }: { task: Task; today: IsoDat
         e.dataTransfer.setData("text/task-id", task.id);
         e.dataTransfer.effectAllowed = "move";
       }}
-      className={`flex flex-col border bg-surf ${mobile ? "gap-[11px] rounded-[10px] p-4" : "cursor-grab gap-[11px] rounded-lg p-3.5 active:cursor-grabbing"} ${
+      className={`flex flex-col border bg-surf ${mobile ? "gap-[11px] rounded-lg p-4" : "cursor-grab gap-[11px] rounded-lg p-3.5 active:cursor-grabbing"} ${
         late ? "border-red-line" : "border-line"
       } ${done ? "opacity-60" : ""}`}
     >
@@ -108,7 +108,7 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
               </div>
             ))
           ) : (
-            <p className="rounded-[10px] border border-dashed border-line2 px-4 py-8 text-center text-[14px] text-ink3">{t("kanban.empty")}</p>
+            <p className="rounded-lg border border-dashed border-line2 px-4 py-8 text-center text-[14px] text-ink3">{t("kanban.empty")}</p>
           )}
         </div>
       </div>
@@ -124,7 +124,7 @@ export function KanbanBoard({ tasks, today }: { tasks: Task[]; today: IsoDate })
             }}
             onDragLeave={() => setOver((o) => (o === c.status ? null : o))}
             onDrop={drop(c.status)}
-            className={`flex min-h-[calc(100dvh-170px)] flex-col gap-3 rounded-t-[10px] px-3 pt-3.5 transition-colors ${over === c.status ? "bg-rust-bg" : "bg-chip"}`}
+            className={`flex min-h-[calc(100dvh-170px)] flex-col gap-3 rounded-t-lg px-3 pt-3.5 transition-colors ${over === c.status ? "bg-rust-bg" : "bg-chip"}`}
           >
             <div className="flex items-center gap-2.5 px-1 pb-1">
               <span className="size-2.5 rounded-full" style={{ background: STATUS_COLOR[c.status] }} />

@@ -40,7 +40,7 @@ export function PersonFilter({ people, value, hrefFor }: { people: Person[]; val
           setOpen(!open);
           setQ("");
         }}
-        className={`flex h-[42px] cursor-pointer items-center gap-2.5 rounded-[7px] border px-3 text-[14px] font-medium ${current ? "border-ink2 text-ink" : "border-line2 text-ink2"}`}
+        className={`flex h-[42px] cursor-pointer items-center gap-2.5 rounded-md border px-3 text-[14px] font-medium ${current ? "border-ink2 text-ink" : "border-line2 text-ink2"}`}
       >
         {current && <Avatar person={current} size={24} />}
         <span className="max-w-[160px] truncate">{current?.full_name ?? t("everyone")}</span>

@@ -32,7 +32,7 @@ export function PortalModal({ children }: { children: React.ReactNode }) {
         role="dialog"
         aria-modal="true"
         tabIndex={-1}
-        className="snf-in relative flex h-full w-full flex-col overflow-y-auto bg-bg outline-none lg:h-[calc(100dvh-48px)] lg:w-[min(1180px,calc(100vw-48px))] lg:rounded-[10px] lg:border lg:border-line2 lg:shadow-[var(--shadow-overlay)]"
+        className="snf-in relative flex h-full w-full flex-col overflow-y-auto bg-bg outline-none lg:h-[calc(100dvh-48px)] lg:w-[min(1180px,calc(100vw-48px))] lg:rounded-lg lg:border lg:border-line2 lg:shadow-[var(--shadow-overlay)]"
       >
         <button
           type="button"

@@ -101,7 +101,7 @@ export function DueStack({ task, today }: { task: Task; today: IsoDate }) {
     return <span className="justify-self-end px-2.5 text-[13px] text-ink3">{t("noDue")}</span>;
   }
   return (
-    <div className={`flex min-w-[118px] flex-col items-start gap-1 justify-self-end rounded-[5px] px-2.5 py-[7px] ${TONE[tone]}`}>
+    <div className={`flex min-w-[118px] flex-col items-start gap-1 justify-self-end rounded-sm px-2.5 py-[7px] ${TONE[tone]}`}>
       <span className="whitespace-nowrap text-[13px] font-semibold leading-none">{dueText(label)}</span>
       <span className="whitespace-nowrap text-[12px] leading-none text-ink2">{formatDate(task.due_date)}</span>
     </div>
@@ -121,7 +121,7 @@ export function DueChip({ task, today }: { task: Task; today: IsoDate }) {
         ? dueText(label)
         : formatDate(task.due_date);
   return (
-    <span className={`inline-flex items-center whitespace-nowrap rounded-[5px] px-2 py-1.5 text-[12px] font-semibold leading-none ${TONE[tone]}`}>
+    <span className={`inline-flex items-center whitespace-nowrap rounded-sm px-2 py-1.5 text-[12px] font-semibold leading-none ${TONE[tone]}`}>
       {text}
     </span>
   );
@@ -138,7 +138,7 @@ export function TaskMeta({ task }: { task: Task }) {
 /** Uppercase eyebrow tag (design "oznaka tipa"). */
 export function TypeTag({ children }: { children: ReactNode }) {
   return (
-    <span className="whitespace-nowrap rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] text-ink2">
+    <span className="whitespace-nowrap rounded-xs border border-line2 px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] text-ink2">
       {children}
     </span>
   );

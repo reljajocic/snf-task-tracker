@@ -42,7 +42,7 @@ export function ClientReminders({ clientId, reminders, today }: { clientId: stri
           <div key={r.id} className="flex items-center gap-3 border-b border-line py-2.5 last:border-b-0">
             <span className="min-w-0 flex-1 truncate text-[14px] font-medium">{r.title}</span>
             {r.repeat === "monthly" && (
-              <span className="rounded-[3px] border border-line2 px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] text-ink2">{t("monthly")}</span>
+              <span className="rounded-xs border border-line2 px-1.5 py-1 text-[11px] font-semibold uppercase leading-none tracking-[0.08em] text-ink2">{t("monthly")}</span>
             )}
             <span className="whitespace-nowrap text-[13px] font-medium text-ink2">{formatDate(r.remind_on)}</span>
             <button type="button" disabled={pending} onClick={() => remove(r.id)} aria-label={t("removeReminder")} className="cursor-pointer text-[14px] text-ink3 hover:text-red-ink">
