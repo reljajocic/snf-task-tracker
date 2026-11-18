@@ -840,7 +840,11 @@
     "poolHint": "Filmed and ready. Drag onto a day; drag a post back here to take it off the schedule.",
     "nameToMove": "Your name, so the team knows who moved it:",
     "notFilmed": "This one isn't filmed yet, so it keeps a date.",
-    "pastDay": "Pick today or a later day."
+    "pastDay": "Pick today or a later day.",
+    "factPost": "Posting",
+    "factLocation": "Location",
+    "factOnCamera": "On camera",
+    "factShoot": "Shoot day"
   },
   "shootSheet": {
     "status": "Status",

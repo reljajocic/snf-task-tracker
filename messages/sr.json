@@ -840,7 +840,11 @@
     "poolHint": "Snimljeno i spremno. Prevucite na dan; vratite objavu ovde da je skinete iz rasporeda.",
     "nameToMove": "Vaše ime, da tim zna ko je pomerio:",
     "notFilmed": "Ovaj video još nije snimljen, pa mora da ima datum.",
-    "pastDay": "Izaberite danas ili kasniji dan."
+    "pastDay": "Izaberite danas ili kasniji dan.",
+    "factPost": "Objava",
+    "factLocation": "Lokacija",
+    "factOnCamera": "Na kameri",
+    "factShoot": "Snimanje"
   },
   "shootSheet": {
     "status": "Status",

@@ -94,9 +94,14 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
   );
 
   if (view === "calendar") {
-    const days = Array.from({ length: 42 }, (_, i) => addDays(gridStart, i));
-    const weeksInMonth = days.filter((_, i) => i % 7 === 0 && (i < 35 || days[i].slice(0, 7) === month));
-    const label = `${t("month.name", { m: String(Number(month.slice(5, 7))) })} ${month.slice(0, 4)}`;
+    const monthLabel = (m: string) => `${t("month.name", { m: String(Number(m.slice(5, 7))) })} ${m.slice(0, 4)}`;
+    // This month and the next: the client can plan ahead without paging.
+    const months = [month, shiftMonth(month, 1)].map((m) => {
+      const start = startOfWeek(`${m}-01`);
+      const days = Array.from({ length: 42 }, (_, i) => addDays(start, i));
+      return { month: m, label: monthLabel(m), weeks: days.filter((_, i) => i % 7 === 0 && (i < 35 || days[i].slice(0, 7) === m)) };
+    });
+    const label = monthLabel(month);
     return (
       <div className="flex flex-col gap-4 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
         <h1 className="display text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
@@ -110,8 +115,7 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
         {toPlan && <div className={portal.plans ? "lg:hidden" : ""}>{toPlan}</div>}
         <PortalCalendar
           token={token}
-          month={month}
-          weeks={weeksInMonth}
+          months={months}
           today={today}
           plans={portal.plans}
           posts={dated.map(calendarPost)}

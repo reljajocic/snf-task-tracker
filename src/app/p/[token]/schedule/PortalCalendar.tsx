@@ -27,7 +27,9 @@ export type CalendarPost = {
  * drag a post onto another day, or one from "Filmed, no date" onto a day (and back). On phones the cells are too small
  * to drag; there a post opens and its date is changed with a button.
  */
-export function PortalCalendar({ token, month, weeks, today, posts, pool, plans }: { token: string; month: string; weeks: IsoDate[]; today: IsoDate; posts: CalendarPost[]; pool: CalendarPost[]; plans: boolean }) {
+export type CalendarMonth = { month: string; label: string; weeks: IsoDate[] };
+
+export function PortalCalendar({ token, months, today, posts, pool, plans }: { token: string; months: CalendarMonth[]; today: IsoDate; posts: CalendarPost[]; pool: CalendarPost[]; plans: boolean }) {
   const t = useTranslations();
   const router = useRouter();
   const [name, setName] = useApprover();
@@ -120,8 +122,12 @@ export function PortalCalendar({ token, month, weeks, today, posts, pool, plans 
   );
 
   const shownPool = items.filter((v) => !v.publish_date);
+  // The chosen month and the next, so posts can be planned ahead (and dragged across the turn of the month).
   const grid = (
-    <div className="flex min-w-0 flex-col gap-1.5">
+    <div className="flex min-w-0 flex-col gap-8">
+    {months.map(({ month, label, weeks }, k) => (
+    <div key={month} className="flex min-w-0 flex-col gap-1.5">
+      {(months.length > 1 || k > 0) && <h2 className="display pb-1 text-[18px] leading-none lg:text-[20px]">{label}</h2>}
       <div className="grid grid-cols-7 gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
         {[0, 1, 2, 3, 4, 5, 6].map((d) => (
           <span key={d} className="px-1.5">{t("weekday.short", { day: String(d) })}</span>
@@ -147,6 +153,8 @@ export function PortalCalendar({ token, month, weeks, today, posts, pool, plans 
           })}
         </div>
       ))}
+    </div>
+    ))}
     </div>
   );
 

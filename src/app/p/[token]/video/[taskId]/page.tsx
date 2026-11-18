@@ -32,11 +32,15 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
   const status = portalStatus(video);
   // The client plans dates: a filmed video without one, or any post not out yet.
   const plannable = portal.plans && video.phase < 5 && (!!video.publish_date || video.shot_status === "shot" || video.phase >= 2);
+  const day = (d: string) => `${t("weekday.short", { day: String(weekdayIndex(d)) })}, ${formatDate(d)}`;
+  // Where it's filmed: the video's own location, else its shoot day's.
+  const where = video.location || video.shoot?.location || null;
   const facts = [
-    video.publish_date && t("portal.postOn", { date: `${t("weekday.short", { day: String(weekdayIndex(video.publish_date)) })}, ${formatDate(video.publish_date)}` }),
-    video.on_camera,
-    video.location,
-  ].filter(Boolean);
+    video.publish_date && { label: t("portal.factPost"), value: day(video.publish_date) },
+    where && { label: t("portal.factLocation"), value: where },
+    video.on_camera && { label: t("portal.factOnCamera"), value: video.on_camera },
+    video.shoot && { label: t("portal.factShoot"), value: day(video.shoot.date) },
+  ].filter((f): f is { label: string; value: string } => !!f);
 
   return (
     <div className="flex flex-1 flex-col lg:grid lg:grid-cols-[560px_minmax(0,1fr)]">
@@ -90,7 +94,16 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
             <PostTags format={video.format} type={video.content_type} formatLabel={t(`format.${video.format}`)} />
           </span>
           <h1 className="display text-[30px] leading-[0.98] lg:text-[40px]">{video.title}</h1>
-          {facts.length > 0 && <span className="text-[15px] leading-normal text-ink2">{facts.join(" · ")}</span>}
+          {facts.length > 0 && (
+            <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-1.5 text-[15px] leading-snug">
+              {facts.map((f) => (
+                <div key={f.label} className="contents">
+                  <dt className="text-ink3">{f.label}</dt>
+                  <dd className="font-medium text-ink">{f.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
           {plannable && <PostDate token={token} taskId={video.id} date={video.publish_date} min={today()} />}
         </div>
 
