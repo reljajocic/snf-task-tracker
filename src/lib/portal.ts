@@ -17,6 +17,8 @@ export type Portal = {
   clientName: string;
   token: string;
   show: { schedule: boolean; shoots: boolean; scripts: boolean; review: boolean; report: boolean };
+  /** The client sets and moves posting dates (and sees filmed videos with no date yet). Needs the schedule shown. */
+  plans: boolean;
   locale: Locale;
 };
 
@@ -24,7 +26,7 @@ export const getPortal = cache(async (token: string): Promise<Portal | null> => 
   if (!/^[0-9a-f]{32,64}$/.test(token)) return null;
   const { data } = await createAdminClient()
     .from("client_portals")
-    .select("client_id, token, enabled, locale, show_schedule, show_shoots, show_scripts, show_review, show_report, client:clients(name)")
+    .select("client_id, token, enabled, locale, show_schedule, show_shoots, show_scripts, show_review, show_report, client_plans, client:clients(name)")
     .eq("token", token)
     .eq("enabled", true)
     .maybeSingle<{
@@ -35,6 +37,7 @@ export const getPortal = cache(async (token: string): Promise<Portal | null> => 
       show_scripts: boolean;
       show_review: boolean;
       show_report: boolean;
+      client_plans: boolean;
       locale: string;
       client: { name: string } | null;
     }>();
@@ -50,6 +53,7 @@ export const getPortal = cache(async (token: string): Promise<Portal | null> => 
       review: data.show_review,
       report: data.show_report,
     },
+    plans: data.show_schedule && data.client_plans,
     // A visitor's own pick (the SR/EN switch in the portal header) wins over the client's default.
     locale: parseLocale((await cookies()).get(PORTAL_LANG_COOKIE)?.value ?? data.locale),
   };
@@ -105,9 +109,10 @@ type RawVideo = Omit<PortalVideo, "versions" | "scriptDecision" | "looseDecision
  * Which of the client's videos a portal page needs (a client's history can be ~1 MB):
  *  - id: one video · shootId: one shoot day · from: posting on/after a date
  *  - month: published that month (YYYY-MM) · open: not published yet, or posting from a date on
+ *  - unscheduled: filmed, not published, no posting date yet (what the client can plan)
  * Dropped videos never reach the portal.
  */
-export type PortalScope = { id: string } | { shootId: string } | { from: IsoDate } | { month: string } | { open: IsoDate };
+export type PortalScope = { id: string } | { shootId: string } | { from: IsoDate } | { month: string } | { open: IsoDate } | { unscheduled: true };
 
 export async function getPortalVideos(clientId: string, scope: PortalScope): Promise<PortalVideo[]> {
   let query = createAdminClient()
@@ -130,6 +135,7 @@ export async function getPortalVideos(clientId: string, scope: PortalScope): Pro
     const next = new Date(Date.UTC(y, m, 1)).toISOString().slice(0, 10);
     query = query.gte("publish_date", `${scope.month}-01`).lt("publish_date", next).gte("phase", 5);
   }
+  else if ("unscheduled" in scope) query = query.is("publish_date", null).lt("phase", 5).or("shot_status.eq.shot,phase.gte.2");
   else query = query.or(`phase.lt.5,publish_date.gte.${scope.open}`);
   const { data, error } = await query.order("publish_date", { nullsFirst: false }).returns<RawVideo[]>();
   if (error) throw error;

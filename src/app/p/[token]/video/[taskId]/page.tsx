@@ -2,12 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { dropboxVideoUrl, embedUrl } from "@/lib/embed";
-import { formatDate, weekdayIndex } from "@/lib/dates";
+import { formatDate, today, weekdayIndex } from "@/lib/dates";
 import { canUndo, getPortal, getPortalVideos, portalStatus, PORTAL_STATUS_COLOR } from "@/lib/portal";
 import { Poster } from "../../bits";
 import { RequestChange, VideoDecision } from "./VideoDecision";
 import { safeHref } from "@/lib/safe-url";
 import { PostTags } from "@/components/tasks/tags";
+import { PostDate } from "../../schedule/PostDate";
 
 // 7c (desktop) / 7f (mobile): watch a cut and approve it or ask for changes. Any video in the schedule opens here too,
 // to read its script before there is a cut.
@@ -29,6 +30,8 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
   const file = url && !player ? dropboxVideoUrl(url) : null;
   const decision = shown ? shown.decision : video.phase === 3 ? null : video.looseDecision;
   const status = portalStatus(video);
+  // The client plans dates: a filmed video without one, or any post not out yet.
+  const plannable = portal.plans && video.phase < 5 && (!!video.publish_date || video.shot_status === "shot" || video.phase >= 2);
   const facts = [
     video.publish_date && t("portal.postOn", { date: `${t("weekday.short", { day: String(weekdayIndex(video.publish_date)) })}, ${formatDate(video.publish_date)}` }),
     video.on_camera,
@@ -88,6 +91,7 @@ export default async function PortalVideo({ params, searchParams }: PageProps<"/
           </span>
           <h1 className="display text-[30px] leading-[0.98] lg:text-[40px]">{video.title}</h1>
           {facts.length > 0 && <span className="text-[15px] leading-normal text-ink2">{facts.join(" · ")}</span>}
+          {plannable && <PostDate token={token} taskId={video.id} date={video.publish_date} min={today()} />}
         </div>
 
         {portal.show.scripts && video.script.length > 0 && (

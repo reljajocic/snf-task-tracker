@@ -9,6 +9,7 @@ export const NOTIFICATION_EVENTS = [
   "task_overdue",
   "client_approved",
   "client_changes",
+  "client_moved_post",
   "edit_cancelled",
   "client_reminder",
 ] as const;
@@ -26,6 +27,7 @@ export const DEFAULT_ENABLED: Record<NotificationEvent, boolean> = {
   task_overdue: true,
   client_approved: true,
   client_changes: true,
+  client_moved_post: true,
   edit_cancelled: true,
   client_reminder: true,
 };

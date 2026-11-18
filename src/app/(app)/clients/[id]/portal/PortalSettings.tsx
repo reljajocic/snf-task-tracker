@@ -9,7 +9,7 @@ import { addPortalPerson, rotateToken, setPortalFlag, setPortalLocale, updatePor
 import { ask } from "@/components/ui/Dialog";
 import { Segmented } from "@/components/ui/Segmented";
 
-type Portal = { enabled: boolean; show_schedule: boolean; show_shoots: boolean; show_scripts: boolean; show_review: boolean; show_report: boolean; locale: string };
+type Portal = { enabled: boolean; show_schedule: boolean; show_shoots: boolean; show_scripts: boolean; show_review: boolean; show_report: boolean; client_plans: boolean; locale: string };
 type PortalPerson = { id: string; label: string; email: string | null; can_approve: boolean };
 
 function Switch({ on, onClick, label }: { on: boolean; onClick: () => void; label: string }) {
@@ -129,6 +129,13 @@ export function PortalSettings({
               <Switch on={state[flag]} label={label} onClick={() => flip(flag)} />
             </div>
           ))}
+          <div className="flex items-center justify-between gap-4 border-t border-line py-3">
+            <span className="flex min-w-0 flex-col gap-1">
+              <span className="text-[15px] font-medium">{t("vis.plans")}</span>
+              <span className="text-[13px] leading-snug text-ink3">{state.show_schedule ? t("vis.plansHint") : t("vis.plansNeedsSchedule")}</span>
+            </span>
+            <Switch on={state.client_plans} label={t("vis.plans")} onClick={() => flip("client_plans")} />
+          </div>
           <div className="flex min-h-12 items-center justify-between border-t border-line">
             <span className="text-[15px] font-medium">{t("vis.internal")}</span>
             <span className="text-[13px] font-medium text-ink3">{t("alwaysHidden")}</span>

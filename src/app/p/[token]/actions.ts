@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
+import { addDays, formatDate, today } from "@/lib/dates";
 import { notify } from "@/lib/notify";
 import { UNDO_WINDOW_MS, getPortal, getPortalVideos } from "@/lib/portal";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -218,5 +219,50 @@ export async function undoDecision(token: string, approvalId: string): Promise<P
   // Back to waiting on the client, but never pull a published video back.
   if (a.kind === "video" && (a.task?.phase ?? 0) < 5) await admin.from("tasks").update({ phase: 3 }).eq("id", a.task_id);
   revalidatePath(`/p/${token}`, "layout");
+  return { ok: true };
+}
+
+/** Date moves don't go through approvals, so their flood guard counts the portal's own log. */
+async function tooManyMoves(clientId: string) {
+  const since = new Date(Date.now() - BURST.windowMs).toISOString();
+  const { count } = await createAdminClient()
+    .from("portal_activity")
+    .select("id", { count: "exact", head: true })
+    .eq("client_id", clientId)
+    .gte("created_at", since);
+  return (count ?? 0) >= BURST.max;
+}
+
+/**
+ * The client plans a post: gives a filmed video its posting date, or moves one that isn't published yet.
+ * Today or later, within a year. The team on the video hears about it.
+ */
+export async function setPostDate(token: string, taskId: string, date: string, name: string): Promise<PortalResult> {
+  const ctx = await context(token, taskId);
+  if (!ctx || !ctx.portal.plans) return { ok: false, error: "Not available." };
+  const { video } = ctx;
+  if (video.phase >= 5) return { ok: false, error: "This one is already published." };
+  if (!video.publish_date && !(video.shot_status === "shot" || video.phase >= 2)) return { ok: false, error: "This video isn't filmed yet." };
+  const approver = cleanName(name);
+  if (!approver) return { ok: false, error: "Please enter your name." };
+  const now = today();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date))) return { ok: false, error: "Pick a date." };
+  if (date < now) return { ok: false, error: "Pick today or a later date." };
+  if (date > addDays(now, 366)) return { ok: false, error: "Pick a date within a year." };
+  if (date === video.publish_date) return { ok: true };
+  if (await tooManyMoves(ctx.portal.clientId)) return { ok: false, error: SLOW_DOWN };
+
+  const admin = createAdminClient();
+  const { error } = await admin.from("tasks").update({ publish_date: date }).eq("id", taskId).eq("client_id", ctx.portal.clientId);
+  if (error) return { ok: false, error: error.message };
+  const was = video.publish_date ? formatDate(video.publish_date) : null;
+  const message = was
+    ? `${approver} moved “${video.title}” from ${was} to ${formatDate(date)}`
+    : `${approver} set “${video.title}” to post on ${formatDate(date)}`;
+  await admin.from("portal_activity").insert({ client_id: ctx.portal.clientId, message });
+  const recipients = await teamOf(taskId);
+  after(() => notify({ event: "client_moved_post", taskId, recipientIds: recipients, extra: { by: approver, from: was ?? "", to: formatDate(date) } }));
+  revalidatePath(`/p/${token}`, "layout");
+  revalidatePath("/content/schedule");
   return { ok: true };
 }

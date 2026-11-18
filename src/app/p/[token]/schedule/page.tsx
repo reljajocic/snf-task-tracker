@@ -8,6 +8,7 @@ import { PostTags } from "@/components/tasks/tags";
 import { FORMATS, FORMAT_COLOR } from "@/lib/formats";
 import { Segmented } from "@/components/ui/Segmented";
 import { PeriodNav } from "@/components/ui/PeriodNav";
+import { PostDate } from "./PostDate";
 
 function shiftMonth(m: string, d: number) {
   const [y, mo] = m.split("-").map(Number);
@@ -25,7 +26,11 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
   const month = typeof sp.m === "string" && /^\d{4}-\d{2}$/.test(sp.m) ? sp.m : today.slice(0, 7);
   const gridStart = startOfWeek(`${month}-01`);
   const from = view === "list" ? startOfWeek(today) : gridStart;
-  const [videos, t] = await Promise.all([getPortalVideos(portal.clientId, { from }), getTranslations({ locale: portal.locale })]);
+  const [videos, t, waiting] = await Promise.all([
+    getPortalVideos(portal.clientId, { from }),
+    getTranslations({ locale: portal.locale }),
+    portal.plans ? getPortalVideos(portal.clientId, { unscheduled: true }) : Promise.resolve([]),
+  ]);
   const format = FORMATS.find((f) => f === sp.format) ?? null;
   const dated = videos.filter((v) => v.publish_date && v.publish_date >= from && (!format || v.format === format));
   const base = `/p/${token}/schedule`;
@@ -35,6 +40,27 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
     const qs = new URLSearchParams(Object.entries(merged).filter(([, v]) => v) as [string, string][]).toString();
     return qs ? `${base}?${qs}` : base;
   };
+  // Filmed, no posting date yet: the client picks one (only when the team lets them plan).
+  const unscheduled = waiting.filter((v) => !format || v.format === format);
+  const toPlan = unscheduled.length > 0 && (
+    <section className="flex flex-col gap-2.5 rounded-lg border border-accent/60 bg-surf p-4 lg:p-5">
+      <div className="flex flex-col gap-1">
+        <h2 className="display text-[18px] leading-[1.1]">{t("portal.toPlan", { n: unscheduled.length })}</h2>
+        <p className="text-[14px] leading-snug text-ink2">{t("portal.toPlanHint")}</p>
+      </div>
+      <div className="flex flex-col">
+        {unscheduled.map((v) => (
+          <div key={v.id} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-line py-3 first:border-t-0">
+            <Link href={`/p/${token}/video/${v.id}`} className="flex min-w-0 flex-1 basis-[220px] flex-col gap-1 hover:opacity-80">
+              <span className="text-[15px] font-medium leading-snug">{v.title}</span>
+              <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
+            </Link>
+            <PostDate token={token} taskId={v.id} date={null} min={today} compact />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
   const formatSwitch = (
     <Segmented
       items={[null, ...FORMATS].map((f) => ({
@@ -64,11 +90,13 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
     return (
       <div className="flex flex-col gap-4 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
         <h1 className="display text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
+        {portal.plans && <p className="-mt-2 text-[14px] text-ink2">{t("portal.moveHint")}</p>}
         <div className="flex flex-wrap items-center gap-3">
           {viewSwitch}
           {formatSwitch}
           <PeriodNav label={label} prevHref={link({ m: shiftMonth(month, -1) })} nextHref={link({ m: shiftMonth(month, 1) })} />
         </div>
+        {toPlan}
         <div className="grid grid-cols-7 gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
           {[0, 1, 2, 3, 4, 5, 6].map((d) => (
             <span key={d} className="px-1.5">{t("weekday.short", { day: String(d) })}</span>
@@ -133,10 +161,12 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
   return (
     <div className="flex flex-col gap-2 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
       <h1 className="display pb-2 text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
+      {portal.plans && <p className="pb-2 text-[14px] text-ink2">{t("portal.moveHint")}</p>}
       <div className="flex flex-wrap items-center gap-3">
         {viewSwitch}
         {formatSwitch}
       </div>
+      {toPlan && <div className="pt-4">{toPlan}</div>}
       {[...weeks.entries()].map(([wk, list]) => (
         <div key={wk} className="flex flex-col">
           <div className="flex items-baseline gap-3 px-1 pb-2 pt-[22px] lg:px-4">

@@ -466,6 +466,10 @@
       "client_reminder": {
         "title": "Client reminders",
         "hint": "Reminders you set on a client, e.g. to send an invoice."
+      },
+      "client_moved_post": {
+        "title": "Client moved a post",
+        "hint": "A client sets or changes the posting date of a video you're on."
       }
     },
     "customColor": "Pick any colour",
@@ -704,7 +708,10 @@
       "scripts": "Scripts for approval",
       "review": "Videos for review and approval",
       "report": "Monthly report",
-      "internal": "Internal tasks and notes"
+      "internal": "Internal tasks and notes",
+      "plans": "Client plans posting dates",
+      "plansHint": "They see filmed videos that have no date, give them one and move posts that aren't out yet. The team is notified.",
+      "plansNeedsSchedule": "Turn on the posting schedule too, or the client won't see it."
     },
     "alwaysHidden": "Always hidden",
     "people": "People at the client",
@@ -818,7 +825,16 @@
     "viewList": "List",
     "requestChange": "Request a change",
     "requestChangeHint": "Already approved or scheduled? Tell us what to change and the team gets it right away.",
-    "changeSent": "Sent. The team has your note."
+    "changeSent": "Sent. The team has your note.",
+    "toPlan": "Filmed, no date yet · {n}",
+    "toPlanHint": "These are ready. Pick a day for each and it goes into the schedule; the team gets a note.",
+    "moveHint": "Open a post to change its date.",
+    "pickDate": "Pick a date",
+    "changeDate": "Change date",
+    "postDate": "Posting date",
+    "postDateHint": "The team is told about the change.",
+    "saveDate": "Save date",
+    "dateSaved": "Date saved"
   },
   "shootSheet": {
     "status": "Status",

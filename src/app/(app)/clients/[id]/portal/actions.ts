@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 
 // RLS: only admins / managers of the client change portal settings.
 
-const VIS = ["show_schedule", "show_shoots", "show_scripts", "show_review", "show_report"] as const;
+const VIS = ["show_schedule", "show_shoots", "show_scripts", "show_review", "show_report", "client_plans"] as const;
 export type PortalFlag = "enabled" | (typeof VIS)[number];
 
 async function ensurePortal(clientId: string) {

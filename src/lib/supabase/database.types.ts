@@ -283,6 +283,7 @@ export type Database = {
       client_portals: {
         Row: {
           client_id: string
+          client_plans: boolean
           created_at: string
           enabled: boolean
           locale: string
@@ -296,6 +297,7 @@ export type Database = {
         }
         Insert: {
           client_id: string
+          client_plans?: boolean
           created_at?: string
           enabled?: boolean
           locale?: string
@@ -309,6 +311,7 @@ export type Database = {
         }
         Update: {
           client_id?: string
+          client_plans?: boolean
           created_at?: string
           enabled?: boolean
           locale?: string

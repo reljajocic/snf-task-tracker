@@ -99,6 +99,14 @@ function describe(event: NotificationEvent, task: TaskInfo, actor: string | null
     case "client_reminder":
       // Not about a task: notifyReminder() builds its own message. Kept so every event has a case.
       return { subject: extra.title ?? "Reminder", heading: escapeHtml(extra.title ?? "Reminder"), lines: [title] };
+    case "client_moved_post":
+      return {
+        subject: `${extra.from ? "Moved" : "Scheduled"}: ${task.title}`,
+        heading: extra.from
+          ? `${escapeHtml(extra.by ?? "The client")} moved a post to ${escapeHtml(extra.to ?? "")}`
+          : `${escapeHtml(extra.by ?? "The client")} scheduled a post for ${escapeHtml(extra.to ?? "")}`,
+        lines: [`<b style="color:#F4F3ED">${title}</b>${where}`, extra.from ? `It was set for ${escapeHtml(extra.from)}.` : ""].filter(Boolean),
+      };
     case "client_changes":
       return {
         subject: `Changes requested: ${task.title}`,

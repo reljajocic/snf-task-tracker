@@ -418,6 +418,9 @@ describe("client portal", () => {
     );
     expect(token).toMatch(/^[0-9a-f]{32}$/);
     expect(await as(MEMBER, "select enabled from public.client_portals where client_id = $1", [C1])).toEqual([{ enabled: true }]);
+    // Letting the client plan posting dates is off by default, and only a manager turns it on.
+    expect(await as(MEMBER, "update public.client_portals set client_plans = true where client_id = $1 returning client_id", [C1])).toEqual([]);
+    expect(await as(MANAGER, "update public.client_portals set client_plans = true where client_id = $1 returning client_plans", [C1])).toEqual([{ client_plans: true }]);
     await expect(
       as(MANAGER, "insert into public.approvals (task_id, kind, status, approver_name) values ($1, 'script', 'approved', 'x')", [t4]),
     ).rejects.toThrow(/permission denied|row-level security/);

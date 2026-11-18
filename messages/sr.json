@@ -466,6 +466,10 @@
       "client_reminder": {
         "title": "Podsetnici za klijente",
         "hint": "Podsetnici koje postaviš na klijentu, npr. da pošalješ fakturu."
+      },
+      "client_moved_post": {
+        "title": "Klijent pomerio objavu",
+        "hint": "Klijent zada ili promeni datum objave videa na kom radiš."
       }
     },
     "customColor": "Izaberi bilo koju boju",
@@ -704,7 +708,10 @@
       "scripts": "Skripte za odobrenje",
       "review": "Videi za pregled i odobrenje",
       "report": "Mesečni izveštaj",
-      "internal": "Interni zadaci i beleške"
+      "internal": "Interni zadaci i beleške",
+      "plans": "Klijent planira datume objava",
+      "plansHint": "Vidi snimljene videe bez datuma, daje im datum i pomera objave koje još nisu izašle. Tim dobija obaveštenje.",
+      "plansNeedsSchedule": "Uključi i raspored objava, inače klijent ovo neće videti."
     },
     "alwaysHidden": "Uvek skriveno",
     "people": "Ljudi kod klijenta",
@@ -818,7 +825,16 @@
     "viewList": "Lista",
     "requestChange": "Zatraži izmenu",
     "requestChangeHint": "Video je već odobren ili u rasporedu? Napišite šta da promenimo i tim odmah dobija poruku.",
-    "changeSent": "Poslato. Tim je dobio vašu poruku."
+    "changeSent": "Poslato. Tim je dobio vašu poruku.",
+    "toPlan": "Snimljeno, bez datuma · {n}",
+    "toPlanHint": "Ovi su spremni. Izaberite dan za svaki i ulazi u raspored; tim dobija obaveštenje.",
+    "moveHint": "Otvorite objavu da promenite datum.",
+    "pickDate": "Izaberi datum",
+    "changeDate": "Promeni datum",
+    "postDate": "Datum objave",
+    "postDateHint": "Tim dobija obaveštenje o promeni.",
+    "saveDate": "Sačuvaj datum",
+    "dateSaved": "Datum sačuvan"
   },
   "shootSheet": {
     "status": "Status",
