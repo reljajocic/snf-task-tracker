@@ -12,7 +12,7 @@ import { getInvoiceAccess } from "@/lib/finance";
 import { today } from "@/lib/dates";
 import { SIDEBAR_COOKIE } from "@/lib/theme";
 
-export default async function AppLayout({ children }: LayoutProps<"/">) {
+export default async function AppLayout({ children, modal }: LayoutProps<"/">) {
   const [profile, cookieStore, lookups, invoiceAccess] = await Promise.all([requireProfile(), cookies(), getLookups(), getInvoiceAccess()]);
 
   return (
@@ -25,6 +25,8 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
         {children}
       </main>
       <MobileNav admin={profile.role === "admin"} />
+      {/* Forms and details opened from inside the app (new shoot day, edit client, invoices…) open here as a window. */}
+      {modal}
       <DialogHost />
       <Suspense>
         <TaskOverlays lookups={lookups} today={today()} />

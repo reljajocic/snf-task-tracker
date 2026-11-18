@@ -13,7 +13,8 @@ const STATUS_COLOR = { to_shoot: "var(--line2)", shot: "var(--status-in-progress
  * Who comes when (as the team sees it), then each video in running order as a card: time, status,
  * script by part, and "I'll do this one". Taken videos stay visible, greyed out.
  */
-export function SignupList({ token, videos }: { token: string; videos: SignupVideo[] }) {
+/** readOnly: the view-only link (?view=1) for people who only follow the plan: no name, no sign-up buttons. */
+export function SignupList({ token, videos, readOnly = false }: { token: string; videos: SignupVideo[]; readOnly?: boolean }) {
   const t = useTranslations("signup");
   const ts = useTranslations("postingStatus");
   const router = useRouter();
@@ -21,7 +22,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
   const [open, setOpen] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
-  const me = name.trim().toLowerCase();
+  const me = readOnly ? "" : name.trim().toLowerCase();
   const isMine = (v: SignupVideo) => v.names.some((n) => n.toLowerCase() === me);
   const [filter, setFilter] = useState<"all" | "mine" | "free">("all");
   const mineList = me ? videos.filter(isMine) : [];
@@ -38,6 +39,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
 
   return (
     <div className="flex flex-col gap-5">
+      {!readOnly && (
       <label className="flex max-w-[420px] flex-col gap-2">
         <span className="text-[13px] font-medium text-ink3">{t("yourName")}</span>
         <input
@@ -48,6 +50,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
         />
         <span className="text-[13px] text-ink3">{t("nameHint")}</span>
       </label>
+      )}
       {error && <span role="alert" className="text-[14px] text-red-ink">{error}</span>}
 
       {mineList.length > 0 && (
@@ -77,7 +80,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
       </div>
 
       <div className="flex gap-1.5">
-        {(["all", "mine", "free"] as const).map((k) => (
+        {(readOnly ? (["all", "free"] as const) : (["all", "mine", "free"] as const)).map((k) => (
           <button
             key={k}
             type="button"
@@ -137,7 +140,7 @@ export function SignupList({ token, videos }: { token: string; videos: SignupVid
                   {mine ? t("yours") : taken ? t("takenBy", { name: v.names.join(", ") }) : t("free")}
                 </span>
                 <span className="ml-auto">
-                  {mine ? (
+                  {readOnly ? null : mine ? (
                     <button
                       type="button"
                       disabled={pending}

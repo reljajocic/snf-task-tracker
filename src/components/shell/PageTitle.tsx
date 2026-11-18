@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 /** "‹ Where you came from": the one back link (lists, client, invoice…). */
 export function BackLink({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={href} className="self-start text-[14px] font-medium text-ink3 hover:text-ink">
+    <Link href={href} data-back-link className="self-start text-[14px] font-medium text-ink3 hover:text-ink">
       ‹ {label}
     </Link>
   );

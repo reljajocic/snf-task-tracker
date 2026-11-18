@@ -334,10 +334,10 @@ export function ShootBoard({
                 {t("shoots.scheduleShot", { count: shotVideos.length })}
               </Link>
             )}
-            <SignupLinkButton shootId={day.id} token={day.signup_token} />
-            <button type="button" onClick={() => setAdding((a) => !a)} className="cursor-pointer text-[14px] font-medium text-rust-ink">
-              {adding ? t("shoots.close") : t("shoots.addVideos")}
-            </button>
+            <ShareShoot shootId={day.id} token={day.signup_token} />
+            <Button type="button" size="sm" variant={adding ? "secondary" : "primary"} onClick={() => setAdding((a) => !a)}>
+              {adding ? t("shoots.close") : `+ ${t("shoots.addVideos")}`}
+            </Button>
           </span>
         )}
       </div>
@@ -597,44 +597,61 @@ function PersonIcon({ size }: { size: number }) {
   );
 }
 
-/** "Sign-up link": makes the talent link for this shoot (once) and copies it; × turns it off. */
-function SignupLinkButton({ shootId, token }: { shootId: string; token: string | null }) {
+/**
+ * "Share": one button, two links for the same day. Sign-up: people at the client write their name next to the
+ * videos they'll film. View only (?view=1): the client follows the plan, nothing to fill in. Either makes the link
+ * (once) and copies it; "Turn off" stops both.
+ */
+function ShareShoot({ shootId, token }: { shootId: string; token: string | null }) {
   const t = useTranslations("shoots");
-  const [copied, setCopied] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState<"signup" | "view" | null>(null);
   const [pending, start] = useTransition();
+  const copy = (kind: "signup" | "view") =>
+    start(async () => {
+      const res = await setSignupLink(shootId, true);
+      if (!res.token) return;
+      await navigator.clipboard?.writeText(`${window.location.origin}/s/${res.token}${kind === "view" ? "?view=1" : ""}`).catch(() => {});
+      setCopied(kind);
+      setTimeout(() => {
+        setCopied(null);
+        setOpen(false);
+      }, 1600);
+    });
+  const option = (kind: "signup" | "view") => (
+    <button type="button" disabled={pending} onClick={() => copy(kind)} className="flex w-full cursor-pointer flex-col items-start gap-0.5 rounded-sm px-3 py-2.5 text-left hover:bg-hover disabled:opacity-45">
+      <span className="text-[14px] font-semibold">{copied === kind ? `✓ ${t("signupCopied")}` : t(kind === "signup" ? "shareSignup" : "shareView")}</span>
+      <span className="text-[13px] leading-snug text-ink3">{t(kind === "signup" ? "signupHint" : "shareViewHint")}</span>
+    </button>
+  );
   return (
-    <span className="flex items-center gap-1.5" title={t("signupHint")}>
-      <button
-        type="button"
-        disabled={pending}
-        onClick={() =>
-          start(async () => {
-            const res = await setSignupLink(shootId, true);
-            if (!res.token) return;
-            await navigator.clipboard?.writeText(`${window.location.origin}/s/${res.token}`).catch(() => {});
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-          })
-        }
-        className="cursor-pointer whitespace-nowrap text-[14px] font-medium text-ink"
-      >
-        {copied ? `✓ ${t("signupCopied")}` : t("signupLink")}
-      </button>
-      {token && (
-        <button
-          type="button"
-          disabled={pending}
-          aria-label={t("signupOff")}
-          title={t("signupOff")}
-          onClick={() =>
-            start(async () => {
-              await setSignupLink(shootId, false);
-            })
-          }
-          className="grid size-6 cursor-pointer place-items-center rounded-full text-[15px] text-ink3 hover:text-red-ink"
-        >
-          ×
-        </button>
+    <span className="relative">
+      <Button type="button" size="sm" variant="secondary" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        {t("share")}
+      </Button>
+      {open && (
+        <>
+          <button type="button" aria-label={t("close")} onClick={() => setOpen(false)} className="fixed inset-0 z-20 cursor-default" />
+          <div className="absolute right-0 top-[calc(100%+6px)] z-30 flex w-[300px] flex-col gap-0.5 rounded-md border border-line2 bg-pop p-1.5 shadow-[var(--shadow-overlay)]">
+            {option("signup")}
+            {option("view")}
+            {token && (
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() =>
+                  start(async () => {
+                    await setSignupLink(shootId, false);
+                    setOpen(false);
+                  })
+                }
+                className="mt-1 cursor-pointer border-t border-line px-3 pb-1.5 pt-2.5 text-left text-[13px] font-medium text-red-ink"
+              >
+                {t("signupOff")}
+              </button>
+            )}
+          </div>
+        </>
       )}
     </span>
   );

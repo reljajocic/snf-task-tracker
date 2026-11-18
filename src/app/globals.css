@@ -385,3 +385,9 @@ p {
 .snf-saved { animation: snf-saved 2.4s var(--ease-standard) both; }
 /* Every error message gives a short shake as it appears, so it's noticed. */
 [role="alert"] { animation: snf-shake 300ms var(--ease-standard); }
+
+/* In a window over the page, the window is the way back: no back links, and the page's bottom padding for the
+   phone tab bar isn't needed. */
+[data-in-modal] [data-back-link] {
+  display: none;
+}

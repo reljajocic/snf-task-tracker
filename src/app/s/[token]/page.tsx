@@ -10,8 +10,10 @@ import { SignupList } from "./SignupList";
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 // Talent sign-up for one shoot day: pick the videos you'll be in. No login (the link is the key).
-export default async function SignupPage({ params }: PageProps<"/s/[token]">) {
-  const { token } = await params;
+// ?view=1: the same day for people who only follow it (the client): no sign-up.
+export default async function SignupPage({ params, searchParams }: PageProps<"/s/[token]">) {
+  const [{ token }, { view }] = await Promise.all([params, searchParams]);
+  const readOnly = view === "1";
   const signup = await getSignup(token);
   if (!signup) notFound();
   const locale = signup.locale;
@@ -34,12 +36,12 @@ export default async function SignupPage({ params }: PageProps<"/s/[token]">) {
             {tw("long", { day: String(weekdayIndex(signup.date)) })}, {formatDate(signup.date)}
             {signup.location ? ` · ${signup.location}` : ""}
           </span>
-          <h1 className="display text-[32px] lg:text-[44px]">{t("title")}</h1>
-          <p className="max-w-[620px] text-[15px] leading-relaxed text-ink2">{t("lead")}</p>
+          <h1 className="display text-[32px] lg:text-[44px]">{readOnly ? t("viewTitle") : t("title")}</h1>
+          <p className="max-w-[620px] text-[15px] leading-relaxed text-ink2">{readOnly ? t("viewLead") : t("lead")}</p>
         </div>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <AutoRefresh seconds={15} />
-          <SignupList token={token} videos={signup.videos} />
+          <SignupList token={token} videos={signup.videos} readOnly={readOnly} />
         </NextIntlClientProvider>
       </main>
     </div>

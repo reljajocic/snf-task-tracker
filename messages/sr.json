@@ -681,7 +681,7 @@
     "allClients": "Svi klijenti",
     "signupLink": "Link za prijavu",
     "signupCopied": "Link kopiran",
-    "signupOff": "Isključi link za prijavu",
+    "signupOff": "Isključi linkove",
     "signupHint": "Pošalji ga ljudima kod klijenta: upisuju ime pored videa koje snimaju (bez prijave).",
     "noTime": "Bez vremena",
     "noPerson": "Još niko",
@@ -690,7 +690,11 @@
     "showScripts": "Prikaži sve skripte",
     "hideScripts": "Sakrij skripte",
     "prevShoot": "Prethodno snimanje",
-    "nextShoot": "Sledeće snimanje"
+    "nextShoot": "Sledeće snimanje",
+    "share": "Podeli",
+    "shareSignup": "Link za prijavu",
+    "shareView": "Link samo za pregled",
+    "shareViewHint": "Da klijent prati dan: videi, satnica i ko je u kom, bez upisivanja."
   },
   "portalSettings": {
     "title": "Portal za klijenta",
@@ -956,7 +960,9 @@
     },
     "yourCall": "Tvoj dolazak: {time}",
     "yourCallNoTime": "Vreme dolaska još nije upisano",
-    "yourVideos": "{count, plural, one {Snimaš # video} few {Snimaš # videa} other {Snimaš # videa}}"
+    "yourVideos": "{count, plural, one {Snimaš # video} few {Snimaš # videa} other {Snimaš # videa}}",
+    "viewTitle": "Dan snimanja",
+    "viewLead": "Videi za ovaj dan, satnica i ko je u kom videu."
   },
   "avatar": {
     "add": "Dodaj sliku",
