@@ -28,6 +28,8 @@
   --seg: #f4f3ed;
   --seg-ink: #2f2d2e;
   --logo-filter: none;
+  --field: rgba(244, 243, 237, 0.05); /* text fields: a filled well with a visible edge */
+  --field-line: rgba(244, 243, 237, 0.26);
   --btn-secondary-line: rgba(244, 243, 237, 0.36);
 
   --accent: #ea693a;
@@ -84,6 +86,8 @@
   --seg: #2f2d2e;
   --seg-ink: #f4f3ed;
   --logo-filter: brightness(0.19);
+  --field: rgba(255, 255, 255, 0.85);
+  --field-line: rgba(47, 45, 46, 0.32);
   --btn-secondary-line: rgba(47, 45, 46, 0.36);
   --accent-hover: #c6552c;
   --accent-active: #9e4021;
@@ -258,6 +262,27 @@ p {
   .snf-app .text-\[14px\] {
     font-size: 15px;
   }
+}
+
+/* Text fields read as text fields everywhere: a filled well with a clear edge, rust while typing. Matches every
+   bordered field (border-line2 / border-accent, a wrapper around a bare input, a script section) without touching
+   the bare inputs that sit inside them. Unlayered on purpose, so it wins over bg-transparent. */
+:is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"]), textarea, select):is([class~="border-line2"], [class~="border-accent"]),
+:is([class~="focus-within:border-accent"], [class~="focus-within:border-line2"]):has(input, textarea) {
+  background-color: var(--field);
+}
+:is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"]), textarea, select)[class~="border-line2"],
+[class~="focus-within:border-accent"][class~="border-line2"],
+[class~="focus-within:border-line2"]:has(input, textarea) {
+  border-color: var(--field-line);
+}
+:is(input, textarea, select)[class~="border-line2"]:focus,
+[class~="focus-within:border-accent"]:focus-within,
+[class~="focus-within:border-line2"]:focus-within {
+  border-color: var(--accent);
+}
+:is(input, textarea, select)[class~="border-line2"]:disabled {
+  background-color: transparent;
 }
 
 /* Phones zoom into any field whose text is under 16px (and the page jumps around while typing),

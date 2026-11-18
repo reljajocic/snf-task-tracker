@@ -282,7 +282,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
       </div>
       <label className="flex flex-col gap-2">
         <span className="eyebrow">{tv("notesLabel")}</span>
-        <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={4} placeholder={tv("notesPlaceholder")} className={textareaClass} />
+        <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={5} placeholder={tv("notesPlaceholder")} className={`${textareaClass} min-h-[132px]`} />
       </label>
     </div>
   );

@@ -101,8 +101,10 @@ function describe(event: NotificationEvent, task: TaskInfo, actor: string | null
       return { subject: extra.title ?? "Reminder", heading: escapeHtml(extra.title ?? "Reminder"), lines: [title] };
     case "client_moved_post":
       return {
-        subject: `${extra.from ? "Moved" : "Scheduled"}: ${task.title}`,
-        heading: extra.from
+        subject: `${!extra.to ? "Unscheduled" : extra.from ? "Moved" : "Scheduled"}: ${task.title}`,
+        heading: !extra.to
+          ? `${escapeHtml(extra.by ?? "The client")} took a post off the schedule`
+          : extra.from
           ? `${escapeHtml(extra.by ?? "The client")} moved a post to ${escapeHtml(extra.to ?? "")}`
           : `${escapeHtml(extra.by ?? "The client")} scheduled a post for ${escapeHtml(extra.to ?? "")}`,
         lines: [`<b style="color:#F4F3ED">${title}</b>${where}`, extra.from ? `It was set for ${escapeHtml(extra.from)}.` : ""].filter(Boolean),

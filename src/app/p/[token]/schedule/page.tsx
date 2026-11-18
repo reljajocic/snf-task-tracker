@@ -2,13 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { addDays, formatDate, formatShortDate, isoWeek, startOfWeek, today as getToday, weekdayIndex } from "@/lib/dates";
-import { PORTAL_STATUS_COLOR, getPortal, getPortalVideos, portalStatus } from "@/lib/portal";
+import { getPortal, getPortalVideos, portalStatus } from "@/lib/portal";
 import { PortalStatusLabel } from "../bits";
 import { PostTags } from "@/components/tasks/tags";
 import { FORMATS, FORMAT_COLOR } from "@/lib/formats";
 import { Segmented } from "@/components/ui/Segmented";
 import { PeriodNav } from "@/components/ui/PeriodNav";
 import { PostDate } from "./PostDate";
+import { PortalCalendar, type CalendarPost } from "./PortalCalendar";
 
 function shiftMonth(m: string, d: number) {
   const [y, mo] = m.split("-").map(Number);
@@ -40,6 +41,15 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
     const qs = new URLSearchParams(Object.entries(merged).filter(([, v]) => v) as [string, string][]).toString();
     return qs ? `${base}?${qs}` : base;
   };
+  const calendarPost = (v: (typeof videos)[number]): CalendarPost => ({
+    id: v.id,
+    title: v.title,
+    format: v.format,
+    content_type: v.content_type,
+    status: portalStatus(v),
+    publish_date: v.publish_date,
+    filmed: v.shot_status === "shot" || v.phase >= 2,
+  });
   // Filmed, no posting date yet: the client picks one (only when the team lets them plan).
   const unscheduled = waiting.filter((v) => !format || v.format === format);
   const toPlan = unscheduled.length > 0 && (
@@ -90,64 +100,23 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
     return (
       <div className="flex flex-col gap-4 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
         <h1 className="display text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
-        {portal.plans && <p className="-mt-2 text-[14px] text-ink2">{t("portal.moveHint")}</p>}
+        {portal.plans && <p className="-mt-2 text-[14px] text-ink2 lg:hidden">{t("portal.moveHint")}</p>}
         <div className="flex flex-wrap items-center gap-3">
           {viewSwitch}
           {formatSwitch}
           <PeriodNav label={label} prevHref={link({ m: shiftMonth(month, -1) })} nextHref={link({ m: shiftMonth(month, 1) })} />
         </div>
-        {toPlan}
-        <div className="grid grid-cols-7 gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
-          {[0, 1, 2, 3, 4, 5, 6].map((d) => (
-            <span key={d} className="px-1.5">{t("weekday.short", { day: String(d) })}</span>
-          ))}
-        </div>
-        <div className="flex flex-col gap-1.5">
-          {weeksInMonth.map((wk) => (
-            <div key={wk} className="grid grid-cols-7 gap-1.5">
-              {[0, 1, 2, 3, 4, 5, 6].map((i) => {
-                const d = addDays(wk, i);
-                const posts = dated.filter((v) => v.publish_date === d);
-                const inMonth = d.slice(0, 7) === month;
-                return (
-                  <div
-                    key={d}
-                    className={`flex min-h-[56px] flex-col gap-1 rounded-lg border p-1.5 lg:min-h-[108px] lg:p-2 ${d === today ? "border-accent" : "border-line"} ${inMonth ? "bg-surf" : "opacity-40"}`}
-                  >
-                    <span className={`text-[12px] font-semibold ${d === today ? "text-accent" : "text-ink3"}`}>{Number(d.slice(8))}</span>
-                    {posts.map((v) => {
-                      const status = portalStatus(v);
-                      const chip = (
-                        // Phones: a cell is ~45px wide, so just the status dot, ringed in the format's colour (titles are in
-                        // the list view). Desktop: the format's colour down the left edge and its name above the title.
-                        <span
-                          title={`${t(`format.${v.format}`)} · ${v.title}`}
-                          style={{ borderLeftColor: FORMAT_COLOR[v.format] }}
-                          className="flex items-center gap-1.5 text-[13px] font-medium leading-tight lg:flex-col lg:items-start lg:gap-0.5 lg:rounded-md lg:border-l-[3px] lg:bg-chip lg:px-1.5 lg:py-1"
-                        >
-                          <span
-                            className="size-2 flex-none rounded-full lg:hidden"
-                            style={{ background: PORTAL_STATUS_COLOR[status], boxShadow: `0 0 0 1.5px var(--surf), 0 0 0 3px ${FORMAT_COLOR[v.format]}` }}
-                          />
-                          <span className="hidden items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] lg:flex" style={{ color: FORMAT_COLOR[v.format] }}>
-                            <span className="size-1.5 rounded-full" style={{ background: PORTAL_STATUS_COLOR[status] }} />
-                            {t(`format.${v.format}`)}
-                          </span>
-                          <span className="hidden min-w-0 break-words lg:line-clamp-2">{v.title}</span>
-                        </span>
-                      );
-                      return (
-                        <Link key={v.id} href={`/p/${token}/video/${v.id}`} className="hover:opacity-80">
-                          {chip}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
+        {/* Desktop plans in the calendar itself (drag); phones get the list of filmed videos to date. */}
+        {toPlan && <div className={portal.plans ? "lg:hidden" : ""}>{toPlan}</div>}
+        <PortalCalendar
+          token={token}
+          month={month}
+          weeks={weeksInMonth}
+          today={today}
+          plans={portal.plans}
+          posts={dated.map(calendarPost)}
+          pool={unscheduled.map(calendarPost)}
+        />
       </div>
     );
   }
@@ -161,7 +130,6 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
   return (
     <div className="flex flex-col gap-2 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
       <h1 className="display pb-2 text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
-      {portal.plans && <p className="pb-2 text-[14px] text-ink2">{t("portal.moveHint")}</p>}
       <div className="flex flex-wrap items-center gap-3">
         {viewSwitch}
         {formatSwitch}
@@ -202,14 +170,19 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
                   </span>
                 </>
               );
-              const cls = `grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-t border-line px-4 py-[13px] first:border-t-0 md:grid-cols-[150px_minmax(0,1fr)_170px_250px] ${
-                status === "awaiting" ? "bg-rust-bg" : ""
-              }`;
-              // Every post opens: a cut to review, or its script.
+              const cls = "grid min-w-0 flex-1 basis-[260px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-[13px] hover:bg-hover md:grid-cols-[150px_minmax(0,1fr)_170px_250px]";
+              // Every post opens: a cut to review, or its script. Planning clients also move it right here.
               return (
-                <Link key={v.id} href={`/p/${token}/video/${v.id}`} className={`${cls} hover:bg-hover`}>
-                  {row}
-                </Link>
+                <div key={v.id} className={`flex flex-wrap items-center border-t border-line first:border-t-0 ${status === "awaiting" ? "bg-rust-bg" : ""}`}>
+                  <Link href={`/p/${token}/video/${v.id}`} className={cls}>
+                    {row}
+                  </Link>
+                  {portal.plans && status !== "published" && (
+                    <div className="flex px-4 pb-3 md:py-2 [&:has(>div)]:w-full">
+                      <PostDate token={token} taskId={v.id} date={v.publish_date} min={today} compact />
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>

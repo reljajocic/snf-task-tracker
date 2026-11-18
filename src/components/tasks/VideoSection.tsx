@@ -234,7 +234,13 @@ export function VideoSection({
       <>
       <ScriptEditor task={task} disabled={disabled} save={save} />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {/* Notes are read on the shoot day, so they get room: a real box that grows with what's written. */}
+      <label className="flex flex-col gap-2.5">
+        <span className="eyebrow">{t("video.note")}</span>
+        <NoteBox value={task.note} placeholder={t("video.notePlaceholder")} disabled={disabled} onSave={(v) => save({ note: v }, { note: v || null })} />
+      </label>
+
+      <div className="grid grid-cols-1 gap-4">
         <label className="flex flex-col gap-2.5">
           <span className="eyebrow">{t("video.reference")}</span>
           <div className="flex h-[42px] items-center gap-2 rounded-md border border-line2 pl-3 pr-1.5 focus-within:border-accent">
@@ -257,12 +263,6 @@ export function VideoSection({
             )}
           </div>
         </label>
-        <label className="flex flex-col gap-2.5">
-          <span className="eyebrow">{t("video.note")}</span>
-          <div className="flex h-[42px] items-center rounded-md border border-line2 px-3 focus-within:border-accent">
-            <InlineText bare value={task.note} placeholder={t("video.notePlaceholder")} disabled={disabled} onSave={(v) => save({ note: v }, { note: v || null })} />
-          </div>
-        </label>
       </div>
       </>
       )}
@@ -280,6 +280,21 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
 }
 
 /** Text that saves on blur/Enter. */
+function NoteBox({ value, onSave, disabled, placeholder }: { value: string | null; onSave: (v: string) => void; disabled?: boolean; placeholder?: string }) {
+  const [v, setV] = useState(value ?? "");
+  return (
+    <textarea
+      value={v}
+      disabled={disabled}
+      placeholder={placeholder}
+      rows={5}
+      onChange={(e) => setV(e.target.value)}
+      onBlur={() => v.trim() !== (value ?? "") && onSave(v)}
+      className="min-h-[132px] w-full resize-y rounded-md border border-line2 bg-transparent px-3.5 py-3 text-[15px] leading-relaxed text-ink outline-none [field-sizing:content] placeholder:text-ink3 focus:border-accent"
+    />
+  );
+}
+
 function InlineText({
   value,
   onSave,

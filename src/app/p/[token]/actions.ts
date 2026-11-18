@@ -234,21 +234,26 @@ async function tooManyMoves(clientId: string) {
 }
 
 /**
- * The client plans a post: gives a filmed video its posting date, or moves one that isn't published yet.
- * Today or later, within a year. The team on the video hears about it.
+ * The client plans a post like the team does: gives a filmed video its posting date, moves one that isn't
+ * published yet, or (date null) takes a filmed one off the schedule again. Dates from today, within a year.
+ * The team on the video hears about it.
  */
-export async function setPostDate(token: string, taskId: string, date: string, name: string): Promise<PortalResult> {
+export async function setPostDate(token: string, taskId: string, date: string | null, name: string): Promise<PortalResult> {
   const ctx = await context(token, taskId);
   if (!ctx || !ctx.portal.plans) return { ok: false, error: "Not available." };
   const { video } = ctx;
   if (video.phase >= 5) return { ok: false, error: "This one is already published." };
-  if (!video.publish_date && !(video.shot_status === "shot" || video.phase >= 2)) return { ok: false, error: "This video isn't filmed yet." };
+  const filmed = video.shot_status === "shot" || video.phase >= 2;
+  // Not filmed yet: it can be moved, but not taken off the schedule (it would vanish from the portal).
+  if (!filmed && (!video.publish_date || date === null)) return { ok: false, error: "This video isn't filmed yet." };
   const approver = cleanName(name);
   if (!approver) return { ok: false, error: "Please enter your name." };
   const now = today();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date))) return { ok: false, error: "Pick a date." };
-  if (date < now) return { ok: false, error: "Pick today or a later date." };
-  if (date > addDays(now, 366)) return { ok: false, error: "Pick a date within a year." };
+  if (date !== null) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date))) return { ok: false, error: "Pick a date." };
+    if (date < now) return { ok: false, error: "Pick today or a later date." };
+    if (date > addDays(now, 366)) return { ok: false, error: "Pick a date within a year." };
+  }
   if (date === video.publish_date) return { ok: true };
   if (await tooManyMoves(ctx.portal.clientId)) return { ok: false, error: SLOW_DOWN };
 
@@ -256,12 +261,15 @@ export async function setPostDate(token: string, taskId: string, date: string, n
   const { error } = await admin.from("tasks").update({ publish_date: date }).eq("id", taskId).eq("client_id", ctx.portal.clientId);
   if (error) return { ok: false, error: error.message };
   const was = video.publish_date ? formatDate(video.publish_date) : null;
-  const message = was
-    ? `${approver} moved “${video.title}” from ${was} to ${formatDate(date)}`
-    : `${approver} set “${video.title}” to post on ${formatDate(date)}`;
+  const to = date ? formatDate(date) : "";
+  const message = !date
+    ? `${approver} took “${video.title}” off the schedule (was ${was})`
+    : was
+      ? `${approver} moved “${video.title}” from ${was} to ${to}`
+      : `${approver} set “${video.title}” to post on ${to}`;
   await admin.from("portal_activity").insert({ client_id: ctx.portal.clientId, message });
   const recipients = await teamOf(taskId);
-  after(() => notify({ event: "client_moved_post", taskId, recipientIds: recipients, extra: { by: approver, from: was ?? "", to: formatDate(date) } }));
+  after(() => notify({ event: "client_moved_post", taskId, recipientIds: recipients, extra: { by: approver, from: was ?? "", to } }));
   revalidatePath(`/p/${token}`, "layout");
   revalidatePath("/content/schedule");
   return { ok: true };

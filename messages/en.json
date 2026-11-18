@@ -828,13 +828,19 @@
     "changeSent": "Sent. The team has your note.",
     "toPlan": "Filmed, no date yet · {n}",
     "toPlanHint": "These are ready. Pick a day for each and it goes into the schedule; the team gets a note.",
-    "moveHint": "Open a post to change its date.",
+    "moveHint": "Change a date with the button next to a post, or open it.",
     "pickDate": "Pick a date",
     "changeDate": "Change date",
     "postDate": "Posting date",
     "postDateHint": "The team is told about the change.",
     "saveDate": "Save date",
-    "dateSaved": "Date saved"
+    "dateSaved": "Date saved",
+    "dragHint": "Drag a post onto another day to move it, or from “No date” onto a day. Changes go to the team.",
+    "noDate": "No date",
+    "poolHint": "Filmed and ready. Drag onto a day; drag a post back here to take it off the schedule.",
+    "nameToMove": "Your name, so the team knows who moved it:",
+    "notFilmed": "This one isn't filmed yet, so it keeps a date.",
+    "pastDay": "Pick today or a later day."
   },
   "shootSheet": {
     "status": "Status",

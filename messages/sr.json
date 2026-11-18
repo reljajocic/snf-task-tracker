@@ -828,13 +828,19 @@
     "changeSent": "Poslato. Tim je dobio vašu poruku.",
     "toPlan": "Snimljeno, bez datuma · {n}",
     "toPlanHint": "Ovi su spremni. Izaberite dan za svaki i ulazi u raspored; tim dobija obaveštenje.",
-    "moveHint": "Otvorite objavu da promenite datum.",
+    "moveHint": "Datum menjate dugmetom pored objave u listi, ili otvorite objavu.",
     "pickDate": "Izaberi datum",
     "changeDate": "Promeni datum",
     "postDate": "Datum objave",
     "postDateHint": "Tim dobija obaveštenje o promeni.",
     "saveDate": "Sačuvaj datum",
-    "dateSaved": "Datum sačuvan"
+    "dateSaved": "Datum sačuvan",
+    "dragHint": "Prevucite objavu na drugi dan da je pomerite, ili iz „Bez datuma“ na neki dan. Tim dobija obaveštenje.",
+    "noDate": "Bez datuma",
+    "poolHint": "Snimljeno i spremno. Prevucite na dan; vratite objavu ovde da je skinete iz rasporeda.",
+    "nameToMove": "Vaše ime, da tim zna ko je pomerio:",
+    "notFilmed": "Ovaj video još nije snimljen, pa mora da ima datum.",
+    "pastDay": "Izaberite danas ili kasniji dan."
   },
   "shootSheet": {
     "status": "Status",

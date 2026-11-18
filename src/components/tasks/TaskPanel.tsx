@@ -342,7 +342,8 @@ function PanelBody({
           <textarea
             value={description}
             disabled={disabled}
-            rows={5}
+            // A video's words are its script and notes; its description is a side note, so it starts small.
+            rows={task.kind === "video" ? 2 : 5}
             placeholder={t("descriptionPlaceholder")}
             onChange={(e) => setDescription(e.target.value)}
             onBlur={() => description.trim() !== (task.description ?? "") && save({ description }, { description: description.trim() || null })}
