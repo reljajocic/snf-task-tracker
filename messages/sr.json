@@ -844,7 +844,8 @@
     "factPost": "Objava",
     "factLocation": "Lokacija",
     "factOnCamera": "Na kameri",
-    "factShoot": "Snimanje"
+    "factShoot": "Snimanje",
+    "close": "Zatvori"
   },
   "shootSheet": {
     "status": "Status",

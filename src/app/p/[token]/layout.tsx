@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: LayoutProps<"/p/[token]">): P
 }
 
 // 7a header: logo × client name, tabs (underlined active), same tabs at the bottom on mobile.
-export default async function PortalLayout({ children, params }: LayoutProps<"/p/[token]">) {
+export default async function PortalLayout({ children, modal, params }: LayoutProps<"/p/[token]">) {
   const { token } = await params;
   const portal = await getPortal(token);
   // Unknown or disabled link: a branded dead end (no hint whether the client exists).
@@ -54,6 +54,8 @@ export default async function PortalLayout({ children, params }: LayoutProps<"/p
       </header>
       <NextIntlClientProvider locale={portal.locale} messages={messages}>
         <main className="flex flex-1 flex-col pb-[calc(76px+var(--nav-bottom))] lg:pb-0">{children}</main>
+        {/* A video clicked in the portal opens here, over the page (@modal/(.)video). */}
+        {modal}
       </NextIntlClientProvider>
       <PortalNav tabs={tabs} variant="bottom" />
     </div>

@@ -844,7 +844,8 @@
     "factPost": "Posting",
     "factLocation": "Location",
     "factOnCamera": "On camera",
-    "factShoot": "Shoot day"
+    "factShoot": "Shoot day",
+    "close": "Close"
   },
   "shootSheet": {
     "status": "Status",
