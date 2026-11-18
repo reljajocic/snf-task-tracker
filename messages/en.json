@@ -1179,6 +1179,54 @@
       "done": "Done"
     }
   },
+  "docs": {
+    "title": "Docs",
+    "emptyTitle": "What the team should know about this client",
+    "emptyLead": "Short pages everyone on the client reads before scripting, shooting or editing: their tone, what they liked and sent back, who decides. Files stay on Drive or Dropbox; paste the links here.",
+    "noneYet": "No docs for this client yet.",
+    "privateHint": "Only the team sees these, never the client portal. Don't keep passwords here.",
+    "blank": "+ Blank page",
+    "newPage": "New page",
+    "untitled": "Untitled",
+    "allPages": "All pages",
+    "edit": "Edit",
+    "save": "Save",
+    "saved": "Saved",
+    "cancel": "Cancel",
+    "delete": "Delete page",
+    "deleteConfirm": "Delete “{title}”?",
+    "pageTitle": "Title",
+    "pageBody": "Page",
+    "bodyPlaceholder": "Write here…",
+    "formatHint": "# Heading · ## Smaller heading · - list · 1. numbered · **bold** · links become clickable. ⌘S saves.",
+    "editedBy": "Edited by {name} · {date}",
+    "editedOn": "Edited {date}",
+    "you": "you",
+    "emptyPage": "Nothing here yet.",
+    "emptyPageEdit": "Nothing here yet. Tap Edit to write it.",
+    "starter": {
+      "brand": {
+        "title": "Brand & tone",
+        "hint": "Colours, fonts, how they speak, what never to say",
+        "body": "# How they speak\n- \n\n# Never\n- \n\n# Look\n- Colours: \n- Fonts: \n- Logo: "
+      },
+      "likes": {
+        "title": "Likes & dislikes",
+        "hint": "What landed with them, what they sent back",
+        "body": "# They liked\n- \n\n# They sent back\n- "
+      },
+      "contacts": {
+        "title": "Contacts & agreements",
+        "hint": "Who approves, who pays, what was agreed",
+        "body": "# People\n- Approves: \n- Pays: \n\n# Agreed\n- "
+      },
+      "links": {
+        "title": "Links",
+        "hint": "Contract, brand book, folders",
+        "body": "- Contract: \n- Brand book: \n- Raw footage: \n- Finals: "
+      }
+    }
+  },
   "report": {
     "title": "Monthly report",
     "teamLead": "What the client will see in the portal for this month. Write them a few words, check the numbers and publish; they get an email.",

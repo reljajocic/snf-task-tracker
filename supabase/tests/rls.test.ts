@@ -375,6 +375,37 @@ describe("client reminders", () => {
   });
 });
 
+describe("client docs", () => {
+  it("the client's team writes them, whoever sees the client reads them, nobody else", async () => {
+    const [{ id, created_by }] = await as<{ id: string; created_by: string }>(
+      MEMBER,
+      "insert into public.client_docs (client_id, title, body, created_by) values ($1, 'Brand', '# Tone', $2) returning id, created_by",
+      [C1, MANAGER],
+    );
+    // Authorship is stamped by the database, not taken from the request.
+    expect(created_by).toBe(MEMBER);
+    expect(await as(MANAGER, "update public.client_docs set body = 'Calm' where id = $1 returning body, created_by, updated_by", [id])).toEqual([
+      { body: "Calm", created_by: MEMBER, updated_by: MANAGER },
+    ]);
+    expect(await as(ADMIN, "select title from public.client_docs")).toEqual([{ title: "Brand" }]);
+    // An outsider sees and changes nothing, and nobody writes docs on a client they're not on.
+    expect(await as(OUTSIDER, "select title from public.client_docs")).toEqual([]);
+    expect(await as(OUTSIDER, "update public.client_docs set title = 'x' returning id")).toEqual([]);
+    await expect(as(OUTSIDER, "insert into public.client_docs (client_id, title) values ($1, 'x')", [C1])).rejects.toThrow(/row-level security/);
+    await expect(as(MEMBER, "insert into public.client_docs (client_id, title) values ($1, 'x')", [C2])).rejects.toThrow(/row-level security/);
+    await expect(as(MEMBER, "update public.client_docs set client_id = $1", [C2])).rejects.toThrow(/row-level security/);
+    await expect(as(MEMBER, "insert into public.client_docs (client_id, title) values ($1, '  ')", [C1])).rejects.toThrow(/check constraint/);
+    // Someone on one of the client's tasks (not its team) reads them but can't edit or delete.
+    await db.query("insert into public.task_assignees (task_id, user_id) values ($1, $2)", [t4, OUTSIDER]);
+    expect(await as(OUTSIDER, "select title from public.client_docs")).toEqual([{ title: "Brand" }]);
+    expect(await as(OUTSIDER, "update public.client_docs set title = 'x' returning id")).toEqual([]);
+    expect(await as(OUTSIDER, "delete from public.client_docs returning id")).toEqual([]);
+    await db.query("delete from public.task_assignees where task_id = $1 and user_id = $2", [t4, OUTSIDER]);
+    await as(MEMBER, "delete from public.client_docs where id = $1", [id]);
+    expect(await as(ADMIN, "select title from public.client_docs")).toEqual([]);
+  });
+});
+
 describe("client portal", () => {
   it("only managers configure the portal; nobody writes approvals through the API", async () => {
     await expect(as(MEMBER, "insert into public.client_portals (client_id, enabled) values ($1, true)", [C1])).rejects.toThrow(

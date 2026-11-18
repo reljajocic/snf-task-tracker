@@ -1179,6 +1179,54 @@
       "done": "Završeno"
     }
   },
+  "docs": {
+    "title": "Docs",
+    "emptyTitle": "Šta tim treba da zna o ovom klijentu",
+    "emptyLead": "Kratke stranice koje svi na klijentu pročitaju pre skripte, snimanja ili montaže: ton, šta im se svidelo i šta su vratili, ko odlučuje. Fajlovi ostaju na Drive-u ili Dropbox-u; ovde nalepi linkove.",
+    "noneYet": "Ovaj klijent još nema docs.",
+    "privateHint": "Vidi samo tim, nikad klijentski portal. Ne čuvaj lozinke ovde.",
+    "blank": "+ Prazna stranica",
+    "newPage": "Nova stranica",
+    "untitled": "Bez naslova",
+    "allPages": "Sve stranice",
+    "edit": "Izmeni",
+    "save": "Sačuvaj",
+    "saved": "Sačuvano",
+    "cancel": "Otkaži",
+    "delete": "Obriši stranicu",
+    "deleteConfirm": "Obrisati „{title}“?",
+    "pageTitle": "Naslov",
+    "pageBody": "Stranica",
+    "bodyPlaceholder": "Piši ovde…",
+    "formatHint": "# Naslov · ## Manji naslov · - lista · 1. numerisano · **bold** · linkovi postaju klikabilni. ⌘S čuva.",
+    "editedBy": "Izmenio/la {name} · {date}",
+    "editedOn": "Izmenjeno {date}",
+    "you": "ti",
+    "emptyPage": "Još ništa.",
+    "emptyPageEdit": "Još ništa. Klikni Izmeni da napišeš.",
+    "starter": {
+      "brand": {
+        "title": "Brend i ton",
+        "hint": "Boje, fontovi, kako pričaju, šta nikad ne sme",
+        "body": "# Kako pričaju\n- \n\n# Nikad\n- \n\n# Izgled\n- Boje: \n- Fontovi: \n- Logo: "
+      },
+      "likes": {
+        "title": "Šta vole / ne vole",
+        "hint": "Šta je prošlo, šta su vratili",
+        "body": "# Svidelo im se\n- \n\n# Vratili su\n- "
+      },
+      "contacts": {
+        "title": "Kontakti i dogovori",
+        "hint": "Ko odobrava, ko plaća, šta je dogovoreno",
+        "body": "# Ljudi\n- Odobrava: \n- Plaća: \n\n# Dogovoreno\n- "
+      },
+      "links": {
+        "title": "Linkovi",
+        "hint": "Ugovor, brand book, folderi",
+        "body": "- Ugovor: \n- Brand book: \n- Sirovi materijal: \n- Finalno: "
+      }
+    }
+  },
   "report": {
     "title": "Mesečni izveštaj",
     "teamLead": "Ovo klijent vidi u portalu za ovaj mesec. Napišite mu par reči, proverite brojke i objavite; dobiće mejl.",
