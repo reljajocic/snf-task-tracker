@@ -70,7 +70,28 @@ export function PortalCalendar({ token, month, weeks, today, posts, pool, plans 
         }
       : {};
 
-  const chip = (v: CalendarPost, inPool = false) => (
+  // "No date" is read, not just dragged: whole titles at reading size, one card each.
+  const poolCard = (v: CalendarPost) => (
+    <Link
+      key={v.id}
+      href={`/p/${token}/video/${v.id}`}
+      draggable={canMove(v)}
+      onDragStart={(e) => {
+        e.dataTransfer.setData("text/portal-post", v.id);
+        e.dataTransfer.effectAllowed = "move";
+      }}
+      style={{ borderLeftColor: FORMAT_COLOR[v.format] }}
+      className="flex cursor-grab flex-col gap-1.5 rounded-md border border-l-[3px] border-line bg-bg px-3.5 py-3 hover:border-ink3 active:cursor-grabbing"
+    >
+      <span className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.08em]" style={{ color: FORMAT_COLOR[v.format] }}>
+        {t(`format.${v.format}`)}
+        {v.content_type && <span className="font-medium normal-case tracking-normal text-ink3">· {v.content_type}</span>}
+      </span>
+      <span className="break-words text-[16px] font-medium leading-snug text-ink">{v.title}</span>
+    </Link>
+  );
+
+  const chip = (v: CalendarPost) => (
     <Link
       key={v.id}
       href={`/p/${token}/video/${v.id}`}
@@ -86,7 +107,7 @@ export function PortalCalendar({ token, month, weeks, today, posts, pool, plans 
           colour down the left edge and its name above the title. */}
       <span
         style={{ borderLeftColor: FORMAT_COLOR[v.format] }}
-        className={`flex items-center gap-1.5 text-[13px] font-medium leading-tight lg:flex-col lg:items-start lg:gap-0.5 lg:rounded-md lg:border-l-[3px] lg:bg-chip lg:px-1.5 lg:py-1 ${inPool ? "max-lg:hidden" : ""}`}
+        className={`flex items-center gap-1.5 text-[13px] font-medium leading-tight lg:flex-col lg:items-start lg:gap-0.5 lg:rounded-md lg:border-l-[3px] lg:bg-chip lg:px-1.5 lg:py-1`}
       >
         <span className="size-2 flex-none rounded-full lg:hidden" style={{ background: PORTAL_STATUS_COLOR[v.status], boxShadow: `0 0 0 1.5px var(--surf), 0 0 0 3px ${FORMAT_COLOR[v.format]}` }} />
         <span className="hidden items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] lg:flex" style={{ color: FORMAT_COLOR[v.format] }}>
@@ -134,15 +155,15 @@ export function PortalCalendar({ token, month, weeks, today, posts, pool, plans 
       {plans && <p className="hidden text-[14px] text-ink2 lg:block">{t("portal.dragHint")}</p>}
       {error && <p role="alert" className="text-[14px] text-red-ink">{error}</p>}
       {plans ? (
-        <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_240px]">
+        <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           {grid}
-          <aside {...target("pool", null)} className={`hidden flex-col gap-2 self-start rounded-lg border p-3.5 lg:flex ${over === "pool" ? "border-accent bg-rust-bg" : "border-line bg-surf"}`}>
+          <aside {...target("pool", null)} className={`hidden flex-col gap-2.5 self-start rounded-lg border p-4 lg:sticky lg:top-4 lg:flex lg:max-h-[calc(100dvh-32px)] lg:overflow-auto ${over === "pool" ? "border-accent bg-rust-bg" : "border-line bg-surf"}`}>
             <span className="flex items-baseline gap-2">
-              <span className="display text-[15px] leading-none">{t("portal.noDate")}</span>
-              <span className="text-[13px] font-medium text-ink3">{shownPool.length}</span>
+              <span className="display text-[20px] leading-none">{t("portal.noDate")}</span>
+              <span className="text-[15px] font-medium text-ink3">{shownPool.length}</span>
             </span>
-            <span className="text-[13px] leading-snug text-ink3">{t("portal.poolHint")}</span>
-            {shownPool.map((v) => chip(v, true))}
+            <span className="pb-1 text-[14px] leading-snug text-ink2">{t("portal.poolHint")}</span>
+            {shownPool.map(poolCard)}
           </aside>
         </div>
       ) : (
