@@ -66,7 +66,7 @@ export function TaskPanel({ id, lookups, today, onClose }: { id: string; lookups
       <section
         role="dialog"
         aria-modal="true"
-        className="group/panel absolute inset-0 flex flex-col bg-bg lg:inset-x-8 lg:inset-y-6 lg:mx-auto lg:max-w-[1280px] lg:overflow-hidden lg:rounded-lg lg:border lg:border-line2 lg:shadow-[0_30px_90px_rgba(0,0,0,0.5)]"
+        className="group/panel absolute inset-0 flex flex-col bg-bg lg:inset-x-12 lg:inset-y-8 lg:mx-auto lg:max-w-[1800px] lg:overflow-hidden lg:rounded-lg lg:border lg:border-line2 lg:shadow-[0_30px_90px_rgba(0,0,0,0.5)]"
       >
         {missing ? (
           <div className="flex flex-1 flex-col items-start gap-4 p-7">
@@ -176,7 +176,7 @@ function PanelBody({
 
   return (
     <>
-      <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4 lg:px-7 lg:py-[18px]">
+      <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4 lg:px-10 lg:py-6">
         <span className="flex min-w-0 items-center gap-2.5">
           {task.kind === "video" && <VideoTag format={task.format} contentType={task.content_type} />}
           <span className="truncate text-[13px] font-medium text-ink3">{header}</span>
@@ -194,7 +194,7 @@ function PanelBody({
       {/* Wide window: settings on the left, the words (script, description, comments) on the right.
           Each side scrolls on its own; on a phone it's one column. */}
       <div className="flex min-h-0 flex-1 flex-col overflow-auto lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:overflow-hidden">
-      <div className="flex flex-col gap-6 px-5 pt-6 lg:overflow-auto lg:border-r lg:border-line lg:px-7 lg:pb-8">
+      <div className="flex flex-col gap-6 px-5 pt-6 lg:overflow-auto lg:border-r lg:border-line lg:px-10 lg:pb-10 lg:pt-8">
         {error && <p role="alert" className="rounded-md bg-red-bg px-3 py-2 text-[13px] text-red-ink">{error}</p>}
         {task.parent && <span className="-mb-4 text-[13px] text-ink3">{t("subtaskOf", { title: task.parent.title })}</span>}
 
@@ -332,7 +332,7 @@ function PanelBody({
 
       </div>
 
-      <div className="flex flex-col gap-6 px-5 pb-28 pt-6 lg:overflow-auto lg:px-7 lg:pb-8">
+      <div className="flex flex-col gap-6 px-5 pb-28 pt-6 lg:overflow-auto lg:px-10 lg:pb-10 lg:pt-8">
         {task.kind === "video" && (
           <VideoSection part="text" task={task} lookups={lookups} today={today} disabled={disabled} save={save} onChanged={onChanged} />
         )}
@@ -355,7 +355,7 @@ function PanelBody({
       </div>
       </div>
 
-      <div className="hidden items-center justify-between gap-3 border-t border-line px-7 py-4 lg:flex">
+      <div className="hidden items-center justify-between gap-3 border-t border-line px-10 py-5 lg:flex">
         <span className="text-[13px] leading-snug text-ink3">
           {t("createdBy", { name: detail.creatorName ?? "—", date: formatDate(task.created_at.slice(0, 10)) })}
         </span>

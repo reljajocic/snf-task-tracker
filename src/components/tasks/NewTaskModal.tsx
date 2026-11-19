@@ -357,10 +357,10 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
           if (canSave) submit();
         }}
         className={`relative flex h-full w-full flex-col overflow-hidden bg-bg lg:rounded-lg lg:border lg:border-line2 lg:shadow-[0_30px_80px_rgba(0,0,0,0.45)] ${
-          isVideo ? "lg:h-[calc(100dvh-48px)] lg:w-[min(1200px,calc(100vw-48px))]" : "lg:h-auto lg:max-h-[calc(100dvh-48px)] lg:w-[760px]"
+          isVideo ? "lg:h-[calc(100dvh-64px)] lg:w-[min(1800px,calc(100vw-96px))]" : "lg:h-auto lg:max-h-[calc(100dvh-64px)] lg:w-[min(1040px,calc(100vw-96px))]"
         }`}
       >
-        <div className="flex items-center justify-between px-5 pt-6 lg:px-7 lg:pt-[22px]">
+        <div className="flex items-center justify-between px-5 pt-6 lg:px-10 lg:pt-9">
           <div className="flex items-center gap-4">
             <h2 className="display whitespace-nowrap text-[24px] leading-tight">{isVideo ? tv("newTitle") : t("new")}</h2>
             {kindSwitch}
@@ -372,17 +372,17 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
 
         {isVideo ? (
           <div className="grid min-h-0 flex-1 grid-cols-1 overflow-auto lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:overflow-hidden">
-            <div className="flex flex-col gap-5 px-5 pb-6 pt-[18px] lg:overflow-auto lg:px-7">
+            <div className="flex flex-col gap-5 px-5 pb-6 pt-[18px] lg:overflow-auto lg:px-10 lg:pb-10 lg:pt-7">
               {titleInput}
               <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">
                 {shared}
                 {videoFields}
               </div>
             </div>
-            <div className="flex min-h-0 flex-col border-line px-5 pb-6 pt-[18px] lg:border-l lg:px-7">{scriptColumn}</div>
+            <div className="flex min-h-0 flex-col border-line px-5 pb-6 pt-[18px] lg:border-l lg:px-10 lg:pb-10 lg:pt-7">{scriptColumn}</div>
           </div>
         ) : (
-          <div className="flex flex-col gap-5 overflow-auto px-5 pb-6 pt-[18px] lg:px-7">
+          <div className="flex flex-col gap-5 overflow-auto px-5 pb-6 pt-[18px] lg:px-10 lg:pb-10 lg:pt-7">
             {titleInput}
             <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">
               {shared}
@@ -392,7 +392,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
         )}
         {error && <p role="alert" className="mx-5 mb-3 rounded-md bg-red-bg px-3 py-2 text-[13px] text-red-ink lg:mx-7">{error}</p>}
 
-        <div className="mt-auto flex items-center justify-end gap-3 border-t border-line px-5 pb-[calc(16px+env(safe-area-inset-bottom))] pt-4 lg:px-7 lg:pb-4">
+        <div className="mt-auto flex items-center justify-end gap-3 border-t border-line px-5 pb-[calc(16px+env(safe-area-inset-bottom))] pt-4 lg:px-10 lg:py-5">
           <button type="button" onClick={onClose} className="hidden h-10 cursor-pointer px-4 text-[14px] font-medium text-ink2 lg:block">
             {t("cancel")}
           </button>

@@ -65,7 +65,8 @@ export function ScheduleCalendar({
     e.dataTransfer.effectAllowed = "move";
   };
 
-  const chip = (v: Task) => {
+  // In the shot-no-date column (big) titles are read, not just recognised: whole titles at reading size.
+  const chip = (v: Task, big = false) => {
     const s = postingStatus(v, today);
     return (
       <TaskLink
@@ -75,20 +76,20 @@ export function ScheduleCalendar({
         onDragStart={drag(v.id)}
         // The left edge in the format's colour: video, photo or carousel at a glance.
         style={{ borderLeftColor: FORMAT_COLOR[v.format] }}
-        className={`flex cursor-grab flex-col gap-1 rounded-sm border border-l-[3px] px-2 py-1.5 active:cursor-grabbing ${s === "not_published" ? "border-red-line bg-red-bg" : "border-line bg-surf"}`}
+        className={`flex cursor-grab flex-col rounded-sm border border-l-[3px] active:cursor-grabbing ${big ? "gap-1.5 px-3.5 py-3" : "gap-1 px-2 py-1.5"} ${s === "not_published" ? "border-red-line bg-red-bg" : "border-line bg-surf"}`}
       >
         <span className="flex items-center gap-1.5">
           <span className="size-[7px] flex-none rounded-full" style={{ background: POSTING_STATUS_COLOR[s] }} />
           <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
         </span>
-        <span className="line-clamp-2 text-[12px] font-medium leading-tight">{v.title}</span>
-        {v.on_camera && <span className="truncate text-[12px] text-ink3">{v.on_camera}</span>}
+        <span className={big ? "text-[15px] font-medium leading-snug" : "line-clamp-2 text-[12px] font-medium leading-tight"}>{v.title}</span>
+        {v.on_camera && <span className={`truncate text-ink3 ${big ? "text-[13px]" : "text-[12px]"}`}>{v.on_camera}</span>}
       </TaskLink>
     );
   };
 
   return (
-    <div className="grid grid-cols-1 gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_260px] lg:px-10 lg:pb-6">
+    <div className="grid grid-cols-1 gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-4 lg:flex-1 lg:grid-cols-[minmax(0,1fr)_clamp(300px,24vw,480px)] lg:px-10 lg:pb-6">
       <div className="flex flex-col">
         {months.map((mo, k) => (
           <div key={mo} className={`flex flex-col ${k === 0 ? "" : "pt-8"}`}>
@@ -136,7 +137,7 @@ export function ScheduleCalendar({
                       </span>
                       <div className="hidden flex-col gap-1 lg:flex">
                     {shoots.filter((sh) => sh.date === d).map((sh) => <ShootMarker key={sh.id} shoot={sh} label={t("shoots.shootDay")} />)}
-                    {list.map(chip)}
+                    {list.map((v) => chip(v))}
                   </div>
                       <div className="flex gap-0.5 lg:hidden">
                         {/* Phones: a shoot day is a small orange square next to the posts' dots. */}
@@ -159,21 +160,21 @@ export function ScheduleCalendar({
             {t("weekday.long", { day: String(weekdayIndex(picked)) })}, {formatDate(picked)}
           </span>
           {shoots.filter((sh) => sh.date === picked).map((sh) => <ShootMarker key={sh.id} shoot={sh} label={t("shoots.shootDay")} />)}
-          {on(picked).length ? on(picked).map(chip) : <span className="text-[14px] text-ink3">{t("schedule.freeSlot")}</span>}
+          {on(picked).length ? on(picked).map((v) => chip(v)) : <span className="text-[14px] text-ink3">{t("schedule.freeSlot")}</span>}
         </div>
       </div>
 
       <aside
         onDragOver={(e) => e.preventDefault()}
         onDrop={drop(null)}
-        className="flex flex-col gap-2.5 self-start rounded-lg border border-line bg-surf p-3.5"
+        className="flex flex-col gap-2.5 self-start rounded-lg border border-line bg-surf p-4 lg:sticky lg:top-6 lg:max-h-[calc(100dvh-48px)] lg:overflow-auto"
       >
         <div className="flex items-baseline gap-2">
-          <span className="display text-[15px] leading-none">{t("schedule.unscheduled")}</span>
+          <span className="display text-[18px] leading-none">{t("schedule.unscheduled")}</span>
           <span className="text-[13px] font-medium text-ink3">{pool.length}</span>
         </div>
         <span className="text-[13px] leading-snug text-ink3">{t("schedule.unscheduledHint")}</span>
-        {pool.map(chip)}
+        {pool.map((v) => chip(v, true))}
         {!pool.length && <span className="text-[13px] text-ink3">{t("schedule.noVideos")}</span>}
       </aside>
     </div>

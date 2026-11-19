@@ -46,8 +46,8 @@ export function AppModal({ children, wide = false }: { children: React.ReactNode
         aria-modal="true"
         tabIndex={-1}
         data-in-modal
-        className={`snf-in relative flex h-full w-full flex-col overflow-y-auto bg-bg pt-[env(safe-area-inset-top)] outline-none lg:h-auto lg:max-h-[calc(100dvh-48px)] lg:rounded-lg lg:border lg:border-line2 lg:pt-0 lg:shadow-[var(--shadow-overlay)] ${
-          wide ? "lg:w-[min(1180px,calc(100vw-48px))]" : "lg:w-[min(860px,calc(100vw-48px))]"
+        className={`snf-in relative flex h-full w-full flex-col overflow-y-auto bg-bg pt-[env(safe-area-inset-top)] outline-none lg:h-auto lg:max-h-[calc(100dvh-64px)] lg:py-4 lg:rounded-lg lg:border lg:border-line2 lg:pt-0 lg:shadow-[var(--shadow-overlay)] ${
+          wide ? "lg:w-[min(1600px,calc(100vw-96px))]" : "lg:w-[min(1100px,calc(100vw-96px))]"
         }`}
       >
         <button
