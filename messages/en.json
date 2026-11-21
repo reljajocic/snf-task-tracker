@@ -285,6 +285,8 @@
     "titlePlaceholder": "Task title, e.g. Edit the TikTok video",
     "descriptionPlaceholder": "What exactly needs to be done",
     "drivePlaceholder": "Paste a link to a folder or file",
+    "fewerDetails": "Fewer details",
+    "moreDetails": "More details",
     "estimatePlaceholder": "e.g. 2h, 90m",
     "estimateHint": "How long the assignee expects it to take.",
     "open": "Open ↗",
@@ -336,6 +338,10 @@
     "archived": "Archived"
   },
   "clientForm": {
+    "groupAbout": "About",
+    "groupContact": "Contact and places",
+    "groupContent": "Content",
+    "groupEditing": "Editing and notes",
     "newTitle": "New client",
     "editTitle": "Edit client",
     "name": "Client name",

@@ -7,6 +7,7 @@ import { createTask } from "@/app/(app)/task-actions";
 import { Button } from "@/components/ui/Button";
 import type { Lookups } from "@/lib/data";
 import { formatDate, type IsoDate } from "@/lib/dates";
+import { ScriptFields } from "./ScriptFields";
 import { SCRIPT_SECTIONS, parseEstimate, type ScriptSection, type TaskPriority, type TaskStatus, type TaskType } from "@/lib/tasks";
 import { Pill } from "./bits";
 import { MonthGrid, quickDates } from "./DatePicker";
@@ -49,6 +50,8 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const [type, setType] = useState<TaskType | null>(null);
   const [estimate, setEstimate] = useState("");
   const [description, setDescription] = useState("");
+  // Type, estimate, Drive and description are rarely filled in when a task is created: one click away.
+  const [more, setMore] = useState(false);
   // Video fields
   const [contentType, setContentType] = useState<string | null>(null);
   const [format, setFormat] = useState<PostFormat>("video");
@@ -254,31 +257,11 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
       </div>
       <span className="-mt-2 text-[13px] text-ink3">{tv("scriptHint")}</span>
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto">
-        {script.map((s, i) => (
-          <div key={i} className="group relative grid grid-cols-1 gap-1 rounded-md border border-line px-3.5 pb-3 pr-11 pt-2 focus-within:border-line2 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-3 sm:px-3 sm:py-2.5 sm:pr-8">
-            <button
-              type="button"
-              aria-label={tv("removeSection")}
-              title={tv("removeSection")}
-              onClick={() => setScript((cur) => cur.filter((_, j) => j !== i))}
-              className="absolute right-1 top-1 grid size-9 cursor-pointer place-items-center text-[18px] leading-none text-ink3 opacity-60 hover:text-red-ink hover:opacity-100 sm:right-0.5 sm:top-0.5 sm:size-7 sm:text-[16px]"
-            >
-              ×
-            </button>
-            <input
-              value={s.label}
-              placeholder={tv("sectionLabel")}
-              onChange={(e) => setScript((cur) => cur.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))}
-              className="h-9 border-0 bg-transparent text-[13px] font-semibold uppercase tracking-[0.12em] text-accent outline-none placeholder:text-ink3 focus-visible:shadow-none sm:h-7 sm:text-[11px]"
-            />
-            <textarea
-              value={s.text}
-              rows={Math.max(2, Math.ceil(s.text.length / 55))}
-              onChange={(e) => setScript((cur) => cur.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))}
-              className="min-h-[96px] resize-y border-0 bg-transparent py-1 text-[16px] leading-relaxed text-ink outline-none [field-sizing:content] focus-visible:shadow-none sm:min-h-0 sm:text-[14px]"
-            />
-          </div>
-        ))}
+        <ScriptFields
+          sections={script}
+          onChange={(i, patch) => setScript((cur) => cur.map((x, j) => (j === i ? { ...x, ...patch } : x)))}
+          onRemove={(i) => setScript((cur) => cur.filter((_, j) => j !== i))}
+        />
       </div>
       <label className="flex flex-col gap-2">
         <span className="eyebrow">{tv("notesLabel")}</span>
@@ -327,6 +310,19 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
         {label(t("fields.priority"))}
         <PriorityPicker value={priority} onChange={setPriority} />
       </div>
+      {/* Stays in place (its label flips) so focus isn't lost when the fields open. */}
+      <button
+        type="button"
+        aria-expanded={more}
+        // Not closable while one of them is filled in: it would still be saved, just out of sight.
+        disabled={more && Boolean(type || estimate.trim() || drive.trim() || description.trim())}
+        onClick={() => setMore((m) => !m)}
+        className="flex min-h-11 cursor-pointer items-center justify-self-start text-[14px] font-medium text-rust-ink hover:text-ink disabled:hidden sm:col-span-2"
+      >
+        {more ? t("fewerDetails") : t("moreDetails")}
+      </button>
+      {more && (
+      <>
       <div className="flex flex-col gap-2 sm:col-span-2">
         {label(t("fields.type"))}
         <TypePicker value={type} onChange={setType} />
@@ -343,6 +339,8 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
         {label(t("fields.description"))}
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder={t("descriptionPlaceholder")} className={textareaClass} />
       </label>
+      </>
+      )}
     </>
   );
 

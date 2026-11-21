@@ -144,7 +144,7 @@ export function InvoiceForm({
   const managerBuyers = buyers; // RLS already limits a manager to their clients' buyers
 
   return (
-    <div className="flex max-w-[860px] flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
+    <div className="@container flex max-w-[1440px] flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
       <PageTitle
         back={{ href: invoice && !isDraft ? `/invoices/${invoice.id}` : "/invoices", label: invoice && !isDraft ? t("numbered", { number: number ?? "" }) : t("title") }}
         title={number ? t("numbered", { number }) : invoice ? t("draftTitle") : t("newTitle")}
@@ -158,6 +158,9 @@ export function InvoiceForm({
       />
       {cancelled && <p className="rounded-md border border-red-line px-3 py-2 text-[14px] text-red-ink">{t("cancelledNote")}</p>}
 
+      {/* Wide screens: who and when on the left, what and how it's split on the right. */}
+      <div className="grid grid-cols-1 items-start gap-x-14 gap-y-6 @[840px]:grid-cols-2">
+      <div className="flex flex-col gap-6">
       <Section title={t("buyer")}>
         <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">
           {activeIssuers.length > 1 && (
@@ -232,6 +235,8 @@ export function InvoiceForm({
         </div>
       </Section>
 
+      </div>
+      <div className="flex flex-col gap-6">
       <Section
         title={t("items")}
         aside={
@@ -378,6 +383,9 @@ export function InvoiceForm({
           </div>
         </Section>
       )}
+
+      </div>
+      </div>
 
       <div className="flex flex-wrap items-center justify-end gap-3 border-t border-line pt-4">
         {error && <p role="alert" className="mr-auto text-[13px] text-red-ink">{error}</p>}

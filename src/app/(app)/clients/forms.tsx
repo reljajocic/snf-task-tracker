@@ -16,6 +16,7 @@ import { deleteClient, deleteProject, saveClient, saveProject, type FormState } 
 import { ask } from "@/components/ui/Dialog";
 import { PageTitle } from "@/components/shell/PageTitle";
 import { COLOR_WHEEL } from "@/lib/color";
+import { Section } from "../invoices/form-bits";
 
 function Field({ label, hint, children, wide }: { label: string; hint?: string; children: React.ReactNode; wide?: boolean }) {
   return (
@@ -32,19 +33,35 @@ function FormShell({
   backHref,
   children,
   footer,
+  columns,
 }: {
   title: string;
   backHref: string;
   children: React.ReactNode;
   footer: React.ReactNode;
+  /** Long forms: two groups side by side on a wide screen (each a FormGroup), one column below that. */
+  columns?: boolean;
 }) {
   const t = useTranslations("common");
   return (
-    <div className="flex max-w-[760px] flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9">
+    <div className={`flex flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-6 lg:px-10 lg:pb-12 lg:pt-9 ${columns ? "@container max-w-[1440px]" : "max-w-[760px]"}`}>
       <PageTitle back={{ href: backHref, label: t("back") }} title={title} />
-      <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">{children}</div>
+      {columns ? (
+        <div className="grid grid-cols-1 items-start gap-x-14 gap-y-6 @[840px]:grid-cols-2">{children}</div>
+      ) : (
+        <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">{children}</div>
+      )}
       <div className="flex flex-wrap items-center justify-end gap-3 border-t border-line pt-4">{footer}</div>
     </div>
+  );
+}
+
+// Same titled section as the invoice form, which opens in the same kind of window.
+function FormGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Section title={title}>
+      <div className="grid grid-cols-1 gap-x-6 gap-y-[18px] sm:grid-cols-2">{children}</div>
+    </Section>
   );
 }
 
@@ -60,6 +77,7 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
       <FormShell
         title={client ? t("clientForm.editTitle") : t("clientForm.newTitle")}
         backHref={back}
+        columns
         footer={
           <>
             {state?.error && <p role="alert" className="mr-auto text-[13px] text-red-ink">{state.error}</p>}
@@ -82,6 +100,8 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
           </>
         }
       >
+        <div className="flex flex-col gap-6">
+        <FormGroup title={t("clientForm.groupAbout")}>
         <Field label={t("clientForm.name")} wide>
           <input name="name" required defaultValue={client?.name} autoFocus={!client} className={inputClass} />
         </Field>
@@ -96,6 +116,9 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
         <Field label={t("clientForm.services")} hint={t("clientForm.servicesHint")} wide>
           <input name="services" defaultValue={client?.services.join(", ")} className={inputClass} />
         </Field>
+        <MarkField name={client?.name ?? ""} initialColor={client?.color ?? null} initialInitials={client?.initials ?? ""} />
+        </FormGroup>
+        <FormGroup title={t("clientForm.groupContact")}>
         <Field label={t("clientForm.city")}>
           <input name="city" defaultValue={client?.city ?? ""} className={inputClass} />
         </Field>
@@ -109,7 +132,10 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
         <Field label={t("clientForm.locations")} hint={t("clientForm.locationsHint")} wide>
           <input name="locations" defaultValue={client?.locations.join(", ")} className={inputClass} />
         </Field>
-        <MarkField name={client?.name ?? ""} initialColor={client?.color ?? null} initialInitials={client?.initials ?? ""} />
+        </FormGroup>
+        </div>
+        <div className="flex flex-col gap-6">
+        <FormGroup title={t("clientForm.groupContent")}>
         <Field label={t("clientForm.profiles")} hint={t("clientForm.profilesHint")} wide>
           <input name="profiles" placeholder="Kymco Srbija, QJ Srbija" defaultValue={(client?.profiles ?? []).join(", ")} className={inputClass} />
         </Field>
@@ -117,6 +143,8 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
           <input name="content_types" defaultValue={(client?.content_types ?? []).join(", ")} className={inputClass} />
         </Field>
         <PostingDays initial={client?.posting_days ?? [0, 2, 4]} label={t("clientForm.postingDays")} />
+        </FormGroup>
+        <FormGroup title={t("clientForm.groupEditing")}>
         <EditorRules initial={client?.editor_rules ?? []} people={people} />
         <Field label={t("clientForm.defaultEditor")} hint={t("clientForm.defaultEditorHint")} wide>
           <select name="default_editor_id" defaultValue={client?.default_editor_id ?? ""} className={`${selectClass} h-[42px]`}>
@@ -127,6 +155,8 @@ export function ClientForm({ client, canDelete, people }: { client?: Client; can
         <Field label={t("clientForm.notes")} wide>
           <textarea name="notes" rows={3} defaultValue={client?.notes ?? ""} className="resize-y rounded-md border border-line2 bg-transparent px-3 py-2.5 text-[14px] text-ink outline-none focus:border-accent" />
         </Field>
+        </FormGroup>
+        </div>
       </FormShell>
     </form>
   );

@@ -285,6 +285,8 @@
     "titlePlaceholder": "Naziv zadatka, npr. Montiraj TikTok video",
     "descriptionPlaceholder": "Šta tačno treba uraditi",
     "drivePlaceholder": "Nalepi link do foldera ili fajla",
+    "fewerDetails": "Manje detalja",
+    "moreDetails": "Više detalja",
     "estimatePlaceholder": "npr. 2h, 90m",
     "estimateHint": "Koliko zaduženi očekuje da će trajati.",
     "open": "Otvori ↗",
@@ -336,6 +338,10 @@
     "archived": "Arhiviran"
   },
   "clientForm": {
+    "groupAbout": "O klijentu",
+    "groupContact": "Kontakt i lokacije",
+    "groupContent": "Sadržaj",
+    "groupEditing": "Montaža i beleške",
     "newTitle": "Novi klijent",
     "editTitle": "Izmeni klijenta",
     "name": "Naziv klijenta",

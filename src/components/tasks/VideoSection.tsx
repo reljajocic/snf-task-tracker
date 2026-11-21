@@ -15,6 +15,7 @@ import { TaskLink } from "./links";
 import { ReshootBadge, ReturnToIdeas, ShootHistory } from "./Reshoot";
 import { ReviewSection } from "./ReviewSection";
 import { ScriptDecisionBadge } from "./ScriptDecisionBadge";
+import { ScriptFields } from "./ScriptFields";
 import { safeHref } from "@/lib/safe-url";
 import { FORMATS, FORMAT_COLOR, typeColor } from "@/lib/formats";
 import { Button } from "@/components/ui/Button";
@@ -460,43 +461,17 @@ function ScriptEditor({ task, disabled, save }: { task: Task; disabled: boolean;
           </button>
         )}
       </div>
-      <div className="flex flex-col gap-2">
-        {sections.map((s, i) => (
-          <div key={i} className="group relative grid grid-cols-1 gap-1 rounded-md border border-line px-3.5 pb-3 pr-11 pt-2 focus-within:border-line2 sm:grid-cols-[88px_minmax(0,1fr)] sm:gap-3 sm:px-3 sm:py-2.5 sm:pr-8">
-            {!disabled && (
-              <button
-                type="button"
-                aria-label={t("removeSection")}
-                title={t("removeSection")}
-                onClick={() => {
-                  const next = sections.filter((_, j) => j !== i);
-                  setSections(next);
-                  commit(next);
-                }}
-                className="absolute right-1 top-1 grid size-9 cursor-pointer place-items-center text-[18px] leading-none text-ink3 opacity-60 hover:text-red-ink hover:opacity-100 sm:right-0.5 sm:top-0.5 sm:size-7 sm:text-[16px]"
-              >
-                ×
-              </button>
-            )}
-            <input
-              value={s.label}
-              disabled={disabled}
-              placeholder={t("sectionLabel")}
-              onChange={(e) => update(i, { label: e.target.value })}
-              onBlur={() => commit(sections)}
-              className="h-9 border-0 bg-transparent text-[13px] font-semibold uppercase tracking-[0.12em] text-accent outline-none placeholder:text-ink3 focus-visible:shadow-none sm:h-7 sm:text-[11px]"
-            />
-            <textarea
-              value={s.text}
-              disabled={disabled}
-              rows={Math.max(1, Math.ceil(s.text.length / 60))}
-              onChange={(e) => update(i, { text: e.target.value })}
-              onBlur={() => commit(sections)}
-              className="min-h-[96px] resize-y border-0 bg-transparent py-1 text-[16px] leading-relaxed text-ink2 outline-none [field-sizing:content] focus-visible:shadow-none sm:min-h-7 sm:text-[14px]"
-            />
-          </div>
-        ))}
-      </div>
+      <ScriptFields
+        sections={sections}
+        disabled={disabled}
+        onChange={update}
+        onBlur={() => commit(sections)}
+        onRemove={(i) => {
+          const next = sections.filter((_, j) => j !== i);
+          setSections(next);
+          commit(next);
+        }}
+      />
     </div>
   );
 }
