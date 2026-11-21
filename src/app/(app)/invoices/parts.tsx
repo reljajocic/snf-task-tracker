@@ -7,7 +7,7 @@ import type { InvoiceAccess } from "@/lib/finance";
 import { money, type PayState } from "@/lib/invoices";
 
 /** Header shared by the invoice pages: Invoices / Costs / Earnings (the last two for partners). */
-export async function InvoicesHeader({ access, active, eyebrow }: { access: InvoiceAccess; active: "list" | "expenses" | "earnings"; eyebrow?: string }) {
+export async function InvoicesHeader({ access, active, eyebrow, actions }: { access: InvoiceAccess; active: "list" | "expenses" | "earnings"; eyebrow?: string; actions?: React.ReactNode }) {
   const t = await getTranslations("invoices");
   return (
     <>
@@ -20,7 +20,9 @@ export async function InvoicesHeader({ access, active, eyebrow }: { access: Invo
             <Link href="/invoices/new" className={buttonClass({ size: "sm" })}>
               {t("new")}
             </Link>
-          ) : undefined
+          ) : (
+            actions
+          )
         }
       />
       {access.finance && (
