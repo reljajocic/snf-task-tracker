@@ -602,6 +602,7 @@
     "allFormats": "All post types"
   },
   "shoots": {
+    "more": "More",
     "title": "Shoots",
     "new": "+ New shoot day",
     "upcoming": "Upcoming",
@@ -852,6 +853,9 @@
     "close": "Close"
   },
   "shootSheet": {
+    "video": "Video",
+    "addNote": "+ Note",
+    "addReference": "+ Reference",
     "status": "Status",
     "time": "Time",
     "person": "Person",

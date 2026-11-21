@@ -3,7 +3,7 @@
 import { ScriptDecisionBadge } from "@/components/tasks/ScriptDecisionBadge";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useOptimistic, useState, useSyncExternalStore, useTransition } from "react";
+import { useEffect, useOptimistic, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import { formatDate } from "@/lib/dates";
 import { setShotStatus } from "@/app/(app)/task-actions";
 import { TaskLink } from "@/components/tasks/links";
@@ -68,8 +68,13 @@ export function ShootBoard({
   nowTime,
   desktopView,
   tags,
+  driveUrl,
+  editHref,
 }: {
   desktopView: "sheet" | "onset";
+  /** The day's footage folder, and its edit page (managers only): in the "⋯" menu. */
+  driveUrl: string | null;
+  editHref: string | null;
   tags: string[];
   day: ShootDay;
   videos: Task[];
@@ -191,8 +196,8 @@ export function ShootBoard({
   // The note in full while the script is open (or there is none); two short lines while it's hidden, so the list stays quick to scan.
   const noteClass = (v: Task, byDefault: boolean) =>
     !hasScript(v) || scriptOpen(v.id, byDefault)
-      ? "whitespace-pre-wrap text-[14px] font-medium text-[var(--waiting-ink)]"
-      : "line-clamp-2 text-[13px] font-medium leading-snug text-[var(--waiting-ink)]";
+      ? "whitespace-pre-wrap text-[14px] leading-normal text-ink2"
+      : "line-clamp-2 text-[13px] leading-snug text-ink2";
   const scriptToggle = (v: Task, byDefault: boolean) =>
     hasScript(v) && (
       <button
@@ -224,20 +229,8 @@ export function ShootBoard({
     return (
       <span className={`flex flex-wrap items-center gap-x-3.5 gap-y-1 font-medium leading-none ${size === "sm" ? "text-[13px]" : "text-[14px]"}`}>
         {canManage ? (
-          // Editable right here (phones too): a native time picker on tap.
-          <label className={`inline-flex items-center ${v.shoot_time ? "text-ink" : "text-ink3"}`} onClick={(e) => e.stopPropagation()}>
-            {/* Saved when the picker closes, not on every segment (that re-sorted the list mid-edit). */}
-            <input
-              key={v.shoot_time ?? ""}
-              type="time"
-              step={300}
-              defaultValue={v.shoot_time ?? ""}
-              aria-label={t("shoots.time")}
-              onBlur={(e) => saveTime(v, e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-              className={`min-w-[4.5rem] cursor-pointer rounded-md border border-line2 bg-transparent px-1.5 py-1 font-medium text-inherit outline-none focus:border-accent ${size === "sm" ? "text-[13px]" : "text-[14px]"}`}
-            />
-          </label>
+          // Reads as text ("No time" when empty); a tap turns it into the time picker, saved when it closes.
+          <TimeField value={v.shoot_time} size={size} label={t("shoots.time")} empty={t("shoots.noTime")} onSave={(x) => saveTime(v, x)} />
         ) : (
           <span className={`inline-flex items-center gap-1.5 ${v.shoot_time ? "text-ink" : "text-ink3"}`}>
             <ClockIcon size={icon} />
@@ -330,8 +323,21 @@ export function ShootBoard({
             <AvatarStack people={day.crew} size={28} ring="var(--bg)" />
           </div>
         )}
+        {/* Phones: everything but the progress goes in "⋯", so the first video is on the first screen. */}
+        <span className="ml-auto lg:hidden">
+          <DayMenu
+            shootId={day.id}
+            token={day.signup_token}
+            driveUrl={driveUrl}
+            editHref={editHref}
+            onAdd={canManage ? () => setAdding((a) => !a) : null}
+            adding={adding}
+            share={canManage}
+            schedule={canManage && shotVideos.length > 0 ? { href: `/content/schedule?client=${day.client?.id ?? ""}&view=calendar`, label: t("shoots.scheduleShot", { count: shotVideos.length }) } : null}
+          />
+        </span>
         {canManage && (
-          <span className="ml-auto flex items-center gap-4">
+          <span className="ml-auto hidden items-center gap-3 lg:flex">
             {shotVideos.length > 0 && (
               <Link href={`/content/schedule?client=${day.client?.id ?? ""}&view=calendar`} className="text-[14px] font-medium text-ink underline decoration-line2 underline-offset-4 hover:decoration-current">
                 {t("shoots.scheduleShot", { count: shotVideos.length })}
@@ -341,6 +347,12 @@ export function ShootBoard({
             <Button type="button" size="sm" variant={adding ? "secondary" : "primary"} onClick={() => setAdding((a) => !a)}>
               {adding ? t("shoots.close") : t("shoots.addVideos")}
             </Button>
+            <DayMenu shootId={day.id} token={day.signup_token} driveUrl={driveUrl} editHref={editHref} onAdd={null} share={false} />
+          </span>
+        )}
+        {!canManage && driveUrl && (
+          <span className="ml-auto hidden lg:flex">
+            <DayMenu shootId={day.id} token={day.signup_token} driveUrl={driveUrl} editHref={null} onAdd={null} share={false} />
           </span>
         )}
       </div>
@@ -360,21 +372,17 @@ export function ShootBoard({
       <div className="flex flex-col gap-[22px] px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-5 lg:hidden">
         {/* The filters stay under the top bar while the list scrolls (looking for a script mid-shoot). */}
         {(typePicker || items.some(hasScript)) && (
-          <div className="sticky top-[max(58px,calc(env(safe-area-inset-top)+54px))] z-10 -mx-5 -my-3 flex flex-col gap-2.5 border-b border-line bg-[var(--canvas)] px-5 py-3">
-            {typePicker && <div className="self-start">{typePicker}</div>}
+          <div className="sticky top-[max(58px,calc(env(safe-area-inset-top)+54px))] z-10 -mx-5 -my-3 flex items-center gap-2.5 border-b border-line bg-[var(--canvas)] px-5 py-2.5">
+            {typePicker && <div className="min-w-0 flex-1 overflow-x-auto no-scrollbar">{typePicker}</div>}
+            {/* One switch for every script on the day; each card still opens and closes its own. */}
             {items.some(hasScript) && (
-              <div className="flex gap-2">
-                {(["all", "none"] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => setAllScripts(m)}
-                    className={`h-10 flex-1 cursor-pointer rounded-md border text-[14px] font-medium ${scriptMode === m ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2"}`}
-                  >
-                    {t(m === "all" ? "shoots.showScripts" : "shoots.hideScripts")}
-                  </button>
-                ))}
-              </div>
+              <button
+                type="button"
+                onClick={() => setAllScripts(scriptMode === "all" ? "none" : "all")}
+                className="ml-auto h-10 flex-none cursor-pointer rounded-md border border-line2 px-3.5 text-[14px] font-medium text-ink2"
+              >
+                {t(scriptMode === "all" ? "shoots.hideScripts" : "shoots.showScripts")}
+              </button>
             )}
           </div>
         )}
@@ -521,7 +529,7 @@ export function ShootBoard({
                       <ScriptDecisionBadge decision={v.script_decision} />
                       {scriptText(v) && <span className="truncate text-[13px] text-ink3">{scriptText(v)}</span>}
                       {/* Under the title, two lines at most; the whole note is in the panel on the right. */}
-                      {v.note && <span className="line-clamp-2 text-[13px] font-medium leading-snug text-[var(--waiting-ink)]">{v.note}</span>}
+                      {v.note && <span className="line-clamp-2 text-[13px] font-medium leading-snug text-ink2">{v.note}</span>}
                     </div>
                     {typeTag(v) || <span />}
                     <div className="flex flex-col items-start gap-1">
@@ -560,7 +568,7 @@ export function ShootBoard({
                   {t("shoots.reference")}
                 </a>
               )}
-              {sel.note && <span className="text-[14px] font-medium text-[var(--waiting-ink)]">{sel.note}</span>}
+              {sel.note && <span className="whitespace-pre-wrap text-[14px] leading-normal text-ink2">{sel.note}</span>}
               {shotButtons(sel)}
               {canManage && (
                 <button
@@ -578,6 +586,58 @@ export function ShootBoard({
         </aside>
       </div>
     </>
+  );
+}
+
+/** A shoot time that reads as text until tapped, then a native time picker (saved on close, not per keystroke). */
+function TimeField({ value, size, label, empty, onSave }: { value: string | null; size: "sm" | "md"; label: string; empty: string; onSave: (v: string) => void }) {
+  const [editing, setEditing] = useState(false);
+  const button = useRef<HTMLButtonElement>(null);
+  const wasEditing = useRef(false);
+  useEffect(() => {
+    if (wasEditing.current && !editing) button.current?.focus();
+    wasEditing.current = editing;
+  }, [editing]);
+  const text = size === "sm" ? "text-[13px]" : "text-[14px]";
+  if (editing)
+    return (
+      <input
+        autoFocus
+        ref={(el) => {
+          try {
+            el?.showPicker?.();
+          } catch {}
+        }}
+        type="time"
+        step={300}
+        defaultValue={value ?? ""}
+        aria-label={label}
+        onClick={(e) => e.stopPropagation()}
+        onBlur={(e) => {
+          setEditing(false);
+          onSave(e.target.value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") e.currentTarget.blur();
+          if (e.key === "Escape") setEditing(false);
+        }}
+        className={`min-w-[4.5rem] rounded-md border border-accent bg-transparent px-1.5 py-1 font-medium text-ink outline-none ${text}`}
+      />
+    );
+  return (
+    <button
+      ref={button}
+      type="button"
+      aria-label={`${label}: ${value ?? empty}`}
+      onClick={(e) => {
+        e.stopPropagation();
+        setEditing(true);
+      }}
+      className={`-mx-1 inline-flex min-h-7 cursor-pointer max-lg:-my-2 max-lg:min-h-11 items-center gap-1.5 rounded-sm px-1 hover:bg-hover ${value ? "text-ink" : "text-ink3"} ${text}`}
+    >
+      <ClockIcon size={size === "sm" ? 13 : 15} />
+      {value ?? empty}
+    </button>
   );
 }
 
@@ -605,9 +665,7 @@ function PersonIcon({ size }: { size: number }) {
  * videos they'll film. View only (?view=1): the client follows the plan, nothing to fill in. Either makes the link
  * (once) and copies it; "Turn off" stops both.
  */
-function ShareShoot({ shootId, token }: { shootId: string; token: string | null }) {
-  const t = useTranslations("shoots");
-  const [open, setOpen] = useState(false);
+function useShareLinks(shootId: string, onDone: () => void) {
   const [copied, setCopied] = useState<"signup" | "view" | null>(null);
   const [pending, start] = useTransition();
   const copy = (kind: "signup" | "view") =>
@@ -618,44 +676,163 @@ function ShareShoot({ shootId, token }: { shootId: string; token: string | null 
       setCopied(kind);
       setTimeout(() => {
         setCopied(null);
-        setOpen(false);
+        onDone();
       }, 1600);
     });
+  const turnOff = () =>
+    start(async () => {
+      await setSignupLink(shootId, false);
+      onDone();
+    });
+  return { copy, copied, pending, turnOff };
+}
+
+const menuItem = "flex w-full cursor-pointer flex-col items-start justify-center gap-0.5 max-lg:min-h-11 rounded-sm px-3 py-2.5 text-left hover:bg-hover disabled:opacity-45";
+
+function ShareOptions({ share, token }: { share: ReturnType<typeof useShareLinks>; token: string | null }) {
+  const t = useTranslations("shoots");
   const option = (kind: "signup" | "view") => (
-    <button type="button" disabled={pending} onClick={() => copy(kind)} className="flex w-full cursor-pointer flex-col items-start gap-0.5 rounded-sm px-3 py-2.5 text-left hover:bg-hover disabled:opacity-45">
-      <span className="text-[14px] font-semibold">{copied === kind ? `✓ ${t("signupCopied")}` : t(kind === "signup" ? "shareSignup" : "shareView")}</span>
+    <button type="button" disabled={share.pending} onClick={() => share.copy(kind)} className={menuItem}>
+      <span className="text-[14px] font-semibold">{share.copied === kind ? `✓ ${t("signupCopied")}` : t(kind === "signup" ? "shareSignup" : "shareView")}</span>
       <span className="text-[13px] leading-snug text-ink3">{t(kind === "signup" ? "signupHint" : "shareViewHint")}</span>
     </button>
   );
+  return (
+    <>
+      {option("signup")}
+      {option("view")}
+      {token && (
+        <button type="button" disabled={share.pending} onClick={share.turnOff} className="mt-1 cursor-pointer border-t border-line px-3 pb-1.5 pt-2.5 text-left text-[13px] font-medium text-red-ink">
+          {t("signupOff")}
+        </button>
+      )}
+    </>
+  );
+}
+
+/** A small menu under a button; a click outside closes it. */
+function Popover({ open, onClose, children, width = "w-[300px]" }: { open: boolean; onClose: () => void; children: React.ReactNode; width?: string }) {
+  const t = useTranslations("shoots");
+  const panel = useRef<HTMLDivElement>(null);
+  // The latest onClose, so the effect runs only when the menu opens or closes (not on every render).
+  const closeRef = useRef(onClose);
+  useEffect(() => {
+    closeRef.current = onClose;
+  });
+  useEffect(() => {
+    if (!open) return;
+    const trigger = panel.current?.parentElement?.querySelector<HTMLElement>(":scope > button");
+    panel.current?.querySelector<HTMLElement>("a, button:not([disabled])")?.focus();
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        closeRef.current();
+      }
+    };
+    document.addEventListener("keydown", key, true);
+    return () => {
+      document.removeEventListener("keydown", key, true);
+      trigger?.focus();
+    };
+  }, [open]);
+  if (!open) return null;
+  return (
+    <>
+      <button type="button" aria-label={t("close")} tabIndex={-1} onClick={onClose} className="fixed inset-0 z-20 cursor-default" />
+      <div ref={panel} className={`absolute right-0 top-[calc(100%+6px)] z-30 flex ${width} max-w-[calc(100vw-40px)] flex-col gap-0.5 rounded-md border border-line2 bg-pop p-1.5 shadow-[var(--shadow-overlay)]`}>
+        {children}
+      </div>
+    </>
+  );
+}
+
+/**
+ * "Share": one button, two links for the same day. Sign-up: people at the client write their name next to the
+ * videos they'll film. View only (?view=1): the client follows the plan, nothing to fill in. Either makes the link
+ * (once) and copies it; "Turn off" stops both.
+ */
+function ShareShoot({ shootId, token }: { shootId: string; token: string | null }) {
+  const t = useTranslations("shoots");
+  const [open, setOpen] = useState(false);
+  const share = useShareLinks(shootId, () => setOpen(false));
   return (
     <span className="relative">
       <Button type="button" size="sm" variant="secondary" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
         {t("share")}
       </Button>
-      {open && (
-        <>
-          <button type="button" aria-label={t("close")} onClick={() => setOpen(false)} className="fixed inset-0 z-20 cursor-default" />
-          <div className="absolute right-0 top-[calc(100%+6px)] z-30 flex w-[300px] flex-col gap-0.5 rounded-md border border-line2 bg-pop p-1.5 shadow-[var(--shadow-overlay)]">
-            {option("signup")}
-            {option("view")}
-            {token && (
-              <button
-                type="button"
-                disabled={pending}
-                onClick={() =>
-                  start(async () => {
-                    await setSignupLink(shootId, false);
-                    setOpen(false);
-                  })
-                }
-                className="mt-1 cursor-pointer border-t border-line px-3 pb-1.5 pt-2.5 text-left text-[13px] font-medium text-red-ink"
-              >
-                {t("signupOff")}
-              </button>
-            )}
-          </div>
-        </>
-      )}
+      <Popover open={open} onClose={() => setOpen(false)}>
+        <ShareOptions share={share} token={token} />
+      </Popover>
+    </span>
+  );
+}
+
+/** "⋯": the day's less frequent actions (footage, edit; on phones also add videos and share). */
+function DayMenu({
+  shootId,
+  token,
+  driveUrl,
+  editHref,
+  onAdd,
+  share: withShare,
+  schedule = null,
+  adding = false,
+}: {
+  adding?: boolean;
+  schedule?: { href: string; label: string } | null;
+  shootId: string;
+  token: string | null;
+  driveUrl: string | null;
+  editHref: string | null;
+  onAdd: (() => void) | null;
+  share: boolean;
+}) {
+  const t = useTranslations("shoots");
+  const [open, setOpen] = useState(false);
+  const share = useShareLinks(shootId, () => setOpen(false));
+  if (!driveUrl && !editHref && !onAdd && !withShare) return null;
+  const close = () => setOpen(false);
+  return (
+    <span className="relative">
+      <Button type="button" size="sm" variant="secondary" aria-label={t("more")} title={t("more")} aria-expanded={open} onClick={() => setOpen((o) => !o)} className="max-lg:h-11 !px-3.5 !text-[18px] leading-none !tracking-normal">
+        ⋯
+      </Button>
+      <Popover open={open} onClose={close}>
+        {onAdd && (
+          <button
+            type="button"
+            onClick={() => {
+              close();
+              onAdd();
+            }}
+            className={menuItem}
+          >
+            <span className="text-[14px] font-semibold">{adding ? t("close") : t("addVideos")}</span>
+          </button>
+        )}
+        {schedule && (
+          <Link href={schedule.href} onClick={close} className={menuItem}>
+            <span className="text-[14px] font-semibold">{schedule.label}</span>
+          </Link>
+        )}
+        {withShare && (
+          <>
+            <span className="px-3 pb-0.5 pt-2 text-[13px] font-medium text-ink3">{t("share")}</span>
+            <ShareOptions share={share} token={token} />
+          </>
+        )}
+        {(driveUrl || editHref) && (onAdd || withShare || schedule) && <span className="my-1 border-t border-line" />}
+        {driveUrl && (
+          <a href={safeHref(driveUrl)} target="_blank" rel="noreferrer" onClick={close} className={menuItem}>
+            <span className="text-[14px] font-semibold">{t("footage")}</span>
+          </a>
+        )}
+        {editHref && (
+          <Link href={editHref} onClick={close} className={menuItem}>
+            <span className="text-[14px] font-semibold">{t("edit")}</span>
+          </Link>
+        )}
+      </Popover>
     </span>
   );
 }

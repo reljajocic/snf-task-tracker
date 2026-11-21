@@ -1,5 +1,4 @@
 import { AutoRefresh } from "@/components/AutoRefresh";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getClientVideos, getShootDay, getShootDays, previousShootDate } from "@/lib/content";
@@ -10,9 +9,7 @@ import type { Task } from "@/lib/tasks";
 import { Segmented } from "@/components/ui/Segmented";
 import { ShootBoard } from "./ShootBoard";
 import { ShootNav } from "./ShootNav";
-import { safeHref } from "@/lib/safe-url";
 import { PageTitle } from "@/components/shell/PageTitle";
-import { buttonClass } from "@/components/ui/Button";
 
 // 2d (desktop) / 2e (mobile, on set)
 export default async function ShootPage({ params, searchParams }: PageProps<"/content/shoots/[id]">) {
@@ -65,26 +62,14 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
             />
           }
           actions={
-            <>
-              <span className="hidden lg:flex">
-                <Segmented
-                  items={[
-                    { key: "sheet", label: t("shootSheet.sheet"), href: shootHref(id, { view: null }), active: desktopView === "sheet" },
-                    { key: "onset", label: t("shootSheet.onSet"), href: shootHref(id, { view: "onset" }), active: desktopView === "onset" },
-                  ]}
-                />
-              </span>
-              {day.drive_url && (
-                <a href={safeHref(day.drive_url)} target="_blank" rel="noreferrer" className={buttonClass({ size: "sm", variant: "secondary" })}>
-                  {t("shoots.footage")}
-                </a>
-              )}
-              {canManage && (
-                <Link href={`/content/shoots/${day.id}/edit`} className={buttonClass({ size: "sm", variant: "secondary" })}>
-                  {t("shoots.edit")}
-                </Link>
-              )}
-            </>
+            <span className="hidden lg:flex">
+              <Segmented
+                items={[
+                  { key: "sheet", label: t("shootSheet.sheet"), href: shootHref(id, { view: null }), active: desktopView === "sheet" },
+                  { key: "onset", label: t("shootSheet.onSet"), href: shootHref(id, { view: "onset" }), active: desktopView === "onset" },
+                ]}
+              />
+            </span>
           }
         />
       </header>
@@ -97,6 +82,8 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
         nowTime={nowTime}
         desktopView={desktopView}
         tags={lookups.clients.find((c) => c.id === client.id)?.contentTypes ?? []}
+        driveUrl={day.drive_url ?? null}
+        editHref={canManage ? `/content/shoots/${day.id}/edit` : null}
       />
     </div>
   );

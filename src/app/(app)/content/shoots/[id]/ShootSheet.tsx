@@ -17,7 +17,12 @@ const STATUS_STYLE: Record<ShotStatus, string> = {
   not_shot: "text-[var(--prio-urgent)]",
 };
 
-const cell = "w-full min-w-0 rounded-sm border-0 bg-transparent px-2 py-1.5 text-[14px] text-ink outline-none focus:bg-chip focus-visible:shadow-none";
+// Cells read as text until touched: a hint on hover, a rust edge while editing (a 7% tint alone was too faint).
+const cellBase =
+  "min-w-0 rounded-sm border-0 bg-transparent px-2 py-1.5 text-[14px] text-ink outline-none enabled:hover:bg-hover focus:bg-chip focus-visible:shadow-[inset_0_0_0_1px_var(--accent)] focus:shadow-[inset_0_0_0_1px_var(--accent)]";
+const cell = `w-full ${cellBase}`;
+// The short fields in the line under a title: as wide as what's in them.
+const inlineCell = `${cellBase} [field-sizing:content] min-w-[5ch] max-w-[280px] placeholder:text-transparent group-hover/row:placeholder:text-ink3 focus:placeholder:text-ink3`;
 
 /**
  * The shoot day as the team's Google Sheet: #, status, time, person, type, title, text, reference, note.
@@ -145,8 +150,15 @@ export function ShootSheet({
     <div className="flex flex-col gap-3 px-10 pb-12 pt-5">
       <div className="flex flex-wrap items-center gap-2.5">
         {filters}
-        <span className="text-[13px] font-medium text-ink3">{t("sortBy")}</span>
-        <Segmented size="sm" items={(["manual", "time", "status", "person", "type"] as const).map((k) => ({ key: k, label: t(`sort.${k}`), active: sort === k, onClick: () => setSort(k) }))} />
+        {/* Order is changed now and then: a quiet select, not a row of five buttons. */}
+        <label className="flex h-8 items-center gap-1.5 rounded-md border border-line2 pl-3 text-[13px] font-medium text-ink3">
+          {t("sortBy")}
+          <select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)} className="h-full cursor-pointer rounded-md bg-transparent pr-2 font-semibold text-ink outline-none">
+            {(["manual", "time", "status", "person", "type"] as const).map((k) => (
+              <option key={k} value={k}>{t(`sort.${k}`)}</option>
+            ))}
+          </select>
+        </label>
         {sort !== "manual" && <span className="text-[13px] text-ink3">{t("sortViewOnly")}</span>}
         <Segmented
           size="sm"
@@ -168,22 +180,14 @@ export function ShootSheet({
         )}
       </div>
       <div className="overflow-x-auto">
-        <table className="snf-rows w-full min-w-[1040px] table-fixed text-left">
+        <table className="snf-rows w-full min-w-[860px] table-fixed text-left">
           <thead>
             <tr className="border-b border-line text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
-              {/* Script gets whatever is left: title sits above it, type under the person. */}
-              <th className="w-[60px] px-3 py-2.5">#</th>
-              <th className="w-[120px] px-2 py-2.5">{t("status")}</th>
-              <th className="w-[68px] px-2 py-2.5">{t("time")}</th>
-              <th className="w-[140px] px-2 py-2.5">
-                {t("person")} · {t("type")}
-              </th>
-              <th className="px-2 py-2.5">
-                {t("title")} · {t("text")}
-              </th>
-              <th className="w-[84px] px-2 py-2.5">{t("reference")}</th>
-              <th className="w-[22%] px-2 py-2.5">{t("note")}</th>
-              <th className="w-8" />
+              {/* The script gets the room: status, time, person and type sit in one line under the title. */}
+              <th className="w-[64px] px-3 py-2.5">#</th>
+              <th className="px-3 py-2.5">{t("video")}</th>
+              <th className="w-[28%] px-3 py-2.5">{t("note")}</th>
+              <th className="w-10" />
             </tr>
           </thead>
           <tbody>
@@ -193,128 +197,130 @@ export function ShootSheet({
               const toggle = () => setOpen(isOpen ? null : v.id);
               return (
                 <Fragment key={v.id}>
-                  <tr className={`align-top ${isOpen ? "[&>td]:bg-chip" : ""}`}>
-                    <td className="px-2 py-2">
+                  <tr className={`group/row align-top ${isOpen ? "[&>td]:bg-chip" : ""}`}>
+                    <td className="px-2 py-3">
                       <div className="flex items-center gap-1">
                         {editable && sort === "manual" && (
                           <span className="flex flex-col">
-                            <button type="button" aria-label={t("moveUp")} disabled={i === 0} onClick={() => move(v.id, -1)} className="h-4 cursor-pointer px-0.5 text-[12px] leading-none text-ink3 hover:text-ink disabled:opacity-25">▲</button>
-                            <button type="button" aria-label={t("moveDown")} disabled={i === shown.length - 1} onClick={() => move(v.id, 1)} className="h-4 cursor-pointer px-0.5 text-[12px] leading-none text-ink3 hover:text-ink disabled:opacity-25">▼</button>
+                            <button type="button" aria-label={t("moveUp")} disabled={i === 0} onClick={() => move(v.id, -1)} className="h-5 cursor-pointer px-0.5 text-[12px] leading-none text-ink3 hover:text-ink disabled:opacity-25">▲</button>
+                            <button type="button" aria-label={t("moveDown")} disabled={i === shown.length - 1} onClick={() => move(v.id, 1)} className="h-5 cursor-pointer px-0.5 text-[12px] leading-none text-ink3 hover:text-ink disabled:opacity-25">▼</button>
                           </span>
                         )}
-                        <button type="button" onClick={toggle} title={isOpen ? t("collapse") : t("expand")} className="cursor-pointer text-[13px] text-ink3 hover:text-ink">
+                        <button type="button" onClick={toggle} title={isOpen ? t("collapse") : t("expand")} aria-expanded={isOpen} className="cursor-pointer text-[14px] font-semibold text-ink2 hover:text-ink">
                           {i + 1}
-                          <span className="ml-1 text-[12px]">{isOpen ? "−" : "+"}</span>
+                          <span className="ml-1 text-[12px] font-normal text-ink3">{isOpen ? "−" : "+"}</span>
                         </button>
                       </div>
                     </td>
-                    <td className="px-1 py-1">
-                      <select
-                        value={status}
-                        disabled={!editable}
-                        onChange={(e) =>
-                          startTransition(async () => {
-                            await setShotStatus(v.id, e.target.value as ShotStatus);
-                          })
-                        }
-                        className={`${cell} cursor-pointer text-[12px] font-semibold uppercase tracking-[0.08em] ${STATUS_STYLE[status]}`}
-                      >
-                        <option value="to_shoot">{t("toShoot")}</option>
-                        <option value="shot">{t("filmed")}</option>
-                        <option value="not_shot">{t("notFilmed")}</option>
-                      </select>
-                    </td>
-                    <td className="px-1 py-1">
-                      <InputCell value={v.shoot_time ?? ""} disabled={!editable} placeholder="—" onSave={(x) => saveTime(v, x)} className="font-semibold" />
-                    </td>
-                    <td className="px-1 py-1">
-                      <InputCell value={v.on_camera ?? ""} disabled={!editable} onSave={(x) => save(v.id, { on_camera: x })} />
-                      <InputCell
-                        value={v.content_type ?? ""}
-                        disabled={!editable}
-                        list={`tags-${shootId}`}
-                        upper
-                        placeholder={t("type")}
-                        onSave={(x) => save(v.id, { content_type: x.toUpperCase() })}
-                        className="text-[12px] text-ink3"
-                      />
-                      {/* Video, photo or carousel, in its colour. */}
-                      <select
-                        value={v.format}
-                        disabled={!editable}
-                        aria-label={tf(v.format)}
-                        onChange={(e) => save(v.id, { format: e.target.value })}
-                        style={{ color: FORMAT_COLOR[v.format] }}
-                        className="w-full cursor-pointer bg-transparent px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] outline-none disabled:cursor-default"
-                      >
-                        {FORMATS.map((f) => (
-                          <option key={f} value={f}>{tf(f)}</option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-1 py-1">
-                      {/* Title and script open the video's own editor (the same panel as everywhere), so the
-                          script's parts are edited one by one and never get mixed up in a single text box. */}
-                      <TaskLink id={v.id} className="block rounded-sm px-2 py-1 hover:bg-hover">
-                        <span className="block text-[15px] font-semibold leading-snug">{v.title}</span>
+                    <td className="px-2 py-3">
+                      <div className="flex max-w-[76ch] flex-col gap-1.5">
+                        {/* Title and script open the video's own editor (the same panel as everywhere), so the
+                            script's parts are edited one by one and never get mixed up in a single text box. */}
+                        <TaskLink id={v.id} className="self-start rounded-sm px-2 text-[16px] font-semibold leading-snug hover:underline">
+                          {v.title}
+                        </TaskLink>
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
+                          <select
+                            value={status}
+                            disabled={!editable}
+                            aria-label={t("status")}
+                            onChange={(e) =>
+                              startTransition(async () => {
+                                await setShotStatus(v.id, e.target.value as ShotStatus);
+                              })
+                            }
+                            className={`${inlineCell} cursor-pointer text-[12px] font-semibold uppercase tracking-[0.08em] disabled:cursor-default ${STATUS_STYLE[status]}`}
+                          >
+                            <option value="to_shoot">{t("toShoot")}</option>
+                            <option value="shot">{t("filmed")}</option>
+                            <option value="not_shot">{t("notFilmed")}</option>
+                          </select>
+                          <InputCell value={v.shoot_time ?? ""} disabled={!editable} placeholder={t("time")} label={t("time")} onSave={(x) => saveTime(v, x)} className={`${inlineCell} font-semibold`} />
+                          <InputCell value={v.on_camera ?? ""} disabled={!editable} placeholder={t("person")} label={t("person")} onSave={(x) => save(v.id, { on_camera: x })} className={inlineCell} />
+                          <InputCell
+                            value={v.content_type ?? ""}
+                            disabled={!editable}
+                            list={`tags-${shootId}`}
+                            upper
+                            placeholder={t("type")}
+                            label={t("type")}
+                            onSave={(x) => save(v.id, { content_type: x.toUpperCase() })}
+                            className={`${inlineCell} text-[12px] font-semibold tracking-[0.08em] text-ink2`}
+                          />
+                          {/* Video, photo or carousel, in its colour. */}
+                          <select
+                            value={v.format}
+                            disabled={!editable}
+                            aria-label={tf(v.format)}
+                            onChange={(e) => save(v.id, { format: e.target.value })}
+                            style={{ color: FORMAT_COLOR[v.format] }}
+                            className={`${inlineCell} cursor-pointer text-[12px] font-semibold uppercase tracking-[0.08em] disabled:cursor-default`}
+                          >
+                            {FORMATS.map((f) => (
+                              <option key={f} value={f}>{tf(f)}</option>
+                            ))}
+                          </select>
+                        </div>
                         {v.script_decision && (
-                          <span className="block pt-1">
+                          <span className="block px-2">
                             <ScriptDecisionBadge decision={v.script_decision} />
                           </span>
                         )}
-                        <span className="block pt-1">
+                        <TaskLink id={v.id} tabIndex={-1} className="mt-1 block rounded-sm px-2 py-1.5 hover:bg-hover">
                           {v.script.some((sec) => sec.text.trim()) ? (
-                            <ScriptPreview sections={v.script} clamp short={!scriptFull(v.id)} />
+                            <ScriptPreview sections={v.script} short={!scriptFull(v.id)} />
                           ) : (
-                            <span className="text-[13px] text-ink3">{editable ? t("addScript") : "—"}</span>
+                            <span className="text-[14px] text-ink3">{editable ? t("addScript") : "—"}</span>
                           )}
-                        </span>
-                      </TaskLink>
-                      {v.script.filter((sec) => sec.text.trim()).length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => setScriptFlip((cur) => ({ ...cur, [v.id]: !cur[v.id] }))}
-                          className="cursor-pointer px-2 pb-1 text-[13px] font-medium text-rust-ink hover:underline"
-                        >
-                          {scriptFull(v.id) ? `▴ ${t("scriptLess")}` : `▾ ${t("scriptMore")}`}
-                        </button>
-                      )}
+                        </TaskLink>
+                        {v.script.filter((sec) => sec.text.trim()).length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setScriptFlip((cur) => ({ ...cur, [v.id]: !cur[v.id] }))}
+                            className="cursor-pointer self-start px-2 text-[13px] font-medium text-rust-ink hover:underline"
+                          >
+                            {scriptFull(v.id) ? `▴ ${t("scriptLess")}` : `▾ ${t("scriptMore")}`}
+                          </button>
+                        )}
+                      </div>
                     </td>
-                    <td className="px-1 py-1">
-                      <TextCell
-                        value={v.reference_url ?? ""}
-                        disabled={!editable}
-                        singleLine
-                        placeholder="https://…"
-                        onSave={(x) => save(v.id, { reference_url: x })}
-                        render={(val) => <LinkPreview url={val} />}
-                      />
+                    <td className="px-2 py-3">
+                      <div className="flex flex-col gap-1">
+                        {/* The whole note with "Whole scripts", the start of a long one with "Just the start" (▾ for the rest). */}
+                        <TextCell value={v.note ?? ""} disabled={!editable} empty={editable ? t("addNote") : null} onSave={(x) => save(v.id, { note: x })} render={(val) => (
+                            <div className={scriptFull(v.id) ? "" : "max-h-[120px] overflow-hidden [mask-image:linear-gradient(to_bottom,black_65%,transparent)]"}>
+                              <Linkified text={val} />
+                            </div>
+                          )} />
+                        {!scriptFull(v.id) && (v.note?.length ?? 0) > 160 && (
+                          <button
+                            type="button"
+                            onClick={() => setScriptFlip((cur) => ({ ...cur, [v.id]: !cur[v.id] }))}
+                            className="cursor-pointer self-start px-2 text-[13px] font-medium text-rust-ink hover:underline"
+                          >
+                            ▾ {t("noteMore")}
+                          </button>
+                        )}
+                        {/* The reference under the note, so the note lines up with the title. */}
+                        <TextCell
+                          value={v.reference_url ?? ""}
+                          disabled={!editable}
+                          singleLine
+                          placeholder="https://…"
+                          empty={editable ? t("addReference") : null}
+                          onSave={(x) => save(v.id, { reference_url: x })}
+                          render={(val) => <LinkPreview url={val} />}
+                        />
+                      </div>
                     </td>
-                    <td className="px-1 py-1">
-                      {/* The whole note with "Whole scripts", the start of a long one with "Just the start" (▾ for the rest). */}
-                      <TextCell value={v.note ?? ""} disabled={!editable} onSave={(x) => save(v.id, { note: x })} render={(val) => (
-                          <div className={`text-[13px] leading-snug ${scriptFull(v.id) ? "" : "max-h-[110px] overflow-hidden [mask-image:linear-gradient(to_bottom,black_65%,transparent)]"}`}>
-                            <Linkified text={val} />
-                          </div>
-                        )} />
-                      {!scriptFull(v.id) && (v.note?.length ?? 0) > 160 && (
-                        <button
-                          type="button"
-                          onClick={() => setScriptFlip((cur) => ({ ...cur, [v.id]: !cur[v.id] }))}
-                          className="cursor-pointer px-2 pb-1 text-[13px] font-medium text-rust-ink hover:underline"
-                        >
-                          ▾ {t("noteMore")}
-                        </button>
-                      )}
-                    </td>
-                    <td className="px-1 py-2">
+                    <td className="px-1 py-3">
                       {editable && (
                         <button
                           type="button"
                           aria-label={t("remove")}
                           title={t("remove")}
                           onClick={() => startTransition(async () => { await removeFromShoot(v.id); })}
-                          className="cursor-pointer text-[15px] text-ink3 hover:text-red-ink"
+                          className="grid size-8 cursor-pointer place-items-center rounded-sm text-[16px] text-ink3 hover:bg-hover hover:text-red-ink"
                         >
                           ×
                         </button>
@@ -324,8 +330,8 @@ export function ShootSheet({
                   {isOpen && (
                     <tr className="border-b border-line bg-chip">
                       <td />
-                      <td colSpan={7} className="px-2 pb-5 pt-1">
-                        <div className="flex max-w-[720px] flex-col gap-3">
+                      <td colSpan={3} className="px-4 pb-5 pt-1">
+                        <div className="flex max-w-[76ch] flex-col gap-3">
                           {!scriptFull(v.id) && <ScriptPreview sections={v.script} />}
                           <div className="flex flex-col gap-3 text-[14px]">
                             {v.reference_url && <LinkPreview url={v.reference_url} full />}
@@ -365,7 +371,7 @@ export function ScriptPreview({ sections, clamp = false, short = false }: { sect
   if (short) {
     const s = filled[0];
     return (
-      <div className="line-clamp-2 text-[14px] leading-snug">
+      <div className="line-clamp-2 text-[15px] leading-normal">
         {s.label && <span className="mr-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">{s.label}</span>}
         <span className="text-ink2">{s.text}</span>
       </div>
@@ -374,11 +380,11 @@ export function ScriptPreview({ sections, clamp = false, short = false }: { sect
   return (
     <div className="flex flex-col gap-2">
       {filled.map((s, i) => (
-        <div key={i} className={clamp ? "text-[14px] leading-snug" : "grid grid-cols-[84px_minmax(0,1fr)] gap-3"}>
+        <div key={i} className={clamp ? "text-[14px] leading-snug" : "grid grid-cols-[92px_minmax(0,1fr)] gap-3"}>
           {s.label && (
             <span className={`font-semibold uppercase tracking-[0.12em] text-accent ${clamp ? "mr-1.5 text-[11px]" : "pt-[3px] text-[11px]"}`}>{s.label}</span>
           )}
-          <span className={`whitespace-pre-wrap text-ink2 ${clamp ? "" : `text-[15px] leading-relaxed ${s.label ? "" : "col-span-2"}`}`}>{s.text}</span>
+          <span className={`whitespace-pre-wrap text-ink2 ${clamp ? "" : `text-[15px] leading-[1.55] ${s.label ? "" : "col-span-2"}`}`}>{s.text}</span>
         </div>
       ))}
     </div>
@@ -411,7 +417,7 @@ function Linkified({ text }: { text: string }) {
   if (!text.trim()) return <span className="text-[13px] text-ink3">—</span>;
   const parts = text.split(/(https?:\/\/[^\s]+)/gi);
   return (
-    <span className="whitespace-pre-wrap break-words text-[13px] leading-snug text-ink2">
+    <span className="whitespace-pre-wrap break-words text-[14px] leading-normal text-ink2">
       {parts.map((p, i) =>
         /^https?:\/\//i.test(p) ? (
           <a key={i} href={p} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} title={p} className="text-rust-ink hover:underline">
@@ -433,7 +439,8 @@ function InputCell({
   placeholder,
   list,
   upper,
-  className = "",
+  label,
+  className = cell,
 }: {
   value: string;
   onSave: (v: string) => void;
@@ -441,6 +448,7 @@ function InputCell({
   placeholder?: string;
   list?: string;
   upper?: boolean;
+  label?: string;
   className?: string;
 }) {
   const [v, setV] = useState(value);
@@ -453,12 +461,15 @@ function InputCell({
     <input
       value={v}
       disabled={disabled}
-      placeholder={placeholder}
+      placeholder={disabled ? undefined : placeholder}
+      aria-label={label}
+      // Where field-sizing isn't supported (Firefox, older Safari), size keeps the field about as wide as its text.
+      size={Math.max(v.length, placeholder?.length ?? 0, 4)}
       list={list}
       onChange={(e) => setV(upper ? e.target.value.toUpperCase() : e.target.value)}
       onBlur={() => v !== value && onSave(v)}
       onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-      className={`${cell} ${className}`}
+      className={className}
     />
   );
 }
@@ -471,6 +482,7 @@ function TextCell({
   disabled,
   placeholder,
   singleLine,
+  empty,
 }: {
   value: string;
   onSave: (v: string) => void;
@@ -478,6 +490,8 @@ function TextCell({
   disabled?: boolean;
   placeholder?: string;
   singleLine?: boolean;
+  /** Shown instead of the value when there is none ("+ Add a note"); null shows nothing. */
+  empty?: string | null;
 }) {
   const t = useTranslations("shootSheet");
   const [editing, setEditing] = useState(false);
@@ -500,9 +514,9 @@ function TextCell({
             setEditing(true);
           }
         }}
-        className={`min-h-[34px] rounded-sm px-2 py-1.5 ${disabled ? "" : "cursor-text hover:bg-hover"}`}
+        className={`rounded-sm px-2 py-1.5 ${disabled ? "" : "cursor-text hover:bg-hover"}`}
       >
-        {render(value)}
+        {!value.trim() && empty !== undefined ? (empty && <span className="text-[13px] text-ink3 opacity-0 transition-opacity group-hover/row:opacity-100 group-focus-within/row:opacity-100">{empty}</span>) : render(value)}
       </div>
     );
   }

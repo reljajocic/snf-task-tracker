@@ -602,6 +602,7 @@
     "allFormats": "Svi tipovi"
   },
   "shoots": {
+    "more": "Više",
     "title": "Snimanja",
     "new": "+ Novo snimanje",
     "upcoming": "Predstojeća",
@@ -852,6 +853,9 @@
     "close": "Zatvori"
   },
   "shootSheet": {
+    "video": "Video",
+    "addNote": "+ Napomena",
+    "addReference": "+ Referenca",
     "status": "Status",
     "time": "Vreme",
     "person": "Osoba",
