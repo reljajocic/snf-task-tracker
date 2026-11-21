@@ -120,7 +120,6 @@
     "more": "+još {count}",
     "nothingThatDay": "Tog dana ništa nije na roku.",
     "weekShort": "N{n}",
-    "eyebrow": "Zadaci po roku",
     "noDeadlines": "Nema rokova",
     "weekRange": "{from} – {to}"
   },
@@ -217,7 +216,6 @@
   },
   "team": {
     "title": "Tim",
-    "eyebrow": "{count, plural, one {# osoba} few {# osobe} other {# osoba}}",
     "invite": "Pozovi u tim",
     "inviteLead": "Dobijaju email sa linkom za prijavu. Pristup klijentima se podešava po klijentu.",
     "name": "Ime i prezime",
@@ -860,7 +858,6 @@
     "close": "Zatvori"
   },
   "shootSheet": {
-    "video": "Video",
     "addNote": "+ Napomena",
     "addReference": "+ Referenca",
     "status": "Status",
@@ -869,7 +866,6 @@
     "type": "Tip",
     "title": "Naslov",
     "text": "Tekst",
-    "note": "Napomena",
     "toShoot": "Za snimanje",
     "filmed": "Snimljeno",
     "notFilmed": "Nije snimljeno",
@@ -1037,7 +1033,6 @@
       "overdue": "Kasni",
       "waiting": "Čeka uplatu"
     },
-    "eyebrow": "{count, plural, one {# faktura} few {# fakture} other {# faktura}}",
     "statOpen": "Nenaplaćeno ({count})",
     "statOverdue": "Kasni ({count})",
     "statPaidMonth": "Naplaćeno ovog meseca",
@@ -1123,7 +1118,6 @@
     "delete": "Obriši",
     "discard": "Odustani",
     "addExpense": "Dodaj trošak",
-    "everyone": "Svi partneri",
     "doc": "Račun",
     "noExpenses": "Još nema troškova.",
     "colInvoiced": "Fakturisano",

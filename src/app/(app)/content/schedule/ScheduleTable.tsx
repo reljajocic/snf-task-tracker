@@ -9,6 +9,7 @@ import { formatDate, formatShortDate, weekdayIndex, type IsoDate } from "@/lib/d
 import { POSTING_STATUS_COLOR, postingStatus, type PostingStatus, type Task } from "@/lib/tasks";
 import { PostTags } from "@/components/tasks/tags";
 import { ShootMarker, type ScheduleShoot } from "./ShootMarker";
+import { ScriptLabel } from "@/components/tasks/ScriptLabel";
 
 export type ScheduleWeek = {
   n: number;
@@ -186,7 +187,7 @@ export function ScheduleTable({
                             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
                               {v.script.filter((sec) => sec.text.trim()).map((sec, j) => (
                                 <div key={j} className="flex flex-col gap-2">
-                                  <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">{sec.label}</span>
+                                  <ScriptLabel label={sec.label} tight />
                                   <span className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink2">{sec.text}</span>
                                 </div>
                               ))}

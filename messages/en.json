@@ -120,7 +120,6 @@
     "more": "+{count} more",
     "nothingThatDay": "Nothing due this day.",
     "weekShort": "W{n}",
-    "eyebrow": "Tasks by deadline",
     "noDeadlines": "No deadlines",
     "weekRange": "{from} – {to}"
   },
@@ -217,7 +216,6 @@
   },
   "team": {
     "title": "Team",
-    "eyebrow": "{count, plural, one {# person} other {# people}}",
     "invite": "Invite to the team",
     "inviteLead": "They get an email with a sign-in link. Client access is set per client.",
     "name": "Full name",
@@ -860,7 +858,6 @@
     "close": "Close"
   },
   "shootSheet": {
-    "video": "Video",
     "addNote": "+ Note",
     "addReference": "+ Reference",
     "status": "Status",
@@ -869,7 +866,6 @@
     "type": "Type",
     "title": "Title",
     "text": "Text",
-    "note": "Note",
     "toShoot": "To shoot",
     "filmed": "Filmed",
     "notFilmed": "Not filmed",
@@ -1037,7 +1033,6 @@
       "overdue": "Late",
       "waiting": "Awaiting payment"
     },
-    "eyebrow": "{count, plural, one {# invoice} other {# invoices}}",
     "statOpen": "Unpaid ({count})",
     "statOverdue": "Late ({count})",
     "statPaidMonth": "Collected this month",
@@ -1123,7 +1118,6 @@
     "delete": "Delete",
     "discard": "Discard",
     "addExpense": "Add cost",
-    "everyone": "All partners",
     "doc": "Bill",
     "noExpenses": "No costs yet.",
     "colInvoiced": "Invoiced",

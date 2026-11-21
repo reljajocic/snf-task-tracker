@@ -81,3 +81,19 @@ export function splitReference(note: string): { reference: string | null; rest: 
   const rest = note.replace(m[0], "").replace(/(ceo\s+)?link\s*:?\s*$/i, "").trim();
   return { reference: m[0], rest };
 }
+
+/**
+ * A section label as it reads on screen: the team types them in capitals ("HOOK OPCIJE", "BODY 1"), shown in
+ * sentence case ("Hook opcije", "Body 1") so a script reads as text, not shouting. Short words stay as they are
+ * ("CTA 2"), and a label typed in mixed case is left alone.
+ */
+export function displayLabel(label: string): string {
+  // Spaces are kept as typed (this also feeds the label field while someone types in it).
+  if (!label.trim() || label !== label.toUpperCase()) return label;
+  const out = label
+    .split(/(\s+)/)
+    .map((w) => (/^\p{L}{1,3}$/u.test(w) ? w : w.toLowerCase()))
+    .join("");
+  const at = out.search(/\S/);
+  return out.slice(0, at) + out.charAt(at).toUpperCase() + out.slice(at + 1);
+}

@@ -7,6 +7,7 @@ import type { SignupVideo } from "@/lib/signup";
 import { useApprover } from "../../p/[token]/useApprover";
 import { addName, removeName } from "./actions";
 import { Button } from "@/components/ui/Button";
+import { ScriptLabel } from "@/components/tasks/ScriptLabel";
 
 const STATUS_COLOR = { to_shoot: "var(--line2)", shot: "var(--status-in-progress)", not_shot: "var(--prio-urgent)" } as const;
 
@@ -124,7 +125,7 @@ export function SignupList({ token, videos, readOnly = false }: { token: string;
                 <div className="flex flex-col gap-2.5">
                   {parts.map((s, i) => (
                     <div key={i} className="flex flex-col gap-1.5 border-l-2 border-accent/60 pl-3">
-                      {s.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">{s.label}</span>}
+                      <ScriptLabel label={s.label} tight />
                       <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">{s.text}</span>
                     </div>
                   ))}

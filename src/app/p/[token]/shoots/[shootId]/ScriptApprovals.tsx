@@ -13,6 +13,7 @@ import { PostTags } from "@/components/tasks/tags";
 import { Segmented } from "@/components/ui/Segmented";
 import { DrawnCheck } from "@/components/ui/DrawnCheck";
 import { Button } from "@/components/ui/Button";
+import { ScriptLabel } from "@/components/tasks/ScriptLabel";
 
 type Item = { id: string; title: string; time: string | null; onCamera: string | null; type: string | null; format: PostFormat; script: ScriptSection[]; decision: Decision | null };
 
@@ -164,7 +165,7 @@ export function ScriptApprovals({
                   {v.script.length ? (
                     v.script.map((s, i) => (
                       <span key={i} className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">
-                        <span className="font-semibold text-accent">{s.label}</span> {s.text}
+                        <ScriptLabel label={s.label} className="mr-1" />{s.text}
                       </span>
                     ))
                   ) : (

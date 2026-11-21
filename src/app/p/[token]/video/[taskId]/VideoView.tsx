@@ -10,6 +10,7 @@ import { safeHref } from "@/lib/safe-url";
 import { PostTags } from "@/components/tasks/tags";
 import { PostDate } from "../../schedule/PostDate";
 import { StudioAvatar } from "@/components/ui/Avatar";
+import { ScriptLabel } from "@/components/tasks/ScriptLabel";
 
 // Shared by the video's page and the window it opens in over the schedule.
 // 7c (desktop) / 7f (mobile): watch a cut and approve it or ask for changes. Any video in the schedule opens here too,
@@ -117,7 +118,7 @@ export async function VideoView({ token, taskId, versionParam, inModal = false }
             <span className="eyebrow">{t("portal.script")}</span>
             {video.script.map((s, i) => (
               <span key={i} className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">
-                <span className="font-semibold text-accent">{s.label}</span> {s.text}
+                <ScriptLabel label={s.label} className="mr-1" />{s.text}
               </span>
             ))}
           </div>

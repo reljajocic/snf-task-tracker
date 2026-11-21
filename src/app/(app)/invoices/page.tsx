@@ -46,7 +46,7 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/invoice
 
   return (
     <>
-      <InvoicesHeader access={access} active="list" eyebrow={clientId ? clientName.get(clientId) : t("eyebrow", { count: rows.filter((r) => r.inv.status !== "draft").length })} />
+      <InvoicesHeader access={access} active="list" eyebrow={clientId ? clientName.get(clientId) : undefined} />
       <div className="flex flex-col gap-6 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:px-10 lg:pb-12">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <Stat label={t("statOpen", { count: open.length })} value={sum(open)} />

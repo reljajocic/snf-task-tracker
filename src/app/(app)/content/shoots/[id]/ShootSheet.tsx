@@ -10,6 +10,7 @@ import type { ScriptSection, ShotStatus, Task } from "@/lib/tasks";
 import { removeFromShoot, reorderShoot } from "../actions";
 import { FORMATS, FORMAT_COLOR } from "@/lib/formats";
 import { Segmented } from "@/components/ui/Segmented";
+import { ScriptLabel } from "@/components/tasks/ScriptLabel";
 
 const STATUS_STYLE: Record<ShotStatus, string> = {
   to_shoot: "text-ink2",
@@ -181,16 +182,14 @@ export function ShootSheet({
       </div>
       <div className="overflow-x-auto">
         <table className="snf-rows w-full min-w-[860px] table-fixed text-left">
-          <thead>
-            <tr className="border-b border-line text-[11px] font-semibold uppercase tracking-[0.12em] text-ink3">
-              {/* The script gets the room: status, time, person and type sit in one line under the title. */}
-              <th className="w-[64px] px-3 py-2.5">#</th>
-              {/* The video column stops at a comfortable reading width; any extra width goes to the note, not to a gap. */}
-              <th className="w-[min(58%,820px)] px-3 py-2.5">{t("video")}</th>
-              <th className="px-3 py-2.5">{t("note")}</th>
-              <th className="w-10" />
-            </tr>
-          </thead>
+          {/* No header row: number, video and note explain themselves. The video column stops at a reading width;
+              any extra width goes to the note, not to a gap. */}
+          <colgroup>
+            <col className="w-[64px]" />
+            <col className="w-[min(58%,820px)]" />
+            <col />
+            <col className="w-10" />
+          </colgroup>
           <tbody>
             {shown.map((v, i) => {
               const status = (v.shot_status ?? "to_shoot") as ShotStatus;
@@ -230,7 +229,7 @@ export function ShootSheet({
                                 await setShotStatus(v.id, e.target.value as ShotStatus);
                               })
                             }
-                            className={`${inlineCell} cursor-pointer text-[12px] font-semibold uppercase tracking-[0.08em] disabled:cursor-default ${STATUS_STYLE[status]}`}
+                            className={`${inlineCell} cursor-pointer text-[13px] font-semibold disabled:cursor-default ${STATUS_STYLE[status]}`}
                           >
                             <option value="to_shoot">{t("toShoot")}</option>
                             <option value="shot">{t("filmed")}</option>
@@ -255,7 +254,7 @@ export function ShootSheet({
                             aria-label={tf(v.format)}
                             onChange={(e) => save(v.id, { format: e.target.value })}
                             style={{ color: FORMAT_COLOR[v.format] }}
-                            className={`${inlineCell} cursor-pointer text-[12px] font-semibold uppercase tracking-[0.08em] disabled:cursor-default`}
+                            className={`${inlineCell} cursor-pointer text-[13px] font-semibold disabled:cursor-default`}
                           >
                             {FORMATS.map((f) => (
                               <option key={f} value={f}>{tf(f)}</option>
@@ -362,30 +361,28 @@ export function ShootSheet({
 }
 
 /**
- * HOOK / CTA / BODY with the label set off in the accent color.
- * `clamp`: the compact in-row style; `short`: just the first part, two lines.
+ * The script as one readable document: each part's name in a quiet grey gutter (Hook, Body 1, CTA), the words in
+ * full ink at reading size, a hairline between parts. `short`: just the first part, two lines.
  */
-export function ScriptPreview({ sections, clamp = false, short = false }: { sections: ScriptSection[]; clamp?: boolean; short?: boolean }) {
+export function ScriptPreview({ sections, short = false }: { sections: ScriptSection[]; short?: boolean }) {
   const t = useTranslations("shootSheet");
   const filled = sections.filter((s) => s.text.trim() || s.label.trim());
   if (!filled.length) return <span className="text-[14px] text-ink3">{t("empty")}</span>;
   if (short) {
     const s = filled[0];
     return (
-      <div className="line-clamp-2 text-[15px] leading-normal">
-        {s.label && <span className="mr-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-accent">{s.label}</span>}
-        <span className="text-ink2">{s.text}</span>
+      <div className="line-clamp-2 text-[15px] leading-[1.55]">
+        <ScriptLabel label={s.label} className="mr-2" />
+        <span className="text-ink">{s.text}</span>
       </div>
     );
   }
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       {filled.map((s, i) => (
-        <div key={i} className={clamp ? "text-[14px] leading-snug" : "grid grid-cols-[92px_minmax(0,1fr)] gap-3"}>
-          {s.label && (
-            <span className={`font-semibold uppercase tracking-[0.12em] text-accent ${clamp ? "mr-1.5 text-[11px]" : "pt-[3px] text-[11px]"}`}>{s.label}</span>
-          )}
-          <span className={`whitespace-pre-wrap text-ink2 ${clamp ? "" : `text-[15px] leading-[1.55] ${s.label ? "" : "col-span-2"}`}`}>{s.text}</span>
+        <div key={i} className="grid grid-cols-[96px_minmax(0,1fr)] gap-4 border-t border-line py-2.5 first:border-t-0 first:pt-0 last:pb-0">
+          <ScriptLabel label={s.label} />
+          <span className={`whitespace-pre-wrap text-[15px] leading-[1.55] text-ink ${s.label.trim() ? "" : "col-span-2"}`}>{s.text}</span>
         </div>
       ))}
     </div>

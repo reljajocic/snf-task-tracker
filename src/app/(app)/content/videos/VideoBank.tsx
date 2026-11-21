@@ -13,6 +13,7 @@ import { pendingReshoot, type Task } from "@/lib/tasks";
 import { PostTags } from "@/components/tasks/tags";
 import { FORMATS, FORMAT_COLOR, type PostFormat } from "@/lib/formats";
 import { Segmented } from "@/components/ui/Segmented";
+import { ScriptLabel } from "@/components/tasks/ScriptLabel";
 
 type Shoot = { id: string; date: IsoDate; location: string | null };
 
@@ -259,7 +260,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                       <div className="flex max-w-[820px] flex-col gap-3 border-t border-line pt-3.5">
                         {parts(v).map((sec, i) => (
                           <div key={i} className="flex flex-col gap-1.5 border-l-2 border-accent/60 pl-3">
-                            {sec.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">{sec.label}</span>}
+                            <ScriptLabel label={sec.label} tight />
                             <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink">{sec.text}</span>
                           </div>
                         ))}

@@ -21,6 +21,7 @@ import { PostTags } from "@/components/tasks/tags";
 import { FORMAT_COLOR, FORMATS, type PostFormat } from "@/lib/formats";
 import { DrawnCheck } from "@/components/ui/DrawnCheck";
 import { Segmented } from "@/components/ui/Segmented";
+import { ScriptLabel } from "@/components/tasks/ScriptLabel";
 
 type Slot = { time: string; onCamera: string; items: Task[] };
 
@@ -187,7 +188,7 @@ export function ShootBoard({
         .filter((sec) => sec.text.trim())
         .map((sec, i) => (
           <div key={i} className="flex flex-col gap-1.5 border-l-2 border-accent/60 pl-3">
-            {sec.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">{sec.label}</span>}
+            <ScriptLabel label={sec.label} tight />
             <span className="whitespace-pre-wrap text-[16px] leading-relaxed text-ink">{sec.text}</span>
           </div>
         ))}
@@ -555,7 +556,7 @@ export function ShootBoard({
                 <div className="flex flex-col gap-4">
                   {sel.script.filter((sec) => sec.text.trim()).map((sec, i) => (
                     <div key={i} className="flex flex-col gap-1.5">
-                      <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">{sec.label}</span>
+                      <ScriptLabel label={sec.label} tight />
                       <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">{sec.text}</span>
                     </div>
                   ))}

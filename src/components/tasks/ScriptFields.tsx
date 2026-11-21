@@ -1,12 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { ScriptSection } from "@/lib/tasks";
+import { displayLabel } from "@/lib/script-text";
 
 /**
  * A script edited as one document: labels in a gutter on the left, the text at reading size on the right, a hairline
  * between parts (like the shoot sheet), instead of a bordered box per part. Text fields grow with what's typed.
- * The × to remove a part shows on hover or while it's being edited (always on screens without hover).
+ * The × to remove a part shows on hover or while it's being edited (always on screens without hover). The first and
+ * last part follow the box's rounded corners, so the bar and tint of the part being edited never poke out square.
+ * Names read in sentence case like everywhere else ("HOOK OPCIJE" shows as "Hook opcije").
  */
 export function ScriptFields({
   sections,
@@ -22,21 +26,27 @@ export function ScriptFields({
   disabled?: boolean;
 }) {
   const t = useTranslations("video");
+  // The name being typed shows exactly as typed; the others in sentence case.
+  const [typing, setTyping] = useState<number | null>(null);
   return (
     <div className="rounded-md border border-line bg-surf focus-within:border-line2">
       {sections.map((s, i) => (
         <div
           key={i}
-          className="group/part relative grid grid-cols-1 gap-0.5 border-t border-line px-4 pb-3 pr-12 pt-2.5 first:border-t-0 focus-within:shadow-[inset_2px_0_0_var(--accent)] sm:grid-cols-[92px_minmax(0,1fr)] sm:gap-4 sm:py-3 sm:pr-11"
+          className="group/part relative grid grid-cols-1 gap-0.5 border-t border-line px-4 pb-3 pr-12 pt-2.5 first:rounded-t-[9px] first:border-t-0 last:rounded-b-[9px] focus-within:bg-hover focus-within:shadow-[inset_2px_0_0_var(--accent)] sm:grid-cols-[92px_minmax(0,1fr)] sm:gap-4 sm:py-3 sm:pr-11"
         >
           <input
-            value={s.label}
+            value={typing === i ? s.label : displayLabel(s.label)}
+            onFocus={() => setTyping(i)}
             disabled={disabled}
             aria-label={t("sectionLabel")}
             placeholder={t("sectionLabel")}
             onChange={(e) => onChange(i, { label: e.target.value })}
-            onBlur={onBlur}
-            className="h-8 min-w-0 border-0 bg-transparent text-[12px] font-semibold uppercase tracking-[0.12em] text-accent outline-none placeholder:normal-case placeholder:tracking-normal placeholder:text-ink3 focus-visible:shadow-none sm:h-[23px] sm:text-[11px]"
+            onBlur={() => {
+              setTyping(null);
+              onBlur?.();
+            }}
+            className="h-8 min-w-0 rounded-xs border-0 bg-transparent text-[13px] font-semibold text-ink3 outline-none placeholder:font-medium placeholder:text-ink3 focus-visible:shadow-none sm:h-[23px]"
           />
           <textarea
             value={s.text}

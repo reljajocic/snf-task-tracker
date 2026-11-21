@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sectionsToText, textToSections } from "./script-text";
+import { displayLabel, sectionsToText, textToSections } from "./script-text";
 
 describe("script text", () => {
   it("splits the team's HOOK/CTA/BODY format into sections", () => {
@@ -99,5 +99,17 @@ describe("shoot running order", () => {
       { id: "z", shoot_order: 0, created_at: "2026-10-03" },
     ];
     expect([...rows].sort(byShootOrder).map((r) => r.id)).toEqual(["z", "y", "x"]);
+  });
+});
+
+describe("displayLabel", () => {
+  it("reads labels in sentence case, keeping short acronyms", () => {
+    expect(displayLabel("HOOK OPCIJE")).toBe("Hook opcije");
+    expect(displayLabel("OPEN LOOP 1")).toBe("Open loop 1");
+    expect(displayLabel("CTA 2")).toBe("CTA 2");
+    expect(displayLabel("PRIČA")).toBe("Priča");
+    expect(displayLabel("Moj deo")).toBe("Moj deo");
+    expect(displayLabel("")).toBe("");
+    expect(displayLabel("HOOK ")).toBe("Hook ");
   });
 });

@@ -18,7 +18,7 @@ export default async function TeamPage() {
 
   return (
     <>
-      <PageHeader title={t("title")} eyebrow={t("eyebrow", { count: people.length })} newTask={false} />
+      <PageHeader title={t("title")} newTask={false} />
       <div className="flex max-w-[960px] flex-col gap-10 px-5 pb-12 lg:px-10">
         <ul className="flex flex-col border-t border-line">
           {people.map((p) => (

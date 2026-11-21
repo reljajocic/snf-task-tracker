@@ -8,8 +8,9 @@ import { CONTENT_NAV, isActive } from "@/components/shell/nav";
 import { Segmented } from "@/components/ui/Segmented";
 
 /**
- * Content bank · Shoots · Schedule: one place, switched from the top (the client carries over). On phones
- * the row ends with "+": a new post on the bank and the schedule, a new shoot day on shoots.
+ * Phones: Content bank · Shoots · Schedule, switched from the top (the client carries over), the row ending with
+ * "+": a new post on the bank and the schedule, a new shoot day on shoots. Desktop has the same three in the
+ * sidebar, so the row isn't shown there (it was a third "where am I" above the page title).
  */
 export function ContentTabs() {
   const t = useTranslations("nav");
@@ -39,17 +40,12 @@ export function ContentTabs() {
         label: tAll("bank.new"),
       };
   return (
-    <nav className="flex items-center gap-2 px-5 pb-1 pt-4 lg:px-10 lg:pt-6">
+    <nav className="flex items-center gap-2 px-5 pb-1 pt-4 lg:hidden">
       <div className="no-scrollbar min-w-0 overflow-x-auto">
-        {/* Phones: short names, so the three and "+" fit one row. */}
-        <span className="lg:hidden">
-          <Segmented size="sm" nowrap items={CONTENT_NAV.map((item) => ({ key: item.href, label: t(`${item.key}Short`), href: item.href, active: isActive(pathname, item) }))} />
-        </span>
-        <span className="hidden lg:block">
-          <Segmented size="sm" nowrap items={CONTENT_NAV.map((item) => ({ key: item.href, label: t(item.key), href: item.href, active: isActive(pathname, item) }))} />
-        </span>
+        {/* Short names, so the three and "+" fit one row. */}
+        <Segmented size="sm" nowrap items={CONTENT_NAV.map((item) => ({ key: item.href, label: t(`${item.key}Short`), href: item.href, active: isActive(pathname, item) }))} />
       </div>
-      <Link href={plus.href} scroll={false} aria-label={plus.label} title={plus.label} className="ml-auto grid size-9 flex-none place-items-center rounded-full bg-accent text-[22px] font-light leading-none text-charcoal lg:hidden">
+      <Link href={plus.href} scroll={false} aria-label={plus.label} title={plus.label} className="ml-auto grid size-9 flex-none place-items-center rounded-full bg-accent text-[22px] font-light leading-none text-charcoal">
         +
       </Link>
     </nav>
