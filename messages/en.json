@@ -311,6 +311,7 @@
       "clear": "No deadline"
     },
     "addPerson": "+ Team member",
+    "notOnTeam": "You're not on {client}'s team, so this can't go there. Pick a client you work on, or ask an admin to add you to {client}.",
     "pickProject": "Pick a project — only managers can file tasks without one.",
     "notFound": "This task doesn't exist or you don't have access to it.",
     "saveFailed": "Couldn't save: {message}",

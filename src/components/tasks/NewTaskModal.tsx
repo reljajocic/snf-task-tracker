@@ -11,7 +11,7 @@ import { ScriptFields } from "./ScriptFields";
 import { SCRIPT_SECTIONS, parseEstimate, type ScriptSection, type TaskPriority, type TaskStatus, type TaskType } from "@/lib/tasks";
 import { Pill } from "./bits";
 import { MonthGrid, quickDates } from "./DatePicker";
-import { ClientProjectSelects, PeoplePicker, assignablePeople, PriorityPicker, StatusPicker, TypePicker, inputClass } from "./fields";
+import { ClientProjectSelects, allowedProjects, PeoplePicker, assignablePeople, PriorityPicker, StatusPicker, TypePicker, inputClass } from "./fields";
 import { FORMATS, FORMAT_COLOR, typeColor, type PostFormat } from "@/lib/formats";
 import { Segmented } from "@/components/ui/Segmented";
 
@@ -38,7 +38,20 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const tf = useTranslations("format");
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<"task" | "video">(defaults.kind ?? "task");
-  const [where, setWhere] = useState({ client_id: defaults.client_id ?? null, project_id: defaults.project_id ?? null });
+  // The page's client (posting schedule, video bank, a client page) is only a suggestion: if I'm not on its team
+  // and on none of its projects I can't file anything there (RLS refuses it), so the form starts without it and says
+  // why, instead of leaving Save greyed out with no way forward. Not on the team but on a project: that project.
+  const [blocked] = useState(() => {
+    const c = lookups.clients.find((x) => x.id === defaults.client_id);
+    return c && !c.isTeam && !allowedProjects(c).length ? c.name : null;
+  });
+  const [where, setWhere] = useState(() => {
+    const c = lookups.clients.find((x) => x.id === defaults.client_id);
+    if (!c || blocked) return { client_id: blocked ? null : (defaults.client_id ?? null), project_id: blocked ? null : (defaults.project_id ?? null) };
+    const allowed = allowedProjects(c);
+    const project = defaults.project_id && (c.isTeam || allowed.some((p) => p.id === defaults.project_id)) ? defaults.project_id : c.isTeam ? null : (allowed[0]?.id ?? null);
+    return { client_id: c.id, project_id: project };
+  });
   // Tasks start with me on them; a video has one editor and starts without one (set by the client's rules once it's dated).
   const [assignees, setAssignees] = useState<string[]>(defaults.kind === "video" ? [] : [lookups.me.id]);
   const [drive, setDrive] = useState("");
@@ -145,6 +158,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const shared = (
     <>
       <ClientProjectSelects layout="grid" clients={lookups.clients} clientId={where.client_id} projectId={where.project_id} onChange={setWhere} />
+      {blocked && !where.client_id && <p className="text-[13px] text-ink2 sm:col-span-2">{t("notOnTeam", { client: blocked })}</p>}
       {needsProject && <p className="text-[13px] text-rust-ink sm:col-span-2">{t("pickProject")}</p>}
       <div className="flex flex-col gap-2 sm:col-span-2">
         {label(t(kind === "video" ? "fields.editor" : "fields.assignees"))}

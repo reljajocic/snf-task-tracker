@@ -311,6 +311,7 @@
       "clear": "Bez roka"
     },
     "addPerson": "+ Član tima",
+    "notOnTeam": "Nisi u timu klijenta {client}, pa ovo ne može tamo. Izaberi klijenta na kom radiš ili zamoli admina da te doda u {client}.",
     "pickProject": "Izaberi projekat — samo menadžeri mogu da prave zadatke bez projekta.",
     "notFound": "Ovaj zadatak ne postoji ili nemaš pristup.",
     "saveFailed": "Nije sačuvano: {message}",
