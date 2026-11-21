@@ -85,7 +85,10 @@ export function ShootBoard({
   );
   // All post types, or one only (like the portal's filter); remembered on this device.
   const onlyRaw = useSyncExternalStore(subscribeType, readType, () => "");
-  const only = FORMATS.find((f) => f === onlyRaw) ?? null;
+  // The pick only counts on a day that has that type and more than one type: otherwise (e.g. "Posts" picked on an
+  // earlier shoot, a day of reels only) it would hide the whole day with no switch on screen to undo it.
+  const typesHere = FORMATS.filter((f) => unsorted.some((v) => v.format === f));
+  const only = typesHere.length > 1 ? (typesHere.find((f) => f === onlyRaw) ?? null) : null;
   const hiddenFormats = only ? FORMATS.filter((f) => f !== only) : [];
   const pickType = (f: PostFormat | null) => {
     try {
@@ -336,7 +339,7 @@ export function ShootBoard({
             )}
             <ShareShoot shootId={day.id} token={day.signup_token} />
             <Button type="button" size="sm" variant={adding ? "secondary" : "primary"} onClick={() => setAdding((a) => !a)}>
-              {adding ? t("shoots.close") : `+ ${t("shoots.addVideos")}`}
+              {adding ? t("shoots.close") : t("shoots.addVideos")}
             </Button>
           </span>
         )}
