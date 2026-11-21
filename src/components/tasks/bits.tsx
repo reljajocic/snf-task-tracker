@@ -135,6 +135,23 @@ export function TaskMeta({ task }: { task: Task }) {
   return <span className="text-[13px] leading-tight text-ink2">{parts.join(" · ")}</span>;
 }
 
+/**
+ * The line under a title in desktop rows: "Client · Type", then status and priority only when they say something
+ * (not "To do", not "Medium": nearly every task is both, so showing them on each row is noise).
+ */
+export function TaskFacts({ parts, status, priority, className = "" }: { parts: (string | null | undefined)[]; status: TaskStatus; priority: TaskPriority; className?: string }) {
+  const text = parts.filter(Boolean).join(" · ");
+  const showStatus = status !== "todo" && status !== "done";
+  if (!text && !showStatus && priority === "medium") return null;
+  return (
+    <span className={`flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[13px] leading-tight text-ink2 ${className}`}>
+      {text && <span>{text}</span>}
+      {showStatus && <StatusDot status={status} />}
+      {priority !== "medium" && <PriorityMark priority={priority} />}
+    </span>
+  );
+}
+
 /** Uppercase eyebrow tag (design "oznaka tipa"). */
 export function TypeTag({ children }: { children: ReactNode }) {
   return (

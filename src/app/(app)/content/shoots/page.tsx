@@ -15,10 +15,14 @@ import { ImportSheet } from "./ImportSheet";
 export default async function ShootsPage({ searchParams }: PageProps<"/content/shoots">) {
   const [params, all, lookups, t, remembered] = await Promise.all([searchParams, getShootDays(), getLookups(), getTranslations(), rememberedClient()]);
   const today = getToday();
-  const wanted = params.client === "all" ? null : typeof params.client === "string" ? params.client : remembered;
-  const clientId = lookups.clients.some((c) => c.id === wanted) ? (wanted as string) : null;
-  const days = clientId ? all.filter((d) => d.client?.id === clientId) : all;
   const withShoots = lookups.clients.filter((c) => all.some((d) => d.client?.id === c.id));
+  // A client asked for in the URL is shown even without shoots (it's added to the picker). One remembered from
+  // another content page only applies if it has shoots: otherwise the picker says "All clients" over an empty list.
+  const asked = typeof params.client === "string" && params.client !== "all" ? lookups.clients.find((c) => c.id === params.client) : undefined;
+  const fromCookie = params.client === undefined ? withShoots.find((c) => c.id === remembered) : undefined;
+  const clientId = (asked ?? fromCookie)?.id ?? null;
+  const days = clientId ? all.filter((d) => d.client?.id === clientId) : all;
+  const pickable = asked && !withShoots.includes(asked) ? [...withShoots, asked] : withShoots;
   const upcoming = days.filter((d) => d.date >= today);
   const past = days.filter((d) => d.date < today).reverse();
   const canCreate = lookups.clients.some((c) => c.isTeam);
@@ -69,10 +73,10 @@ export default async function ShootsPage({ searchParams }: PageProps<"/content/s
           ) : null
         }
       />
-      {withShoots.length > 1 && (
+      {pickable.length > 1 && (
         <div className="px-5 pb-6 max-lg:pt-3 lg:px-10">
           <Suspense>
-            <ClientPicker clients={withShoots.map((c) => ({ id: c.id, name: c.name }))} value={clientId ?? "all"} allLabel={t("shoots.allClients")} />
+            <ClientPicker clients={pickable.map((c) => ({ id: c.id, name: c.name }))} value={clientId ?? "all"} allLabel={t("shoots.allClients")} />
           </Suspense>
         </div>
       )}

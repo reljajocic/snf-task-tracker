@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { PriorityMark, StatusDot, dueTone } from "@/components/tasks/bits";
+import { TaskFacts, dueTone } from "@/components/tasks/bits";
 import { TaskLink } from "@/components/tasks/links";
 import { AvatarStack } from "@/components/ui/Avatar";
 import { requireProfile } from "@/lib/auth";
@@ -66,20 +66,14 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
                   <TaskLink
                     key={x.id}
                     id={x.id}
-                    className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-line px-[18px] py-3.5 last:border-b-0 hover:bg-hover lg:grid-cols-[minmax(0,1fr)_100px_60px_120px] wide:grid-cols-[minmax(0,1fr)_100px_150px_60px_120px] ${x.status === "done" ? "opacity-60" : ""}`}
+                    className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-line px-[18px] py-3.5 last:border-b-0 hover:bg-hover lg:grid-cols-[minmax(0,1fr)_96px_100px] lg:gap-5 ${x.status === "done" ? "opacity-60" : ""}`}
                   >
-                    <div className="flex min-w-0 flex-col gap-[5px]">
+                    <div className="flex min-w-0 flex-col gap-1.5">
                       <span className={`text-[15px] font-medium leading-snug ${x.status === "done" ? "line-through" : ""}`}>{x.title}</span>
                       {/* Project and type only: the client's name is the page's own title. */}
-                      {(x.project || x.type) && (
-                        <span className="text-[13px] leading-tight text-ink2">
-                          {[x.project?.name, x.type ? t(`taskType.${x.type}`) : null].filter(Boolean).join(" · ")}
-                        </span>
-                      )}
+                      <TaskFacts parts={[x.project?.name, x.type ? t(`taskType.${x.type}`) : null]} status={x.status} priority={x.priority} />
                     </div>
-                    <span className="hidden lg:block"><PriorityMark priority={x.priority} /></span>
-                    <span className="hidden wide:block"><StatusDot status={x.status} /></span>
-                    <span className="hidden lg:block"><AvatarStack people={x.assignees} size={26} /></span>
+                    <span className="hidden justify-self-end lg:block"><AvatarStack people={x.assignees} size={26} /></span>
                     {x.due_date ? (
                       <span className={`justify-self-end whitespace-nowrap rounded-sm px-[9px] py-1.5 text-[13px] font-semibold leading-none ${TONE[dueTone(x, today)]}`}>
                         {formatDate(x.due_date)}

@@ -4,38 +4,35 @@ import { useTranslations } from "next-intl";
 import { AvatarStack } from "@/components/ui/Avatar";
 import { daysBetween, formatDate, type IsoDate } from "@/lib/dates";
 import type { Task } from "@/lib/tasks";
-import { DueStack, PriorityMark, PrioritySquare, StatusDot, TaskMeta, dueTone, useDueText } from "./bits";
+import { DueStack, PriorityMark, PrioritySquare, TaskFacts, TaskMeta, dueTone, useDueText } from "./bits";
 import { TaskLink } from "./links";
 import { taskDue } from "@/lib/tasks";
 
-// Status column only fits from ~1400px; below that the row keeps title, priority, people, deadline.
-const ROW_GRID =
-  "grid grid-cols-[minmax(0,1fr)_96px_60px_156px] items-center gap-4 wide:grid-cols-[minmax(0,1fr)_96px_150px_60px_156px]";
+// The title gets the width: client, type, status and priority sit on one line under it (status and priority only
+// when they aren't the usual To do / Medium), so the row is title | people | deadline.
+const ROW_GRID = "grid grid-cols-[minmax(0,1fr)_96px_118px] items-center gap-5";
 
-/** Desktop row inside a surface list (design 1a). `showDue` = relative chip vs plain date. */
+/** Desktop row inside a surface list (design 1a). `plainDate`: under a day header, so the date isn't repeated. */
 export function TaskRow({ task, today, plainDate = false }: { task: Task; today: IsoDate; plainDate?: boolean }) {
+  const t = useTranslations();
   const late = dueTone(task, today) === "late";
   return (
     <TaskLink
       id={task.id}
       className={`${ROW_GRID} border-t border-line px-[18px] py-3.5 first:border-t-0 hover:bg-hover ${late && !plainDate ? "bg-red-bg hover:bg-red-bg" : ""}`}
     >
-      <div className="flex min-w-0 flex-col gap-[5px]">
+      <div className="flex min-w-0 flex-col gap-1.5">
         <span className="text-[15px] font-medium leading-snug">{task.title}</span>
-        <TaskMeta task={task} />
+        <TaskFacts
+          parts={[task.client?.name ?? t("task.noClient"), task.type ? t(`taskType.${task.type}`) : null]}
+          status={task.status}
+          priority={task.priority}
+        />
       </div>
-      <PriorityMark priority={task.priority} />
-      <span className="hidden wide:block">
-        <StatusDot status={task.status} />
+      <span className="justify-self-end">
+        <AvatarStack people={task.assignees} size={28} />
       </span>
-      <AvatarStack people={task.assignees} size={28} />
-      {plainDate ? (
-        <span className="min-w-[118px] justify-self-end whitespace-nowrap px-2.5 text-[13px] font-medium text-ink2">
-          {task.due_date ? formatDate(task.due_date) : ""}
-        </span>
-      ) : (
-        <DueStack task={task} today={today} />
-      )}
+      {plainDate ? <span /> : <DueStack task={task} today={today} />}
     </TaskLink>
   );
 }
