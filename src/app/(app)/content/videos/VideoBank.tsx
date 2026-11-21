@@ -78,7 +78,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
   // Phones: the two selects share a row under the search field (they used to take a row each).
   const selectCls = "h-9 min-w-0 flex-1 cursor-pointer appearance-none rounded-full border border-line2 bg-transparent px-3.5 text-[13px] font-medium text-ink2 outline-none hover:text-ink sm:flex-none";
   const chip = (active: boolean) =>
-    `h-8 flex-none cursor-pointer whitespace-nowrap rounded-full border px-3 text-[13px] font-semibold tracking-[0.04em] ${active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`;
+    `h-8 flex-none cursor-pointer whitespace-nowrap rounded-full border px-3 text-[13px] font-semibold tracking-[0.08em] ${active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`;
   const action = "h-8 cursor-pointer whitespace-nowrap rounded-md border border-line2 bg-transparent px-2.5 text-[13px] font-medium text-ink2 hover:border-ink3 hover:text-ink disabled:opacity-50";
 
   const meta = (v: Task) => {
@@ -259,7 +259,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                       <div className="flex max-w-[820px] flex-col gap-3 border-t border-line pt-3.5">
                         {parts(v).map((sec, i) => (
                           <div key={i} className="flex flex-col gap-1.5 border-l-2 border-accent/60 pl-3">
-                            {sec.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-accent">{sec.label}</span>}
+                            {sec.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">{sec.label}</span>}
                             <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink">{sec.text}</span>
                           </div>
                         ))}

@@ -4,7 +4,8 @@ import type { ComponentProps } from "react";
 // Port of the design system's <Button>: uppercase DM Sans 500, tracked label, 10px radius,
 // flat rust primary that lifts a touch on hover (see globals.css). No scale on press.
 type Variant = "primary" | "secondary" | "ghost";
-type Size = "sm" | "md" | "lg";
+// xs: inline, next to a 36px field inside a panel. touch: the main action on a phone screen (56px).
+type Size = "xs" | "sm" | "md" | "lg" | "touch";
 
 const base =
   "inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-md border font-medium uppercase tracking-[0.14em] transition-[color,background-color,border-color,filter] duration-[var(--dur-fast)] ease-[var(--ease-standard)] cursor-pointer disabled:cursor-not-allowed disabled:opacity-45";
@@ -14,13 +15,15 @@ const variants: Record<Variant, string> = {
     "bg-accent border-transparent text-charcoal active:brightness-95",
   secondary:
     "bg-transparent border-[var(--btn-secondary-line)] text-ink hover:border-ink3",
-  ghost: "bg-transparent border-transparent text-ink2 hover:text-ink px-1",
+  ghost: "bg-transparent border-transparent text-ink2 hover:text-ink",
 };
 
 const sizes: Record<Size, string> = {
+  xs: "h-9 px-3.5 text-[12px]",
   sm: "h-10 px-[1.1rem] text-[13px]",
   md: "h-12 px-7 text-[15px]",
   lg: "h-[52px] px-9 text-[18px]",
+  touch: "h-14 px-6 text-[15px]",
 };
 
 type Common = { variant?: Variant; size?: Size; className?: string };

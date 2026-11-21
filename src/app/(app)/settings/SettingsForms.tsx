@@ -12,7 +12,7 @@ import { NOTIFICATION_CHANNELS, NOTIFICATION_EVENTS, isEnabled, type Notificatio
 import { LOCALES, LOCALE_NAME, type Locale } from "@/lib/locale";
 import { THEMES, THEME_COOKIE, type Theme } from "@/lib/theme";
 import { saveTheme } from "@/components/shell/actions";
-import { inkOn } from "@/lib/color";
+import { COLOR_WHEEL, inkOn } from "@/lib/color";
 import { AVATAR_COLORS } from "@/lib/team";
 import { saveProfile, setLanguage, setPreference } from "./actions";
 
@@ -56,7 +56,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
           <label
             title={t("customColor")}
             className={`relative grid size-7 cursor-pointer place-items-center overflow-hidden rounded-full ring-offset-2 ring-offset-[var(--surf)] ${!preset ? "ring-2 ring-accent" : ""}`}
-            style={{ background: preset ? "conic-gradient(#ea693a, #d6a93e, #6fae7b, #4fa3a5, #5b8ec2, #9a7fd1, #ea693a)" : color }}
+            style={{ background: preset ? COLOR_WHEEL : color }}
           >
             {preset && <span className="grid size-4 place-items-center rounded-full bg-[var(--surf)] text-[12px] text-ink2">+</span>}
             <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0" />

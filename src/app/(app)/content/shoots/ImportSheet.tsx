@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 import { inputClass, selectClass } from "@/components/tasks/fields";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonClass } from "@/components/ui/Button";
 import { importShootSheet, type ShootFormState } from "./actions";
 
 /** "Import from Google Sheets": paste the shoot sheet link, get a shoot day with all its videos. */
@@ -14,7 +14,7 @@ export function ImportSheet({ clients }: { clients: { id: string; name: string }
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="flex h-10 cursor-pointer items-center rounded-sm border border-line2 px-4 text-[13px] font-medium uppercase tracking-[0.14em]">
+      <button type="button" onClick={() => setOpen(true)} className={buttonClass({ variant: "secondary", size: "sm" })}>
         {t("button")}
       </button>
     );

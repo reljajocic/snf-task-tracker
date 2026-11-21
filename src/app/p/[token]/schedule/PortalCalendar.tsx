@@ -10,6 +10,8 @@ import { PORTAL_STATUS_COLOR, type PortalStatus } from "@/lib/portal-status";
 import { useApprover } from "../useApprover";
 import { NameField } from "../video/[taskId]/VideoDecision";
 import { setPostDate } from "../actions";
+import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
 
 export type CalendarPost = {
   id: string;
@@ -112,7 +114,7 @@ export function PortalCalendar({ token, months, today, posts, pool, plans }: { t
         className={`flex items-center gap-1.5 text-[13px] font-medium leading-tight lg:flex-col lg:items-start lg:gap-0.5 lg:rounded-md lg:border-l-[3px] lg:bg-chip lg:px-1.5 lg:py-1`}
       >
         <span className="size-2 flex-none rounded-full lg:hidden" style={{ background: PORTAL_STATUS_COLOR[v.status], boxShadow: `0 0 0 1.5px var(--surf), 0 0 0 3px ${FORMAT_COLOR[v.format]}` }} />
-        <span className="hidden items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.08em] lg:flex" style={{ color: FORMAT_COLOR[v.format] }}>
+        <span className="hidden items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.08em] lg:flex" style={{ color: FORMAT_COLOR[v.format] }}>
           <span className="size-1.5 rounded-full" style={{ background: PORTAL_STATUS_COLOR[v.status] }} />
           {t(`format.${v.format}`)}
         </span>
@@ -178,28 +180,27 @@ export function PortalCalendar({ token, months, today, posts, pool, plans }: { t
         grid
       )}
       {pending && (
-        <div className="fixed inset-0 z-40 grid place-items-center bg-black/50 p-5" onClick={() => setPending(null)}>
-          <div className="flex w-full max-w-[380px] flex-col gap-4 rounded-lg border border-line bg-surf p-5" onClick={(e) => e.stopPropagation()}>
-            <span className="text-[15px] font-medium">{t("portal.nameToMove")}</span>
+        <Modal title={t("portal.nameToMove")} onClose={() => setPending(null)} className="max-w-[400px]">
+          <form
+            className="flex flex-col gap-5"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!name.trim()) return;
+              apply(pending.id, pending.date, name);
+              setPending(null);
+            }}
+          >
             <NameField name={name} setName={setName} />
-            <div className="flex gap-3">
-              <button
-                type="button"
-                disabled={!name.trim()}
-                onClick={() => {
-                  apply(pending.id, pending.date, name);
-                  setPending(null);
-                }}
-                className="h-12 cursor-pointer rounded-md bg-accent px-[22px] text-[15px] font-semibold text-charcoal disabled:opacity-45"
-              >
+            <div className="flex flex-wrap gap-3">
+              <Button type="submit" size="sm" className="max-lg:h-11" disabled={!name.trim()}>
                 {t("portal.saveDate")}
-              </button>
-              <button type="button" onClick={() => setPending(null)} className="h-12 cursor-pointer px-3 text-[15px] text-ink2">
+              </Button>
+              <Button variant="ghost" size="sm" className="max-lg:h-11" onClick={() => setPending(null)}>
                 {t("portal.cancel")}
-              </button>
+              </Button>
             </div>
-          </div>
-        </div>
+          </form>
+        </Modal>
       )}
     </div>
   );

@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import { returnVideoToIdeas } from "@/app/(app)/task-actions";
 import { formatDate } from "@/lib/dates";
 import type { ShootAttempt } from "@/lib/tasks";
+import { Button } from "@/components/ui/Button";
 
 /** "Return to ideas": asks why (required), then sends the video back for a reshoot. */
 export function ReturnToIdeas({ taskId, onDone, className = "" }: { taskId: string; onDone: () => void; className?: string }) {
@@ -47,17 +48,12 @@ export function ReturnToIdeas({ taskId, onDone, className = "" }: { taskId: stri
       <span className="text-[13px] leading-snug text-ink3">{t("hint")}</span>
       {error && <span role="alert" className="text-[13px] text-red-ink">{error}</span>}
       <div className="flex gap-2">
-        <button
-          type="button"
-          disabled={pending || !reason.trim()}
-          onClick={submit}
-          className="h-9 cursor-pointer rounded-md bg-accent px-3.5 text-[13px] font-semibold text-charcoal disabled:opacity-45"
-        >
+        <Button size="xs" disabled={pending || !reason.trim()} onClick={submit}>
           {t("confirm")}
-        </button>
-        <button type="button" onClick={() => setOpen(false)} className="h-9 cursor-pointer rounded-md border border-line2 px-3.5 text-[13px] font-medium text-ink2">
+        </Button>
+        <Button variant="secondary" size="xs" onClick={() => setOpen(false)}>
           {t("cancel")}
-        </button>
+        </Button>
       </div>
     </div>
   );

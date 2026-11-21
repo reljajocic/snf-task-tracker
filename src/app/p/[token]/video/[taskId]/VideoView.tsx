@@ -9,6 +9,7 @@ import { RequestChange, VideoDecision } from "./VideoDecision";
 import { safeHref } from "@/lib/safe-url";
 import { PostTags } from "@/components/tasks/tags";
 import { PostDate } from "../../schedule/PostDate";
+import { StudioAvatar } from "@/components/ui/Avatar";
 
 // Shared by the video's page and the window it opens in over the schedule.
 // 7c (desktop) / 7f (mobile): watch a cut and approve it or ask for changes. Any video in the schedule opens here too,
@@ -124,7 +125,7 @@ export async function VideoView({ token, taskId, versionParam, inModal = false }
 
         {shown?.note && (
           <div className="flex gap-3">
-            <span className="grid size-8 flex-none place-items-center rounded-full bg-[#F4A98D] text-[13px] font-semibold text-charcoal">S</span>
+            <StudioAvatar />
             <div className="flex flex-col gap-1.5">
               <span className="text-[14px] font-semibold">
                 Slate n&apos; Frame <span className="font-normal text-ink3">· {formatDate(shown.created_at.slice(0, 10))}</span>

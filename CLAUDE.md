@@ -12,3 +12,6 @@
 - Files stay on Google Drive; the app stores links only.
 - Phases: 1 = tasks + clients + roles, 2 = video flow / posting schedule / shoots, 3 = client portal
   (secret link, no login).
+- After any change people can see (components, `globals.css`, `messages/en.json`), run the
+  `design-reviewer` agent (`.claude/agents/design-reviewer.md`) on the diff before committing,
+  and fix its **greška** findings.

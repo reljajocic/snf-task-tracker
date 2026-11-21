@@ -32,7 +32,7 @@ export default async function SignupPage({ params, searchParams }: PageProps<"/s
       </header>
       <main className="mx-auto flex w-full max-w-[860px] flex-col gap-6 px-5 pb-16 pt-8 lg:px-8 lg:pt-10">
         <div className="flex flex-col gap-3">
-          <span className="text-[13px] font-medium uppercase tracking-[0.14em] text-ink3">
+          <span className="text-[14px] font-medium text-ink3">
             {tw("long", { day: String(weekdayIndex(signup.date)) })}, {formatDate(signup.date)}
             {signup.location ? ` · ${signup.location}` : ""}
           </span>

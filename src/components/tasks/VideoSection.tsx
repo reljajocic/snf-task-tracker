@@ -17,6 +17,7 @@ import { ReviewSection } from "./ReviewSection";
 import { ScriptDecisionBadge } from "./ScriptDecisionBadge";
 import { safeHref } from "@/lib/safe-url";
 import { FORMATS, FORMAT_COLOR, typeColor } from "@/lib/formats";
+import { Button } from "@/components/ui/Button";
 
 type Save = (patch: TaskPatch, optimistic?: Partial<Task>) => void;
 
@@ -427,9 +428,9 @@ function Subtasks({ task, lookups, disabled, onChanged }: { task: Task; lookups:
             {assignablePeople(lookups, task.client?.id).map((p) => <option key={p.id} value={p.id}>{p.full_name}</option>)}
           </select>
           <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className="h-9 rounded-md border border-line2 bg-transparent px-2 text-[14px] text-ink" />
-          <button type="submit" disabled={pending || !title.trim()} className="h-9 cursor-pointer rounded-md bg-accent px-3.5 text-[13px] font-semibold uppercase tracking-[0.1em] text-charcoal disabled:opacity-45">
+          <Button type="submit" size="xs" disabled={pending || !title.trim()}>
             {t("video.addSubtaskSave")}
-          </button>
+          </Button>
           <button type="button" onClick={() => setAdding(false)} className="h-9 cursor-pointer px-2 text-[13px] text-ink3">×</button>
         </form>
       )}
@@ -483,7 +484,7 @@ function ScriptEditor({ task, disabled, save }: { task: Task; disabled: boolean;
               placeholder={t("sectionLabel")}
               onChange={(e) => update(i, { label: e.target.value })}
               onBlur={() => commit(sections)}
-              className="h-9 border-0 bg-transparent text-[13px] font-semibold uppercase tracking-[0.14em] text-accent outline-none placeholder:text-ink3 focus-visible:shadow-none sm:h-7 sm:text-[11px]"
+              className="h-9 border-0 bg-transparent text-[13px] font-semibold uppercase tracking-[0.12em] text-accent outline-none placeholder:text-ink3 focus-visible:shadow-none sm:h-7 sm:text-[11px]"
             />
             <textarea
               value={s.text}

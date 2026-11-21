@@ -15,6 +15,7 @@ import { SOCIAL_LABEL, SOCIAL_PLATFORMS, type Social, type SocialPlatform } from
 import { deleteClient, deleteProject, saveClient, saveProject, type FormState } from "./actions";
 import { ask } from "@/components/ui/Dialog";
 import { PageTitle } from "@/components/shell/PageTitle";
+import { COLOR_WHEEL } from "@/lib/color";
 
 function Field({ label, hint, children, wide }: { label: string; hint?: string; children: React.ReactNode; wide?: boolean }) {
   return (
@@ -259,7 +260,7 @@ function MarkField({ name, initialColor, initialInitials }: { name: string; init
           <label
             title={t("markCustom")}
             className="relative grid size-8 cursor-pointer place-items-center overflow-hidden rounded-full border border-line2 text-[15px] text-ink2"
-            style={{ background: "conic-gradient(#ea693a, #d6a93e, #6fae7b, #4fa3a5, #5b8ec2, #9a7fd1, #ea693a)" }}
+            style={{ background: COLOR_WHEEL }}
           >
             <span className="grid size-5 place-items-center rounded-full bg-[var(--canvas)] text-[13px]">+</span>
             <input type="color" value={color ?? "#ea693a"} onChange={(e) => setColor(e.target.value)} className="absolute inset-0 cursor-pointer opacity-0" />

@@ -269,7 +269,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
               value={s.label}
               placeholder={tv("sectionLabel")}
               onChange={(e) => setScript((cur) => cur.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))}
-              className="h-9 border-0 bg-transparent text-[13px] font-semibold uppercase tracking-[0.14em] text-accent outline-none placeholder:text-ink3 focus-visible:shadow-none sm:h-7 sm:text-[11px]"
+              className="h-9 border-0 bg-transparent text-[13px] font-semibold uppercase tracking-[0.12em] text-accent outline-none placeholder:text-ink3 focus-visible:shadow-none sm:h-7 sm:text-[11px]"
             />
             <textarea
               value={s.text}
@@ -356,7 +356,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
           e.preventDefault();
           if (canSave) submit();
         }}
-        className={`relative flex h-full w-full flex-col overflow-hidden bg-bg lg:rounded-lg lg:border lg:border-line2 lg:shadow-[0_30px_80px_rgba(0,0,0,0.45)] ${
+        className={`relative flex h-full w-full flex-col overflow-hidden bg-bg lg:rounded-lg lg:border lg:border-line2 lg:shadow-[var(--shadow-overlay)] ${
           isVideo ? "lg:h-[calc(100dvh-64px)] lg:w-[min(1800px,calc(100vw-96px))]" : "lg:h-auto lg:max-h-[calc(100dvh-64px)] lg:w-[min(1040px,calc(100vw-96px))]"
         }`}
       >

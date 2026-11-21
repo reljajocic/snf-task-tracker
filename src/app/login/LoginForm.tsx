@@ -60,7 +60,7 @@ export function LoginForm({ initialError }: { initialError: "linkExpired" | "ina
         </div>
 
         <label className="flex flex-col gap-2.5">
-          <span className="eyebrow hidden lg:block" style={{ color: "rgba(244,243,237,.48)" }}>
+          <span className="eyebrow" style={{ color: "rgba(244,243,237,.64)" }}>
             {t("emailLabel")}
           </span>
           <input
@@ -70,25 +70,20 @@ export function LoginForm({ initialError }: { initialError: "linkExpired" | "ina
             inputMode="email"
             required
             autoFocus
-            aria-label={t("emailLabel")}
+            placeholder={t("emailPlaceholder")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="h-14 rounded-md border border-offwhite/36 bg-offwhite/6 px-4 text-[18px] text-offwhite outline-none focus:border-accent lg:h-[52px] lg:rounded-none lg:border-0 lg:border-b lg:border-accent lg:bg-transparent lg:px-0 lg:text-[18px] lg:focus-visible:shadow-none"
+            className="h-14 rounded-md border border-offwhite/36 bg-offwhite/6 px-4 text-[18px] text-offwhite outline-none placeholder:text-offwhite/40 focus:border-accent lg:h-[52px] lg:rounded-none lg:border-0 lg:border-b-2 lg:border-offwhite/36 lg:focus:border-accent lg:bg-transparent lg:px-0 lg:text-[18px] lg:focus-visible:shadow-none"
           />
         </label>
 
         {errorLine}
 
         <Button type="submit" size="lg" disabled={pending} className="h-14 w-full font-semibold lg:h-[52px] lg:w-auto lg:self-start lg:font-medium">
-          {pending ? t("sending") : (
-            <>
-              <span className="lg:hidden">{t("sendShort")}</span>
-              <span className="hidden lg:inline">{t("send")}</span>
-            </>
-          )}
+          {pending ? t("sending") : t("send")}
         </Button>
 
-        <p className="hidden text-[13px] leading-normal text-offwhite/48 lg:block">{t("restricted")}</p>
+        <p className="text-[13px] leading-normal text-offwhite/64">{t("restricted")}</p>
       </form>
     );
   }

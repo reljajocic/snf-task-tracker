@@ -17,7 +17,7 @@ export function FormatTag({ format, label }: { format: PostFormat; label: string
 /** The content type stays quiet next to the format: a dot in its colour and small text, no box. */
 export function TypeTag({ type }: { type: string }) {
   return (
-    <span className="inline-flex flex-none items-center gap-1 whitespace-nowrap text-[10px] font-semibold uppercase leading-none tracking-[0.06em] text-ink3">
+    <span className="inline-flex flex-none items-center gap-1 whitespace-nowrap text-[11px] font-semibold uppercase leading-none tracking-[0.08em] text-ink3">
       <span className="size-1.5 flex-none rounded-full" style={{ background: typeColor(type) }} />
       {type}
     </span>

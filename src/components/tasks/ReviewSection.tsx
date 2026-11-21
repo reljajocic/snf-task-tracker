@@ -6,6 +6,7 @@ import { addVersion, loadReview, type ReviewState } from "@/app/(app)/task-actio
 import { formatDate } from "@/lib/dates";
 import type { Task } from "@/lib/tasks";
 import { safeHref } from "@/lib/safe-url";
+import { Button } from "@/components/ui/Button";
 
 const DECISION = { approved: "text-[var(--status-done)]", changes: "text-[var(--waiting-ink)]" };
 
@@ -97,9 +98,9 @@ export function ReviewSection({ task, disabled, onChanged }: { task: Task; disab
             </label>
             <span className="flex gap-2">
               <button type="button" onClick={() => setAdding(false)} className="h-9 cursor-pointer px-2 text-[13px] text-ink3">×</button>
-              <button type="submit" disabled={pending || !url.trim()} className="h-9 cursor-pointer rounded-md bg-accent px-3.5 text-[13px] font-semibold uppercase tracking-[0.1em] text-charcoal disabled:opacity-45">
+              <Button type="submit" size="xs" disabled={pending || !url.trim()}>
                 {t("versions.save")}
-              </button>
+              </Button>
             </span>
           </div>
           {error && <span className="text-[13px] text-red-ink">{error}</span>}

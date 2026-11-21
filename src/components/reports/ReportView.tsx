@@ -3,6 +3,7 @@ import type { MonthReport } from "@/lib/report";
 import { safeHref } from "@/lib/safe-url";
 import { PostTags } from "@/components/tasks/tags";
 import { parseFormat, type PostFormat } from "@/lib/formats";
+import { StudioAvatar } from "@/components/ui/Avatar";
 
 type T = (key: string, values?: Record<string, string | number>) => string;
 
@@ -47,7 +48,7 @@ export function ReportView({ report, summary, t, formatLabel }: { report: MonthR
     <div className="flex flex-col gap-7">
       {summary && (
         <section className="flex gap-3 rounded-lg border border-line bg-surf p-5">
-          <span className="grid size-8 flex-none place-items-center rounded-full bg-[#F4A98D] text-[13px] font-semibold text-charcoal">S</span>
+          <StudioAvatar />
           <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink">{summary}</p>
         </section>
       )}

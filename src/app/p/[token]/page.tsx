@@ -37,7 +37,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
     <div className="grid grid-cols-1 items-start gap-10 px-5 pb-12 pt-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-12 lg:pt-10">
       <div className="flex flex-col gap-10">
         <div className="flex flex-col gap-3">
-          <span className="text-[12px] font-medium uppercase tracking-[0.14em] text-ink3 lg:text-[13px]">
+          <span className="text-[13px] font-medium text-ink3 lg:text-[14px]">
             {t("weekday.long", { day: String(weekdayIndex(today)) })}, {formatDate(today)}
           </span>
           <h1 className="display text-[32px] lg:text-[48px]">{t("portal.yourContent")}</h1>
@@ -90,7 +90,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
           <section className="flex flex-col gap-3.5">
             <div className="flex items-baseline justify-between">
               {h2(t("portal.nextPosts"))}
-              <Link href={`${base}/schedule`} className="text-[14px] font-medium text-ink2 hover:text-ink">{t("portal.fullSchedule")}</Link>
+              <Link href={`${base}/schedule`} className="text-[14px] font-medium text-ink2 hover:text-ink underline decoration-line2 underline-offset-4 hover:decoration-current">{t("portal.fullSchedule")}</Link>
             </div>
             {nextPosts.length ? (
               <div className="snf-stack">

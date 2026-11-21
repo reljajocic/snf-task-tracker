@@ -30,7 +30,7 @@ export function DocBody({ body }: { body: string }) {
               <Line text={b.text} />
             </h2>
           ) : (
-            <h3 key={i} className="mt-2 text-[13px] font-semibold uppercase tracking-[0.1em] text-ink first:mt-0">
+            <h3 key={i} className="mt-2 text-[13px] font-semibold uppercase tracking-[0.12em] text-ink first:mt-0">
               <Line text={b.text} />
             </h3>
           )

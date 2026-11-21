@@ -213,7 +213,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                     const done = x.status === "done";
                     return (
                       <TaskLink key={x.id} id={x.id} className={`flex flex-col gap-2 rounded-md border bg-surf p-2.5 ${late ? "border-red-line" : "border-line"} ${done ? "opacity-60" : ""}`}>
-                        <span className="text-[11px] font-semibold uppercase leading-tight tracking-[0.1em] text-ink3">{x.client?.name ?? t("task.noClient")}</span>
+                        <span className="text-[11px] font-semibold uppercase leading-tight tracking-[0.08em] text-ink3">{x.client?.name ?? t("task.noClient")}</span>
                         <span className={`text-[14px] font-medium leading-snug ${done ? "line-through" : ""}`}>{x.title}</span>
                         <div className="flex items-center justify-between">
                           <PriorityMark priority={x.priority} />

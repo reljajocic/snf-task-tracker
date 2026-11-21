@@ -12,6 +12,7 @@ import { FORMATS, FORMAT_COLOR, type PostFormat } from "@/lib/formats";
 import { PostTags } from "@/components/tasks/tags";
 import { Segmented } from "@/components/ui/Segmented";
 import { DrawnCheck } from "@/components/ui/DrawnCheck";
+import { Button } from "@/components/ui/Button";
 
 type Item = { id: string; title: string; time: string | null; onCamera: string | null; type: string | null; format: PostFormat; script: ScriptSection[]; decision: Decision | null };
 
@@ -83,14 +84,14 @@ export function ScriptApprovals({
           </div>
         </div>
         {canDecide && remaining > 0 && (
-          <button
-            type="button"
+          <Button
+            size="sm"
+            className="max-lg:h-14"
             disabled={pending || !name.trim()}
             onClick={() => run(() => approveAllScripts(token, shootId, name, only ? videos.map((v) => v.id) : undefined))}
-            className="h-12 cursor-pointer rounded-md bg-accent px-5 text-[14px] font-semibold uppercase tracking-[0.1em] text-charcoal disabled:opacity-45"
           >
             {t("approveAll", { count: remaining })}
-          </button>
+          </Button>
         )}
       </div>
       {canDecide && remaining > 0 && (
@@ -181,17 +182,12 @@ export function ScriptApprovals({
                         className="resize-y rounded-md border border-accent bg-transparent px-3.5 py-3 text-[15px] text-ink outline-none"
                       />
                       <div className="flex gap-2">
-                        <button
-                          type="button"
-                          disabled={pending || !comment.trim()}
-                          onClick={() => run(() => decideScript(token, v.id, "changes", name, comment))}
-                          className="h-10 cursor-pointer rounded-md bg-accent px-4 text-[14px] font-semibold text-charcoal disabled:opacity-45"
-                        >
+                        <Button size="sm" className="max-lg:h-11" disabled={pending || !comment.trim()} onClick={() => run(() => decideScript(token, v.id, "changes", name, comment))}>
                           {t("send")}
-                        </button>
-                        <button type="button" onClick={() => setChangesFor(null)} className="h-10 cursor-pointer px-3 text-[14px] text-ink2">
+                        </Button>
+                        <Button variant="ghost" size="sm" className="max-lg:h-11" onClick={() => setChangesFor(null)}>
                           {t("cancel")}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   )}

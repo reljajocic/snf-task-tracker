@@ -7,6 +7,7 @@ import { DrawnCheck } from "@/components/ui/DrawnCheck";
 import { useApprover } from "../useApprover";
 import { NameField } from "../video/[taskId]/VideoDecision";
 import { setPostDate } from "../actions";
+import { Button, buttonClass } from "@/components/ui/Button";
 
 /**
  * The client gives a filmed video its posting date, or moves one. The phone's own date picker; their name once
@@ -47,7 +48,7 @@ export function PostDate({ token, taskId, date, min, compact }: { token: string;
             setValue(date ?? "");
             setOpen(true);
           }}
-          className={`cursor-pointer whitespace-nowrap rounded-md border px-4 font-medium ${date ? "border-line2 text-ink hover:border-ink3" : "border-accent text-rust-ink"} ${compact ? "h-10 text-[14px]" : "h-12 self-start text-[15px]"}`}
+          className={buttonClass({ variant: date ? "secondary" : "primary", size: "sm", className: compact ? "max-lg:h-11" : "self-start max-lg:h-12" })}
         >
           {date ? t("changeDate") : t("pickDate")}
         </button>
@@ -68,18 +69,13 @@ export function PostDate({ token, taskId, date, min, compact }: { token: string;
         />
       </label>
       <span className="text-[12px] leading-snug text-ink3">{t("postDateHint")}</span>
-      <div className="flex gap-3">
-        <button
-          type="button"
-          disabled={pending || !value || value === date || !name.trim()}
-          onClick={save}
-          className="h-12 cursor-pointer rounded-md bg-accent px-[22px] text-[15px] font-semibold text-charcoal disabled:opacity-45"
-        >
+      <div className="flex flex-wrap gap-3">
+        <Button size="sm" className="max-lg:h-11" disabled={pending || !value || value === date || !name.trim()} onClick={save}>
           {t("saveDate")}
-        </button>
-        <button type="button" onClick={() => setOpen(false)} className="h-12 cursor-pointer px-3 text-[15px] text-ink2">
+        </Button>
+        <Button variant="ghost" size="sm" className="max-lg:h-11" onClick={() => setOpen(false)}>
           {t("cancel")}
-        </button>
+        </Button>
       </div>
       {error && <span role="alert" className="text-[14px] text-red-ink">{error}</span>}
     </div>

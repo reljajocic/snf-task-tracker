@@ -25,7 +25,7 @@ export function MemberControls({ userId, role, active, partner }: { userId: stri
         value={role}
         disabled={pending}
         onChange={(e) => run({ role: e.target.value as "admin" | "user" })}
-        className="h-8 cursor-pointer rounded-md border border-line2 bg-transparent px-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-ink2"
+        className="h-8 cursor-pointer rounded-md border border-line2 bg-transparent px-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-ink2"
       >
         <option value="user">{t("roleUser")}</option>
         <option value="admin">{t("roleAdmin")}</option>

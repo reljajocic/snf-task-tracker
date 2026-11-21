@@ -24,6 +24,7 @@ import { VideoSection } from "./VideoSection";
 import { VideoTag } from "./video-bits";
 import { ask } from "@/components/ui/Dialog";
 import { safeHref } from "@/lib/safe-url";
+import { Button } from "@/components/ui/Button";
 
 const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink2" };
 
@@ -66,7 +67,7 @@ export function TaskPanel({ id, lookups, today, onClose }: { id: string; lookups
       <section
         role="dialog"
         aria-modal="true"
-        className="group/panel absolute inset-0 flex flex-col bg-bg lg:inset-x-12 lg:inset-y-8 lg:mx-auto lg:max-w-[1800px] lg:overflow-hidden lg:rounded-lg lg:border lg:border-line2 lg:shadow-[0_30px_90px_rgba(0,0,0,0.5)]"
+        className="group/panel absolute inset-0 flex flex-col bg-bg lg:inset-x-12 lg:inset-y-8 lg:mx-auto lg:max-w-[1800px] lg:overflow-hidden lg:rounded-lg lg:border lg:border-line2 lg:shadow-[var(--shadow-overlay)]"
       >
         {missing ? (
           <div className="flex flex-1 flex-col items-start gap-4 p-7">
@@ -369,13 +370,14 @@ function PanelBody({
       {/* Mobile: persistent primary action (3c), out of the way while typing (it would sit on the keyboard). */}
       {!disabled && (
         <div className="absolute inset-x-0 bottom-0 flex gap-3 border-t border-line bg-bg px-5 pb-[calc(16px+env(safe-area-inset-bottom))] pt-4 group-has-[input:focus]/panel:hidden group-has-[textarea:focus]/panel:hidden lg:hidden">
-          <button
-            type="button"
+          <Button
+            variant={done ? "secondary" : "primary"}
+            size="touch"
+            className="min-w-0 flex-1 max-lg:whitespace-normal max-lg:px-3 max-lg:text-[14px] max-lg:leading-tight"
             onClick={() => save({ status: done ? "in_progress" : "done" }, { status: done ? "in_progress" : "done" })}
-            className={`h-14 flex-1 cursor-pointer rounded-lg text-[15px] font-semibold uppercase tracking-[0.12em] ${done ? "border border-line2 text-ink" : "bg-accent text-charcoal"}`}
           >
             {done ? t("reopen") : t("markDone")}
-          </button>
+          </Button>
           {detail.canDelete && (
             <button type="button" onClick={remove} aria-label={t("delete")} className="h-14 cursor-pointer rounded-md border border-line2 px-4 text-[13px] text-red-ink">
               {t("delete")}

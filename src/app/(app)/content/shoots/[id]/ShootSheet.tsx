@@ -217,7 +217,7 @@ export function ShootSheet({
                             await setShotStatus(v.id, e.target.value as ShotStatus);
                           })
                         }
-                        className={`${cell} cursor-pointer text-[12px] font-semibold uppercase tracking-[0.06em] ${STATUS_STYLE[status]}`}
+                        className={`${cell} cursor-pointer text-[12px] font-semibold uppercase tracking-[0.08em] ${STATUS_STYLE[status]}`}
                       >
                         <option value="to_shoot">{t("toShoot")}</option>
                         <option value="shot">{t("filmed")}</option>

@@ -2,7 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
 
 const VIEW = 280; // the round window on screen
 const OUT = 256; // the saved image
@@ -72,10 +73,8 @@ export function AvatarCropper({
     canvas.toBlob((b) => b && onDone(b), "image/webp", 0.88);
   };
 
-  return createPortal(
-    <div className="fixed inset-0 z-[70] grid place-items-center bg-[var(--overlay)] p-4" onClick={onCancel}>
-      <div className="flex w-full max-w-[360px] flex-col items-center gap-5 rounded-lg border border-line2 bg-pop p-6 shadow-[var(--shadow-overlay)]" onClick={(e) => e.stopPropagation()}>
-        <span className="display self-start text-[18px]">{t("cropTitle")}</span>
+  return (
+    <Modal title={t("cropTitle")} onClose={onCancel} z="z-[70]" className="max-w-[360px] items-center gap-5">
         <div
           className="relative cursor-grab touch-none overflow-hidden rounded-full active:cursor-grabbing"
           style={{ width: VIEW, height: VIEW, background }}
@@ -97,16 +96,14 @@ export function AvatarCropper({
           <input type="range" min={0.5} max={4} step={0.01} value={zoom} onChange={(e) => setZoomKeepingCenter(Number(e.target.value))} className="flex-1 accent-[var(--accent)]" />
         </label>
         <span className="-mt-2 self-start text-[13px] text-ink3">{t("cropHint")}</span>
-        <div className="flex w-full justify-end gap-2">
-          <button type="button" onClick={onCancel} className="h-10 cursor-pointer rounded-md px-4 text-[14px] font-medium text-ink2 hover:text-ink">
+        <div className="flex w-full justify-end gap-2.5">
+          <Button variant="secondary" size="sm" className="max-lg:h-11" onClick={onCancel}>
             {t("cancel")}
-          </button>
-          <button type="button" onClick={save} className="h-10 cursor-pointer rounded-md bg-accent px-5 text-[14px] font-semibold text-charcoal">
+          </Button>
+          <Button size="sm" className="max-lg:h-11" onClick={save}>
             {t("save")}
-          </button>
+          </Button>
         </div>
-      </div>
-    </div>,
-    document.body,
+    </Modal>
   );
 }

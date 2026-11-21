@@ -182,7 +182,7 @@ export function ShootBoard({
         .filter((sec) => sec.text.trim())
         .map((sec, i) => (
           <div key={i} className="flex flex-col gap-1.5 border-l-2 border-accent/60 pl-3">
-            {sec.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-accent">{sec.label}</span>}
+            {sec.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">{sec.label}</span>}
             <span className="whitespace-pre-wrap text-[16px] leading-relaxed text-ink">{sec.text}</span>
           </div>
         ))}
@@ -333,7 +333,7 @@ export function ShootBoard({
         {canManage && (
           <span className="ml-auto flex items-center gap-4">
             {shotVideos.length > 0 && (
-              <Link href={`/content/schedule?client=${day.client?.id ?? ""}&view=calendar`} className="text-[14px] font-medium text-ink">
+              <Link href={`/content/schedule?client=${day.client?.id ?? ""}&view=calendar`} className="text-[14px] font-medium text-ink underline decoration-line2 underline-offset-4 hover:decoration-current">
                 {t("shoots.scheduleShot", { count: shotVideos.length })}
               </Link>
             )}
@@ -547,7 +547,7 @@ export function ShootBoard({
                 <div className="flex flex-col gap-4">
                   {sel.script.filter((sec) => sec.text.trim()).map((sec, i) => (
                     <div key={i} className="flex flex-col gap-1.5">
-                      <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-accent">{sec.label}</span>
+                      <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">{sec.label}</span>
                       <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">{sec.text}</span>
                     </div>
                   ))}

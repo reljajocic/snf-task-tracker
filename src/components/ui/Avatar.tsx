@@ -1,3 +1,5 @@
+import { AVATAR_COLORS } from "@/lib/team";
+
 type Person = { initials: string; avatar_bg: string; avatar_fg: string; full_name?: string; avatar_url?: string | null };
 
 /** Circle with the person's photo, or their initials on their colour. Stacks overlap by 8px. */
@@ -47,4 +49,10 @@ export function AvatarStack({ people, size = 28, ring = "var(--surf)" }: { peopl
       ))}
     </span>
   );
+}
+
+/** Slate n' Frame speaking as the studio (notes and summaries in the client portal): "S" on the brand peach. */
+const STUDIO = { initials: "S", full_name: "Slate n' Frame", avatar_bg: AVATAR_COLORS[0].bg, avatar_fg: AVATAR_COLORS[0].fg };
+export function StudioAvatar({ size = 32 }: { size?: number }) {
+  return <Avatar person={STUDIO} size={size} />;
 }

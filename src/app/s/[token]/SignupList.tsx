@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 import type { SignupVideo } from "@/lib/signup";
 import { useApprover } from "../../p/[token]/useApprover";
 import { addName, removeName } from "./actions";
+import { Button } from "@/components/ui/Button";
 
 const STATUS_COLOR = { to_shoot: "var(--line2)", shot: "var(--status-in-progress)", not_shot: "var(--prio-urgent)" } as const;
 
@@ -62,7 +63,7 @@ export function SignupList({ token, videos, readOnly = false }: { token: string;
 
       {/* The whole day at a glance, one line per video; a tap jumps to its card. */}
       <div className="flex flex-col rounded-lg border border-line bg-surf py-2">
-        <span className="px-4 pb-1.5 pt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-ink3 lg:px-5">{t("overview")}</span>
+        <span className="eyebrow px-4 pb-1.5 pt-2 lg:px-5">{t("overview")}</span>
         {videos.map((v, i) => (
           <a
             key={v.id}
@@ -123,7 +124,7 @@ export function SignupList({ token, videos, readOnly = false }: { token: string;
                 <div className="flex flex-col gap-2.5">
                   {parts.map((s, i) => (
                     <div key={i} className="flex flex-col gap-1.5 border-l-2 border-accent/60 pl-3">
-                      {s.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-accent">{s.label}</span>}
+                      {s.label && <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">{s.label}</span>}
                       <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">{s.text}</span>
                     </div>
                   ))}
@@ -141,24 +142,20 @@ export function SignupList({ token, videos, readOnly = false }: { token: string;
                 </span>
                 <span className="ml-auto">
                   {readOnly ? null : mine ? (
-                    <button
-                      type="button"
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="max-lg:h-11"
                       disabled={pending}
                       onClick={() => run(() => removeName(token, v.id, name))}
-                      className="h-10 cursor-pointer rounded-md border border-line2 px-4 text-[14px] font-medium text-ink2"
                     >
                       {t("leave")}
-                    </button>
+                    </Button>
                   ) : (
                     !taken && (
-                      <button
-                        type="button"
-                        disabled={pending || !name.trim()}
-                        onClick={() => run(() => addName(token, v.id, name))}
-                        className="h-10 cursor-pointer rounded-md bg-accent px-4 text-[14px] font-semibold text-charcoal disabled:opacity-45"
-                      >
+                      <Button size="sm" className="max-lg:h-11" disabled={pending || !name.trim()} onClick={() => run(() => addName(token, v.id, name))}>
                         {t("join")}
-                      </button>
+                      </Button>
                     )
                   )}
                 </span>

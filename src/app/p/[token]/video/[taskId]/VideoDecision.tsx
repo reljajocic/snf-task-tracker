@@ -7,6 +7,7 @@ import type { Decision } from "@/lib/portal";
 import { decideVideo, requestChange, undoDecision } from "../../actions";
 import { useApprover } from "../../useApprover";
 import { DrawnCheck } from "@/components/ui/DrawnCheck";
+import { Button } from "@/components/ui/Button";
 
 export function NameField({ name, setName }: { name: string; setName: (v: string) => void }) {
   const t = useTranslations("portal");
@@ -82,23 +83,23 @@ export function VideoDecision({ token, taskId, versionId, decision, undoable }: 
             placeholder={t("changesPlaceholder")}
             className="resize-y rounded-md border border-accent bg-transparent px-4 py-3.5 text-[15px] leading-normal text-ink outline-none"
           />
-          <div className="flex gap-3">
-            <button type="button" disabled={pending || !comment.trim() || !name.trim()} onClick={() => decide("changes")} className="h-12 cursor-pointer rounded-md bg-accent px-[22px] text-[15px] font-semibold text-charcoal disabled:opacity-45">
+          <div className="flex flex-wrap gap-3">
+            <Button size="md" disabled={pending || !comment.trim() || !name.trim()} onClick={() => decide("changes")}>
               {t("send")}
-            </button>
-            <button type="button" onClick={() => setForm(false)} className="h-12 cursor-pointer px-3 text-[15px] text-ink2">
+            </Button>
+            <Button variant="ghost" size="md" onClick={() => setForm(false)}>
               {t("cancel")}
-            </button>
+            </Button>
           </div>
         </div>
       ) : (
-        <div className="flex gap-3">
-          <button type="button" disabled={pending || !name.trim()} onClick={() => decide("approved")} className="h-14 flex-1 cursor-pointer rounded-md bg-accent text-[15px] font-semibold uppercase tracking-[0.12em] text-charcoal disabled:opacity-45">
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button size="touch" className="sm:flex-1" disabled={pending || !name.trim()} onClick={() => decide("approved")}>
             {t("approve")}
-          </button>
-          <button type="button" onClick={() => setForm(true)} className="h-14 flex-1 cursor-pointer rounded-md border border-line2 text-[15px] font-medium text-ink">
+          </Button>
+          <Button variant="secondary" size="touch" className="sm:flex-1" onClick={() => setForm(true)}>
             {t("askChanges")}
-          </button>
+          </Button>
         </div>
       )}
       {error && <span role="alert" className="text-[14px] text-red-ink">{error}</span>}
@@ -153,13 +154,13 @@ export function RequestChange({ token, taskId }: { token: string; taskId: string
         placeholder={t("changesPlaceholder")}
         className="resize-y rounded-md border border-accent bg-transparent px-4 py-3.5 text-[15px] leading-normal text-ink outline-none"
       />
-      <div className="flex gap-3">
-        <button type="button" disabled={pending || !comment.trim() || !name.trim()} onClick={send} className="h-12 cursor-pointer rounded-md bg-accent px-[22px] text-[15px] font-semibold text-charcoal disabled:opacity-45">
+      <div className="flex flex-wrap gap-3">
+        <Button size="md" disabled={pending || !comment.trim() || !name.trim()} onClick={send}>
           {t("send")}
-        </button>
-        <button type="button" onClick={() => setOpen(false)} className="h-12 cursor-pointer px-3 text-[15px] text-ink2">
+        </Button>
+        <Button variant="ghost" size="md" onClick={() => setOpen(false)}>
           {t("cancel")}
-        </button>
+        </Button>
       </div>
       {error && <span role="alert" className="text-[14px] text-red-ink">{error}</span>}
     </div>

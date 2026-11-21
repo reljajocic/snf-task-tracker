@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { reportBrowserError } from "@/app/actions/report-error";
+import { Button } from "@/components/ui/Button";
 
 /** What people see when a page breaks: a calm message and "try again"; the admin gets told. */
 export function ErrorScreen({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
@@ -27,9 +28,9 @@ export function ErrorScreen({ error, reset }: { error: Error & { digest?: string
     <div className="flex flex-1 flex-col items-start gap-4 px-5 py-16 lg:px-10">
       <h1 className="display text-[30px] lg:text-[32px]">{t("errorTitle")}</h1>
       <p className="max-w-[520px] text-[15px] leading-relaxed text-ink2">{t("errorText")}</p>
-      <button type="button" onClick={() => (navigator.onLine ? window.location.reload() : reset())} className="h-11 cursor-pointer rounded-md bg-accent px-5 text-[14px] font-semibold text-charcoal">
+      <Button size="sm" className="max-lg:h-11" onClick={() => (navigator.onLine ? window.location.reload() : reset())}>
         {t("tryAgain")}
-      </button>
+      </Button>
     </div>
   );
 }

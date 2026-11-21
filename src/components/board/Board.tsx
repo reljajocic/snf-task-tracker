@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { portalLoadBoard, portalSaveBoard, portalUploadBoardImage, uploadBoardImage } from "@/app/actions/boards";
 import type { BoardFiles } from "@/lib/boards";
 import { createClient } from "@/lib/supabase/client";
+import { PICK_COLORS } from "@/lib/color";
 
 // A moodboard (Excalidraw) that several people edit at once.
 //  - Every change is saved (debounced) and merged per element in the database (board_merge), so
@@ -26,7 +27,7 @@ type Lib = typeof import("@excalidraw/excalidraw");
 type Person = { id: string; name: string; color: string };
 type Pointer = { x: number; y: number; tool: "pointer" | "laser" };
 
-const COLORS = ["#ea693a", "#4fa3a5", "#9a7fd1", "#6fae7b", "#d6a93e", "#5b8ec2"];
+const COLORS = PICK_COLORS;
 const colorOf = (id: string) => COLORS[[...id].reduce((a, c) => a + c.charCodeAt(0), 0) % COLORS.length];
 
 /** Downscale to at most 1600px and re-encode as WebP (GIFs are kept as they are). */
