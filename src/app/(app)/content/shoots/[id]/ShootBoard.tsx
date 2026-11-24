@@ -495,7 +495,7 @@ export function ShootBoard({
       )}
 
       {/* … or the on-set board (2d) */}
-      <div className={`hidden min-h-0 flex-1 grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_440px] ${desktopView === "onset" ? "lg:grid" : ""}`}>
+      <div className={`hidden min-h-0 flex-1 grid-cols-[minmax(0,1fr)_400px] xl:grid-cols-[minmax(0,1fr)_minmax(520px,1fr)] ${desktopView === "onset" ? "lg:grid" : ""}`}>
         <div className="flex flex-col overflow-auto pb-10 pl-10 pr-8 pt-5">
           {typePicker && <div className="self-start pb-4">{typePicker}</div>}
           <CallTimes times={deriveCallTimes(items)} />
@@ -544,7 +544,8 @@ export function ShootBoard({
           {!items.length && <p className="pt-6 text-[14px] text-ink3">{t("shoots.empty")}</p>}
         </div>
 
-        <aside className="flex flex-col gap-5 overflow-auto border-l border-line px-7 pb-10 pt-6">
+        {/* The script is read here, from a step away while filming: half the screen and reading-size text. */}
+        <aside className="flex flex-col gap-6 overflow-auto border-l border-line px-8 pb-10 pt-6 xl:px-10">
           {sel ? (
             <>
               <div className="flex flex-col gap-2">
@@ -553,23 +554,23 @@ export function ShootBoard({
                 {whoWhen(sel)}
               </div>
               {sel.script.some((sec) => sec.text.trim()) ? (
-                <div className="flex flex-col gap-4">
+                <div className="flex max-w-[68ch] flex-col gap-5">
                   {sel.script.filter((sec) => sec.text.trim()).map((sec, i) => (
-                    <div key={i} className="flex flex-col gap-1.5">
-                      <ScriptLabel label={sec.label} tight />
-                      <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">{sec.text}</span>
+                    <div key={i} className="flex flex-col gap-2">
+                      <ScriptLabel label={sec.label} tight className="!text-[15px]" />
+                      <span className="whitespace-pre-wrap text-[20px] leading-relaxed text-ink">{sec.text}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <span className="text-[14px] text-ink3">{t("shoots.noScript")}</span>
+                <span className="text-[16px] text-ink3">{t("shoots.noScript")}</span>
               )}
               {sel.reference_url && (
-                <a href={safeHref(sel.reference_url)} target="_blank" rel="noreferrer" className="text-[14px] font-medium text-rust-ink">
+                <a href={safeHref(sel.reference_url)} target="_blank" rel="noreferrer" className="text-[15px] font-medium text-rust-ink">
                   {t("shoots.reference")}
                 </a>
               )}
-              {sel.note && <span className="whitespace-pre-wrap text-[14px] leading-normal text-ink2">{sel.note}</span>}
+              {sel.note && <span className="max-w-[68ch] whitespace-pre-wrap text-[16px] leading-relaxed text-ink2">{sel.note}</span>}
               {shotButtons(sel)}
               {canManage && (
                 <button
@@ -582,7 +583,7 @@ export function ShootBoard({
               )}
             </>
           ) : (
-            <span className="text-[14px] text-ink3">{t("shoots.selectVideo")}</span>
+            <span className="text-[16px] text-ink3">{t("shoots.selectVideo")}</span>
           )}
         </aside>
       </div>
