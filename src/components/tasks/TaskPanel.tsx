@@ -14,19 +14,21 @@ import {
 } from "@/app/(app)/task-actions";
 import { Avatar } from "@/components/ui/Avatar";
 import type { Lookups } from "@/lib/data";
-import { formatDate, type IsoDate } from "@/lib/dates";
+import Link from "next/link";
+import { dueLabel, formatDate, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { formatEstimate, parseEstimate, type Task } from "@/lib/tasks";
 import { dueTone, useDueText } from "./bits";
 import { DatePicker } from "./DatePicker";
-import { ClientProjectSelects, FieldRow, PeoplePicker, assignablePeople, PriorityPicker, StatusPicker, TypePicker } from "./fields";
-import { dueLabel } from "@/lib/dates";
+import { ClientProjectSelects, FieldRow, PeoplePicker, assignablePeople, PriorityPicker, TypePicker } from "./fields";
+import { ItemWhere } from "./item-bits";
+import { ReturnToIdeas } from "./Reshoot";
+import { StatusMenu } from "./StatusMenu";
 import { VideoSection } from "./VideoSection";
-import { VideoTag } from "./video-bits";
 import { ask } from "@/components/ui/Dialog";
 import { safeHref } from "@/lib/safe-url";
 import { Button } from "@/components/ui/Button";
 
-const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink2" };
+const TONE = { late: "text-red-ink", today: "text-rust-ink", normal: "text-ink3" };
 
 /** Side panel over the current screen (3a), full screen on mobile (3c). Saves on every change. */
 export function TaskPanel({ id, lookups, today, onClose }: { id: string; lookups: Lookups; today: IsoDate; onClose: () => void }) {
@@ -115,7 +117,9 @@ function PanelBody({
   onChanged: () => void;
 }) {
   const t = useTranslations("task");
+  const tw = useTranslations();
   const dueText = useDueText();
+  const [reshooting, setReshooting] = useState(false);
   const [task, setTask] = useState<Task>(detail.task);
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description ?? "");
@@ -169,62 +173,87 @@ function PanelBody({
   };
 
   const done = task.status === "done";
-  // Videos only get a deadline/status/priority once they're in edit (phase 2+).
-  const editStage = task.kind !== "video" || (task.phase ?? 0) >= 2;
+  const video = task.kind === "video";
   const label = task.due_date ? dueLabel(task.due_date, today, done) : null;
   const tone = dueTone(task, today);
-  const header = [task.client?.name ?? t("noClient"), task.project?.name].filter(Boolean).join(" · ");
+  const day = (d: IsoDate) => tw("weekday.short", { day: String(weekdayIndex(d)) });
 
   return (
     <>
-      <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-4 lg:px-10 lg:py-6">
-        <span className="flex min-w-0 items-center gap-2.5">
-          {task.kind === "video" && <VideoTag format={task.format} contentType={task.content_type} />}
-          <span className="truncate text-[13px] font-medium text-ink3">{header}</span>
-        </span>
-        <div className="flex items-center gap-1.5">
-          <button type="button" onClick={copyLink} className="h-[34px] cursor-pointer whitespace-nowrap rounded-md border border-line2 px-3 text-[13px] font-medium text-ink2 hover:text-ink">
+      {/* Header: where it belongs on the left, its status (a button that changes it) on the right. */}
+      <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-3.5 lg:px-10 lg:py-5">
+        <ItemWhere task={task} project className="min-w-0" />
+        <div className="flex flex-none items-center gap-1.5">
+          <StatusMenu task={task} today={today} save={save} disabled={disabled} onReshoot={video ? () => setReshooting(true) : undefined} />
+          <button type="button" onClick={copyLink} className="hidden h-9 cursor-pointer whitespace-nowrap rounded-md px-3 text-[13px] font-medium text-ink2 hover:text-ink sm:block">
             {copied ? t("copied") : t("copyLink")}
           </button>
-          <button type="button" aria-label={t("close")} onClick={onClose} className="size-[34px] cursor-pointer rounded-md text-[24px] text-ink2 hover:text-ink">
+          <button type="button" aria-label={t("close")} onClick={onClose} className="size-9 cursor-pointer rounded-md text-[24px] text-ink2 hover:text-ink max-lg:size-11">
             ×
           </button>
         </div>
       </div>
 
-      {/* Wide window: settings on the left, the words (script, description, comments) on the right.
-          Each side scrolls on its own; on a phone it's one column. */}
+      {/* Wide window: the item on the left (title, dates, people, details), its words on the right
+          (script, notes, description, comments). Each side scrolls on its own; on a phone it's one column. */}
       <div className="flex min-h-0 flex-1 flex-col overflow-auto lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:overflow-hidden">
-      <div className="flex flex-col gap-6 px-5 pt-6 lg:overflow-auto lg:border-r lg:border-line lg:px-10 lg:pb-10 lg:pt-8">
+      <div className="flex flex-col gap-7 px-5 pt-6 lg:overflow-auto lg:border-r lg:border-line lg:px-10 lg:pb-10 lg:pt-8">
         {error && <p role="alert" className="rounded-md bg-red-bg px-3 py-2 text-[13px] text-red-ink">{error}</p>}
-        {task.parent && <span className="-mb-4 text-[13px] text-ink3">{t("subtaskOf", { title: task.parent.title })}</span>}
 
-        <input
-          value={title}
-          disabled={disabled}
-          aria-label={t("titlePlaceholder")}
-          onChange={(e) => setTitle(e.target.value)}
-          onBlur={() => title.trim() && title.trim() !== task.title && save({ title }, { title: title.trim() })}
-          onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
-          className="focus-visible:shadow-none w-full border-0 border-b border-transparent bg-transparent py-1 text-[24px] font-medium leading-tight text-ink outline-none focus:border-accent lg:text-[24px]"
-        />
-
-        {task.kind === "video" && (
-          <VideoSection part="fields" task={{ ...task, shoot_history: detail.task.shoot_history }} lookups={lookups} today={today} disabled={disabled} save={save} onChanged={onChanged} onReshoot={reshot} />
-        )}
-
-        <div className="flex flex-col">
-          {editStage && (
-            <>
-              <FieldRow label={t("fields.status")}>
-                <StatusPicker value={task.status} disabled={disabled} onChange={(status) => save({ status }, { status })} />
-              </FieldRow>
-              <FieldRow label={t("fields.priority")}>
-                <PriorityPicker value={task.priority} disabled={disabled} onChange={(priority) => save({ priority }, { priority })} />
-              </FieldRow>
-            </>
+        <div className="flex flex-col gap-1.5">
+          {task.parent && <span className="text-[13px] text-ink3">{t("subtaskOf", { title: task.parent.title })}</span>}
+          <input
+            value={title}
+            disabled={disabled}
+            aria-label={t("titlePlaceholder")}
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={() => title.trim() && title.trim() !== task.title && save({ title }, { title: title.trim() })}
+            onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()}
+            className="focus-visible:shadow-none w-full border-0 border-b border-transparent bg-transparent py-1 text-[24px] font-medium leading-tight text-ink outline-none focus:border-accent"
+          />
+          {video && task.dropped_at && (
+            <span className="text-[13px] text-ink3">{tw("item.droppedOn", { date: formatDate(task.dropped_at) })}</span>
           )}
-          {task.kind === "video" ? (
+          {video && !task.dropped_at && task.published_at && (task.phase ?? 0) >= 5 && (
+            <span className="text-[13px] text-ink3">{tw("item.publishedOn", { date: formatDate(task.published_at) })}</span>
+          )}
+        </div>
+
+        {reshooting && !disabled && <ReturnToIdeas taskId={task.id} startOpen onCancel={() => setReshooting(false)} onDone={() => { setReshooting(false); reshot(); }} />}
+
+        {/* Dates: always together and in this order. A task only has a deadline. */}
+        <section className="flex flex-col gap-3">
+          <span className="eyebrow">{tw("item.dates")}</span>
+          <div className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-3">
+            {video && (
+              <DateField label={tw("item.shoot")}>
+                {task.shoot ? (
+                  <Link href={`/content/shoots/${task.shoot.id}`} className="flex h-9 items-center gap-1.5 self-start whitespace-nowrap text-[14px] font-semibold text-ink hover:underline">
+                    {formatDate(task.shoot.date)}
+                    <span className="text-[13px] font-medium text-ink3">{task.shoot_time ?? day(task.shoot.date)}</span>
+                  </Link>
+                ) : (
+                  <span className="flex h-9 items-center text-[14px] text-ink3">{tw("video.noShoot")}</span>
+                )}
+              </DateField>
+            )}
+            <DateField label={tw("item.deadline")}>
+              <DatePicker value={task.due_date} today={today} disabled={disabled} onChange={(due_date) => save({ due_date }, { due_date })} />
+              {label && <span className={`text-[13px] font-semibold ${TONE[tone]}`}>{dueText(label)}</span>}
+            </DateField>
+            {video && (
+              <DateField label={tw("item.posting")}>
+                <DatePicker value={task.publish_date} today={today} disabled={disabled} emptyLabel={tw("video.noPublish")} onChange={(d) => save({ publish_date: d }, { publish_date: d })} />
+                {task.publish_date && <span className="text-[13px] text-ink3">{day(task.publish_date)}</span>}
+              </DateField>
+            )}
+          </div>
+        </section>
+
+        {/* People */}
+        <section className="flex flex-col">
+          <span className="eyebrow pb-2">{tw("item.people")}</span>
+          {video ? (
             <>
               {/* A video has one editor (it's in their tasks) and, unless set, is filmed by the shoot day's crew. */}
               <FieldRow label={t("fields.editor")}>
@@ -264,13 +293,19 @@ function PanelBody({
               />
             </FieldRow>
           )}
-          {editStage && (
-            <>
-          <FieldRow label={t("fields.due")}>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <DatePicker value={task.due_date} today={today} disabled={disabled} onChange={(due_date) => save({ due_date }, { due_date })} />
-              {label && <span className={`whitespace-nowrap rounded-sm px-2.5 py-2 text-[13px] font-semibold leading-none ${TONE[tone]}`}>{dueText(label)}</span>}
-            </div>
+        </section>
+
+        {/* Details: everything else, one row each. */}
+        <section className="flex flex-col border-b border-line">
+          <span className="eyebrow pb-2">{tw("item.details")}</span>
+          {video && <VideoSection part="details" task={task} lookups={lookups} disabled={disabled} save={save} onChanged={onChanged} />}
+          {!video && (
+            <FieldRow label={t("fields.type")} top>
+              <TypePicker value={task.type} disabled={disabled} onChange={(type) => save({ type }, { type })} />
+            </FieldRow>
+          )}
+          <FieldRow label={t("fields.priority")} top>
+            <PriorityPicker value={task.priority} disabled={disabled} onChange={(priority) => save({ priority }, { priority })} />
           </FieldRow>
           <FieldRow label={t("fields.estimate")}>
             <input
@@ -287,8 +322,6 @@ function PanelBody({
               className="h-9 w-32 rounded-md border border-line2 bg-transparent px-3 text-[14px] font-medium text-ink outline-none placeholder:font-normal placeholder:text-ink3 focus:border-accent"
             />
           </FieldRow>
-            </>
-          )}
           <ClientProjectSelects
             clients={lookups.clients}
             clientId={task.client?.id ?? null}
@@ -303,40 +336,30 @@ function PanelBody({
               });
             }}
           />
-          {task.kind !== "video" && (
-            <div className="border-b border-line">
-              <FieldRow label={t("fields.type")} top>
-                <TypePicker value={task.type} disabled={disabled} onChange={(type) => save({ type }, { type })} />
-              </FieldRow>
+          <FieldRow label={t("fields.drive")}>
+            <div className="flex h-9 items-center gap-2 rounded-md border border-line2 pl-3 pr-1 focus-within:border-accent">
+              <input
+                value={drive}
+                disabled={disabled}
+                placeholder={t("drivePlaceholder")}
+                onChange={(e) => setDrive(e.target.value)}
+                onBlur={() => drive.trim() !== (task.drive_url ?? "") && save({ drive_url: drive }, { drive_url: drive.trim() || null })}
+                className="min-w-0 flex-1 border-0 bg-transparent text-[14px] text-ink outline-none placeholder:text-ink3"
+              />
+              {task.drive_url && (
+                <a href={safeHref(task.drive_url)} target="_blank" rel="noreferrer" className="flex h-7 items-center whitespace-nowrap rounded-sm bg-chip px-2.5 text-[13px] font-medium text-ink">
+                  {t("open")}
+                </a>
+              )}
             </div>
-          )}
-        </div>
+          </FieldRow>
+        </section>
 
-        <div className="flex flex-col gap-2.5">
-          <span className="eyebrow">{t("fields.drive")}</span>
-          <div className="flex h-[46px] items-center gap-2 rounded-md border border-line2 pl-3.5 pr-1.5 focus-within:border-accent">
-            <input
-              value={drive}
-              disabled={disabled}
-              placeholder={t("drivePlaceholder")}
-              onChange={(e) => setDrive(e.target.value)}
-              onBlur={() => drive.trim() !== (task.drive_url ?? "") && save({ drive_url: drive }, { drive_url: drive.trim() || null })}
-              className="min-w-0 flex-1 border-0 bg-transparent text-[14px] text-ink outline-none placeholder:text-ink3"
-            />
-            {task.drive_url && (
-              <a href={safeHref(task.drive_url)} target="_blank" rel="noreferrer" className="flex h-[34px] items-center whitespace-nowrap rounded-sm bg-chip px-3 text-[13px] font-medium text-ink">
-                {t("open")}
-              </a>
-            )}
-          </div>
-        </div>
-
+        {video && <VideoSection part="extras" task={{ ...task, shoot_history: detail.task.shoot_history }} lookups={lookups} disabled={disabled} save={save} onChanged={onChanged} />}
       </div>
 
       <div className="flex flex-col gap-6 px-5 pb-28 pt-6 lg:overflow-auto lg:px-10 lg:pb-10 lg:pt-8">
-        {task.kind === "video" && (
-          <VideoSection part="text" task={task} lookups={lookups} today={today} disabled={disabled} save={save} onChanged={onChanged} />
-        )}
+        {video && <VideoSection part="text" task={task} lookups={lookups} disabled={disabled} save={save} onChanged={onChanged} />}
 
         <div className="flex flex-col gap-2.5">
           <span className="eyebrow">{t("fields.description")}</span>
@@ -344,7 +367,7 @@ function PanelBody({
             value={description}
             disabled={disabled}
             // A video's words are its script and notes; its description is a side note, so it starts small.
-            rows={task.kind === "video" ? 2 : 5}
+            rows={video ? 2 : 5}
             placeholder={t("descriptionPlaceholder")}
             onChange={(e) => setDescription(e.target.value)}
             onBlur={() => description.trim() !== (task.description ?? "") && save({ description }, { description: description.trim() || null })}
@@ -378,6 +401,9 @@ function PanelBody({
           >
             {done ? t("reopen") : t("markDone")}
           </Button>
+          <button type="button" onClick={copyLink} className="h-14 cursor-pointer whitespace-nowrap rounded-md border border-line2 px-4 text-[13px] text-ink2 sm:hidden">
+            {copied ? t("copied") : t("copyLink")}
+          </button>
           {detail.canDelete && (
             <button type="button" onClick={remove} aria-label={t("delete")} className="h-14 cursor-pointer rounded-md border border-line2 px-4 text-[13px] text-red-ink">
               {t("delete")}
@@ -386,6 +412,16 @@ function PanelBody({
         </div>
       )}
     </>
+  );
+}
+
+/** One date in the Dates row: its name, the control, and what it means under it. */
+function DateField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      <span className="text-[13px] font-medium text-ink3">{label}</span>
+      <div className="flex flex-col items-start gap-1">{children}</div>
+    </div>
   );
 }
 

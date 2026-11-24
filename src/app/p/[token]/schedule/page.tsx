@@ -160,8 +160,8 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
                   <div className="flex min-w-0 flex-col gap-1">
                     <span className="text-[15px] font-medium leading-snug">{v.title}</span>
                     <span className="text-[13px] text-ink3">
-                      <span className="md:hidden">{formatShortDate(v.publish_date!)} · </span>
-                      {[v.on_camera, v.location].filter(Boolean).join(" · ")}
+                      <span className="mr-3 md:hidden">{formatShortDate(v.publish_date!)}</span>
+                      {[v.on_camera, v.location].filter(Boolean).join(", ")}
                     </span>
                     <span className="md:hidden">
                       <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />

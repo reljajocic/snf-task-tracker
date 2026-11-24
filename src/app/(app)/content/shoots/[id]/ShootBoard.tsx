@@ -886,7 +886,7 @@ function AddVideos({ shootId, clientId, candidates, onDone, onClose }: { shootId
                     v.shoot ? t("onOtherShoot", { date: formatDate(v.shoot.date) }) : null,
                   ]
                     .filter(Boolean)
-                    .join(" · ")}
+                    .join(", ")}
                 </span>
                 {on && (
                   <input

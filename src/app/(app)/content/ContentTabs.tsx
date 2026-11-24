@@ -8,7 +8,7 @@ import { CONTENT_NAV, isActive } from "@/components/shell/nav";
 import { Segmented } from "@/components/ui/Segmented";
 
 /**
- * Phones: Content bank · Shoots · Schedule, switched from the top (the client carries over), the row ending with
+ * Phones: Content bank, Shoots, Schedule, switched from the top (the client carries over), the row ending with
  * "+": a new post on the bank and the schedule, a new shoot day on shoots. Desktop has the same three in the
  * sidebar, so the row isn't shown there (it was a third "where am I" above the page title).
  */

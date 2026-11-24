@@ -113,7 +113,7 @@ export function ScriptApprovals({
                 <button type="button" onClick={() => setOpen(isOpen ? null : v.id)} className="flex min-w-0 cursor-pointer flex-col gap-1 text-left">
                   <span className="text-[15px] font-medium leading-snug">{v.title}</span>
                   <span className="truncate text-[13px] text-ink3">
-                    <span className="md:hidden">{v.time ? `${v.time} · ` : ""}</span>
+                    {v.time && <span className="mr-3 md:hidden">{v.time}</span>}
                     {v.onCamera ?? ""}
                   </span>
                   <span className="md:hidden">

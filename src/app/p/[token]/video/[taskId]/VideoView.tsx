@@ -77,7 +77,7 @@ export async function VideoView({ token, taskId, versionParam, inModal = false }
                 .filter((x) => x.id !== shown.id)
                 .map((x) => (
                   <Link key={x.id} href={`?v=${x.version}`} className="text-ink2 hover:text-ink">
-                    {t("portal.version", { n: x.version, date: "" }).replace(" · ", "")}
+                    {t("portal.versionN", { n: x.version })}
                   </Link>
                 ))}
             </span>
@@ -129,7 +129,7 @@ export async function VideoView({ token, taskId, versionParam, inModal = false }
             <StudioAvatar />
             <div className="flex flex-col gap-1.5">
               <span className="text-[14px] font-semibold">
-                Slate n&apos; Frame <span className="font-normal text-ink3">· {formatDate(shown.created_at.slice(0, 10))}</span>
+                Slate n&apos; Frame <span className="ml-2 font-normal text-ink3">{formatDate(shown.created_at.slice(0, 10))}</span>
               </span>
               <span className="whitespace-pre-wrap text-[15px] leading-relaxed text-ink2">{shown.note}</span>
             </div>

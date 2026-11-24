@@ -113,7 +113,7 @@ export function DocPage({ clientId, doc, canEdit, editedBy, editedOn, startEditi
             {saved && (
               <span className="snf-saved inline-flex items-center gap-1 font-medium text-[var(--status-done)]">
                 <DrawnCheck size={14} />
-                {t("saved")} ·
+                {t("saved")}
               </span>
             )}
             {editedBy ? t("editedBy", { name: editedBy, date: editedOn }) : t("editedOn", { date: editedOn })}

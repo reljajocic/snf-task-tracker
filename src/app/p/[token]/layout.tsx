@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: LayoutProps<"/p/[token]">): P
     robots: { index: false, follow: false },
     // Installed on a phone, the portal opens as its own app, straight on this client's portal.
     manifest: `/p/${token}/manifest.webmanifest`,
-    title: portal ? `${portal.clientName} · Slate n' Frame` : "Slate n' Frame",
+    title: portal ? `${portal.clientName} – Slate n' Frame` : "Slate n' Frame",
     appleWebApp: { capable: true, title: portal?.clientName ?? "Slate n' Frame", statusBarStyle: "black" },
   };
 }

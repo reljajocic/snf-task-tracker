@@ -125,7 +125,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
                 <div key={g.date} className="flex flex-col gap-2">
                   <div className="eyebrow pt-1 text-[12px]">{g.label}</div>
                   {g.shoots.map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} />)}
-                  {g.items.map((x) => <TaskRowMobile key={x.id} task={x} />)}
+                  {g.items.map((x) => <TaskRowMobile key={x.id} task={x} today={today} />)}
                 </div>
               ))
             : empty(t("home.nothingWeek"))}
@@ -136,7 +136,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
               {sectionTitle(t("home.noDeadline"))}
               <span className="text-[13px] font-semibold text-ink3">{noDeadline.length}</span>
             </div>
-            {noDeadline.map((x) => <TaskRowMobile key={x.id} task={x} />)}
+            {noDeadline.map((x) => <TaskRowMobile key={x.id} task={x} today={today} />)}
           </section>
         )}
         <section className="flex flex-col gap-3">
@@ -187,7 +187,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
                   <div key={g.date} className="flex flex-col gap-2">
                     <div className="eyebrow text-[12px]">{g.label}</div>
                     {g.shoots.map((s) => <ShootEvent key={s.id} shoot={s} label={shootLabel} />)}
-                    {g.items.length > 0 && <RowList>{g.items.map((x) => <TaskRow key={x.id} task={x} today={today} plainDate />)}</RowList>}
+                    {g.items.length > 0 && <RowList>{g.items.map((x) => <TaskRow key={x.id} task={x} today={today} />)}</RowList>}
                   </div>
                 ))}
               </div>

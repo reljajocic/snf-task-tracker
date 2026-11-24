@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { TaskFacts, dueTone } from "@/components/tasks/bits";
-import { TaskLink } from "@/components/tasks/links";
+import { TaskRow } from "@/components/tasks/rows";
 import { AvatarStack } from "@/components/ui/Avatar";
 import { requireProfile } from "@/lib/auth";
 import { PROJECT_STATUS_COLOR, getClient } from "@/lib/clients";
 import { getLookups, getTasks } from "@/lib/data";
-import { formatDate, today as getToday } from "@/lib/dates";
+import { today as getToday } from "@/lib/dates";
 import { byDue } from "@/lib/tasks";
 import { SOCIAL_LABEL, socialDisplay, socialUrl } from "@/lib/socials";
 import { getInvoiceAccess } from "@/lib/finance";
@@ -18,7 +17,6 @@ import { createClient } from "@/lib/supabase/server";
 import type { ClientReminder } from "@/lib/reminders";
 import { Segmented } from "@/components/ui/Segmented";
 
-const TONE = { late: "bg-red-bg text-red-ink", today: "bg-rust-bg text-rust-ink", normal: "bg-chip text-ink" };
 
 // 6b / 6d
 export default async function ClientPage({ params, searchParams }: PageProps<"/clients/[id]">) {
@@ -63,25 +61,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
             {shown.length ? (
               <div className="snf-stack">
                 {shown.map((x) => (
-                  <TaskLink
-                    key={x.id}
-                    id={x.id}
-                    className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-line px-[18px] py-3.5 last:border-b-0 hover:bg-hover lg:grid-cols-[minmax(0,1fr)_96px_100px] lg:gap-5 ${x.status === "done" ? "opacity-60" : ""}`}
-                  >
-                    <div className="flex min-w-0 flex-col gap-1.5">
-                      <span className={`text-[15px] font-medium leading-snug ${x.status === "done" ? "line-through" : ""}`}>{x.title}</span>
-                      {/* Project and type only: the client's name is the page's own title. */}
-                      <TaskFacts parts={[x.project?.name, x.type ? t(`taskType.${x.type}`) : null]} status={x.status} priority={x.priority} />
-                    </div>
-                    <span className="hidden justify-self-end lg:block"><AvatarStack people={x.assignees} size={26} /></span>
-                    {x.due_date ? (
-                      <span className={`justify-self-end whitespace-nowrap rounded-sm px-[9px] py-1.5 text-[13px] font-semibold leading-none ${TONE[dueTone(x, today)]}`}>
-                        {formatDate(x.due_date)}
-                      </span>
-                    ) : (
-                      <span />
-                    )}
-                  </TaskLink>
+                  <TaskRow key={x.id} task={x} today={today} inClient />
                 ))}
               </div>
             ) : (

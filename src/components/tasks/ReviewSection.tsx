@@ -43,7 +43,7 @@ export function ReviewSection({ task, disabled, onChanged }: { task: Task; disab
       {review?.script && (
         <span className={`text-[13px] font-medium ${DECISION[review.script.status]}`}>
           {t(review.script.status === "approved" ? "scriptApproval.approved" : "scriptApproval.changes", { name: review.script.approver_name })}
-          {review.script.comment ? ` — “${review.script.comment}”` : ""}
+          {review.script.comment ? `: “${review.script.comment}”` : ""}
         </span>
       )}
 
@@ -62,7 +62,7 @@ export function ReviewSection({ task, disabled, onChanged }: { task: Task; disab
                 {v.decision
                   ? t(v.decision.status === "approved" ? "versions.approved" : "versions.changes", { name: v.decision.approver_name })
                   : t("versions.pending")}
-                {v.decision?.comment ? ` — “${v.decision.comment}”` : ""}
+                {v.decision?.comment ? `: “${v.decision.comment}”` : ""}
               </span>
             </div>
           ))}

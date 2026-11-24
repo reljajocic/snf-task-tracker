@@ -53,7 +53,7 @@ type Message = { subject: string; heading: string; lines: string[] };
 
 function describe(event: NotificationEvent, task: TaskInfo, actor: string | null, extra: Record<string, string>): Message {
   const title = escapeHtml(task.title);
-  const where = task.client ? ` · ${escapeHtml(task.client.name)}` : "";
+  const where = task.client ? ` (${escapeHtml(task.client.name)})` : "";
   const due = task.due_date ? `Deadline: ${formatDate(task.due_date)}` : "";
   const who = actor ? escapeHtml(actor) : "Someone";
   switch (event) {
@@ -76,7 +76,7 @@ function describe(event: NotificationEvent, task: TaskInfo, actor: string | null
       if (extra.titles) {
         const titles = extra.titles.split("\n");
         return {
-          subject: `Approved: ${titles.length} scripts${task.client ? ` · ${task.client.name}` : ""}`,
+          subject: `Approved: ${titles.length} scripts${task.client ? ` for ${task.client.name}` : ""}`,
           heading: `${escapeHtml(extra.by ?? "The client")} approved ${titles.length} scripts`,
           lines: titles.map((x) => `• ${escapeHtml(x)}`),
         };
@@ -181,7 +181,7 @@ export async function notifyReminder(opts: { reminderId: string; userId: string;
     ]);
     if (!person?.is_active) return false;
     const mine = (prefs ?? []) as Preference[];
-    const msg: Message = { subject: `${opts.title} · ${opts.clientName}`, heading: escapeHtml(opts.title), lines: [`<b style="color:#F4F3ED">${escapeHtml(opts.clientName)}</b>`] };
+    const msg: Message = { subject: `${opts.title} (${opts.clientName})`, heading: escapeHtml(opts.title), lines: [`<b style="color:#F4F3ED">${escapeHtml(opts.clientName)}</b>`] };
     const path = `/clients/${opts.clientId}`;
     const { data: row } = await admin
       .from("notifications")

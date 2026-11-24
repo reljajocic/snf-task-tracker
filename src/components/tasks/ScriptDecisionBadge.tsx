@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { ScriptDecision } from "@/lib/tasks";
 
-/** The client's word on a script from the portal: "✓ Approved · Ana" or "Changes · Ana" (comment on hover). */
+/** The client's word on a script from the portal: "✓ Approved by Ana" or "Changes from Ana" (comment on hover). */
 export function ScriptDecisionBadge({ decision, full = false }: { decision: ScriptDecision | null; full?: boolean }) {
   const t = useTranslations("scriptApproval");
   if (!decision) return null;

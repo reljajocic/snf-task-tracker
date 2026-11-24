@@ -218,7 +218,7 @@ export function parseEstimate(input: string): number | null {
   return null;
 }
 
-/** "Edit · 3/5", or "Published". Labels come from i18n; this returns the parts. */
+/** "Edit, step 3 of 5", or "Published". Labels come from i18n; this returns the parts. */
 export function phaseInfo(phase: number | null) {
   const p = phase ?? 0;
   return { index: Math.min(p, PHASES.length - 1), published: p >= PUBLISHED_PHASE, step: Math.min(p + 1, PHASES.length) };
@@ -242,5 +242,29 @@ export const POSTING_STATUS_COLOR: Record<PostingStatus, string> = {
   to_shoot: "var(--status-todo)",
   not_shot: "var(--prio-urgent)",
   not_published: "var(--prio-urgent)",
+  dropped: "var(--ink3)",
+};
+
+/**
+ * The one status an item shows everywhere: a task's status, or a video's phase (a video's status follows its phase
+ * in the database: revision waits on the client, published is done). Dropped videos say so.
+ */
+export type ItemStatus = TaskStatus | (typeof PHASES)[number] | "published" | "dropped";
+
+export function itemStatus(t: Pick<Task, "kind" | "status" | "phase" | "dropped_at">): ItemStatus {
+  if (t.kind !== "video") return t.status;
+  if (t.dropped_at) return "dropped";
+  const p = t.phase ?? 0;
+  return p >= PUBLISHED_PHASE ? "published" : PHASES[p];
+}
+
+export const ITEM_STATUS_COLOR: Record<ItemStatus, string> = {
+  ...STATUS_COLOR,
+  script: "var(--status-todo)",
+  shoot: "var(--status-shoot)",
+  edit: "var(--status-in-progress)",
+  revision: "var(--status-waiting)",
+  publish: "var(--accent)",
+  published: "var(--status-done)",
   dropped: "var(--ink3)",
 };

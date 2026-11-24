@@ -8,9 +8,22 @@ import type { ShootAttempt } from "@/lib/tasks";
 import { Button } from "@/components/ui/Button";
 
 /** "Return to ideas": asks why (required), then sends the video back for a reshoot. */
-export function ReturnToIdeas({ taskId, onDone, className = "" }: { taskId: string; onDone: () => void; className?: string }) {
+export function ReturnToIdeas({
+  taskId,
+  onDone,
+  onCancel,
+  startOpen = false,
+  className = "",
+}: {
+  taskId: string;
+  onDone: () => void;
+  /** Where the form was opened from elsewhere (the status menu), cancelling closes it there too. */
+  onCancel?: () => void;
+  startOpen?: boolean;
+  className?: string;
+}) {
   const t = useTranslations("reshoot");
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(startOpen);
   const [reason, setReason] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -51,7 +64,14 @@ export function ReturnToIdeas({ taskId, onDone, className = "" }: { taskId: stri
         <Button size="xs" disabled={pending || !reason.trim()} onClick={submit}>
           {t("confirm")}
         </Button>
-        <Button variant="secondary" size="xs" onClick={() => setOpen(false)}>
+        <Button
+          variant="secondary"
+          size="xs"
+          onClick={() => {
+            setOpen(false);
+            onCancel?.();
+          }}
+        >
           {t("cancel")}
         </Button>
       </div>
@@ -59,13 +79,13 @@ export function ReturnToIdeas({ taskId, onDone, className = "" }: { taskId: stri
   );
 }
 
-/** "To reshoot · reason" on an idea that was filmed before. */
+/** "To reshoot: reason" on an idea that was filmed before. */
 export function ReshootBadge({ attempt }: { attempt: ShootAttempt }) {
   const t = useTranslations("reshoot");
   return (
     <span className="flex min-w-0 items-center gap-1.5 self-start rounded-full bg-rust-bg px-2.5 py-1 text-[12px] font-medium text-rust-ink">
-      <span className="flex-none font-semibold">↺ {t("badge")}</span>
-      <span className="truncate">· {attempt.reason}</span>
+      <span className="flex-none font-semibold">↺ {t("badge")}:</span>
+      <span className="truncate">{attempt.reason}</span>
     </span>
   );
 }
@@ -81,15 +101,15 @@ export function ShootHistory({ attempts }: { attempts: ShootAttempt[] }) {
       {attempts.map((a, i) => (
         <div key={a.returned_at} className="flex flex-col gap-1 border-l-2 border-accent/60 pl-3">
           <span className="text-[14px] font-semibold">
-            {t("attempt", { n: attempts.length - i })} · {a.shoot_date ? formatDate(a.shoot_date) : t("noDate")}
-            {a.location ? ` · ${a.location}` : ""}
+            {t("attempt", { n: attempts.length - i })}, {a.shoot_date ? formatDate(a.shoot_date) : t("noDate")}
+            {a.location ? `, ${a.location}` : ""}
           </span>
           <span className="text-[13px] text-ink2">
-            {[a.on_camera, a.shoot_time, a.shot_status && ts.has(a.shot_status) ? ts(a.shot_status) : null].filter(Boolean).join(" · ")}
+            {[a.on_camera, a.shoot_time, a.shot_status && ts.has(a.shot_status) ? ts(a.shot_status) : null].filter(Boolean).join(", ")}
           </span>
           <span className="text-[14px] text-ink">“{a.reason}”</span>
           <span className="text-[12px] text-ink3">
-            {a.publish_date ? `${t("wasPosting", { date: formatDate(a.publish_date) })} · ` : ""}
+            {a.publish_date ? `${t("wasPosting", { date: formatDate(a.publish_date) })}. ` : ""}
             {t("returned", { name: a.returned_by?.full_name ?? "—", date: formatDate(a.returned_at.slice(0, 10)) })}
           </span>
         </div>

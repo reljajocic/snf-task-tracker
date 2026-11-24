@@ -24,8 +24,9 @@ export default async function ProjectBoardPage({ params }: PageProps<"/clients/[
             <Link href={`/clients/${id}`} className="text-[14px] font-medium text-ink3 hover:text-ink">
               ← {board.clientName}
             </Link>
-            <span className="truncate text-[16px] font-semibold">
-              {t("title")} · {board.projectName}
+            <span className="flex min-w-0 items-baseline gap-2.5 truncate text-[16px] font-semibold">
+              {t("title")}
+              <span className="truncate font-medium text-ink2">{board.projectName}</span>
             </span>
             <BoardAccess boardId={board.id} value={board.clientAccess} />
           </div>

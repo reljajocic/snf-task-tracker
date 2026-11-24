@@ -34,7 +34,7 @@ export default async function ShootsPage({ searchParams }: PageProps<"/content/s
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 flex-col gap-1.5">
             <span className="text-[13px] font-medium text-ink3">
-              {[d.client?.name, d.location].filter(Boolean).join(" · ")}
+              {[d.client?.name, d.location].filter(Boolean).join(", ")}
             </span>
             <span className="text-[18px] font-medium leading-tight">
               {t("weekday.long", { day: String(weekdayIndex(d.date)) })}, {formatDate(d.date)}
@@ -49,7 +49,7 @@ export default async function ShootsPage({ searchParams }: PageProps<"/content/s
           <div className="flex items-center justify-between">
             <span className="text-[13px] font-medium text-ink3">
               {d.total ? t("shoots.shotOf", { shot: d.shot, total: d.total }) : t("shoots.videos", { count: 0 })}
-              {d.starts_at ? ` · ${d.starts_at}${d.ends_at ? `–${d.ends_at}` : ""}` : ""}
+              {d.starts_at ? `, ${d.starts_at}${d.ends_at ? `–${d.ends_at}` : ""}` : ""}
             </span>
             <AvatarStack people={d.crew} size={24} />
           </div>

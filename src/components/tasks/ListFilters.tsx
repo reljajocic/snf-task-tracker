@@ -12,7 +12,7 @@ export const LIST_FILTER_KEYS = ["who", "client", "status", "priority", "type"] 
 const pillSelect =
   "h-[38px] cursor-pointer appearance-none rounded-full border bg-transparent px-3.5 text-[13px] font-medium outline-none";
 
-/** 5a filter bar (desktop) and the "Filters · N" sheet with people chips on top (mobile). State lives in the URL. */
+/** 5a filter bar (desktop) and the "Filters (N)" sheet with people chips on top (mobile). State lives in the URL. */
 export function ListFilters({ people, clients }: { people: Person[]; clients: { id: string; name: string }[] }) {
   const names = shortNames(people);
   const t = useTranslations();

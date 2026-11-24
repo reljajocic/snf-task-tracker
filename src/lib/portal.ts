@@ -107,8 +107,8 @@ type RawVideo = Omit<PortalVideo, "versions" | "scriptDecision" | "looseDecision
 
 /**
  * Which of the client's videos a portal page needs (a client's history can be ~1 MB):
- *  - id: one video · shootId: one shoot day · from: posting on/after a date
- *  - month: published that month (YYYY-MM) · open: not published yet, or posting from a date on
+ *  - id: one video; shootId: one shoot day; from: posting on/after a date
+ *  - month: published that month (YYYY-MM); open: not published yet, or posting from a date on
  *  - unscheduled: filmed, not published, no posting date yet (what the client can plan)
  * Dropped videos never reach the portal.
  */

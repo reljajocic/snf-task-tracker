@@ -96,7 +96,7 @@ export function AssignPicker({ videos, onPick }: { videos: Task[]; onPick: (id: 
                       <span className="min-w-0 truncate text-[15px] font-medium leading-snug text-ink">{v.title}</span>
                     </span>
                     {(v.on_camera || v.location) && (
-                      <span className="truncate text-[13px] text-ink3">{[v.on_camera, v.location].filter(Boolean).join(" · ")}</span>
+                      <span className="truncate text-[13px] text-ink3">{[v.on_camera, v.location].filter(Boolean).join(", ")}</span>
                     )}
                     {first && (
                       <span className="line-clamp-2 text-[13px] leading-snug text-ink2">

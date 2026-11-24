@@ -6,10 +6,14 @@ import { updateTask } from "@/app/(app)/task-actions";
 import { TaskLink } from "@/components/tasks/links";
 import { AssignPicker } from "./AssignPicker";
 import { formatDate, formatShortDate, weekdayIndex, type IsoDate } from "@/lib/dates";
-import { POSTING_STATUS_COLOR, postingStatus, type PostingStatus, type Task } from "@/lib/tasks";
+import { PHASES, itemStatus, postingStatus, type ItemStatus, type Task } from "@/lib/tasks";
 import { PostTags } from "@/components/tasks/tags";
 import { ShootMarker, type ScheduleShoot } from "./ShootMarker";
 import { ScriptLabel } from "@/components/tasks/ScriptLabel";
+import { ItemDates } from "@/components/tasks/item-bits";
+import { TaskRow } from "@/components/tasks/rows";
+import { StatusMenu } from "@/components/tasks/StatusMenu";
+import { AvatarStack } from "@/components/ui/Avatar";
 
 export type ScheduleWeek = {
   n: number;
@@ -21,7 +25,21 @@ export type ScheduleWeek = {
   shoots?: ScheduleShoot[];
 };
 
-const GRID = "grid grid-cols-[140px_minmax(0,1fr)_64px_150px_110px_140px_80px] gap-3.5";
+const GRID = "grid grid-cols-[140px_minmax(0,1fr)_150px_252px_84px] gap-x-4";
+
+const stretched = "outline-none after:absolute after:inset-0 after:content-[''] focus-visible:shadow-none focus-visible:after:shadow-[inset_0_0_0_2px_var(--accent)]";
+
+/** Under the title: the post's tags, who's on camera and where, kept apart by space. */
+function Facts({ v }: { v: Task }) {
+  const t = useTranslations();
+  return (
+    <span className="flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[13px] text-ink2">
+      <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
+      {v.on_camera && <span>{v.on_camera}</span>}
+      {v.location && <span className="text-ink3">{v.location}</span>}
+    </span>
+  );
+}
 
 /** 2a: posting schedule as a table, grouped by week (desktop) / cards (mobile 2c). */
 export function ScheduleTable({
@@ -41,7 +59,8 @@ export function ScheduleTable({
   const t = useTranslations();
   const [open, setOpen] = useState<string | null>(null);
   const [type, setType] = useState("all");
-  const [status, setStatus] = useState<"all" | PostingStatus>("all");
+  // The same statuses the rows show (the video's phase), plus "Not published": its date passed and it isn't out.
+  const [status, setStatus] = useState<"all" | "not_published" | ItemStatus>("all");
   const [location, setLocation] = useState("all");
   const [, startTransition] = useTransition();
 
@@ -50,7 +69,7 @@ export function ScheduleTable({
   const locations = [...new Set(all.map((v) => v.location).filter(Boolean))] as string[];
   const matches = (v: Task) =>
     (type === "all" || v.content_type === type) &&
-    (status === "all" || postingStatus(v, today) === status) &&
+    (status === "all" || (status === "not_published" ? postingStatus(v, today) === "not_published" : itemStatus(v) === status)) &&
     (location === "all" || v.location === location);
   const filtering = type !== "all" || status !== "all" || location !== "all";
 
@@ -64,16 +83,6 @@ export function ScheduleTable({
   const pill = "h-9 cursor-pointer appearance-none rounded-full border bg-transparent px-3 text-[13px] font-medium outline-none";
   const tone = (active: boolean) => (active ? "border-ink2 text-ink" : "border-line2 text-ink2");
 
-  const statusCell = (v: Task) => {
-    const s = postingStatus(v, today);
-    return (
-      <span className={`flex items-center gap-2 whitespace-nowrap text-[13px] font-medium ${s === "not_published" ? "text-red-ink" : "text-ink2"}`}>
-        <span className="size-2 flex-none rounded-full" style={{ background: POSTING_STATUS_COLOR[s] }} />
-        {t(`postingStatus.${s}`)}
-      </span>
-    );
-  };
-
   const assignSelect = (date: IsoDate) =>
     unscheduled.length > 0 && <AssignPicker videos={unscheduled} onPick={(id) => assign(id, date)} />;
 
@@ -84,9 +93,10 @@ export function ScheduleTable({
         <span className="mx-1 hidden h-5 w-px bg-line2 sm:block" />
         <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className={`${pill} ${tone(status !== "all")}`}>
           <option value="all">{t("schedule.allStatuses")}</option>
-          {(["to_shoot", "shot", "published", "not_published", "not_shot"] as const).map((s) => (
-            <option key={s} value={s}>{t(`postingStatus.${s}`)}</option>
+          {([...PHASES, "published"] as const).map((s) => (
+            <option key={s} value={s}>{t(`phase.${s}`)}</option>
           ))}
+          <option value="not_published">{t("postingStatus.not_published")}</option>
         </select>
         {types.length > 0 && (
           <select value={type} onChange={(e) => setType(e.target.value)} className={`${pill} ${tone(type !== "all")}`}>
@@ -103,14 +113,14 @@ export function ScheduleTable({
       </div>
 
       <div className="px-5 lg:px-10">
-        <div className={`${GRID} hidden px-4 pb-2.5 pt-3.5 text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-ink3 lg:grid`}>
-          <span>{t("schedule.col.date")}</span>
-          <span>{t("schedule.col.title")}</span>
-          <span>{t("schedule.col.type")}</span>
-          <span>{t("schedule.col.onCamera")}</span>
-          <span>{t("schedule.col.location")}</span>
-          <span>{t("schedule.col.status")}</span>
-          <span>{t("schedule.col.shot")}</span>
+        <div className="@container hidden lg:block">
+          <div className={`${GRID} hidden px-4 pb-2.5 pt-3.5 text-[13px] font-medium leading-none text-ink3 @[960px]:grid`}>
+            <span>{t("schedule.col.date")}</span>
+            <span>{t("schedule.col.title")}</span>
+            <span>{t("schedule.col.status")}</span>
+            <span>{t("item.dates")}</span>
+            <span className="justify-self-end">{t("item.people")}</span>
+          </div>
         </div>
 
         {weeks.length === 0 && <p className="py-12 text-center text-[15px] text-ink3">{t("schedule.empty")}</p>}
@@ -151,36 +161,48 @@ export function ScheduleTable({
                   const s = postingStatus(v, today);
                   return (
                     <div key={v.id} className="flex flex-col border-t border-line first:border-t-0">
-                      {/* Desktop row */}
-                      <button
-                        type="button"
-                        onClick={() => setOpen(isOpen ? null : v.id)}
-                        className={`${GRID} hidden cursor-pointer items-center px-4 py-[13px] text-left hover:bg-hover lg:grid ${s === "not_published" ? "bg-red-bg" : ""}`}
-                      >
-                        <span className="flex gap-2 whitespace-nowrap text-[14px] font-medium">
-                          <span className="w-[30px] text-ink3">{day(r.date)}</span>
-                          {formatDate(r.date)}
-                        </span>
-                        <span className="truncate text-[15px] font-medium leading-snug">{v.title}</span>
-                        <span>
-                          <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
-                        </span>
-                        <span className="truncate text-[14px] text-ink2">{v.on_camera ?? "—"}</span>
-                        <span className="truncate text-[14px] text-ink2">{v.location ?? "—"}</span>
-                        {statusCell(v)}
-                        <span className="text-[13px] text-ink3">{v.shoot ? formatShortDate(v.shoot.date) : "—"}</span>
-                      </button>
-                      {/* Mobile card */}
-                      <button type="button" onClick={() => setOpen(isOpen ? null : v.id)} className="flex cursor-pointer flex-col gap-2 px-4 py-3.5 text-left lg:hidden">
+                      {/* Desktop row: posting day, then the usual order (title and where it belongs, status, dates,
+                          people). The title opens the script under the row; the status changes in place. */}
+                      <div className={`@container relative hidden hover:bg-hover lg:block ${s === "not_published" ? "bg-red-bg hover:bg-red-bg" : ""}`}>
+                        <div className="grid grid-cols-[120px_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 px-4 py-[13px] @[960px]:grid-cols-[140px_minmax(0,1fr)_150px_252px_84px]">
+                          <span className="flex gap-2 whitespace-nowrap text-[14px] font-medium">
+                            <span className="w-[30px] text-ink3">{day(r.date)}</span>
+                            {formatDate(r.date)}
+                          </span>
+                          <span className="flex min-w-0 flex-col gap-1.5">
+                            <button type="button" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : v.id)} className={`cursor-pointer text-left text-[15px] font-medium leading-snug ${stretched}`}>
+                              {v.title}
+                            </button>
+                            <Facts v={v} />
+                          </span>
+                          <span className="col-span-2 col-start-2 row-start-2 flex flex-wrap items-center gap-x-5 gap-y-2 @[960px]:contents">
+                            <span className="relative justify-self-start">
+                              <StatusMenu task={v} today={today} size="sm" />
+                            </span>
+                            <ItemDates task={v} today={today} />
+                          </span>
+                          <span className="col-start-3 row-start-1 justify-self-end @[960px]:col-start-5">
+                            <AvatarStack people={v.assignees} size={28} />
+                          </span>
+                        </div>
+                      </div>
+                      {/* Phone card: the same pieces stacked. */}
+                      <div className={`relative flex flex-col gap-2.5 px-4 py-3.5 lg:hidden ${s === "not_published" ? "bg-red-bg" : ""}`}>
                         <div className="flex items-center justify-between gap-3">
                           <span className="whitespace-nowrap text-[13px] font-medium text-ink3">
                             {day(r.date)} {formatShortDate(r.date)}
                           </span>
-                          {statusCell(v)}
+                          <AvatarStack people={v.assignees} size={26} />
                         </div>
-                        <span className="text-[16px] font-medium leading-snug">{v.title}</span>
-                        <span className="text-[13px] text-ink2">{[v.content_type, v.on_camera, v.location].filter(Boolean).join(" · ")}</span>
-                      </button>
+                        <button type="button" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : v.id)} className={`cursor-pointer text-left text-[16px] font-medium leading-snug ${stretched}`}>
+                          {v.title}
+                        </button>
+                        <Facts v={v} />
+                        <span className="relative flex flex-wrap items-end gap-x-5 gap-y-2">
+                          <StatusMenu task={v} today={today} size="sm" />
+                          <ItemDates task={v} today={today} slots={false} />
+                        </span>
+                      </div>
                       {isOpen && (
                         <div className="flex flex-col gap-4 bg-chip px-4 pb-5 pt-2 lg:pl-[170px]">
                           {v.script.some((sec) => sec.text.trim()) ? (
@@ -236,15 +258,7 @@ export function ScheduleTable({
           {unscheduled.length ? (
             <div className="snf-stack">
               {unscheduled.map((v) => (
-                <TaskLink key={v.id} id={v.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3.5 border-t border-line px-4 py-[13px] first:border-t-0 hover:bg-hover lg:grid-cols-[minmax(0,1fr)_64px_150px_110px_140px]">
-                  <span className="truncate text-[15px] font-medium">{v.title}</span>
-                  <span className="hidden lg:block">
-                    <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
-                  </span>
-                  <span className="hidden truncate text-[14px] text-ink2 lg:block">{v.on_camera ?? "—"}</span>
-                  <span className="hidden truncate text-[14px] text-ink2 lg:block">{v.location ?? "—"}</span>
-                  {statusCell(v)}
-                </TaskLink>
+                <TaskRow key={v.id} task={v} today={today} inClient />
               ))}
             </div>
           ) : (

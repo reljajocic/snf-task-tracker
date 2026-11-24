@@ -40,7 +40,7 @@ export async function reportError(report: ErrorReport) {
     const site = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/$/, "");
     const lines = [
       `<b style="color:#F4F3ED">${escape(message)}</b>`,
-      `Where: ${escape(report.source)} · ${escape(report.path ?? report.route ?? "—")}`,
+      `Where: ${escape(report.source)}, ${escape(report.path ?? report.route ?? "—")}`,
       report.digest ? `Digest: ${escape(report.digest)}` : "",
       "More of the same in the next hour won't be emailed.",
     ].filter(Boolean);

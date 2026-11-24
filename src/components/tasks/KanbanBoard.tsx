@@ -6,9 +6,9 @@ import { updateTask } from "@/app/(app)/task-actions";
 import { AvatarStack } from "@/components/ui/Avatar";
 import type { IsoDate } from "@/lib/dates";
 import { STATUSES, STATUS_COLOR, byDue, type Task, type TaskStatus } from "@/lib/tasks";
-import { DueChip, dueTone } from "./bits";
+import { dueTone } from "./bits";
+import { ItemDates, ItemWhere, StatusLabel } from "./item-bits";
 import { TaskLink } from "./links";
-import { PhaseBar, VideoTag } from "./video-bits";
 import { Segmented } from "@/components/ui/Segmented";
 
 function KanbanCard({ task, today, mobile = false }: { task: Task; today: IsoDate; mobile?: boolean }) {
@@ -27,21 +27,16 @@ function KanbanCard({ task, today, mobile = false }: { task: Task; today: IsoDat
         late ? "border-red-line" : "border-line"
       } ${done ? "opacity-60" : ""}`}
     >
-      <div className="flex items-center justify-between gap-2">
-        <span className={`truncate font-semibold uppercase leading-tight tracking-[0.12em] text-ink3 ${mobile ? "text-[12px]" : "text-[11px]"}`}>
-          {task.client?.name ?? t("task.noClient")}
-        </span>
-        {task.kind === "video" ? (
-          <VideoTag format={task.format} contentType={mobile ? task.content_type : null} />
-        ) : (
-          task.type && <span className={`flex-none font-medium text-ink3 ${mobile ? "text-[13px]" : "text-[12px]"}`}>{t(`taskType.${task.type}`)}</span>
-        )}
-      </div>
       {task.parent && <span className="text-[13px] leading-tight text-ink3">{t("task.subtaskOf", { title: task.parent.title })}</span>}
-      <span className={`font-medium leading-[1.35] ${mobile ? "text-[18px]" : "text-[15px]"} ${done ? "line-through" : ""}`}>{task.title}</span>
-      {task.kind === "video" && <PhaseBar task={task} />}
-      <div className="flex items-center justify-between">
-        <DueChip task={task} today={today} />
+      {/* Same order as every row: title, where it belongs, status, dates, people. The column is the task's status;
+          a video also shows its phase, which is what it is everywhere else. */}
+      <div className="flex flex-col gap-1.5">
+        <span className={`font-medium leading-[1.35] ${mobile ? "text-[18px]" : "text-[15px]"} ${done ? "line-through" : ""}`}>{task.title}</span>
+        <ItemWhere task={task} />
+      </div>
+      {task.kind === "video" && <StatusLabel task={task} />}
+      <div className="flex items-end justify-between gap-3">
+        <ItemDates task={task} today={today} slots={false} />
         <AvatarStack people={task.assignees} size={26} />
       </div>
     </TaskLink>

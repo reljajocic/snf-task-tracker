@@ -72,7 +72,8 @@ export default async function VideoBankPage({ searchParams }: PageProps<"/conten
 
   const tabs = TABS.map((k) => ({
     key: k,
-    label: `${t(`bank.tab.${k}`)} · ${counts[k]}`,
+    label: t(`bank.tab.${k}`),
+    count: counts[k],
     href: `/content/videos?client=${client.id}${k === "ready" ? "" : `&tab=${k}`}`,
     active: k === tab,
   }));

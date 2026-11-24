@@ -1,18 +1,16 @@
 "use client";
 
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useId, useState, useTransition } from "react";
 import { addSubtask, listSubtasks, updateTask, type TaskPatch } from "@/app/(app)/task-actions";
 import { Avatar } from "@/components/ui/Avatar";
 import type { Lookups } from "@/lib/data";
-import { formatDate, weekdayIndex, type IsoDate } from "@/lib/dates";
-import { canReturnToIdeas, pendingReshoot, PHASES, PUBLISHED_PHASE, SCRIPT_SECTIONS, type ScriptSection, type Task } from "@/lib/tasks";
+import { formatDate } from "@/lib/dates";
+import { pendingReshoot, SCRIPT_SECTIONS, type ScriptSection, type Task } from "@/lib/tasks";
 import { Pill } from "./bits";
-import { DatePicker } from "./DatePicker";
-import { assignablePeople } from "./fields";
+import { assignablePeople, FieldRow } from "./fields";
 import { TaskLink } from "./links";
-import { ReshootBadge, ReturnToIdeas, ShootHistory } from "./Reshoot";
+import { ReshootBadge, ShootHistory } from "./Reshoot";
 import { ReviewSection } from "./ReviewSection";
 import { ScriptDecisionBadge } from "./ScriptDecisionBadge";
 import { ScriptFields } from "./ScriptFields";
@@ -22,218 +20,109 @@ import { Button } from "@/components/ui/Button";
 
 type Save = (patch: TaskPatch, optimistic?: Partial<Task>) => void;
 
-/** Video part of the task panel (design 4b / 4d). */
+/** A one-line text field inside a field row: saves on blur or Enter. */
+const box = "flex h-9 items-center gap-2 rounded-md border border-line2 pl-3 pr-1 focus-within:border-accent";
+
+/**
+ * Video parts of the task window. The window lays every item out the same way (status in the header; then dates,
+ * people, details; the words on the right), and asks this for the video's own pieces:
+ * "details" (rows in the Details list), "extras" (reshoot, subtasks, review) and "text" (script, notes, reference).
+ */
 export function VideoSection({
   task,
   lookups,
-  today,
   disabled,
   save,
   onChanged,
-  onReshoot,
-  part = "all",
+  part,
 }: {
   task: Task;
   lookups: Lookups;
-  today: IsoDate;
   disabled: boolean;
   save: Save;
   onChanged: () => void;
-  /** After "return to ideas" (defaults to onChanged). */
-  onReshoot?: () => void;
-  /** The task window shows settings on the left ("fields") and the script and notes on the right ("text"). */
-  part?: "all" | "fields" | "text";
+  part: "details" | "extras" | "text";
 }) {
-  const show = (p: "fields" | "text") => part === "all" || part === p;
   const t = useTranslations();
-  const phase = task.phase ?? 0;
   const client = lookups.clients.find((c) => c.id === task.client?.id);
   const types = client?.contentTypes.length ? client.contentTypes : ["FUN", "INFO", "GYM", "UGC", "PROMO"];
-  const next = phase < PUBLISHED_PHASE ? phase + 1 : null;
 
-  return (
-    <div className="flex flex-col gap-[26px]">
-      {show("fields") && (
+  if (part === "details") {
+    return (
       <>
-      {/* Phase stepper */}
-      <div className="flex flex-col gap-3.5">
-        <div className="flex items-center justify-between">
-          <span className="eyebrow">{t("video.phase")}</span>
-          {next !== null && !disabled && !task.dropped_at && (
-            <button
-              type="button"
-              onClick={() => save({ phase: next }, { phase: next })}
-              className="h-[34px] cursor-pointer whitespace-nowrap rounded-md border border-line2 px-3 text-[13px] font-medium text-ink hover:border-ink3"
-            >
-              {next === PUBLISHED_PHASE ? t("phase.markPublished") : t("phase.moveTo", { phase: t(`phase.${PHASES[next]}`) })} →
-            </button>
-          )}
-        </div>
-        <div className="flex items-start">
-          {PHASES.map((p, i) => {
-            const done = phase > i;
-            const current = phase === i;
-            return (
-              <div key={p} className="flex flex-1 items-start last:flex-none">
-                <button
-                  type="button"
-                  disabled={disabled}
-                  onClick={() => save({ phase: i }, { phase: i })}
-                  className="flex w-[64px] flex-none cursor-pointer flex-col items-center gap-2 disabled:cursor-default sm:w-[72px]"
-                >
-                  <span
-                    className={`grid size-8 place-items-center rounded-full border-[1.5px] text-[13px] font-semibold ${
-                      current ? "border-accent bg-accent text-charcoal" : done ? "border-ink2 bg-ink2 text-bg" : "border-line2 text-ink3"
-                    }`}
-                  >
-                    {done ? "✓" : i + 1}
-                  </span>
-                  <span className={`whitespace-nowrap text-[12px] font-medium sm:text-[13px] ${current ? "text-ink" : done ? "text-ink2" : "text-ink3"}`}>
-                    {t(`phase.${p}`)}
-                  </span>
-                </button>
-                {i < PHASES.length - 1 && <span className="mt-4 h-[1.5px] flex-1" style={{ background: done ? "var(--ink2)" : "var(--line2)" }} />}
-              </div>
-            );
-          })}
-        </div>
-        {task.dropped_at ? (
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-[13px] font-medium text-ink3">
-              {t("phase.dropped")} · {formatDate(task.dropped_at)}
-            </span>
-            {!disabled && (
-              <button
-                type="button"
-                onClick={() => save({ dropped_at: null, status: "in_progress" }, { dropped_at: null, status: "in_progress" })}
-                className="cursor-pointer text-[13px] font-medium text-ink2 underline-offset-2 hover:underline"
-              >
-                {t("phase.restore")}
-              </button>
-            )}
+        <FieldRow label={t("video.formatLabel")} top>
+          <div className="flex flex-wrap gap-1.5">
+            {FORMATS.map((f) => (
+              <Pill key={f} disabled={disabled} selected={task.format === f} onClick={() => save({ format: f }, { format: f })}>
+                <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />
+                {t(`format.${f}`)}
+              </Pill>
+            ))}
           </div>
-        ) : phase >= PUBLISHED_PHASE ? (
-          <span className="text-[13px] font-medium text-[var(--status-done)]">
-            {t("phase.published")}
-            {task.published_at ? ` · ${formatDate(task.published_at)}` : ""}
-          </span>
-        ) : (
-          !disabled && (
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-              {canReturnToIdeas(task) && <ReturnToIdeas taskId={task.id} onDone={onReshoot ?? onChanged} />}
-              <button
-                type="button"
-                onClick={() => save({ dropped_at: today }, { dropped_at: today, status: "done" })}
-                className="cursor-pointer self-start text-[13px] text-ink3 underline-offset-2 hover:text-ink2 hover:underline"
-              >
-                {t("phase.drop")}
-              </button>
-            </div>
-          )
-        )}
-        {pendingReshoot(task) && <ReshootBadge attempt={pendingReshoot(task)!} />}
-      </div>
-      <ShootHistory attempts={task.shoot_history} />
-
-      {/* Facts grid */}
-      <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2">
-        <Fact label={t("video.onCamera")}>
-          <InlineText value={task.on_camera} disabled={disabled} onSave={(v) => save({ on_camera: v }, { on_camera: v || null })} />
-        </Fact>
-        <Fact label={t("video.location")}>
-          <InlineText
-            value={task.location}
-            disabled={disabled}
-            list={client?.locations}
-            onSave={(v) => save({ location: v }, { location: v || null })}
-          />
-        </Fact>
+        </FieldRow>
+        <FieldRow label={t("video.contentType")} top>
+          <div className="flex flex-wrap gap-1.5">
+            {types.map((ct) => (
+              <Pill key={ct} disabled={disabled} selected={task.content_type === ct} onClick={() => save({ content_type: task.content_type === ct ? null : ct }, { content_type: task.content_type === ct ? null : ct })}>
+                <span className="size-2 rounded-full" style={{ background: typeColor(ct) }} />
+                {ct}
+              </Pill>
+            ))}
+          </div>
+        </FieldRow>
+        <FieldRow label={t("video.onCamera")}>
+          <div className={box}>
+            <InlineText bare value={task.on_camera} disabled={disabled} onSave={(v) => save({ on_camera: v }, { on_camera: v || null })} />
+          </div>
+        </FieldRow>
+        <FieldRow label={t("video.location")}>
+          <div className={box}>
+            <InlineText bare value={task.location} disabled={disabled} list={client?.locations} onSave={(v) => save({ location: v }, { location: v || null })} />
+          </div>
+        </FieldRow>
         {client && client.profiles.length > 0 && (
-          <Fact label={t("video.profile")}>
+          <FieldRow label={t("video.profile")}>
             <select
               value={task.profile ?? ""}
               disabled={disabled}
               onChange={(e) => save({ profile: e.target.value || null }, { profile: e.target.value || null })}
-              className="-ml-1 cursor-pointer appearance-none bg-transparent px-1 text-[15px] font-medium text-ink outline-none disabled:cursor-default"
+              className="h-9 cursor-pointer appearance-none rounded-md border border-line2 bg-transparent bg-[url(/brand/chevron.svg)] bg-[length:10px] bg-[right_12px_center] bg-no-repeat pl-3 pr-8 text-[14px] font-medium text-ink outline-none focus:border-accent disabled:cursor-default"
             >
               <option value="">—</option>
               {client.profiles.map((p) => <option key={p} value={p}>{p}</option>)}
             </select>
-          </Fact>
+          </FieldRow>
         )}
-        <Fact label={t("video.shoot")}>
-          {task.shoot ? (
-            <Link href={`/content/shoots/${task.shoot.id}`} className="text-[15px] font-medium hover:underline">
-              {formatDate(task.shoot.date)}
-              {task.shoot_time ? ` · ${task.shoot_time}` : ""} <span className="text-rust-ink">↗</span>
-            </Link>
-          ) : (
-            <span className="text-[14px] text-ink3">{t("video.noShoot")}</span>
-          )}
-        </Fact>
-        <Fact label={t("video.publish")}>
-          <div className="flex items-center gap-2">
-            <DatePicker
-              value={task.publish_date}
-              today={today}
-              disabled={disabled}
-              emptyLabel={t("video.noPublish")}
-              onChange={(d) => save({ publish_date: d }, { publish_date: d })}
-            />
-            {task.publish_date && (
-              <span className="text-[13px] text-ink3">{t("weekday.short", { day: String(weekdayIndex(task.publish_date)) })}</span>
-            )}
-          </div>
-        </Fact>
-      </div>
-
-      {/* Once it's out: the post's link, for the client's monthly report. */}
-      {(task.phase ?? 0) >= 4 && (
-        <label className="flex flex-col gap-2.5">
-          <span className="eyebrow">{t("video.postUrl")}</span>
-          <div className="flex h-[42px] items-center gap-2 rounded-md border border-line2 pl-3 pr-1.5 focus-within:border-accent">
-            <InlineText bare value={task.post_url} placeholder={t("video.postUrlPlaceholder")} disabled={disabled} onSave={(v) => save({ post_url: v }, { post_url: v || null })} />
-            {task.post_url && (
-              <a href={safeHref(task.post_url)} target="_blank" rel="noreferrer" className="flex h-[30px] items-center rounded-sm bg-chip px-2.5 text-[13px] font-medium">
-                ↗
-              </a>
-            )}
-          </div>
-        </label>
-      )}
-
-      <div className="flex flex-col gap-2.5">
-        <span className="eyebrow">{t("video.formatLabel")}</span>
-        <div className="flex flex-wrap gap-1.5">
-          {FORMATS.map((f) => (
-            <Pill key={f} disabled={disabled} selected={task.format === f} onClick={() => save({ format: f }, { format: f })}>
-              <span className="size-2 rounded-full" style={{ background: FORMAT_COLOR[f] }} />
-              {t(`format.${f}`)}
-            </Pill>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2.5">
-        <span className="eyebrow">{t("video.contentType")}</span>
-        <div className="flex flex-wrap gap-1.5">
-          {types.map((ct) => (
-            <Pill key={ct} disabled={disabled} selected={task.content_type === ct} onClick={() => save({ content_type: task.content_type === ct ? null : ct }, { content_type: task.content_type === ct ? null : ct })}>
-              <span className="size-2 rounded-full" style={{ background: typeColor(ct) }} />
-              {ct}
-            </Pill>
-          ))}
-        </div>
-      </div>
-
-      <Subtasks task={task} lookups={lookups} disabled={disabled} onChanged={onChanged} />
-
-      <ReviewSection task={task} disabled={disabled} onChanged={onChanged} />
+        {/* Once it's out: the post's link, for the client's monthly report. */}
+        {(task.phase ?? 0) >= 4 && (
+          <FieldRow label={t("video.postUrl")}>
+            <div className={box}>
+              <InlineText bare value={task.post_url} placeholder={t("video.postUrlPlaceholder")} disabled={disabled} onSave={(v) => save({ post_url: v }, { post_url: v || null })} />
+              {task.post_url && (
+                <a href={safeHref(task.post_url)} target="_blank" rel="noreferrer" aria-label={t("task.open")} className="flex h-7 items-center rounded-sm bg-chip px-2.5 text-[13px] font-medium">
+                  ↗
+                </a>
+              )}
+            </div>
+          </FieldRow>
+        )}
       </>
-      )}
+    );
+  }
 
-      {show("text") && (
+  if (part === "extras") {
+    return (
       <>
+        {pendingReshoot(task) && <ReshootBadge attempt={pendingReshoot(task)!} />}
+        <ShootHistory attempts={task.shoot_history} />
+        <Subtasks task={task} lookups={lookups} disabled={disabled} onChanged={onChanged} />
+        <ReviewSection task={task} disabled={disabled} onChanged={onChanged} />
+      </>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-[26px]">
       <ScriptEditor task={task} disabled={disabled} save={save} />
 
       {/* Notes are read on the shoot day, so they get room: a real box that grows with what's written. */}
@@ -266,17 +155,6 @@ export function VideoSection({
           </div>
         </label>
       </div>
-      </>
-      )}
-    </div>
-  );
-}
-
-function Fact({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex min-w-0 flex-col gap-[7px] bg-bg px-4 py-3.5">
-      <span className="text-[12px] font-medium text-ink3">{label}</span>
-      {children}
     </div>
   );
 }

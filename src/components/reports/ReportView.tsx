@@ -114,7 +114,7 @@ export function ReportView({ report, summary, t, formatLabel }: { report: MonthR
                           p.metrics.shares ? t("nShares", { n: n(p.metrics.shares) }) : null,
                         ]
                           .filter(Boolean)
-                          .join(" · ")}
+                          .join(", ")}
                       </span>
                     )}
                   </span>

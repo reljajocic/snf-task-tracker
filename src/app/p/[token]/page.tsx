@@ -103,8 +103,8 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                     <div className="flex min-w-0 flex-col gap-1">
                       <span className="text-[15px] font-medium leading-snug">{v.title}</span>
                       <span className="text-[13px] text-ink3">
-                        <span className="md:hidden">{day(v.publish_date!)} {formatDate(v.publish_date!)} · </span>
-                        {[v.on_camera, v.location].filter(Boolean).join(" · ")}
+                        <span className="mr-3 md:hidden">{day(v.publish_date!)} {formatDate(v.publish_date!)}</span>
+                        {[v.on_camera, v.location].filter(Boolean).join(", ")}
                       </span>
                       <span className="md:hidden">
                         <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
@@ -132,7 +132,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                   {t("weekday.long", { day: String(weekdayIndex(nextShoot.date)) })}, {formatDate(nextShoot.date)}
                 </span>
                 <span className="text-[14px] text-ink2">
-                  {[nextShoot.location, nextShoot.starts_at && `${nextShoot.starts_at}${nextShoot.ends_at ? `–${nextShoot.ends_at}` : ""}`].filter(Boolean).join(" · ")}
+                  {[nextShoot.location, nextShoot.starts_at && `${nextShoot.starts_at}${nextShoot.ends_at ? `–${nextShoot.ends_at}` : ""}`].filter(Boolean).join(", ")}
                 </span>
               </Link>
             ) : (

@@ -3,14 +3,15 @@ import { getShootDays } from "@/lib/content";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/shell/PageHeader";
-import { PriorityMark, dueTone } from "@/components/tasks/bits";
+import { dueTone } from "@/components/tasks/bits";
+import { ItemWhere, StatusLabel } from "@/components/tasks/item-bits";
 import { TaskLink } from "@/components/tasks/links";
 import { TaskCardMobile } from "@/components/tasks/rows";
 import { AvatarStack } from "@/components/ui/Avatar";
 import { Segmented } from "@/components/ui/Segmented";
 import { getTasks } from "@/lib/data";
 import { addDays, formatDate, formatShortDate, isoWeek, startOfWeek, today as getToday, weekdayIndex, type IsoDate } from "@/lib/dates";
-import { PRIORITY_COLOR, byDue, type Task } from "@/lib/tasks";
+import { ITEM_STATUS_COLOR, byDue, itemStatus, type Task } from "@/lib/tasks";
 import { PeriodNav } from "@/components/ui/PeriodNav";
 import { TaskPhoneBar } from "../TaskViewTabs";
 
@@ -117,7 +118,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                   <span className="text-[18px] font-semibold">{Number(d.slice(8, 10))}</span>
                   <span className="flex h-1.5 gap-0.5">
                     {shootsOn(d).length > 0 && <span className="size-1.5 rounded-full bg-accent ring-2 ring-rust-bg" />}
-                    {on(d).slice(0, 3).map((x) => <span key={x.id} className="size-1.5 rounded-full" style={{ background: PRIORITY_COLOR[x.priority] }} />)}
+                    {on(d).slice(0, 3).map((x) => <span key={x.id} className="size-1.5 rounded-full" style={{ background: ITEM_STATUS_COLOR[itemStatus(x)] }} />)}
                   </span>
                 </Link>
               );
@@ -138,7 +139,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                     </span>
                     <span className="flex h-1.5 gap-0.5">
                       {shootsOn(d).length > 0 && <span className="size-1.5 rounded-full bg-accent ring-2 ring-rust-bg" />}
-                    {on(d).slice(0, 3).map((x) => <span key={x.id} className="size-1.5 rounded-full" style={{ background: PRIORITY_COLOR[x.priority] }} />)}
+                    {on(d).slice(0, 3).map((x) => <span key={x.id} className="size-1.5 rounded-full" style={{ background: ITEM_STATUS_COLOR[itemStatus(x)] }} />)}
                     </span>
                   </Link>
                 );
@@ -180,7 +181,7 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                     const done = x.status === "done";
                     return (
                       <TaskLink key={x.id} id={x.id} className={`flex min-w-0 items-center gap-1.5 rounded-sm px-[7px] py-[5px] ${late ? "bg-red-bg" : "bg-surf"} ${done ? "opacity-60" : ""}`}>
-                        <span className="size-[7px] flex-none rounded-[2px]" style={{ background: PRIORITY_COLOR[x.priority] }} />
+                        <span className="size-[7px] flex-none rounded-full" style={{ background: ITEM_STATUS_COLOR[itemStatus(x)] }} />
                         <span className={`truncate text-[12px] font-medium leading-tight ${late ? "text-red-ink" : "text-ink"} ${done ? "line-through" : ""}`}>{x.title}</span>
                       </TaskLink>
                     );
@@ -213,10 +214,13 @@ export default async function CalendarPage({ searchParams }: PageProps<"/calenda
                     const done = x.status === "done";
                     return (
                       <TaskLink key={x.id} id={x.id} className={`flex flex-col gap-2 rounded-md border bg-surf p-2.5 ${late ? "border-red-line" : "border-line"} ${done ? "opacity-60" : ""}`}>
-                        <span className="text-[11px] font-semibold uppercase leading-tight tracking-[0.08em] text-ink3">{x.client?.name ?? t("task.noClient")}</span>
-                        <span className={`text-[14px] font-medium leading-snug ${done ? "line-through" : ""}`}>{x.title}</span>
-                        <div className="flex items-center justify-between">
-                          <PriorityMark priority={x.priority} />
+                        {/* The usual order; the column is the deadline, so the card shows no dates. */}
+                        <span className="flex flex-col gap-1">
+                          <span className={`text-[14px] font-medium leading-snug ${done ? "line-through" : ""}`}>{x.title}</span>
+                          <ItemWhere task={x} />
+                        </span>
+                        <div className="flex items-center justify-between gap-2">
+                          <StatusLabel task={x} className="min-w-0 truncate text-[12px]" />
                           <AvatarStack people={x.assignees} size={22} />
                         </div>
                       </TaskLink>

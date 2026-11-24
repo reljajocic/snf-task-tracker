@@ -67,7 +67,7 @@ export default async function ClientsPage({ searchParams }: PageProps<"/clients"
               <span className="flex items-center gap-2 text-[13px] text-ink2">
                 <span className="size-2 rounded-full" style={{ background: CLIENT_STATUS_COLOR[c.status] }} />
                 {t(`clientStatus.${c.status}`)}
-                {c.city && <span className="text-ink3">· {c.city}</span>}
+                {c.city && <span className="ml-1.5 text-ink3">{c.city}</span>}
               </span>
             </div>
             <div className="flex flex-col items-end gap-1">

@@ -14,6 +14,11 @@ import { PostTags } from "@/components/tasks/tags";
 import { FORMATS, FORMAT_COLOR, type PostFormat } from "@/lib/formats";
 import { Segmented } from "@/components/ui/Segmented";
 import { ScriptLabel } from "@/components/tasks/ScriptLabel";
+import { ItemDates } from "@/components/tasks/item-bits";
+import { StatusMenu } from "@/components/tasks/StatusMenu";
+import { displayLabel } from "@/lib/script-text";
+
+const stretched = "outline-none after:absolute after:inset-0 after:content-[''] focus-visible:shadow-none focus-visible:after:shadow-[inset_0_0_0_2px_var(--accent)] after:rounded-lg";
 
 type Shoot = { id: string; date: IsoDate; location: string | null };
 
@@ -82,13 +87,10 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
     `h-8 flex-none cursor-pointer whitespace-nowrap rounded-full border px-3 text-[13px] font-semibold tracking-[0.08em] ${active ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink2 hover:text-ink"}`;
   const action = "h-8 cursor-pointer whitespace-nowrap rounded-md border border-line2 bg-transparent px-2.5 text-[13px] font-medium text-ink2 hover:border-ink3 hover:text-ink disabled:opacity-50";
 
+  // The shoot's date is in the dates; this only says what the date alone doesn't: it wasn't shot, or it was dropped.
   const meta = (v: Task) => {
     if (tab === "dropped") return v.dropped_at ? t("droppedOn", { date: formatDate(v.dropped_at) }) : "";
-    if (v.shoot) {
-      const where = v.shoot.location ? ` · ${v.shoot.location}` : "";
-      if (tab === "shoot" && v.shoot.date < today) return t("notShotOn", { date: formatDate(v.shoot.date) }) + where;
-      return (tab === "ready" ? t("shotOn", { date: formatDate(v.shoot.date) }) : t("shootOn", { date: formatDate(v.shoot.date) })) + where;
-    }
+    if (tab === "shoot" && v.shoot && v.shoot.date < today) return t("notShotOn", { date: formatDate(v.shoot.date) });
     return "";
   };
 
@@ -134,7 +136,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
               {shootOptions.map((sh) => (
                 <option key={sh.id} value={sh.id}>
                   {formatDate(sh.date)}
-                  {sh.location ? ` · ${sh.location}` : ""}
+                  {sh.location ? `, ${sh.location}` : ""}
                 </option>
               ))}
               {videos.some((v) => !v.shoot) && <option value="none">{t("noShoot")}</option>}
@@ -180,26 +182,37 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
             const disabled = busy === v.id;
             return (
               <div key={v.id} className={`flex flex-col gap-3 px-4 py-3.5 ${disabled ? "opacity-60" : ""}`}>
-               <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
-                <TaskLink id={v.id} className="flex min-w-0 flex-1 flex-col gap-1.5 hover:opacity-80">
-                  <span className="flex items-center gap-2">
+               {/* The usual order: title and where it belongs, status, dates; then what this shelf does with it. */}
+               <div className="relative flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
+                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <TaskLink id={v.id} className={`text-[15px] font-medium leading-snug text-ink hover:underline ${stretched}`}>
+                    {v.title}
+                  </TaskLink>
+                  <span className="flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[13px] text-ink3">
                     <PostTags format={v.format} type={v.content_type} formatLabel={tf(v.format)} />
-                    <span className="min-w-0 truncate text-[15px] font-medium leading-snug text-ink">{v.title}</span>
+                    {v.profile && <span>{v.profile}</span>}
+                    {v.on_camera && <span>{v.on_camera}</span>}
+                    {v.location && <span>{v.location}</span>}
+                    {m && <span className={tab === "shoot" && v.shoot && v.shoot.date < today ? "text-red-ink" : ""}>{m}</span>}
                   </span>
-                  {(v.profile || v.on_camera || v.location || m) && (
-                    <span className="truncate text-[13px] text-ink3">{[v.profile, v.on_camera, v.location, m].filter(Boolean).join(" · ")}</span>
-                  )}
                   {v.script_decision && <ScriptDecisionBadge decision={v.script_decision} />}
                   {tab === "ideas" && pendingReshoot(v) && <ReshootBadge attempt={pendingReshoot(v)!} />}
                   {first && !open.has(v.id) && (
                     <span className="line-clamp-2 max-w-[720px] text-[13px] leading-snug text-ink2">
-                      {first.label && <span className="mr-1.5 text-[11px] font-semibold tracking-[0.12em] text-accent">{first.label}</span>}
+                      {first.label && <span className="mr-1.5 font-semibold text-ink3">{displayLabel(first.label)}</span>}
                       {first.text}
                     </span>
                   )}
-                </TaskLink>
+                </div>
+                <span className="relative flex flex-wrap items-center gap-x-5 gap-y-2">
+                  <span className="w-[150px] flex-none">
+                    <StatusMenu task={v} today={today} size="sm" />
+                  </span>
+                  {/* Fixed slots, so the dates line up down the shelf. */}
+                  <ItemDates task={v} today={today} />
+                </span>
 
-                <div className="flex flex-none flex-wrap items-center gap-2">
+                <div className="relative flex flex-none flex-wrap items-center gap-2">
                   {/* Only what still needs a shoot: ideas, and leftovers whose shoot has passed. */}
                   {(tab === "ideas" || (tab === "shoot" && v.shoot !== null && v.shoot.date < today)) &&
                     shoots.some((s) => s.id !== v.shoot_id) && (
@@ -216,7 +229,7 @@ export function VideoBank({ tab, videos, shoots, today }: { tab: "ideas" | "shoo
                         .map((s) => (
                           <option key={s.id} value={s.id}>
                             {formatDate(s.date)}
-                            {s.location ? ` · ${s.location}` : ""}
+                            {s.location ? `, ${s.location}` : ""}
                           </option>
                         ))}
                     </select>

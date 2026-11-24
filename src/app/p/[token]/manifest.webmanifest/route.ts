@@ -8,7 +8,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
   if (!portal) return new NextResponse("Not found", { status: 404 });
   return NextResponse.json(
     {
-      name: `${portal.clientName} · Slate n' Frame`,
+      name: `${portal.clientName} – Slate n' Frame`,
       short_name: portal.clientName,
       start_url: `/p/${token}`,
       scope: `/p/${token}`,

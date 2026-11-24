@@ -24,11 +24,12 @@ export function ShootEvent({ shoot, label, variant = "card" }: { shoot: ShootDay
     >
       <span className="grid size-9 flex-none place-items-center rounded-full bg-rust-bg text-rust-ink">{NAV_ICONS.shoots}</span>
       <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="truncate text-[15px] font-medium">
-          {label} · {shoot.client?.name}
+        <span className="flex min-w-0 items-baseline gap-2.5">
+          <span className="flex-none text-[15px] font-medium">{label}</span>
+          <span className="truncate text-[14px] text-ink2">{shoot.client?.name}</span>
         </span>
         <span className="truncate text-[13px] text-ink3">
-          {[shoot.location, time, `${shoot.shot}/${shoot.total}`].filter(Boolean).join(" · ")}
+          {[shoot.location, time, `${shoot.shot}/${shoot.total}`].filter(Boolean).join(", ")}
         </span>
       </span>
       <AvatarStack people={shoot.crew} size={24} />

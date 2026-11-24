@@ -78,7 +78,7 @@ export default async function InvoicesPage({ searchParams }: PageProps<"/invoice
                   <span className="flex min-w-0 flex-col gap-[3px]">
                     <span className="line-clamp-2 break-words text-[15px] font-medium leading-snug">{buyer?.name ?? "—"}</span>
                     <span className="truncate text-[13px] text-ink3">
-                      <span className="lg:hidden">{invoiceNumber(inv) ?? t("draft")} · {formatDate(inv.issued_on)}</span>
+                      <span className="lg:hidden">{invoiceNumber(inv) ?? t("draft")}, {formatDate(inv.issued_on)}</span>
                       {inv.client_id && clientName.get(inv.client_id) && <span className="hidden lg:inline">{clientName.get(inv.client_id)}</span>}
                     </span>
                   </span>

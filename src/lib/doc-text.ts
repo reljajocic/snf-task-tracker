@@ -83,6 +83,6 @@ export function docInline(text: string): Inline[] {
 export function docSnippet(body: string, max = 90) {
   const first = docBlocks(body).find((b) => b.kind !== "heading") ?? docBlocks(body)[0];
   if (!first) return "";
-  const text = (first.kind === "list" ? first.items.join(" · ") : first.text).replace(/\*\*/g, "").replace(/\s+/g, " ").trim();
+  const text = (first.kind === "list" ? first.items.join(", ") : first.text).replace(/\*\*/g, "").replace(/\s+/g, " ").trim();
   return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
 }

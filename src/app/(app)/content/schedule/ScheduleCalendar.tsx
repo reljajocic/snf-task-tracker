@@ -5,7 +5,7 @@ import { useOptimistic, useState, useTransition, type DragEvent } from "react";
 import { updateTask } from "@/app/(app)/task-actions";
 import { TaskLink } from "@/components/tasks/links";
 import { addDays, formatDate, isoWeek, startOfWeek, weekdayIndex, type IsoDate } from "@/lib/dates";
-import { POSTING_STATUS_COLOR, postingStatus, type Task } from "@/lib/tasks";
+import { ITEM_STATUS_COLOR, itemStatus, postingStatus, type Task } from "@/lib/tasks";
 import { PostTags } from "@/components/tasks/tags";
 import { FORMAT_COLOR } from "@/lib/formats";
 import { ShootMarker, type ScheduleShoot } from "./ShootMarker";
@@ -78,12 +78,15 @@ export function ScheduleCalendar({
         style={{ borderLeftColor: FORMAT_COLOR[v.format] }}
         className={`flex cursor-grab flex-col rounded-sm border border-l-[3px] active:cursor-grabbing ${big ? "gap-1.5 px-3.5 py-3" : "gap-1 px-2 py-1.5"} ${s === "not_published" ? "border-red-line bg-red-bg" : "border-line bg-surf"}`}
       >
-        <span className="flex items-center gap-1.5">
-          <span className="size-[7px] flex-none rounded-full" style={{ background: POSTING_STATUS_COLOR[s] }} />
-          <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
+        {/* The usual order, small: title, then tags and who's on camera; the dot is its status. */}
+        <span className={`flex items-start gap-1.5 ${big ? "text-[15px] font-medium leading-snug" : "text-[12px] font-medium leading-tight"}`}>
+          <span className="mt-[5px] size-[7px] flex-none rounded-full" style={{ background: ITEM_STATUS_COLOR[itemStatus(v)] }} />
+          <span className={big ? "" : "line-clamp-2"}>{v.title}</span>
         </span>
-        <span className={big ? "text-[15px] font-medium leading-snug" : "line-clamp-2 text-[12px] font-medium leading-tight"}>{v.title}</span>
-        {v.on_camera && <span className={`truncate text-ink3 ${big ? "text-[13px]" : "text-[12px]"}`}>{v.on_camera}</span>}
+        <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <PostTags format={v.format} type={v.content_type} formatLabel={t(`format.${v.format}`)} />
+          {v.on_camera && <span className={`truncate text-ink3 ${big ? "text-[13px]" : "text-[12px]"}`}>{v.on_camera}</span>}
+        </span>
       </TaskLink>
     );
   };
@@ -143,7 +146,7 @@ export function ScheduleCalendar({
                         {/* Phones: a shoot day is a small orange square next to the posts' dots. */}
                         {shoots.some((sh) => sh.date === d) && <span className="size-1.5 rounded-[1px] bg-accent" />}
                         {list.map((v) => (
-                          <span key={v.id} className="size-1.5 rounded-full" style={{ background: POSTING_STATUS_COLOR[postingStatus(v, today)] }} />
+                          <span key={v.id} className="size-1.5 rounded-full" style={{ background: ITEM_STATUS_COLOR[itemStatus(v)] }} />
                         ))}
                       </div>
                     </div>

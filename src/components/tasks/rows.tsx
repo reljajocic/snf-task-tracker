@@ -1,39 +1,59 @@
-// Task rows and cards for Home, List and Calendar. Server-safe (no hooks besides translations);
-// each item is wrapped in a TaskLink that opens the detail panel.
+// Task and video rows and cards for Home, the task list, the client page and the calendar. Every one is laid out
+// the same way (see item-bits): title, where it belongs, status, dates (shoot, deadline, posting), people.
+// The title is the link that opens the item; it stretches over the whole row, and the status button sits above it,
+// so the status changes in place without opening anything.
 import { useTranslations } from "next-intl";
 import { AvatarStack } from "@/components/ui/Avatar";
-import { daysBetween, formatDate, type IsoDate } from "@/lib/dates";
+import { daysBetween, type IsoDate } from "@/lib/dates";
 import type { Task } from "@/lib/tasks";
-import { DueStack, PriorityMark, PrioritySquare, TaskFacts, TaskMeta, dueTone, useDueText } from "./bits";
+import { PriorityMark, dueTone } from "./bits";
+import { ItemDates, ItemWhere } from "./item-bits";
 import { TaskLink } from "./links";
-import { taskDue } from "@/lib/tasks";
+import { StatusMenu } from "./StatusMenu";
 
-// The title gets the width: client, type, status and priority sit on one line under it (status and priority only
-// when they aren't the usual To do / Medium), so the row is title | people | deadline.
-const ROW_GRID = "grid grid-cols-[minmax(0,1fr)_96px_118px] items-center gap-5";
+/**
+ * Title | status | dates | people. Shared by every desktop list so the same thing sits in the same column. Rows
+ * measure their own width: in a narrow column (Home beside its sidebar) status and dates go on a second line.
+ */
+export const ROW_GRID = "grid grid-cols-[minmax(0,1fr)_150px_252px_84px] items-center gap-5";
 
-/** Desktop row inside a surface list (design 1a). `plainDate`: under a day header, so the date isn't repeated. */
-export function TaskRow({ task, today, plainDate = false }: { task: Task; today: IsoDate; plainDate?: boolean }) {
-  const t = useTranslations();
-  const late = dueTone(task, today) === "late";
+// The title's link covers its row or card; its focus ring is drawn on that whole area (and not again on the text).
+const stretched = "outline-none after:absolute after:inset-0 after:rounded-lg after:content-[''] focus-visible:shadow-none focus-visible:after:shadow-[inset_0_0_0_2px_var(--accent)]";
+
+/** Where it belongs, with the priority when it isn't the usual Medium. */
+function WhereLine({ task, client = true }: { task: Task; client?: boolean }) {
   return (
-    <TaskLink
-      id={task.id}
-      className={`${ROW_GRID} border-t border-line px-[18px] py-3.5 first:border-t-0 hover:bg-hover ${late && !plainDate ? "bg-red-bg hover:bg-red-bg" : ""}`}
-    >
-      <div className="flex min-w-0 flex-col gap-1.5">
-        <span className="text-[15px] font-medium leading-snug">{task.title}</span>
-        <TaskFacts
-          parts={[task.client?.name ?? t("task.noClient"), task.type ? t(`taskType.${task.type}`) : null]}
-          status={task.status}
-          priority={task.priority}
-        />
+    <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+      <ItemWhere task={task} client={client} project={!client} />
+      {task.priority !== "medium" && <PriorityMark priority={task.priority} />}
+    </span>
+  );
+}
+
+/** Desktop row (design 1a), in a surface list or the task list table. */
+export function TaskRow({ task, today, inClient = false }: { task: Task; today: IsoDate; /** On the client's own page: its name is the title, so the project shows instead. */ inClient?: boolean }) {
+  const late = dueTone(task, today) === "late";
+  const done = task.status === "done";
+  return (
+    <div className={`@container relative hover:bg-hover ${late ? "bg-red-bg hover:bg-red-bg" : ""}`}>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-3 px-[18px] py-3.5 @[720px]:grid-cols-[minmax(0,1fr)_150px_252px_84px]">
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <TaskLink id={task.id} className={`line-clamp-2 text-[15px] font-medium leading-snug ${done ? "text-ink2 line-through" : ""} ${stretched}`}>
+            {task.title}
+          </TaskLink>
+          <WhereLine task={task} client={!inClient} />
+        </div>
+        <div className="col-span-2 row-start-2 flex flex-wrap items-center gap-x-5 gap-y-2 @[720px]:contents">
+          <span className="relative justify-self-start">
+            <StatusMenu task={task} today={today} size="sm" />
+          </span>
+          <ItemDates task={task} today={today} />
+        </div>
+        <span className="col-start-2 row-start-1 justify-self-end self-start @[720px]:col-start-4 @[720px]:self-center">
+          <AvatarStack people={task.assignees} size={28} />
+        </span>
       </div>
-      <span className="justify-self-end">
-        <AvatarStack people={task.assignees} size={28} />
-      </span>
-      {plainDate ? <span /> : <DueStack task={task} today={today} />}
-    </TaskLink>
+    </div>
   );
 }
 
@@ -41,77 +61,58 @@ export function RowList({ children }: { children: React.ReactNode }) {
   return <div className="snf-stack">{children}</div>;
 }
 
-/** Mobile card with relative deadline and priority (design 1b "Danas i zakasnelo"). */
-export function TaskCardMobile({ task, today }: { task: Task; today: IsoDate }) {
-  const dueText = useDueText();
-  const label = taskDue(task, today);
-  const tone = dueTone(task, today);
-  const toneClass = tone === "late" ? "bg-red-bg text-red-ink" : tone === "today" ? "bg-rust-bg text-rust-ink" : "bg-chip text-ink2";
+/** Phone card: the same pieces stacked. `compact` for long lists (smaller title, no dates). */
+export function TaskCardMobile({ task, today, compact = false }: { task: Task; today: IsoDate; compact?: boolean }) {
+  const late = dueTone(task, today) === "late";
+  const done = task.status === "done";
   return (
-    <TaskLink
-      id={task.id}
-      className={`flex flex-col gap-3 rounded-lg border bg-surf p-4 ${tone === "late" ? "border-red-line" : "border-line"}`}
-    >
+    <div className={`relative flex flex-col gap-3 rounded-lg border bg-surf ${compact ? "px-4 py-3.5" : "p-4"} ${late ? "border-red-line" : "border-line"}`}>
       <div className="flex justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-1.5">
-          <span className="text-[18px] font-medium leading-snug">{task.title}</span>
-          <TaskMeta task={task} />
+          <TaskLink id={task.id} className={`${compact ? "text-[16px]" : "text-[18px]"} font-medium leading-snug ${done ? "text-ink2 line-through" : ""} ${stretched}`}>
+            {task.title}
+          </TaskLink>
+          <WhereLine task={task} />
         </div>
         <AvatarStack people={task.assignees} size={30} />
       </div>
-      <div className="flex items-center justify-between gap-2">
-        {label && task.due_date ? (
-          <div className={`flex items-center gap-2 rounded-md px-2.5 py-2 ${toneClass}`}>
-            <span className="whitespace-nowrap text-[15px] font-bold leading-none">{dueText(label)}</span>
-            <span className="whitespace-nowrap text-[13px] leading-none text-ink2">{formatDate(task.due_date)}</span>
-          </div>
-        ) : (
-          <span />
-        )}
-        <PriorityMark priority={task.priority} />
-      </div>
-    </TaskLink>
-  );
-}
-
-/** Compact mobile row (design 1b "Ove nedelje"). */
-export function TaskRowMobile({ task }: { task: Task }) {
-  const t = useTranslations("task");
-  return (
-    <TaskLink id={task.id} className="flex min-h-11 items-center justify-between gap-3 rounded-lg border border-line bg-surf px-4 py-3.5">
-      <div className="flex min-w-0 flex-col gap-1.5">
-        <span className="text-[16px] font-medium leading-snug">{task.title}</span>
-        <span className="flex items-center gap-[7px] text-[13px] leading-tight text-ink2">
-          <PrioritySquare priority={task.priority} />
-          {task.client?.name ?? t("noClient")}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <span className="relative">
+          <StatusMenu task={task} today={today} size="sm" />
         </span>
+        {!compact && <ItemDates task={task} today={today} slots={false} />}
       </div>
-      <AvatarStack people={task.assignees} size={30} />
-    </TaskLink>
+    </div>
   );
 }
 
-/** "Waiting on client" card: how long it's been waiting + deadline. */
+/** Compact phone row (design 1b "This week"). */
+export function TaskRowMobile({ task, today }: { task: Task; today: IsoDate }) {
+  return <TaskCardMobile task={task} today={today} compact />;
+}
+
+/** "Waiting on client" card: the usual card, plus how long it's been waiting. */
 export function WaitingCard({ task, today, large = false }: { task: Task; today: IsoDate; large?: boolean }) {
   const t = useTranslations();
   const days = Math.max(0, daysBetween(task.status_changed_at.slice(0, 10), today));
   return (
-    <TaskLink
-      id={task.id}
-      className={`flex flex-col gap-2.5 border border-line bg-surf ${large ? "rounded-lg p-4" : "rounded-lg px-4 py-3.5"}`}
-    >
+    <div className={`relative flex flex-col gap-2.5 rounded-lg border border-line bg-surf ${large ? "p-4" : "px-4 py-3.5"}`}>
       <div className="flex justify-between gap-3">
-        <div className="flex min-w-0 flex-col gap-[5px]">
-          <span className={`${large ? "text-[16px]" : "text-[15px]"} font-medium leading-snug`}>{task.title}</span>
-          <span className="text-[13px] leading-tight text-ink2">{task.client?.name ?? t("task.noClient")}</span>
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <TaskLink id={task.id} className={`${large ? "text-[16px]" : "text-[15px]"} font-medium leading-snug ${stretched}`}>
+            {task.title}
+          </TaskLink>
+          <ItemWhere task={task} />
         </div>
-        {!large && <AvatarStack people={task.assignees} size={26} />}
+        <AvatarStack people={task.assignees} size={26} />
       </div>
-      <div className={`flex justify-between whitespace-nowrap font-medium leading-none ${large ? "text-[14px] font-semibold" : "text-[13px]"}`}>
-        <span className="text-[var(--waiting-ink)]">{t("task.waitingFor", { days })}</span>
-        {task.due_date && <span className="font-normal text-ink3">{t("home.dueShort", { date: formatDate(task.due_date) })}</span>}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <span className="relative flex flex-wrap items-center gap-x-3 gap-y-2">
+          <StatusMenu task={task} today={today} size="sm" />
+          <span className="text-[13px] font-semibold text-[var(--waiting-ink)]">{t("task.waitingFor", { days })}</span>
+        </span>
+        <ItemDates task={task} today={today} slots={false} />
       </div>
-    </TaskLink>
+    </div>
   );
 }
-

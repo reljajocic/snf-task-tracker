@@ -39,7 +39,7 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
     .sort((a, b) => a.date.localeCompare(b.date) || (a.starts_at ?? "").localeCompare(b.starts_at ?? "") || a.id.localeCompare(b.id));
   const at = days.findIndex((s) => s.id === day.id);
   const stepTo = (s: (typeof days)[number] | undefined) =>
-    s ? { href: shootHref(s.id), label: [formatDate(s.date), allClients ? s.client?.name : s.location].filter(Boolean).join(" · ") } : null;
+    s ? { href: shootHref(s.id), label: [formatDate(s.date), allClients ? s.client?.name : s.location].filter(Boolean).join(", ") } : null;
   const nowTime = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date());
 
   return (
@@ -51,7 +51,7 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
       <header className="px-5 pb-5 pt-6 lg:px-10 lg:pt-9">
         <PageTitle
           back={{ href: "/content/shoots", label: t("nav.shoots") }}
-          eyebrow={[client.name, day.location].filter(Boolean).join(" · ")}
+          eyebrow={[client.name, day.location].filter(Boolean).join(", ")}
           title={`${t("weekday.long", { day: String(weekdayIndex(day.date)) })}, ${formatDate(day.date)}`}
           sub={
             <ShootNav

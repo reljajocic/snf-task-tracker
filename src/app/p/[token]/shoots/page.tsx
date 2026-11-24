@@ -26,7 +26,7 @@ export default async function PortalShoots({ params }: PageProps<"/p/[token]/sho
                   {t("weekday.long", { day: String(weekdayIndex(s.date)) })}, {formatDate(s.date)}
                 </span>
                 <span className="text-[14px] text-ink2">
-                  {[s.location, s.starts_at && `${s.starts_at}${s.ends_at ? `–${s.ends_at}` : ""}`, t("portal.scriptsCount", { count: total })].filter(Boolean).join(" · ")}
+                  {[s.location, s.starts_at && `${s.starts_at}${s.ends_at ? `–${s.ends_at}` : ""}`, t("portal.scriptsCount", { count: total })].filter(Boolean).join(", ")}
                 </span>
                 {portal.show.scripts && total > 0 && (
                   <>

@@ -34,7 +34,7 @@ describe("docInline", () => {
 
 describe("docSnippet", () => {
   it("is the first text under the title, plain and short", () => {
-    expect(docSnippet("# Tone\n- **calm**\n- warm")).toBe("calm · warm");
+    expect(docSnippet("# Tone\n- **calm**\n- warm")).toBe("calm, warm");
     expect(docSnippet("x".repeat(100), 10)).toBe("xxxxxxxxx…");
     expect(docSnippet("")).toBe("");
   });

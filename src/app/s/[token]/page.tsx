@@ -34,7 +34,7 @@ export default async function SignupPage({ params, searchParams }: PageProps<"/s
         <div className="flex flex-col gap-3">
           <span className="text-[14px] font-medium text-ink3">
             {tw("long", { day: String(weekdayIndex(signup.date)) })}, {formatDate(signup.date)}
-            {signup.location ? ` · ${signup.location}` : ""}
+            {signup.location ? `, ${signup.location}` : ""}
           </span>
           <h1 className="display text-[32px] lg:text-[44px]">{readOnly ? t("viewTitle") : t("title")}</h1>
           <p className="max-w-[620px] text-[15px] leading-relaxed text-ink2">{readOnly ? t("viewLead") : t("lead")}</p>

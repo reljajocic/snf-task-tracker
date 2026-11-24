@@ -23,7 +23,7 @@ export default async function PortalShoot({ params }: PageProps<"/p/[token]/shoo
         <Link href={`/p/${token}/shoots`} className="text-[15px] font-medium text-ink2 hover:text-ink">‹ {t("portal.shootsTitle")}</Link>
         <span className="text-[14px] font-medium text-ink2">
           {t("weekday.long", { day: String(weekdayIndex(shoot.date)) })}, {formatDate(shoot.date)}
-          {shoot.location ? ` · ${shoot.location}` : ""}
+          {shoot.location ? `, ${shoot.location}` : ""}
         </span>
         <h1 className="display text-[30px] lg:text-[40px]">{t("portal.scriptsTitle")}</h1>
       </div>

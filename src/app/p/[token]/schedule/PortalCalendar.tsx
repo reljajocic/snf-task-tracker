@@ -89,7 +89,7 @@ export function PortalCalendar({ token, months, today, posts, pool, plans }: { t
     >
       <span className="flex items-center gap-1.5 text-[12px] font-semibold uppercase tracking-[0.08em]" style={{ color: FORMAT_COLOR[v.format] }}>
         {t(`format.${v.format}`)}
-        {v.content_type && <span className="font-medium normal-case tracking-normal text-ink3">· {v.content_type}</span>}
+        {v.content_type && <span className="ml-1 font-medium normal-case tracking-normal text-ink3">{v.content_type}</span>}
       </span>
       <span className="break-words text-[16px] font-medium leading-snug text-ink">{v.title}</span>
     </Link>
@@ -104,7 +104,7 @@ export function PortalCalendar({ token, months, today, posts, pool, plans }: { t
         e.dataTransfer.setData("text/portal-post", v.id);
         e.dataTransfer.effectAllowed = "move";
       }}
-      title={`${t(`format.${v.format}`)} · ${v.title}`}
+      title={`${v.title} (${t(`format.${v.format}`)})`}
       className={`hover:opacity-80 ${canMove(v) ? "lg:cursor-grab lg:active:cursor-grabbing" : ""}`}
     >
       {/* Phones: a cell is ~45px wide, so just the status dot ringed in the format's colour. Desktop: the format's

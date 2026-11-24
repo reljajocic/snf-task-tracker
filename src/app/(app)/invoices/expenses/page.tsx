@@ -72,9 +72,9 @@ export default async function ExpensesPage({ searchParams }: PageProps<"/invoice
                         <span className="line-clamp-2 break-words text-[15px] font-medium leading-snug">{s.name}</span>
                         <span className="truncate text-[13px] text-ink3">
                           {ended ? t("subEnded", { date: formatDate(s.ends_on!) }) : t("subEvery", { day: s.day_of_month })}
-                          {s.supplier ? ` · ${s.supplier}` : ""}
+                          {s.supplier ? `, ${s.supplier}` : ""}
                           {/* Phones have no column for it: the exception goes on this line. */}
-                          {s.profile_id && <span className="font-medium text-ink2 lg:hidden"> · {who(s.profile_id)}</span>}
+                          {s.profile_id && <span className="ml-2 font-medium text-ink2 lg:hidden">{who(s.profile_id)}</span>}
                         </span>
                       </span>
                       <span className="hidden text-[13px] text-ink2 lg:block">{t("subSince", { date: formatDate(s.starts_on) })}</span>
@@ -112,7 +112,7 @@ export default async function ExpensesPage({ searchParams }: PageProps<"/invoice
                             {e.subscription_id && <span className="mr-2 font-medium text-ink2">{t("subscriptionBadge")}</span>}
                             {e.invoice_no && (
                               <span className={`mr-2 font-medium ${e.paid_on ? "text-ink2" : "text-red-ink"}`}>
-                                {t("receivedLine", { no: e.invoice_no })} · {e.paid_on ? t("receivedPaid", { date: formatDate(e.paid_on) }) : t("receivedUnpaid")}
+                                {t("receivedLine", { no: e.invoice_no })}, {e.paid_on ? t("receivedPaid", { date: formatDate(e.paid_on) }) : t("receivedUnpaid")}
                               </span>
                             )}
                             {e.supplier}

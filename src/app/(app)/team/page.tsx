@@ -27,7 +27,7 @@ export default async function TeamPage() {
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <span className="text-[15px] font-medium">
                   {p.full_name}
-                  {p.id === me.id && <span className="ml-2 text-[13px] text-ink3">· {t("you")}</span>}
+                  {p.id === me.id && <span className="ml-2 text-[13px] text-ink3">{t("you")}</span>}
                 </span>
                 <span className="truncate text-[13px] text-ink3">{p.email}</span>
               </div>
