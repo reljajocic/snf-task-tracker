@@ -66,6 +66,7 @@ export function ShootBoard({
   candidates,
   canManage,
   isToday,
+  filmable,
   nowTime,
   desktopView,
   tags,
@@ -82,6 +83,8 @@ export function ShootBoard({
   candidates: Task[];
   canManage: boolean;
   isToday: boolean;
+  /** Today or past: the shoot happened (or is happening). */
+  filmable: boolean;
   nowTime: string;
 }) {
   const t = useTranslations();
@@ -362,6 +365,7 @@ export function ShootBoard({
         <AddVideos
           shootId={day.id}
           clientId={day.client?.id ?? ""}
+          started={filmable}
           candidates={candidates}
           onClose={() => setAdding(false)}
           onDone={() => setAdding(false)}
@@ -839,7 +843,7 @@ function DayMenu({
   );
 }
 
-function AddVideos({ shootId, clientId, candidates, onDone, onClose }: { shootId: string; clientId: string; candidates: Task[]; onDone: () => void; onClose: () => void }) {
+function AddVideos({ shootId, clientId, started, candidates, onDone, onClose }: { shootId: string; clientId: string; /** The day has come: a new video here was filmed off plan. */ started: boolean; candidates: Task[]; onDone: () => void; onClose: () => void }) {
   const t = useTranslations("shoots");
   const tf = useTranslations("format");
   const tp = useTranslations("phase");
@@ -906,7 +910,7 @@ function AddVideos({ shootId, clientId, candidates, onDone, onClose }: { shootId
         <span className="text-[14px] text-ink3">{t("noCandidates")}</span>
       )}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href={`?new=1&kind=video&client=${clientId}&shoot=${shootId}`} scroll={false} className="text-[14px] font-medium text-rust-ink">
+        <Link href={`?new=1&kind=video&client=${clientId}&shoot=${shootId}${started ? "&stage=shot" : ""}`} scroll={false} className="text-[14px] font-medium text-rust-ink">
           {t("newVideo")}
         </Link>
         <Button

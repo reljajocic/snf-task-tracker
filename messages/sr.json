@@ -553,6 +553,10 @@
     "laterHint": "Rok, status i prioritet dolaze kad video pređe u montažu.",
     "removeSection": "Ukloni deo",
     "referenceLabel": "Referenca",
+    "filmedOn": "Dan snimanja",
+    "notOnShoot": "Nije sa snimanja",
+    "otherDay": "Drugi dan",
+    "newShootDay": "Ide na snimanje za {client} {date}, pravi se ako ga nema.",
     "stage": "Status",
     "stages": {
       "idea": "Ideja",

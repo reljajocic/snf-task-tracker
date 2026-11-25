@@ -553,6 +553,10 @@
     "laterHint": "Deadline, status and priority come in when the video moves to edit.",
     "removeSection": "Remove section",
     "referenceLabel": "Reference",
+    "filmedOn": "Filmed",
+    "notOnShoot": "Not on a shoot",
+    "otherDay": "Another day",
+    "newShootDay": "Goes on the {client} shoot on {date}, made if there isn't one.",
     "stage": "Status",
     "stages": {
       "idea": "Idea",

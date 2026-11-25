@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { requireProfile } from "@/lib/auth";
+import { today } from "@/lib/dates";
 import { notify } from "@/lib/notify";
 import { returnToIdeas } from "@/lib/reshoot";
 import { createClient } from "@/lib/supabase/server";
@@ -42,7 +43,7 @@ async function watchers(taskId: string): Promise<string[]> {
 }
 
 export async function createTask(
-  input: TaskPatch & { title: string; assignee_ids: string[] },
+  input: TaskPatch & { title: string; assignee_ids: string[]; /** A video filmed off plan: the day it was filmed. */ shoot_date?: string | null },
 ): Promise<ActionResult<{ id: string }>> {
   const me = await requireProfile();
   const fields = clean(input);
@@ -52,7 +53,38 @@ export async function createTask(
   if (isVideo && input.assignee_ids.length && fields.editor_id === undefined) fields.editor_id = input.assignee_ids[0];
 
   const supabase = await createClient();
-  const { data, error } = await supabase.from("tasks").insert(fields).select("id").single();
+  // Filmed on a shoot it wasn't planned for: it goes on that day's shoot (made for the day if there wasn't one),
+  // last in the running order, already ticked off.
+  let shootOrder: number | null = null;
+  if (input.shoot_date && input.shoot_date > today()) return { ok: false, error: "A video can't be filmed on a day that hasn't come yet." };
+  if (isVideo && !fields.shoot_id && fields.client_id && input.shoot_date && DATE_RE.test(input.shoot_date)) {
+    const { data: day } = await supabase.from("shoot_days").select("id").eq("client_id", fields.client_id).eq("date", input.shoot_date).limit(1).maybeSingle();
+    if (day) fields.shoot_id = day.id;
+    else {
+      const { data: made, error: dErr } = await supabase
+        .from("shoot_days")
+        .insert({ client_id: fields.client_id, date: input.shoot_date, created_by: me.id })
+        .select("id")
+        .single();
+      if (dErr) return { ok: false, error: dErr.message };
+      fields.shoot_id = made.id;
+    }
+  }
+  if (isVideo && fields.shoot_id) {
+    const { data: last } = await supabase
+      .from("tasks")
+      .select("shoot_order")
+      .eq("shoot_id", fields.shoot_id)
+      .not("shoot_order", "is", null)
+      .order("shoot_order", { ascending: false })
+      .limit(1);
+    shootOrder = (last?.[0]?.shoot_order ?? -1) + 1;
+  }
+  const { data, error } = await supabase
+    .from("tasks")
+    .insert((shootOrder === null ? fields : { ...fields, shoot_order: shootOrder }) as TaskPatch)
+    .select("id")
+    .single();
   if (error) return { ok: false, error: error.message };
 
   if (isVideo) {

@@ -34,10 +34,13 @@ export function MonthGrid({
   value,
   today,
   onPick,
+  max,
 }: {
   value: IsoDate | null;
   today: IsoDate;
   onPick: (d: IsoDate) => void;
+  /** Last day that can be picked (e.g. today, for something that already happened). */
+  max?: IsoDate;
 }) {
   const t = useTranslations();
   const [month, setMonth] = useState<IsoDate>(`${(value ?? today).slice(0, 7)}-01`);
@@ -66,13 +69,17 @@ export function MonthGrid({
         {visible.map((d) => {
           const selected = d === value;
           const isToday = d === today;
+          const off = !!max && d > max;
           return (
             <button
               key={d}
               type="button"
+              disabled={off}
               onClick={() => onPick(d)}
               className={`h-9 cursor-pointer rounded-full border p-0 text-[13px] font-medium ${
-                selected
+                off
+                  ? "cursor-default border-transparent text-ink3 opacity-50"
+                  : selected
                   ? "border-accent bg-accent text-charcoal"
                   : isToday
                     ? "border-accent text-accent"

@@ -189,3 +189,18 @@ export async function importShootSheet(_prev: ShootFormState, form: FormData): P
   revalidatePath("/", "layout");
   redirect(`/content/shoots/${shoot.id}`);
 }
+
+/** A client's last few shoot days up to `today`, newest first: what an "already filmed" video was filmed on. */
+export async function recentShoots(clientId: string, today: string): Promise<{ id: string; date: string; location: string | null }[]> {
+  await requireProfile();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(today)) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("shoot_days")
+    .select("id, date, location")
+    .eq("client_id", clientId)
+    .lte("date", today)
+    .order("date", { ascending: false })
+    .limit(3);
+  return data ?? [];
+}

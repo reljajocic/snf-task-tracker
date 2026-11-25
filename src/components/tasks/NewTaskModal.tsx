@@ -3,10 +3,11 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 import { addClientContentType } from "@/app/(app)/clients/actions";
+import { recentShoots } from "@/app/(app)/content/shoots/actions";
 import { createTask } from "@/app/(app)/task-actions";
 import { Button } from "@/components/ui/Button";
 import type { Lookups } from "@/lib/data";
-import { formatDate, type IsoDate } from "@/lib/dates";
+import { daysBetween, formatDate, formatShortDate, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { ScriptFields } from "./ScriptFields";
 import { SCRIPT_SECTIONS, parseEstimate, type ScriptSection, type TaskPriority, type TaskStatus, type TaskType } from "@/lib/tasks";
 import { Pill } from "./bits";
@@ -36,6 +37,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const t = useTranslations("task");
   const tv = useTranslations("video");
   const tf = useTranslations("format");
+  const tw = useTranslations("weekday");
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<"task" | "video">(defaults.kind ?? "task");
   // The page's client (posting schedule, video bank, a client page) is only a suggestion: if I'm not on its team
@@ -70,6 +72,11 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
   const [format, setFormat] = useState<PostFormat>("video");
   // Where the new video starts: an idea, already filmed (waiting for a date), or already out.
   const [stage, setStage] = useState<"idea" | "shot" | "published">(defaults.stage ?? "idea");
+  // Filmed off plan: which of the client's shoots it was filmed on, or another day (a shoot day is made for it).
+  const [shoots, setShoots] = useState<{ clientId: string; list: { id: string; date: IsoDate; location: string | null }[] } | null>(null);
+  // Neither shoot nor date: not filmed on a shoot (the client sent it, say).
+  const [filmedOn, setFilmedOn] = useState<{ clientId: string | null; shoot?: string; date?: IsoDate } | null>(null);
+  const [filmedPickerOpen, setFilmedPickerOpen] = useState(false);
   const [extraTags, setExtraTags] = useState<string[]>([]);
   const [tagDraft, setTagDraft] = useState<string | null>(null);
   const [onCamera, setOnCamera] = useState("");
@@ -84,9 +91,32 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
 
   const client = lookups.clients.find((c) => c.id === where.client_id);
   const needsProject = Boolean(client && !client.isTeam && !where.project_id);
-  const canSave = title.trim().length > 0 && !needsProject && !pending;
   const isVideo = kind === "video";
   const tags = [...(client?.contentTypes ?? []), ...extraTags.filter((x) => !client?.contentTypes.includes(x))];
+
+  // From a shoot's page the video is already on that shoot; elsewhere it asks which shoot it was filmed on.
+  const asksShoot = isVideo && stage === "shot" && !defaults.shoot_id && !!where.client_id;
+  useEffect(() => {
+    if (!asksShoot || !where.client_id) return;
+    const clientId = where.client_id;
+    let live = true;
+    recentShoots(clientId, today).then((list) => live && setShoots({ clientId, list }));
+    return () => {
+      live = false;
+    };
+  }, [asksShoot, where.client_id, today]);
+  // Until the client's shoots are in, nothing is picked (and it can't be saved), so nothing jumps or is guessed.
+  const loadingShoots = asksShoot && shoots?.clientId !== where.client_id;
+  const canSave = title.trim().length > 0 && !needsProject && !pending && !loadingShoots;
+  const recent = shoots?.clientId === where.client_id ? shoots.list : [];
+  // Unless picked: the client's latest shoot if it was this past week (most likely the one), otherwise no shoot.
+  const filmed: { shoot?: string; date?: IsoDate } =
+    filmedOn?.clientId === where.client_id
+      ? filmedOn
+      : recent[0] && daysBetween(recent[0].date, today) <= 7
+        ? { shoot: recent[0].id }
+        : {};
+  const otherDay = filmed.date && !recent.some((r) => r.date === filmed.date) ? filmed.date : null;
 
   useEffect(() => {
     const esc = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -116,7 +146,8 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
               reference_url: reference,
               drive_url: drive,
               publish_date: defaults.publish_date ?? null,
-              shoot_id: defaults.shoot_id ?? null,
+              shoot_id: defaults.shoot_id ?? (asksShoot && filmed.shoot ? filmed.shoot : null),
+              shoot_date: asksShoot && !filmed.shoot ? (filmed.date ?? null) : null,
               ...(stage === "shot" ? { phase: 2, shot_status: "shot" as const } : stage === "published" ? { phase: 5, shot_status: "shot" as const } : {}),
             }
           : {
@@ -183,6 +214,54 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
             </Pill>
           ))}
         </div>
+        {asksShoot && (
+          <div className="mb-3 flex flex-col gap-2">
+            {label(tv("filmedOn"))}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {loadingShoots && <span aria-hidden className="h-[38px] w-28 rounded-full border border-line2" />}
+              {recent.map((r) => (
+                <Pill key={r.id} size="lg" selected={filmed.shoot === r.id} onClick={() => { setFilmedOn({ clientId: where.client_id, shoot: r.id }); setFilmedPickerOpen(false); }}>
+                  {tw("short", { day: String(weekdayIndex(r.date)) })} {formatShortDate(r.date)}
+                  {r.location && (
+                    <span title={r.location} className={`max-w-[12ch] truncate font-normal ${filmed.shoot === r.id ? "" : "text-ink3"}`}>
+                      {r.location}
+                    </span>
+                  )}
+                </Pill>
+              ))}
+              <button
+                type="button"
+                onClick={() => setFilmedPickerOpen((o) => !o)}
+                aria-expanded={filmedPickerOpen}
+                className={`h-[38px] cursor-pointer whitespace-nowrap rounded-full border px-3.5 text-[14px] font-semibold ${
+                  otherDay ? "border-seg bg-seg text-seg-ink" : "border-line2 text-ink"
+                }`}
+              >
+                {otherDay ? `${tw("short", { day: String(weekdayIndex(otherDay)) })} ${formatShortDate(otherDay)}` : tv("otherDay")} ▾
+              </button>
+              {!loadingShoots && (
+                <Pill size="lg" selected={!filmed.shoot && !filmed.date} onClick={() => { setFilmedOn({ clientId: where.client_id }); setFilmedPickerOpen(false); }}>
+                  {tv("notOnShoot")}
+                </Pill>
+              )}
+            </div>
+            {filmedPickerOpen && (
+              <div className="w-full max-w-[300px] rounded-lg border border-line2 bg-surf p-3.5">
+                <MonthGrid
+                  value={filmed.date ?? null}
+                  today={today}
+                  max={today}
+                  onPick={(d) => {
+                    const match = recent.find((r) => r.date === d);
+                    setFilmedOn(match ? { clientId: where.client_id, shoot: match.id } : { clientId: where.client_id, date: d });
+                    setFilmedPickerOpen(false);
+                  }}
+                />
+              </div>
+            )}
+            {otherDay && <span className="text-[13px] text-ink3">{tv("newShootDay", { date: formatDate(otherDay), client: client?.name ?? "" })}</span>}
+          </div>
+        )}
         {label(tv("formatLabel"))}
         <div className="flex flex-wrap items-center gap-1.5">
           {FORMATS.map((f) => (
@@ -311,7 +390,7 @@ export function NewTaskModal({ lookups, today, defaults, onClose }: { lookups: L
           )}
         </div>
         {pickerOpen && (
-          <div className="w-[300px] rounded-lg border border-line2 bg-surf p-3.5">
+          <div className="w-full max-w-[300px] rounded-lg border border-line2 bg-surf p-3.5">
             <MonthGrid value={due} today={today} onPick={(d) => { setDue(d); setPickerOpen(false); }} />
           </div>
         )}

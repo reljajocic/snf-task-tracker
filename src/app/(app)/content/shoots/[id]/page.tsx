@@ -79,6 +79,7 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
         candidates={candidates}
         canManage={canManage}
         isToday={day.date === getToday()}
+        filmable={day.date <= getToday()}
         nowTime={nowTime}
         desktopView={desktopView}
         tags={lookups.clients.find((c) => c.id === client.id)?.contentTypes ?? []}
