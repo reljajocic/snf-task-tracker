@@ -212,7 +212,8 @@
     "seesInvoices": "Fakture",
     "noInvoices": "Bez faktura",
     "tabOverview": "Pregled",
-    "tabPortal": "Klijentski portal"
+    "tabPortal": "Klijentski portal",
+    "elsewhere": "Ovaj klijent na drugim mestima u aplikaciji"
   },
   "team": {
     "title": "Tim",
@@ -602,6 +603,9 @@
     "more": "+{count}",
     "markPublished": "✓ Označi objavljeno",
     "allProfiles": "Svi profili",
+    "prevMonth": "Prethodni mesec",
+    "nextMonth": "Sledeći mesec",
+    "client": "Klijent",
     "allFormats": "Svi tipovi"
   },
   "shoots": {

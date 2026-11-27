@@ -11,7 +11,7 @@ export type ClientTab = "overview" | "docs" | "board" | "portal" | "reports";
 
 /**
  * Every page of a client starts the same: who it is, its tabs (overview, the team's docs, its moodboard, the portal the client sees, the monthly
- * report) and one row of links to its content elsewhere in the app (bank, shoots, schedule, invoices, Drive).
+ * report) and, in the same row, links to its content elsewhere in the app (bank, shoots, schedule, invoices, Drive).
  */
 export async function ClientHeader({ client, active, canManage, invoices }: { client: Client; active: ClientTab; canManage: boolean; invoices: boolean }) {
   const t = await getTranslations();
@@ -63,9 +63,12 @@ export async function ClientHeader({ client, active, canManage, invoices }: { cl
           </Link>
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-        <Segmented items={tabs} scroll />
-        <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] font-medium">
+      {/* One row: the client's own pages, then (after a rule) its content elsewhere in the app. Phones slide it sideways
+          instead of stacking the links in rows of their own under the tabs. */}
+      <div className="no-scrollbar -mx-5 flex items-center gap-x-5 overflow-x-auto px-5 lg:mx-0 lg:flex-wrap lg:justify-between lg:gap-x-6 lg:gap-y-3 lg:overflow-visible lg:px-0">
+        <Segmented items={tabs} nowrap />
+        <span aria-hidden className="h-5 w-px flex-none bg-line2 lg:hidden" />
+        <nav aria-label={t("clients.elsewhere")} className="flex flex-none items-center gap-x-5 whitespace-nowrap text-[14px] font-medium lg:flex-wrap lg:gap-y-2">
           {links.map((l) => (
             <Link key={l.href} href={l.href} className="text-ink2 hover:text-ink">
               {l.label} <span className="text-ink3">↗</span>

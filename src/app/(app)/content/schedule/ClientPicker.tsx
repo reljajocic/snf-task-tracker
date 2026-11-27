@@ -1,9 +1,11 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 /** Accented client switcher, first in the filter row. `allLabel` adds an "all clients" option (value "all"). */
 export function ClientPicker({ clients, value, allLabel }: { clients: { id: string; name: string }[]; value: string; allLabel?: string }) {
+  const t = useTranslations("schedule");
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -17,8 +19,8 @@ export function ClientPicker({ clients, value, allLabel }: { clients: { id: stri
         next.set("client", e.target.value);
         router.push(`${pathname}?${next}`);
       }}
-      aria-label="Client"
-      className="h-9 max-w-[260px] cursor-pointer appearance-none truncate rounded-full border border-accent bg-rust-bg bg-[url(/brand/chevron.svg)] bg-[length:9px] bg-[right_14px_center] bg-no-repeat pl-3.5 pr-9 text-[13px] font-semibold text-ink outline-none"
+      aria-label={t("client")}
+      className="h-9 max-w-[260px] flex-none cursor-pointer appearance-none truncate rounded-full border border-accent bg-rust-bg bg-[url(/brand/chevron.svg)] bg-[length:9px] bg-[right_14px_center] bg-no-repeat pl-3.5 pr-9 text-[13px] font-semibold text-ink outline-none"
     >
       {allLabel && <option value="all">{allLabel}</option>}
       {clients.map((c) => (

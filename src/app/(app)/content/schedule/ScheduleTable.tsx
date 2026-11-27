@@ -13,6 +13,7 @@ import { ScriptLabel } from "@/components/tasks/ScriptLabel";
 import { ItemDates } from "@/components/tasks/item-bits";
 import { TaskRow } from "@/components/tasks/rows";
 import { StatusMenu } from "@/components/tasks/StatusMenu";
+import { FILTER_ROW } from "./filter-row";
 import { AvatarStack } from "@/components/ui/Avatar";
 
 export type ScheduleWeek = {
@@ -80,7 +81,7 @@ export function ScheduleTable({
     });
 
   const day = (d: IsoDate) => t("weekday.short", { day: String(weekdayIndex(d)) });
-  const pill = "h-9 cursor-pointer appearance-none rounded-full border bg-transparent px-3 text-[13px] font-medium outline-none";
+  const pill = "h-9 flex-none cursor-pointer appearance-none rounded-full border bg-transparent px-3 text-[13px] font-medium outline-none";
   const tone = (active: boolean) => (active ? "border-ink2 text-ink" : "border-line2 text-ink2");
 
   const assignSelect = (date: IsoDate) =>
@@ -88,9 +89,9 @@ export function ScheduleTable({
 
   return (
     <div className="flex flex-col pb-[calc(120px+env(safe-area-inset-bottom))] lg:pb-12">
-      <div className="flex flex-wrap items-center gap-2.5 border-b border-line px-5 pb-[18px] lg:px-10">
+      <div className={FILTER_ROW}>
         {clientPicker}
-        <span className="mx-1 hidden h-5 w-px bg-line2 sm:block" />
+        <span aria-hidden className="mx-1 h-5 w-px flex-none bg-line2" />
         <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className={`${pill} ${tone(status !== "all")}`}>
           <option value="all">{t("schedule.allStatuses")}</option>
           {([...PHASES, "published"] as const).map((s) => (

@@ -212,7 +212,8 @@
     "seesInvoices": "Invoices",
     "noInvoices": "No invoices",
     "tabOverview": "Overview",
-    "tabPortal": "Client portal"
+    "tabPortal": "Client portal",
+    "elsewhere": "This client elsewhere in the app"
   },
   "team": {
     "title": "Team",
@@ -602,6 +603,9 @@
     "more": "+{count}",
     "markPublished": "✓ Mark published",
     "allProfiles": "All profiles",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "client": "Client",
     "allFormats": "All post types"
   },
   "shoots": {

@@ -10,6 +10,7 @@ import { rememberedClient } from "@/lib/remembered-client";
 import { addDays, isoWeek, startOfWeek, today as getToday, weekdayIndex, type IsoDate } from "@/lib/dates";
 import { postingStatus } from "@/lib/tasks";
 import { ClientPicker } from "./ClientPicker";
+import { FILTER_ROW } from "./filter-row";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { ScheduleTable, type ScheduleWeek } from "./ScheduleTable";
 import { FORMATS } from "@/lib/formats";
@@ -113,14 +114,19 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
   // Keeps the month, view and profile, so closing the form lands back on the same schedule.
   const addHref = href({ new: "1", kind: "video" });
 
+  // Client, profile and post type (on phones led by Calendar / Table): one row, sliding sideways on phones rather than stacking.
   const picker = (
     <>
+      <span className="flex flex-none items-center gap-2.5 lg:hidden">
+        <Segmented items={viewSeg} nowrap />
+        <span aria-hidden className="mx-1 h-5 w-px bg-line2" />
+      </span>
       <Suspense>
         <ClientPicker clients={clients.map((c) => ({ id: c.id, name: c.name }))} value={client.id} />
       </Suspense>
       {profiles.length > 0 && (
         <Segmented
-          scroll
+          nowrap
           items={[
             ...profiles.map((p) => ({ key: p, label: p, href: href({ profile: p }), active: profile === p })),
             { key: "all", label: t("schedule.allProfiles"), href: href({ profile: "all" }), active: profile === null },
@@ -128,7 +134,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
         />
       )}
       <Segmented
-        scroll
+        nowrap
         items={[
           { key: "all", label: t("schedule.allFormats"), href: href({ format: null }), active: format === null },
           ...FORMATS.map((f) => ({ key: f, label: t(`format.${f}`), href: href({ format: f }), active: format === f })),
@@ -137,16 +143,15 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
     </>
   );
 
+  const prev = href({ m: shiftMonth(m, -1).slice(0, 7) });
+  const next = href({ m: shiftMonth(m, 1).slice(0, 7) });
   const controls = (
     <>
-      <PeriodNav label={period} prevHref={href({ m: shiftMonth(m, -1).slice(0, 7) })} nextHref={href({ m: shiftMonth(m, 1).slice(0, 7) })} />
+      <PeriodNav label={period} prevHref={prev} nextHref={next} prevLabel={t("schedule.prevMonth")} nextLabel={t("schedule.nextMonth")} />
       <Segmented items={viewSeg} />
-      {/* Phones add from the "+" next to the content tabs. */}
-      <span className="hidden lg:inline-flex">
-        <Link href={addHref} scroll={false} className={buttonClass({ size: "sm" })}>
-          {t("schedule.addVideo")}
-        </Link>
-      </span>
+      <Link href={addHref} scroll={false} className={buttonClass({ size: "sm" })}>
+        {t("schedule.addVideo")}
+      </Link>
     </>
   );
 
@@ -159,7 +164,10 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
         phone="none"
         actions={<span className="hidden items-center gap-3.5 lg:flex">{controls}</span>}
       />
-      <div className="flex flex-wrap items-center gap-2.5 px-5 pb-3 pt-3 lg:hidden">{controls}</div>
+      {/* Phones: the month across the screen; the view leads the filter row (adding is the "+" next to the content tabs). */}
+      <div className="flex px-5 pb-3 pt-3 lg:hidden">
+        <PeriodNav label={period} prevHref={prev} nextHref={next} prevLabel={t("schedule.prevMonth")} nextLabel={t("schedule.nextMonth")} fill />
+      </div>
       {late > 0 && (
         <p className="px-5 pb-3 text-[13px] font-medium text-red-ink lg:px-10">{t("schedule.notPublishedCount", { count: late })}</p>
       )}
@@ -167,7 +175,7 @@ export default async function SchedulePage({ searchParams }: PageProps<"/content
         <ScheduleTable weeks={weeks} unscheduled={unscheduled} today={today} clientPicker={picker} profile={profile} />
       ) : (
         <>
-          <div className="flex flex-wrap items-center gap-2.5 border-b border-line px-5 pb-[18px] lg:px-10">{picker}</div>
+          <div className={FILTER_ROW}>{picker}</div>
           <ScheduleCalendar month={m} videos={videos} unscheduled={unscheduled} postingDays={client.postingDays} today={today} profile={profile} shoots={shoots} />
         </>
       )}
