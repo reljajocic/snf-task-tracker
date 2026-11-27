@@ -7,10 +7,10 @@ import { Segmented } from "@/components/ui/Segmented";
 import { CLIENT_STATUS_COLOR, type Client } from "@/lib/clients";
 import { safeHref } from "@/lib/safe-url";
 
-export type ClientTab = "overview" | "docs" | "portal" | "reports";
+export type ClientTab = "overview" | "docs" | "board" | "portal" | "reports";
 
 /**
- * Every page of a client starts the same: who it is, its tabs (overview, the team's docs, the portal the client sees, the monthly
+ * Every page of a client starts the same: who it is, its tabs (overview, the team's docs, its moodboard, the portal the client sees, the monthly
  * report) and one row of links to its content elsewhere in the app (bank, shoots, schedule, invoices, Drive).
  */
 export async function ClientHeader({ client, active, canManage, invoices }: { client: Client; active: ClientTab; canManage: boolean; invoices: boolean }) {
@@ -19,6 +19,7 @@ export async function ClientHeader({ client, active, canManage, invoices }: { cl
   const tabs = [
     { key: "overview", label: t("clients.tabOverview"), href: base, active: active === "overview" },
     { key: "docs", label: t("docs.title"), href: `${base}/docs`, active: active === "docs" },
+    { key: "board", label: t("board.title"), href: `${base}/board`, active: active === "board" },
     ...(canManage ? [{ key: "portal", label: t("clients.tabPortal"), href: `${base}/portal`, active: active === "portal" }] : []),
     { key: "reports", label: t("report.title"), href: `${base}/reports`, active: active === "reports" },
   ];

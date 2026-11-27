@@ -573,6 +573,21 @@ describe("moodboards", () => {
       { d: "true", has_file: true },
     ]);
   });
+
+  it("a client has its own board: its team works on it, others don't see it, and a board belongs to one owner", async () => {
+    const [{ id: cb }] = await as<{ id: string }>(MEMBER, "insert into public.boards (client_id) values ($1) returning id", [C1]);
+    expect(await as(MANAGER, "select id from public.boards where client_id = $1", [C1])).toEqual([{ id: cb }]);
+    await as(MANAGER, "select public.board_merge($1, $2::jsonb)", [cb, JSON.stringify([el("9", 1)])]);
+    expect(await as(MEMBER, "select jsonb_array_length(elements) as n from public.boards where id = $1", [cb])).toEqual([{ n: 1 }]);
+    // Not on the team: can't see it, save to it or make one.
+    expect(await as(OUTSIDER, "select id from public.boards where client_id = $1", [C1])).toEqual([]);
+    await expect(as(OUTSIDER, "select public.board_merge($1, '[]'::jsonb)", [cb])).rejects.toThrow(/not found|Not allowed/);
+    await expect(as(MEMBER, "insert into public.boards (client_id) values ($1)", [C2])).rejects.toThrow(/row-level security/);
+    // One board per client, and never both a client's and a project's.
+    await expect(as(MANAGER, "insert into public.boards (client_id) values ($1)", [C1])).rejects.toThrow(/duplicate/);
+    await expect(as(ADMIN, "insert into public.boards (client_id, project_id) values ($1, $2)", [C2, P1])).rejects.toThrow(/boards_one_owner/);
+    await expect(as(ADMIN, "insert into public.boards default values")).rejects.toThrow(/boards_one_owner|row-level security/);
+  });
 });
 
 describe("video editor and shooter", () => {

@@ -9,6 +9,7 @@ import { portalLoadBoard, portalSaveBoard, portalUploadBoardImage, uploadBoardIm
 import type { BoardFiles } from "@/lib/boards";
 import { createClient } from "@/lib/supabase/client";
 import { PICK_COLORS } from "@/lib/color";
+import { LinkBox, isWebLink, linkBoxSize, linkView } from "./links";
 
 // A moodboard (Excalidraw) that several people edit at once.
 //  - Every change is saved (debounced) and merged per element in the database (board_merge), so
@@ -16,13 +17,25 @@ import { PICK_COLORS } from "@/lib/color";
 //  - The team also sends changes and pointers live over a private Realtime channel, and sees who's here.
 //  - The portal (no login) saves through server actions and picks up others' changes by polling.
 //  - Images are shrunk in the browser, stored in Storage, and kept on the board as links.
+//  - A pasted or dropped web link becomes a box (see links.tsx): a playable post, or a card that opens the page.
 
 const Excalidraw = dynamic(async () => (await import("@excalidraw/excalidraw")).Excalidraw, {
   ssr: false,
   loading: () => <div className="grid h-full place-items-center text-[14px] text-ink3">…</div>,
 });
 
-type El = { id: string; version: number; versionNonce?: number; isDeleted?: boolean; type?: string; fileId?: string | null; status?: string };
+type El = {
+  id: string;
+  version: number;
+  versionNonce?: number;
+  isDeleted?: boolean;
+  type?: string;
+  fileId?: string | null;
+  status?: string;
+  link?: string | null;
+  width?: number;
+  height?: number;
+};
 type Lib = typeof import("@excalidraw/excalidraw");
 type Person = { id: string; name: string; color: string };
 type Pointer = { x: number; y: number; tool: "pointer" | "laser" };
@@ -192,6 +205,32 @@ export function Board({
   const onChange = useCallback(
     (elements: readonly unknown[], _appState: unknown, files: Record<string, { id: string; dataURL: string }>) => {
       if (!canEdit) return;
+      // A link just pasted or dropped: Excalidraw makes every unknown one a tall 560 × 840 box. Size it for what it shows.
+      const api = apiRef.current;
+      const lib = libRef.current;
+      const fresh = (elements as El[]).filter((e) => e.type === "embeddable" && e.link && !e.isDeleted && !known.current.has(e.id));
+      const sized = new Map(
+        fresh
+          .filter((e) => e.width === 560 && e.height === 840)
+          .map((e) => [e.id, linkBoxSize(linkView(e.link!))] as const)
+          .filter((x): x is [string, { width: number; height: number }] => !!x[1]),
+      );
+      if (api && lib && sized.size) {
+        // Several pasted at once sit in a row, spaced for their old size: close them up.
+        const row = [...fresh].sort((a, b) => ((a as { x?: number }).x ?? 0) - ((b as { x?: number }).x ?? 0));
+        let x = (row[0] as { x?: number }).x ?? 0;
+        const patch = new Map<string, { x: number; width: number; height: number }>();
+        for (const e of row) {
+          const size = sized.get(e.id) ?? { width: e.width ?? 560, height: e.height ?? 840 };
+          patch.set(e.id, { x, ...size });
+          x += size.width + 24;
+        }
+        api.updateScene({
+          elements: api.getSceneElementsIncludingDeleted().map((e) => (patch.has(e.id) ? lib.newElementWith(e as never, patch.get(e.id)! as never) : e)),
+          captureUpdate: lib.CaptureUpdateAction.IMMEDIATELY,
+        });
+        return; // The resize comes back through onChange and is saved then.
+      }
       for (const f of Object.values(files)) {
         if (!fileRefs.current[f.id] && !uploading.current.has(f.id) && f.dataURL.startsWith("data:")) void upload(f.id, f.dataURL);
       }
@@ -322,6 +361,9 @@ export function Board({
             onChange={onChange as never}
             onPointerUpdate={onPointerUpdate as never}
             isCollaborating={!token}
+            validateEmbeddable={isWebLink}
+            // A function call, not <LinkBox />: null has to reach Excalidraw so it draws its own player.
+            renderEmbeddable={(el) => LinkBox({ view: el.link ? linkView(el.link) : null, openLabel: t("openLink") })}
             viewModeEnabled={!canEdit}
             theme={theme}
             UIOptions={{ canvasActions: { loadScene: false, saveToActiveFile: false, toggleTheme: false, clearCanvas: false, changeViewBackgroundColor: false } }}

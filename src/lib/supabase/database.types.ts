@@ -141,32 +141,42 @@ export type Database = {
       boards: {
         Row: {
           client_access: string
+          client_id: string | null
           elements: Json
           files: Json
           id: string
-          project_id: string
+          project_id: string | null
           updated_at: string
           updated_by: string | null
         }
         Insert: {
           client_access?: string
+          client_id?: string | null
           elements?: Json
           files?: Json
           id?: string
-          project_id: string
+          project_id?: string | null
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
           client_access?: string
+          client_id?: string | null
           elements?: Json
           files?: Json
           id?: string
-          project_id?: string
+          project_id?: string | null
           updated_at?: string
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "boards_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "boards_project_id_fkey"
             columns: ["project_id"]

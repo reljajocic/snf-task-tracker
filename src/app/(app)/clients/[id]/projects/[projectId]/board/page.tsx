@@ -28,6 +28,7 @@ export default async function ProjectBoardPage({ params }: PageProps<"/clients/[
               {t("title")}
               <span className="truncate font-medium text-ink2">{board.projectName}</span>
             </span>
+            <span className="hidden text-[14px] text-ink2 lg:inline">{t("pasteHint")}</span>
             <BoardAccess boardId={board.id} value={board.clientAccess} />
           </div>
         }

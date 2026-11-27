@@ -27,7 +27,7 @@ export default async function PortalBoard({ params }: PageProps<"/p/[token]/boar
             </Link>
             <span className="flex min-w-0 items-baseline gap-2.5 truncate text-[16px] font-semibold">
               {t("title")}
-              <span className="truncate font-medium text-ink2">{board.projectName}</span>
+              <span className="truncate font-medium text-ink2">{board.projectName ?? t("general")}</span>
             </span>
           </div>
         }

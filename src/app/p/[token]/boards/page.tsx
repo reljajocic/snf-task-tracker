@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { getPortalBoards } from "@/lib/boards";
 import { getPortal } from "@/lib/portal";
 
-// The client's moodboards (only the ones the team shared).
+// The client's moodboards (only the ones the team shared): its general board first, then projects'.
 export default async function PortalBoards({ params }: PageProps<"/p/[token]/boards">) {
   const { token } = await params;
   const portal = (await getPortal(token))!;
@@ -17,7 +17,7 @@ export default async function PortalBoards({ params }: PageProps<"/p/[token]/boa
       <div className="snf-stack">
         {boards.map((b) => (
           <Link key={b.id} href={`/p/${token}/boards/${b.id}`} className="flex items-center justify-between gap-4 bg-surf px-[18px] py-4 hover:bg-hover">
-            <span className="text-[16px] font-medium">{b.projectName}</span>
+            <span className="text-[16px] font-medium">{b.projectName ?? t("general")}</span>
             <span className="text-[14px] text-ink2">{t(b.access === "edit" ? "canEdit" : "canView")} →</span>
           </Link>
         ))}
