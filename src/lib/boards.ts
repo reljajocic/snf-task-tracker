@@ -47,9 +47,16 @@ async function getOrMakeBoard(owner: "project_id" | "client_id", id: string, pat
   const supabase = await createClient();
   const first = await supabase.from("boards").select(COLS).eq(owner, id).maybeSingle<Row>();
   if (first.data) return toBoard(first.data);
-  // Make it unless it exists (two requests at once, e.g. a prefetch and the click, both land here).
-  const made = await supabase.from("boards").upsert(owner === "project_id" ? { project_id: id } : { client_id: id }, { onConflict: owner, ignoreDuplicates: true });
-  const again = await supabase.from("boards").select(COLS).eq(owner, id).maybeSingle<Row>();
+  // Make it unless it exists (two requests at once, e.g. a prefetch and the click, both land here). The new row comes back
+  // from the insert itself: the same read again would get the first one's empty answer, which Next.js keeps for the render.
+  const made = await supabase
+    .from("boards")
+    .upsert(owner === "project_id" ? { project_id: id } : { client_id: id }, { onConflict: owner, ignoreDuplicates: true })
+    .select(COLS)
+    .maybeSingle<Row>();
+  if (made.data) return toBoard(made.data);
+  // The other request made it first: read it (a different query from the first, for the same reason).
+  const again = await supabase.from("boards").select(COLS).eq(owner, id).limit(1).maybeSingle<Row>();
   if (again.data) return toBoard(again.data);
   // Shouldn't happen for someone who can open it: leave a trace to find out why.
   await reportError({
