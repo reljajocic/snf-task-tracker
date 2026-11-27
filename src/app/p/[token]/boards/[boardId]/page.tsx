@@ -13,7 +13,7 @@ export default async function PortalBoard({ params }: PageProps<"/p/[token]/boar
   const board = await getPortalBoard(portal.clientId, boardId);
   if (!board) notFound();
   return (
-    <div className="flex h-[calc(100dvh-4rem-76px)] min-h-0 flex-col lg:h-[calc(100dvh-72px)]">
+    <div className="flex h-[calc(100dvh-4rem-var(--nav-room))] min-h-0 flex-col lg:h-[calc(100dvh-72px)]">
       <Board
         boardId={board.id}
         token={token}

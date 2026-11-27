@@ -89,7 +89,7 @@ export function DocPage({ clientId, doc, canEdit, editedBy, editedOn, startEditi
           className={`${inputClass} h-auto min-h-[320px] resize-none overflow-hidden py-3 font-mono text-[14px] leading-relaxed`}
         />
         <p className="text-[13px] leading-snug text-ink3">{t("formatHint")}</p>
-        <div className="sticky bottom-[calc(68px+var(--nav-bottom))] z-10 -mx-1 flex flex-wrap items-center justify-end gap-3 bg-[var(--canvas)] px-1 py-2 lg:bottom-0">
+        <div className="sticky bottom-[calc(var(--nav-room)-8px)] z-10 -mx-1 flex flex-wrap items-center justify-end gap-3 bg-[var(--canvas)] px-1 py-2 lg:bottom-0">
           {error && <span role="alert" className="mr-auto text-[13px] text-red-ink">{error}</span>}
           <button type="button" disabled={pending} onClick={remove} className="mr-auto h-10 cursor-pointer px-1 text-[13px] font-medium text-red-ink disabled:opacity-45">
             {t("delete")}

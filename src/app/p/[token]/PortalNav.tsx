@@ -26,12 +26,11 @@ export function PortalNav({ tabs, variant }: { tabs: PortalTab[]; variant: "top"
     );
   }
   return (
-    <nav className="glass fixed inset-x-3 bottom-[calc(var(--nav-bottom)+8px)] z-30 flex h-[60px] rounded-full px-1.5 lg:hidden">
+    <nav className="glass fixed inset-x-5 bottom-[calc(var(--nav-bottom)+14px)] z-30 flex h-16 gap-1 rounded-full p-1.5 lg:hidden">
       {tabs.map((t) => (
-        <Link key={t.href} href={t.href} className={`flex flex-1 flex-col items-center justify-center gap-1 text-[12px] font-medium ${active(t) ? "text-ink" : "text-ink3"}`}>
-          <span className={`h-[3px] w-[18px] rounded-[2px] ${active(t) ? "bg-accent" : "bg-transparent"}`} />
+        <Link key={t.href} href={t.href} className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-full text-[12px] font-medium ${active(t) ? "bg-[var(--glass-active)] text-ink" : "text-ink3"}`}>
           <span className={active(t) ? "text-accent" : ""}>{NAV_ICONS[t.icon]}</span>
-          {t.label}
+          <span className="max-w-full truncate px-1">{t.label}</span>
         </Link>
       ))}
     </nav>

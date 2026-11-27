@@ -27,7 +27,7 @@ export default async function ClientBoardPage({
   const board = await getClientBoard(id);
   if (!board) notFound();
   return (
-    <div className="flex min-h-[calc(100dvh-8.5rem)] flex-col lg:h-dvh lg:min-h-0">
+    <div className="flex min-h-[calc(100dvh-4.25rem-var(--nav-room))] flex-col lg:h-dvh lg:min-h-0">
       <ClientHeader
         client={data.client}
         active="board"

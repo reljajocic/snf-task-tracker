@@ -14,6 +14,7 @@
   --pop: rgba(36, 33, 34, 0.86); /* popovers and menus: glass, still readable over content */
   --glass: rgba(30, 27, 28, 0.72); /* the phone's floating bar */
   --shadow-glass: 0 12px 32px rgba(0, 0, 0, 0.32);
+  --glass-active: rgba(244, 243, 237, 0.11); /* the current tab's capsule in the glass bar */
   /* A label over someone else's picture (an embedded post): the same dark pill in both themes. */
   --scrim: rgba(18, 16, 17, 0.82);
   --scrim-ink: #f4f3ed;
@@ -79,6 +80,7 @@
   --pop: rgba(255, 255, 255, 0.88);
   --glass: rgba(250, 249, 245, 0.74);
   --shadow-glass: 0 10px 28px rgba(47, 45, 46, 0.12);
+  --glass-active: rgba(47, 45, 46, 0.08);
   --glass-edge: rgba(47, 45, 46, 0.1);
   --glass-shine: rgba(255, 255, 255, 0.75);
   --card-edge: rgba(47, 45, 46, 0.12);
@@ -396,6 +398,9 @@ p {
    system bars (no viewport-fit=cover), so iOS reports no inset there: keep a gap of our own. */
 :root {
   --nav-bottom: env(safe-area-inset-bottom);
+  /* What the phone's floating bar takes at the bottom of the screen: the bar (64px) 14px above the home indicator, plus
+     8px of air above it. Pages pad by it; full-height pages (moodboards) subtract it. */
+  --nav-room: calc(86px + var(--nav-bottom));
 }
 @media (display-mode: standalone) {
   :root {

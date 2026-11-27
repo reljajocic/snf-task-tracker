@@ -12,7 +12,7 @@ export default async function ProjectBoardPage({ params }: PageProps<"/clients/[
   const board = await getProjectBoard(projectId);
   if (!board || board.clientId !== id) notFound();
   return (
-    <div className="flex h-[calc(100dvh-8.5rem)] min-h-0 flex-col lg:h-dvh">
+    <div className="flex h-[calc(100dvh-4.25rem-var(--nav-room))] min-h-0 flex-col lg:h-dvh">
       <Board
         boardId={board.id}
         initialElements={board.elements}

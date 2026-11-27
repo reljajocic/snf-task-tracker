@@ -53,7 +53,7 @@ export default async function PortalLayout({ children, modal, params }: LayoutPr
         </div>
       </header>
       <NextIntlClientProvider locale={portal.locale} messages={messages}>
-        <main className="flex flex-1 flex-col pb-[calc(76px+var(--nav-bottom))] lg:pb-0">{children}</main>
+        <main className="flex flex-1 flex-col pb-[var(--nav-room)] lg:pb-0">{children}</main>
         {/* A video clicked in the portal opens here, over the page (@modal/(.)video). */}
         {modal}
       </NextIntlClientProvider>
