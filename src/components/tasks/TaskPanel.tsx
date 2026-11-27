@@ -131,6 +131,8 @@ function PanelBody({
 
   const save = (patch: TaskPatch, optimistic: Partial<Task> = {}) => {
     setTask((cur) => ({ ...cur, ...optimistic }));
+    // The status button can set the Drive link too (asked when a video leaves Edit).
+    if (optimistic.drive_url !== undefined) setDrive(optimistic.drive_url ?? "");
     startTransition(async () => {
       const res = await updateTask(task.id, patch);
       if (!res.ok) setError(t("saveFailed", { message: res.error }));

@@ -3,9 +3,10 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
-import { updateTask, type TaskPatch } from "@/app/(app)/task-actions";
+import { addVersion, updateTask, type TaskPatch } from "@/app/(app)/task-actions";
 import type { IsoDate } from "@/lib/dates";
 import { ITEM_STATUS_COLOR, PHASES, PUBLISHED_PHASE, STATUSES, canReturnToIdeas, itemStatus, type ItemStatus, type Task } from "@/lib/tasks";
+import { CutLinkDialog, type CutLink } from "./CutLinkDialog";
 import { useItemStatusLabel } from "./item-bits";
 
 type Option = { key: ItemStatus; patch: TaskPatch; optimistic: Partial<Task> };
@@ -52,6 +53,8 @@ export function StatusMenu({
   const shown = picked?.version === version ? picked.patch : {};
   const [open, setOpen] = useState(false);
   const [failed, setFailed] = useState(false);
+  // Leaving Edit (a first cut, or the fixes after the client's changes): asks for the cut's Drive link first.
+  const [asking, setAsking] = useState<Option | null>(null);
   const [pos, setPos] = useState<{ top: number; left: number; up: boolean } | null>(null);
   const [, startTransition] = useTransition();
   const button = useRef<HTMLButtonElement>(null);
@@ -102,6 +105,26 @@ export function StatusMenu({
   const pick = (o: Option) => {
     close();
     if (o.key === s) return;
+    const leavesEdit = task.kind === "video" && !current.dropped_at && (current.phase ?? 0) === 2 && (o.patch.phase ?? 0) >= 3;
+    if (leavesEdit) return setAsking(o);
+    apply(o);
+  };
+
+  const saveLink = async (o: Option, link: CutLink): Promise<string | null> => {
+    if (o.patch.phase === 3) {
+      // To the client: the next version (this also moves it to Revision).
+      const res = await addVersion(task.id, link);
+      if (!res.ok) return res.error;
+      setAsking(null);
+      apply(o);
+      return null;
+    }
+    setAsking(null);
+    apply({ ...o, patch: { ...o.patch, drive_url: link.url }, optimistic: { ...o.optimistic, drive_url: link.url } });
+    return null;
+  };
+
+  const apply = (o: Option) => {
     setFailed(false);
     if (save) return save(o.patch, o.optimistic);
     setPicked({ version, patch: o.optimistic });
@@ -141,6 +164,24 @@ export function StatusMenu({
         <span role="alert" className="ml-2 text-[12px] font-medium text-red-ink">
           {t("notSaved")}
         </span>
+      )}
+      {asking && (
+        <CutLinkDialog
+          title={task.title}
+          review={asking.patch.phase === 3}
+          initialUrl={asking.patch.phase === 3 ? "" : (task.drive_url ?? "")}
+          onSave={(link) => saveLink(asking, link)}
+          onSkip={() => {
+            const o = asking;
+            setAsking(null);
+            apply(o);
+          }}
+          onCancel={() => {
+            setAsking(null);
+            // Back on the status button (the window's own focus return lands on the menu item, gone by now).
+            requestAnimationFrame(() => button.current?.focus());
+          }}
+        />
       )}
       {open &&
         pos &&

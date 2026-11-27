@@ -739,13 +739,23 @@
     "languageHint": "What the client reads the portal in.",
     "rotateYes": "Make a new link"
   },
+  "cutLink": {
+    "titleReview": "Link to the cut",
+    "titlePublish": "Link to the final video",
+    "bodyReview": "“{title}” goes to the client for review. Add the Drive link so they can watch it.",
+    "bodyPublish": "“{title}” is ready to post. Add the Drive link to the final file.",
+    "link": "Google Drive link",
+    "skip": "Move without a link",
+    "saveReview": "Send for review",
+    "savePublish": "Save and move"
+  },
   "versions": {
     "title": "Versions for client review",
     "add": "+ Add version",
     "url": "Link to the cut (Google Drive, Vimeo…)",
     "note": "What changed (the client sees this)",
     "notify": "Email the client about it",
-    "save": "Add version",
+    "save": "Send for review",
     "version": "Version {n}",
     "pending": "Waiting for client",
     "approved": "Approved by {name}",

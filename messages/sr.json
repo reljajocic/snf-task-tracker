@@ -739,13 +739,23 @@
     "languageHint": "Na kom jeziku klijent čita portal.",
     "rotateYes": "Napravi novi link"
   },
+  "cutLink": {
+    "titleReview": "Link do montaže",
+    "titlePublish": "Link do finalnog videa",
+    "bodyReview": "„{title}“ ide klijentu na pregled. Dodaj Drive link da može da ga pogleda.",
+    "bodyPublish": "„{title}“ je spreman za objavu. Dodaj Drive link do finalnog fajla.",
+    "link": "Google Drive link",
+    "skip": "Pomeri bez linka",
+    "saveReview": "Pošalji na pregled",
+    "savePublish": "Sačuvaj i pomeri"
+  },
   "versions": {
     "title": "Verzije za pregled klijenta",
     "add": "+ Dodaj verziju",
     "url": "Link do montaže (Google Drive, Vimeo…)",
     "note": "Šta je promenjeno (klijent vidi ovo)",
     "notify": "Pošalji klijentu email o tome",
-    "save": "Dodaj verziju",
+    "save": "Pošalji na pregled",
     "version": "Verzija {n}",
     "pending": "Čeka klijenta",
     "approved": "Odobrio/la {name}",
