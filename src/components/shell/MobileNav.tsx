@@ -6,13 +6,16 @@ import { useTranslations } from "next-intl";
 import { NAV_ICONS } from "./icons";
 import { ADMIN_ONLY_NAV, MOBILE_NAV, isActive } from "./nav";
 
-/** Mobile bottom bar, 68px + the home-indicator area: orange 18×3 marker, icon and label; the active tab is accented. */
+/**
+ * Mobile bottom bar: a floating glass bar (60px, 8px above the home-indicator area, so 68px in all as before) the page
+ * scrolls under; orange 18×3 marker, icon and label; the active tab is accented.
+ */
 export function MobileNav({ admin = false }: { admin?: boolean }) {
   const t = useTranslations("nav");
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[calc(68px+var(--nav-bottom))] border-t border-line bg-side pb-[var(--nav-bottom)] lg:hidden">
+    <nav className="glass fixed inset-x-3 bottom-[calc(var(--nav-bottom)+8px)] z-30 flex h-[60px] rounded-full px-1.5 lg:hidden">
       {(admin ? ADMIN_ONLY_NAV : MOBILE_NAV).map((item) => {
         const active = isActive(pathname, item);
         return (
@@ -20,7 +23,7 @@ export function MobileNav({ admin = false }: { admin?: boolean }) {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`flex flex-1 flex-col items-center justify-center gap-1.5 text-[12px] font-medium ${
+            className={`flex flex-1 flex-col items-center justify-center gap-1 text-[12px] font-medium ${
               active ? "text-ink" : "text-ink3"
             }`}
           >

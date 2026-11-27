@@ -28,10 +28,13 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
     : [];
   const queue = awaitingVideos.length + scriptPacks.length;
 
-  const nextPosts = videos.filter((v) => v.publish_date && v.publish_date >= today).slice(0, 5);
+  // Videos waiting for the client's approval are already the cards above: the list goes on with the rest (the full
+  // schedule still has every one).
+  const awaitingIds = new Set(awaitingVideos.map((v) => v.id));
+  const nextPosts = videos.filter((v) => v.publish_date && v.publish_date >= today && !awaitingIds.has(v.id)).slice(0, 5);
   const nextShoot = shoots.find((s) => s.date >= today) ?? null;
 
-  const h2 = (s: string) => <h2 className="display whitespace-nowrap text-[18px] leading-[1.1] lg:text-[20px]">{s}</h2>;
+  const h2 = (s: string) => <h2 className="section-title whitespace-nowrap text-[18px] leading-[1.1] lg:text-[20px]">{s}</h2>;
 
   return (
     <div className="grid grid-cols-1 items-start gap-10 px-5 pb-12 pt-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-12 lg:pt-10">
@@ -55,7 +58,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                   <Link key={v.id} href={`${base}/video/${v.id}`} className="flex gap-4 rounded-lg border border-accent bg-surf p-3.5">
                     <Poster className="h-32 w-[72px]" />
                     <div className="flex min-w-0 flex-1 flex-col gap-2">
-                      <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-accent">
+                      <span className="text-[13px] font-semibold leading-none text-rust-ink">
                         {v.versions[0] ? t("portal.videoVersion", { n: v.versions[0].version }) : t("portal.videoOnly")}
                       </span>
                       <span className="text-[18px] font-medium leading-snug">{v.title}</span>
@@ -68,7 +71,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                 ))}
                 {scriptPacks.map((p) => (
                   <Link key={p.shoot.id} href={`${base}/shoots/${p.shoot.id}`} className="flex flex-col gap-2 rounded-lg border border-line bg-surf p-[18px]">
-                    <span className="text-[11px] font-semibold uppercase leading-none tracking-[0.12em] text-ink3">{t("portal.scriptsFor")}</span>
+                    <span className="text-[13px] font-semibold leading-none text-ink3">{t("portal.scriptsFor")}</span>
                     <span className="text-[18px] font-medium leading-snug">
                       {t("portal.shootOn", { date: formatDate(p.shoot.date), location: p.shoot.location ? `, ${p.shoot.location}` : "" })}
                     </span>
@@ -116,7 +119,7 @@ export default async function PortalHome({ params }: PageProps<"/p/[token]">) {
                 ))}
               </div>
             ) : (
-              <p className="text-[14px] text-ink3">{t("portal.noPosts")}</p>
+              <p className="text-[14px] text-ink3">{t(awaitingIds.size ? "portal.noOtherPosts" : "portal.noPosts")}</p>
             )}
           </section>
         )}

@@ -100,7 +100,7 @@ export async function AdminDashboard() {
   const eyebrow = `${t("weekday.long", { day: String(weekdayIndex(today)) })}, ${formatDate(today)}`;
   const h2 = (text: string, sub?: string) => (
     <div className="flex flex-wrap items-baseline justify-between gap-2">
-      <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{text}</h2>
+      <h2 className="section-title text-[18px] leading-[1.1] lg:text-[20px]">{text}</h2>
       {sub && <span className="text-[13px] text-ink3">{sub}</span>}
     </div>
   );

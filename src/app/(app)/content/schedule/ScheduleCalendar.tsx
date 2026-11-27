@@ -173,7 +173,7 @@ export function ScheduleCalendar({
         className="flex flex-col gap-2.5 self-start rounded-lg border border-line bg-surf p-4 lg:sticky lg:top-6 lg:max-h-[calc(100dvh-48px)] lg:overflow-auto"
       >
         <div className="flex items-baseline gap-2">
-          <span className="display text-[18px] leading-none">{t("schedule.unscheduled")}</span>
+          <span className="section-title text-[18px] leading-none">{t("schedule.unscheduled")}</span>
           <span className="text-[13px] font-medium text-ink3">{pool.length}</span>
         </div>
         <span className="text-[13px] leading-snug text-ink3">{t("schedule.unscheduledHint")}</span>

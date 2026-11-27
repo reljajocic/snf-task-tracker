@@ -46,19 +46,42 @@ export function linkBoxSize(view: LinkView | null): { width: number; height: num
 }
 
 /** What's drawn inside a link box. Null: Excalidraw's own iframe. */
-export function LinkBox({ view, openLabel }: { view: LinkView | null; openLabel: string }) {
+/**
+ * A link on the board. Excalidraw keeps a box asleep until it is clicked (so dragging it doesn't open or play it): until
+ * then a hint says one click wakes it, and the card's "Open" shows once it's awake.
+ */
+export function LinkBox({
+  view,
+  active,
+  hovered = false,
+  labels,
+}: {
+  view: LinkView | null;
+  /** Woken by a click (plays, opens) … */
+  active: boolean;
+  /** … or only pointed at: Excalidraw shows its own "click to interact" then, so ours steps aside. */
+  hovered?: boolean;
+  labels: { open: string; play: string; toOpen: string };
+}) {
   if (!view || view.kind === "native") return null;
   if (view.kind === "embed") {
     return (
-      <iframe
-        src={view.src}
-        title={view.title}
-        loading="lazy"
-        allow="autoplay; encrypted-media; picture-in-picture; clipboard-write; fullscreen"
-        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation"
-        referrerPolicy="strict-origin-when-cross-origin"
-        className="block size-full rounded-[inherit] border-0 bg-bg"
-      />
+      <div className="relative size-full rounded-[inherit]">
+        <iframe
+          src={view.src}
+          title={view.title}
+          loading="lazy"
+          allow="autoplay; encrypted-media; picture-in-picture; clipboard-write; fullscreen"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-presentation"
+          referrerPolicy="strict-origin-when-cross-origin"
+          className="block size-full rounded-[inherit] border-0 bg-bg"
+        />
+        {!active && !hovered && (
+          <span className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-[var(--scrim)] px-3 py-1.5 text-[13px] font-semibold text-[var(--scrim-ink)]">
+            {labels.play}
+          </span>
+        )}
+      </div>
     );
   }
   return (
@@ -70,7 +93,7 @@ export function LinkBox({ view, openLabel }: { view: LinkView | null; openLabel:
     >
       <span className="truncate text-[16px] font-semibold leading-tight">{view.site}</span>
       {view.page && <span className="truncate text-[13px] leading-tight text-ink2">{view.page}</span>}
-      <span className="text-[13px] font-semibold leading-tight text-rust-ink">{openLabel} ↗</span>
+      <span className={`text-[13px] font-semibold leading-tight ${active ? "text-rust-ink" : "text-ink3"}`}>{active ? `${labels.open} ↗` : labels.toOpen}</span>
     </a>
   );
 }

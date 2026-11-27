@@ -420,7 +420,7 @@ export function ShootBoard({
         )}
         {pending.filter((s) => s !== nowSlot).length > 0 && (
           <div className="flex flex-col gap-2.5">
-            <span className="display text-[16px]">{t("shoots.next")}</span>
+            <span className="section-title text-[16px]">{t("shoots.next")}</span>
             {pending
               .filter((s) => s !== nowSlot)
               .map((s) => (
@@ -849,7 +849,7 @@ function AddVideos({ shootId, clientId, started, candidates, onDone, onClose }: 
     <div className="mx-5 mt-4 flex flex-col gap-3 rounded-lg border border-line2 bg-surf p-4 lg:mx-10">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <span className="display text-[15px]">{t("pickVideos")}</span>
+          <span className="section-title text-[15px]">{t("pickVideos")}</span>
           <span className="text-[13px] text-ink3">{t("pickHint")}</span>
         </div>
         <button type="button" aria-label={t("close")} title={t("close")} onClick={onClose} className="size-8 flex-none cursor-pointer rounded-md text-[20px] text-ink2 hover:bg-hover hover:text-ink">

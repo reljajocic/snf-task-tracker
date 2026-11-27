@@ -169,7 +169,7 @@ export function PortalCalendar({ token, months, today, posts, pool, plans }: { t
           {grid}
           <aside {...target("pool", null)} className={`hidden flex-col gap-2.5 self-start rounded-lg border p-4 lg:sticky lg:top-4 lg:flex lg:max-h-[calc(100dvh-32px)] lg:overflow-auto ${over === "pool" ? "border-accent bg-rust-bg" : "border-line bg-surf"}`}>
             <span className="flex items-baseline gap-2">
-              <span className="display text-[20px] leading-none">{t("portal.noDate")}</span>
+              <span className="section-title text-[20px] leading-none">{t("portal.noDate")}</span>
               <span className="text-[15px] font-medium text-ink3">{shownPool.length}</span>
             </span>
             <span className="pb-1 text-[14px] leading-snug text-ink2">{t("portal.poolHint")}</span>

@@ -13,7 +13,7 @@ export function Field({ label, children, wide, hint }: { label: string; children
 export const Section = ({ title, children, aside }: { title: string; children: React.ReactNode; aside?: React.ReactNode }) => (
   <section className="flex flex-col gap-4 border-t border-line pt-5">
     <div className="flex items-center justify-between gap-3">
-      <h2 className="display text-[18px] leading-[1.1]">{title}</h2>
+      <h2 className="section-title text-[18px] leading-[1.1]">{title}</h2>
       {aside}
     </div>
     {children}

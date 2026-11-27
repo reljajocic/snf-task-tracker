@@ -363,7 +363,14 @@ export function Board({
             isCollaborating={!token}
             validateEmbeddable={isWebLink}
             // A function call, not <LinkBox />: null has to reach Excalidraw so it draws its own player.
-            renderEmbeddable={(el) => LinkBox({ view: el.link ? linkView(el.link) : null, openLabel: t("openLink") })}
+            renderEmbeddable={(el, app) =>
+              LinkBox({
+                view: el.link ? linkView(el.link) : null,
+                active: app.activeEmbeddable?.element.id === el.id && app.activeEmbeddable.state === "active",
+                hovered: app.activeEmbeddable?.element.id === el.id && app.activeEmbeddable.state === "hover",
+                labels: { open: t("openLink"), play: t("clickToPlay"), toOpen: t("clickToOpen") },
+              })
+            }
             viewModeEnabled={!canEdit}
             theme={theme}
             UIOptions={{ canvasActions: { loadScene: false, saveToActiveFile: false, toggleTheme: false, clearCanvas: false, changeViewBackgroundColor: false } }}

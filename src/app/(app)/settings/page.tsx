@@ -23,27 +23,27 @@ export default async function SettingsPage() {
       <PageHeader title={t("title")} newTask={false} />
       <div className="flex max-w-[760px] flex-col gap-10 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:px-10 lg:pb-12">
         <section className="flex flex-col gap-3.5">
-          <h2 className="display text-[20px]">{t("profile")}</h2>
+          <h2 className="section-title text-[20px]">{t("profile")}</h2>
           <ProfileForm profile={me} />
         </section>
         <section className="flex flex-col gap-3.5">
-          <h2 className="display text-[20px]">{t("appearance")}</h2>
+          <h2 className="section-title text-[20px]">{t("appearance")}</h2>
           <p className="text-[14px] text-ink2">{t("appearanceHint")}</p>
           <ThemeSetting current={parseTheme((await cookies()).get(THEME_COOKIE)?.value)} />
         </section>
         <section className="flex flex-col gap-3.5">
-          <h2 className="display text-[20px]">{t("language")}</h2>
+          <h2 className="section-title text-[20px]">{t("language")}</h2>
           <p className="text-[14px] text-ink2">{t("languageHint")}</p>
           <LanguageSetting current={parseLocale(locale)} />
         </section>
         <section className="flex flex-col gap-3.5">
-          <h2 className="display text-[20px]">{t("notifications")}</h2>
+          <h2 className="section-title text-[20px]">{t("notifications")}</h2>
           <p className="text-[14px] text-ink2">{t("notificationsLead")}</p>
           <PushDevice />
           <NotificationSettings prefs={(data ?? []) as Preference[]} />
         </section>
         <section className="flex flex-col gap-3.5">
-          <h2 className="display text-[20px]">{t("ai.title")}</h2>
+          <h2 className="section-title text-[20px]">{t("ai.title")}</h2>
           <p className="text-[14px] text-ink2">{t("ai.lead")}</p>
           <AiKeys keys={(keys ?? []) as ApiKey[]} />
         </section>

@@ -55,7 +55,7 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
   const toPlan = unscheduled.length > 0 && (
     <section className="flex flex-col gap-2.5 rounded-lg border border-accent/60 bg-surf p-4 lg:p-5">
       <div className="flex flex-col gap-1">
-        <h2 className="display text-[18px] leading-[1.1]">{t("portal.toPlan", { n: unscheduled.length })}</h2>
+        <h2 className="section-title text-[18px] leading-[1.1]">{t("portal.toPlan", { n: unscheduled.length })}</h2>
         <p className="text-[14px] leading-snug text-ink2">{t("portal.toPlanHint")}</p>
       </div>
       <div className="flex flex-col">
@@ -73,6 +73,7 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
   );
   const formatSwitch = (
     <Segmented
+      nowrap
       items={[null, ...FORMATS].map((f) => ({
         key: f ?? "all",
         label: f ? t(`format.${f}`) : t("schedule.allFormats"),
@@ -84,6 +85,7 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
   );
   const viewSwitch = (
     <Segmented
+      nowrap
       items={(["calendar", "list"] as const).map((k) => ({
         key: k,
         label: t(k === "calendar" ? "portal.viewCalendar" : "portal.viewList"),
@@ -91,6 +93,14 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
         active: view === k,
       }))}
     />
+  );
+
+  // The view and the post type: one row that wraps on wide screens and slides sideways on phones (rather than stacking).
+  const switches = (
+    <div className="no-scrollbar -mx-5 flex items-center gap-3 overflow-x-auto px-5 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
+      {viewSwitch}
+      {formatSwitch}
+    </div>
   );
 
   if (view === "calendar") {
@@ -102,14 +112,26 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
       return { month: m, label: monthLabel(m), weeks: days.filter((_, i) => i % 7 === 0 && (i < 35 || days[i].slice(0, 7) === m)) };
     });
     const label = monthLabel(month);
+    const nav = {
+      label,
+      prevHref: link({ m: shiftMonth(month, -1) }),
+      nextHref: link({ m: shiftMonth(month, 1) }),
+      prevLabel: t("schedule.prevMonth"),
+      nextLabel: t("schedule.nextMonth"),
+    };
     return (
       <div className="flex flex-col gap-4 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
         <h1 className="display text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
         {portal.plans && <p className="-mt-2 text-[14px] text-ink2 lg:hidden">{t("portal.moveHint")}</p>}
-        <div className="flex flex-wrap items-center gap-3">
-          {viewSwitch}
-          {formatSwitch}
-          <PeriodNav label={label} prevHref={link({ m: shiftMonth(month, -1) })} nextHref={link({ m: shiftMonth(month, 1) })} />
+        {/* Phones: the month across the screen, then the switches; wide screens: one row. */}
+        <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
+          <div className="flex lg:hidden">
+            <PeriodNav {...nav} fill />
+          </div>
+          {switches}
+          <span className="hidden lg:block">
+            <PeriodNav {...nav} />
+          </span>
         </div>
         {/* Desktop plans in the calendar itself (drag); phones get the list of filmed videos to date. */}
         {toPlan && <div className={portal.plans ? "lg:hidden" : ""}>{toPlan}</div>}
@@ -134,10 +156,7 @@ export default async function PortalSchedule({ params, searchParams }: PageProps
   return (
     <div className="flex flex-col gap-2 px-5 pb-12 pt-8 lg:px-12 lg:pt-10">
       <h1 className="display pb-2 text-[32px] lg:text-[44px]">{t("schedule.title")}</h1>
-      <div className="flex flex-wrap items-center gap-3">
-        {viewSwitch}
-        {formatSwitch}
-      </div>
+      {switches}
       {toPlan && <div className="pt-4">{toPlan}</div>}
       {[...weeks.entries()].map(([wk, list]) => (
         <div key={wk} className="flex flex-col">

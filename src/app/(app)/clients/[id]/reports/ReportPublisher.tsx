@@ -30,7 +30,7 @@ export function ReportPublisher({ clientId, month, summary, publishedAt, canEdit
   return (
     <section className="flex flex-col gap-3 rounded-lg border border-line bg-surf p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="display text-[18px] leading-[1.1]">{t("forClient")}</h2>
+        <h2 className="section-title text-[18px] leading-[1.1]">{t("forClient")}</h2>
         <span className={`text-[13px] font-semibold ${publishedAt ? "text-[var(--status-done)]" : "text-ink3"}`}>
           {publishedAt ? t("publishedOn", { date: formatDate(publishedAt.slice(0, 10)) }) : t("notPublished")}
         </span>

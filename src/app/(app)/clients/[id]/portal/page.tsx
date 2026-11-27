@@ -33,7 +33,7 @@ export default async function PortalSettingsPage({ params, searchParams }: PageP
     <div className="flex flex-col">
       <ClientHeader client={data.client} active="portal" canManage={canManage} invoices={invoiceAccess.finance || invoiceAccess.clientIds.includes(id)} />
       <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-6 lg:px-10">
-        <h2 className="display text-[22px] leading-[1.1] lg:text-[26px]">{t("title")}</h2>
+        <h2 className="section-title text-[22px] leading-[1.1] lg:text-[26px]">{t("title")}</h2>
         {portal?.enabled && url && (
           <a href={url} target="_blank" rel="noreferrer" className={buttonClass({ size: "sm", variant: "secondary" })}>
             {t("open")} ↗

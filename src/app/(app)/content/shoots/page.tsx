@@ -82,7 +82,7 @@ export default async function ShootsPage({ searchParams }: PageProps<"/content/s
       )}
       <div className="flex flex-col gap-9 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:px-10 lg:pb-12">
         <section className="flex flex-col gap-3.5">
-          <h2 className="display text-[18px] lg:text-[20px]">{t("shoots.upcoming")}</h2>
+          <h2 className="section-title text-[18px] lg:text-[20px]">{t("shoots.upcoming")}</h2>
           {upcoming.length ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">{upcoming.map(card)}</div>
           ) : (
@@ -91,7 +91,7 @@ export default async function ShootsPage({ searchParams }: PageProps<"/content/s
         </section>
         {past.length > 0 && (
           <section className="flex flex-col gap-3.5">
-            <h2 className="display text-[18px] lg:text-[20px]">{t("shoots.past")}</h2>
+            <h2 className="section-title text-[18px] lg:text-[20px]">{t("shoots.past")}</h2>
             <div className="grid grid-cols-1 gap-3 opacity-80 sm:grid-cols-2 xl:grid-cols-3">{past.map(card)}</div>
           </section>
         )}

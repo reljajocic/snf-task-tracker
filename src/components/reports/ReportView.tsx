@@ -54,8 +54,8 @@ export function ReportView({ report, summary, t, formatLabel }: { report: MonthR
       )}
 
       <section className="flex flex-col gap-3">
-        <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{t("inNumbers")}</h2>
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+        <h2 className="section-title text-[18px] leading-[1.1] lg:text-[20px]">{t("inNumbers")}</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
           {stat(report.published, t("published"), t("ofPlanned", { n: report.planned }))}
           {stat(report.onTime, t("onTime"), report.published ? t("percent", { n: Math.round((report.onTime / report.published) * 100) }) : undefined)}
           {stat(w.shootDays, t("shootDays"), t("videosShot", { n: w.shot }))}
@@ -71,7 +71,7 @@ export function ReportView({ report, summary, t, formatLabel }: { report: MonthR
 
       {social && (
         <section className="flex flex-col gap-3">
-          <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{t("onInstagram")}</h2>
+          <h2 className="section-title text-[18px] leading-[1.1] lg:text-[20px]">{t("onInstagram")}</h2>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
             {stat(n(social.totals.views), t("views"), t("acrossPosts", { n: social.posts }))}
             {stat(n(social.totals.reach), t("reach"))}
@@ -90,7 +90,7 @@ export function ReportView({ report, summary, t, formatLabel }: { report: MonthR
       )}
 
       <section className="flex flex-col gap-3">
-        <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{t("posts")}</h2>
+        <h2 className="section-title text-[18px] leading-[1.1] lg:text-[20px]">{t("posts")}</h2>
         {report.posts.length ? (
           <div className="snf-stack">
             {report.posts.map((p) => {

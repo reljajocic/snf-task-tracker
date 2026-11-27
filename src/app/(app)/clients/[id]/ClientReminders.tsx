@@ -36,7 +36,7 @@ export function ClientReminders({ clientId, reminders, today }: { clientId: stri
 
   return (
     <section className="flex flex-col gap-3.5">
-      <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{t("reminders")}</h2>
+      <h2 className="section-title text-[18px] leading-[1.1] lg:text-[20px]">{t("reminders")}</h2>
       <div className="flex flex-col rounded-lg border border-line bg-surf px-4 py-1.5">
         {reminders.map((r) => (
           <div key={r.id} className="flex items-center gap-3 border-b border-line py-2.5 last:border-b-0">

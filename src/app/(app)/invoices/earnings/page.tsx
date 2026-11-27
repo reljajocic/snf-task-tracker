@@ -47,7 +47,7 @@ export default async function EarningsPage({ searchParams }: PageProps<"/invoice
   const table = (key: string, title: ReactNode, lines: { key: string; head: ReactNode; data: PartnerMonth; strong?: boolean }[], sub?: string) => (
     <section key={key} className="flex flex-col gap-3">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="display flex items-center gap-2.5 text-[18px] leading-[1.1] lg:text-[20px]">{title}</h2>
+        <h2 className="section-title flex items-center gap-2.5 text-[18px] leading-[1.1] lg:text-[20px]">{title}</h2>
         {sub && <span className="text-[13px] text-ink3">{sub}</span>}
       </div>
       <div className="snf-stack overflow-x-auto">

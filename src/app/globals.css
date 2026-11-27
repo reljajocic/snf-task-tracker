@@ -11,7 +11,14 @@
   --surf: rgba(244, 243, 237, 0.06);
   --card-edge: rgba(244, 243, 237, 0.1);
   --surf2: rgba(244, 243, 237, 0.1);
-  --pop: rgba(36, 33, 34, 0.94); /* popovers and menus: readable over content */
+  --pop: rgba(36, 33, 34, 0.86); /* popovers and menus: glass, still readable over content */
+  --glass: rgba(30, 27, 28, 0.72); /* the phone's floating bar */
+  --shadow-glass: 0 12px 32px rgba(0, 0, 0, 0.32);
+  /* A label over someone else's picture (an embedded post): the same dark pill in both themes. */
+  --scrim: rgba(18, 16, 17, 0.82);
+  --scrim-ink: #f4f3ed;
+  --glass-edge: rgba(244, 243, 237, 0.14);
+  --glass-shine: rgba(255, 255, 255, 0.09);
   --line: rgba(244, 243, 237, 0.09);
   --line2: rgba(244, 243, 237, 0.17);
   --ink: #f4f3ed;
@@ -69,7 +76,11 @@
   --side: rgba(247, 246, 241, 0.7);
   --surf: rgba(255, 255, 255, 0.62);
   --surf2: rgba(255, 255, 255, 0.85);
-  --pop: rgba(255, 255, 255, 0.97);
+  --pop: rgba(255, 255, 255, 0.88);
+  --glass: rgba(250, 249, 245, 0.74);
+  --shadow-glass: 0 10px 28px rgba(47, 45, 46, 0.12);
+  --glass-edge: rgba(47, 45, 46, 0.1);
+  --glass-shine: rgba(255, 255, 255, 0.75);
   --card-edge: rgba(47, 45, 46, 0.12);
   --line: rgba(47, 45, 46, 0.1);
   --line2: rgba(47, 45, 46, 0.2);
@@ -229,6 +240,43 @@ p {
   backdrop-filter: blur(22px) saturate(1.5);
 }
 
+/* Glass, only for what floats over content (the phone's bar, menus): the content shows through blurred, with a lit top
+   edge. Content itself (cards, lists, forms) stays flat. */
+.bg-pop {
+  background-image: linear-gradient(var(--glass-shine), transparent 48px);
+}
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-edge);
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    var(--shadow-glass);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  backdrop-filter: blur(24px) saturate(1.4);
+}
+/* "Reduce transparency" (and browsers without blur): solid panels. */
+@media (prefers-reduced-transparency: reduce) {
+  .bg-side,
+  .bg-pop,
+  .glass {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .bg-pop,
+  .glass {
+    background: var(--bg);
+  }
+  .bg-side {
+    background: var(--canvas);
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bg-pop,
+  .glass {
+    background: var(--bg);
+  }
+}
+
 /* Hover and focus changes ease in instead of snapping. Base layer, so components with their own
    transition classes keep them. */
 @layer base {
@@ -310,6 +358,14 @@ p {
   font-weight: 900;
   text-transform: uppercase;
   line-height: 0.96;
+}
+
+/* Section headings (a card's or a block's title): the body face, bold, in sentence case. Montserrat Black in capitals is
+   kept for page titles, dates and big numbers, so a page has one loud line, not one per card. */
+.section-title {
+  font-family: var(--font-body);
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 /* Section labels: a small bold heading in sentence case, not tracked-out capitals. */

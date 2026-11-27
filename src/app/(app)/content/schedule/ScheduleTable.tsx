@@ -253,7 +253,7 @@ export function ScheduleTable({
 
         <div className="flex flex-col gap-2 pt-9">
           <div className="flex items-baseline gap-3 px-1 pb-1 lg:px-4">
-            <span className="display text-[15px] leading-none">{t("schedule.unscheduled")}</span>
+            <span className="section-title text-[15px] leading-none">{t("schedule.unscheduled")}</span>
             <span className="text-[13px] font-medium text-ink3">{unscheduled.length}</span>
           </div>
           {unscheduled.length ? (

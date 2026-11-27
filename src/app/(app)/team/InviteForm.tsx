@@ -17,7 +17,7 @@ export function InviteForm() {
   return (
     <form action={action} className="flex flex-col gap-4 rounded-lg border border-line bg-surf p-6">
       <div className="flex flex-col gap-1.5">
-        <h2 className="display text-[20px]">{t("invite")}</h2>
+        <h2 className="section-title text-[20px]">{t("invite")}</h2>
         <p className="text-[14px] text-ink2">{t("inviteLead")}</p>
       </div>
 

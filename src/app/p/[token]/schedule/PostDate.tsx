@@ -48,7 +48,7 @@ export function PostDate({ token, taskId, date, min, compact }: { token: string;
             setValue(date ?? "");
             setOpen(true);
           }}
-          className={buttonClass({ variant: date ? "secondary" : "primary", size: "sm", className: compact ? "max-lg:h-11" : "self-start max-lg:h-12" })}
+          className={buttonClass({ variant: date || compact ? "secondary" : "primary", size: "sm", className: compact ? "max-lg:h-11" : "self-start max-lg:h-12" })}
         >
           {date ? t("changeDate") : t("pickDate")}
         </button>

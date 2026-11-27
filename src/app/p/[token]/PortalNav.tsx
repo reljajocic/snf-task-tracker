@@ -26,9 +26,9 @@ export function PortalNav({ tabs, variant }: { tabs: PortalTab[]; variant: "top"
     );
   }
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[calc(68px+var(--nav-bottom))] border-t border-line bg-side pb-[var(--nav-bottom)] lg:hidden">
+    <nav className="glass fixed inset-x-3 bottom-[calc(var(--nav-bottom)+8px)] z-30 flex h-[60px] rounded-full px-1.5 lg:hidden">
       {tabs.map((t) => (
-        <Link key={t.href} href={t.href} className={`flex flex-1 flex-col items-center justify-center gap-1.5 text-[12px] font-medium ${active(t) ? "text-ink" : "text-ink3"}`}>
+        <Link key={t.href} href={t.href} className={`flex flex-1 flex-col items-center justify-center gap-1 text-[12px] font-medium ${active(t) ? "text-ink" : "text-ink3"}`}>
           <span className={`h-[3px] w-[18px] rounded-[2px] ${active(t) ? "bg-accent" : "bg-transparent"}`} />
           <span className={active(t) ? "text-accent" : ""}>{NAV_ICONS[t.icon]}</span>
           {t.label}

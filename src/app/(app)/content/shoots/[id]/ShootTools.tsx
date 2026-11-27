@@ -9,7 +9,7 @@ export function CallTimes({ times }: { times: { time: string; name: string }[] }
   return (
     <div className="flex flex-col gap-2.5 rounded-lg border border-line bg-surf p-4">
       <div className="flex items-baseline gap-2">
-        <span className="display text-[15px] leading-none">{t("callTimes")}</span>
+        <span className="section-title text-[15px] leading-none">{t("callTimes")}</span>
         <span className="text-[13px] text-ink3">{t("callTimesAuto")}</span>
       </div>
       <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2 xl:grid-cols-3">

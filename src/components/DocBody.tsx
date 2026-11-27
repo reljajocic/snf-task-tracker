@@ -26,7 +26,7 @@ export function DocBody({ body }: { body: string }) {
       {docBlocks(body).map((b, i) =>
         b.kind === "heading" ? (
           b.level === 1 ? (
-            <h2 key={i} className="display mt-3 text-[20px] leading-[1.15] text-ink first:mt-0">
+            <h2 key={i} className="section-title mt-3 text-[20px] leading-[1.15] text-ink first:mt-0">
               <Line text={b.text} />
             </h2>
           ) : (

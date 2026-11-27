@@ -96,9 +96,20 @@ export default async function ExpensesPage({ searchParams }: PageProps<"/invoice
             const list = expenses.filter((e) => e.spent_on.startsWith(m));
             return (
               <section key={m} className="flex flex-col gap-3">
-                <div className="flex items-baseline justify-between gap-3">
-                  <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{monthLabel(m)}</h2>
-                  <span className="text-[15px] font-semibold tabular-nums">{money(list.reduce((s, e) => s + e.amount, 0), 0)} <span className="text-[13px] font-medium text-ink3">RSD</span></span>
+                {/* The month's total is the number people come for: big, on the month's line. */}
+                <div className="flex items-end justify-between gap-3">
+                  <h2 className="section-title text-[18px] leading-[1.1] lg:text-[20px]">{monthLabel(m)}</h2>
+                  <span className="flex items-baseline gap-1.5">
+                    <span className="display text-[24px] leading-none tabular-nums lg:text-[28px]">{money(list.reduce((s, e) => s + e.amount, 0), 0)}</span>
+                    <span className="text-[13px] font-medium text-ink3">RSD</span>
+                  </span>
+                </div>
+                <div className="hidden grid-cols-[90px_minmax(0,1fr)_160px_150px_130px] -mb-1 gap-x-4 px-[19px] text-[12px] font-medium text-ink3 lg:grid">
+                  <span>{t("spentOn")}</span>
+                  <span>{t("colWhat")}</span>
+                  <span>{t("colClient")}</span>
+                  <span>{t("paidBy")}</span>
+                  <span className="justify-self-end">{t("colAmount")}</span>
                 </div>
                 <div className="snf-stack">
                   {list.map((e) => (

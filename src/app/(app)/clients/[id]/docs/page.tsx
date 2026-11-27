@@ -42,7 +42,7 @@ export default async function ClientDocsPage({ params, searchParams }: PageProps
       {!docs.length ? (
         <div className="flex max-w-[720px] flex-col gap-5 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] pt-7 lg:px-10 lg:pb-12">
           <div className="flex flex-col gap-2">
-            <h2 className="display text-[22px] leading-[1.1]">{t("emptyTitle")}</h2>
+            <h2 className="section-title text-[22px] leading-[1.1]">{t("emptyTitle")}</h2>
             <p className="max-w-[560px] text-[14px] leading-relaxed text-ink2">{t("emptyLead")}</p>
           </div>
           {canEdit ? (

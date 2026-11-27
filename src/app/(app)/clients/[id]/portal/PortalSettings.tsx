@@ -52,7 +52,7 @@ export function PortalSettings({
   };
 
   const card = "flex flex-col gap-4 rounded-lg border border-line bg-surf p-[22px]";
-  const h = (s: string) => <span className="display text-[18px] leading-tight">{s}</span>;
+  const h = (s: string) => <span className="section-title text-[18px] leading-tight">{s}</span>;
   const vis: [PortalFlag, string][] = [
     ["show_schedule", t("vis.schedule")],
     ["show_shoots", t("vis.shoots")],

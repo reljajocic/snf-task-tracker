@@ -22,7 +22,7 @@ export function InstagramPanel({ clientId, account, status }: { clientId: string
   return (
     <section className="flex flex-col gap-3.5 rounded-lg border border-line bg-surf p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="display text-[18px] leading-[1.1]">Instagram</h2>
+        <h2 className="section-title text-[18px] leading-[1.1]">Instagram</h2>
         {account && <span className="text-[14px] font-medium">@{account.username}</span>}
       </div>
       <p className="text-[14px] text-ink2">{account ? t("connectedLead") : t("lead")}</p>

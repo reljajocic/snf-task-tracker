@@ -21,7 +21,7 @@ export function ImportSheet({ clients }: { clients: { id: string; name: string }
   }
   return (
     <form action={action} className="flex w-full flex-col gap-3 rounded-lg border border-line2 bg-surf p-4 lg:w-[560px]">
-      <span className="display text-[15px]">{t("title")}</span>
+      <span className="section-title text-[15px]">{t("title")}</span>
       <span className="text-[13px] leading-snug text-ink3">{t("hint")}</span>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-[180px_minmax(0,1fr)]">
         <select name="client_id" className={`${selectClass} h-[42px]`}>

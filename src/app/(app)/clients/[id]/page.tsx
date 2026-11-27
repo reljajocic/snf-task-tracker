@@ -39,7 +39,7 @@ export default async function ClientPage({ params, searchParams }: PageProps<"/c
   const clientTasks = tasks.filter((x) => x.client?.id === client.id);
   const shown = clientTasks.filter((x) => (showDone ? x.status === "done" : x.status !== "done")).sort(byDue);
 
-  const h2 = (text: string) => <h2 className="display text-[18px] leading-[1.1] lg:text-[20px]">{text}</h2>;
+  const h2 = (text: string) => <h2 className="section-title text-[18px] leading-[1.1] lg:text-[20px]">{text}</h2>;
 
   return (
     <div className="flex flex-col">
