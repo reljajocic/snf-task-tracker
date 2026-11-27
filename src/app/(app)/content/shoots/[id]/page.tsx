@@ -46,20 +46,28 @@ export default async function ShootPage({ params, searchParams }: PageProps<"/co
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Names from the sign-up link and ticks from the crew show up within seconds. */}
       <AutoRefresh seconds={15} />
-      {/* One header: the day is the title (‹ › to the shoot before and after), client and place above it,
-          the view and the day's own actions on the right. */}
+      {/* One header: who and where come first (the client is the title, the place under it), then the day, smaller;
+          ‹ › to the shoot before and after; the view and the day's own actions on the right. */}
       <header className="px-5 pb-5 pt-6 lg:px-10 lg:pt-9">
         <PageTitle
           back={{ href: "/content/shoots", label: t("nav.shoots") }}
-          eyebrow={[client.name, day.location].filter(Boolean).join(", ")}
-          title={`${t("weekday.long", { day: String(weekdayIndex(day.date)) })}, ${formatDate(day.date)}`}
+          title={client.name}
           sub={
-            <ShootNav
-              prev={stepTo(days[at - 1])}
-              next={stepTo(days[at + 1])}
-              scope={{ href: shootHref(day.id, { nav: allClients ? null : "all" }), all: allClients }}
-              labels={{ prev: t("shoots.prevShoot"), next: t("shoots.nextShoot"), all: t("shoots.allClients") }}
-            />
+            <>
+              <span className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1 text-[16px] leading-snug lg:text-[18px]">
+                {day.location && <span className="font-semibold text-ink">{day.location},</span>}
+                <span className="text-ink2">
+                  {t("weekday.long", { day: String(weekdayIndex(day.date)) })}, {formatDate(day.date)}
+                  {day.starts_at && `, ${day.starts_at}${day.ends_at ? ` – ${day.ends_at}` : ""}`}
+                </span>
+              </span>
+              <ShootNav
+                prev={stepTo(days[at - 1])}
+                next={stepTo(days[at + 1])}
+                scope={{ href: shootHref(day.id, { nav: allClients ? null : "all" }), all: allClients }}
+                labels={{ prev: t("shoots.prevShoot"), next: t("shoots.nextShoot"), all: t("shoots.allClients") }}
+              />
+            </>
           }
           actions={
             <span className="hidden lg:flex">

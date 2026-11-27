@@ -315,12 +315,6 @@ export function ShootBoard({
     <>
       <div className="flex flex-wrap items-center gap-x-7 gap-y-3 border-b border-line px-5 pb-5 lg:px-10">
         {progress}
-        {day.starts_at && (
-          <span className="hidden whitespace-nowrap text-[14px] font-medium text-ink2 lg:inline">
-            {day.starts_at}
-            {day.ends_at ? ` – ${day.ends_at}` : ""}
-          </span>
-        )}
         {day.crew.length > 0 && (
           <div className="hidden items-center gap-2.5 lg:flex">
             <span className="text-[14px] font-medium text-ink2">{t("shoots.crew")}</span>
