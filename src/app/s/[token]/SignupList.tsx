@@ -13,7 +13,8 @@ const STATUS_COLOR = { to_shoot: "var(--line2)", shot: "var(--status-in-progress
 
 /**
  * Who comes when (as the team sees it), then each video in running order as a card: time, status,
- * script by part, and "I'll do this one". Taken videos stay visible, greyed out.
+ * script by part, and "I'll do this one". Taken videos stay visible, greyed out (on the sign-up link only: on the view-only one
+ * nothing is taken from the reader, so every card reads in full).
  */
 /** readOnly: the view-only link (?view=1) for people who only follow the plan: no name, no sign-up buttons. */
 export function SignupList({ token, videos, readOnly = false }: { token: string; videos: SignupVideo[]; readOnly?: boolean }) {
@@ -106,7 +107,7 @@ export function SignupList({ token, videos, readOnly = false }: { token: string;
             <div
               key={v.id}
               id={`v-${v.id}`}
-              className={`flex scroll-mt-4 flex-col gap-3.5 rounded-lg border bg-surf p-4 transition-opacity lg:p-5 ${mine ? "border-accent" : "border-line"} ${taken ? "opacity-45 grayscale" : ""}`}
+              className={`flex scroll-mt-4 flex-col gap-3.5 rounded-lg border bg-surf p-4 transition-opacity lg:p-5 ${mine ? "border-accent" : "border-line"} ${taken && !readOnly ? "opacity-45 grayscale" : ""}`}
             >
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13px] font-medium text-ink3">
                 <span className="tabular-nums">#{i + 1}</span>
@@ -139,7 +140,8 @@ export function SignupList({ token, videos, readOnly = false }: { token: string;
 
               <div className="flex flex-wrap items-center gap-2 border-t border-line pt-3.5">
                 <span className="text-[14px] font-medium text-ink2">
-                  {mine ? t("yours") : taken ? t("takenBy", { name: v.names.join(", ") }) : t("free")}
+                  {/* View-only: just who is in it (nothing is "taken" from someone who only follows the plan). */}
+                  {mine ? t("yours") : taken ? (readOnly ? v.names.join(", ") : t("takenBy", { name: v.names.join(", ") })) : t("free")}
                 </span>
                 <span className="ml-auto">
                   {readOnly ? null : mine ? (
