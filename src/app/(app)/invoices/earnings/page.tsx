@@ -5,7 +5,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Segmented } from "@/components/ui/Segmented";
 import { requireProfile } from "@/lib/auth";
 import { today as getToday } from "@/lib/dates";
-import { getExpenses, getInvoiceAccess, getInvoices, getPeople, getShares } from "@/lib/finance";
+import { getExpenses, getInvoiceAccess, getInvoices, getIssuers, getPeople, getShares } from "@/lib/finance";
 import { money, monthlyEarnings, type PartnerMonth } from "@/lib/invoices";
 import { InvoicesHeader, Stat } from "../parts";
 
@@ -25,7 +25,7 @@ export default async function EarningsPage({ searchParams }: PageProps<"/invoice
   const [params, access, me, t, tAll] = await Promise.all([searchParams, getInvoiceAccess(), requireProfile(), getTranslations("invoices"), getTranslations()]);
   if (!access.finance) redirect("/invoices");
   const byPerson = params.view === "person";
-  const [invoices, shares, expenses, everyone] = await Promise.all([getInvoices(), getShares(), getExpenses(), getPeople()]);
+  const [invoices, shares, expenses, everyone, issuers] = await Promise.all([getInvoices(), getShares(), getExpenses(), getPeople(), getIssuers()]);
   const partnerIds = everyone.filter((p) => p.is_partner).map((p) => p.id);
   const withShare = new Set(shares.filter((s) => s.amount > 0).map((s) => s.profile_id));
   const people = everyone.filter((p) => p.is_partner || withShare.has(p.id));
@@ -33,7 +33,19 @@ export default async function EarningsPage({ searchParams }: PageProps<"/invoice
   const month = getToday().slice(0, 7);
   const label = (m: string) => `${tAll("month.name", { m: String(Number(m.slice(5))) })} ${m.slice(0, 4)}`;
   const allTime = (pid: string) => rows.reduce((s, r) => add(s, r.byPartner[pid] ?? ZERO), ZERO);
-  const mine = partnerIds.includes(me.id) ? rows.find((r) => r.month === month)?.byPartner[me.id] ?? null : null;
+  const partner = partnerIds.includes(me.id);
+  const mine = partner ? rows.find((r) => r.month === month)?.byPartner[me.id] ?? ZERO : null;
+  // What went through each company we invoice from: issued invoices only (drafts and cancelled ones aren't money).
+  const byIssuer = issuers
+    .map((iss) => {
+      const mine = invoices.filter((i) => i.issuer_id === iss.id && i.status === "issued");
+      const invoiced = mine.reduce((s, i) => s + Number(i.total_rsd), 0);
+      const collected = mine.filter((i) => i.paid_on).reduce((s, i) => s + Number(i.total_rsd), 0);
+      const first = mine.map((i) => i.issued_on).sort()[0];
+      return { id: iss.id, name: iss.name, count: mine.length, first, invoiced, collected, outstanding: invoiced - collected };
+    })
+    .filter((x) => x.count > 0);
+  const everyoneAllTime = people.reduce((s, p) => add(s, allTime(p.id)), ZERO);
 
   const cols: { key: keyof PartnerMonth; label: string }[] = [
     { key: "invoiced", label: t("colInvoiced") },
@@ -83,12 +95,36 @@ export default async function EarningsPage({ searchParams }: PageProps<"/invoice
       <InvoicesHeader access={access} active="earnings" eyebrow={label(month)} />
       <div className="flex flex-col gap-9 px-5 pb-[calc(120px+env(safe-area-inset-bottom))] lg:px-10 lg:pb-12">
         {mine && (
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-5">
+            <Stat label={t("myNetAllTime")} value={allTime(me.id).net} className="col-span-2 lg:col-span-4 xl:col-span-1" />
             <Stat label={t("myNet")} value={mine.net} />
             <Stat label={t("colCollected")} value={mine.collected} />
             <Stat label={t("colOutstanding")} value={mine.outstanding} tone="red" />
             <Stat label={t("colExpenses")} value={mine.expenses} />
           </div>
+        )}
+        {byIssuer.length > 0 && (
+          <section className="flex flex-col gap-3">
+            <h2 className="section-title text-[18px] leading-[1.1] lg:text-[20px]">{t("throughCompany")}</h2>
+            <div className="snf-stack">
+              {byIssuer.map((x) => (
+                <div key={x.id} className="flex flex-col gap-3 px-[18px] py-3.5 md:flex-row md:items-center md:gap-6">
+                  <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span className="text-[15px] font-medium text-ink">{x.name}</span>
+                    <span className="text-[13px] text-ink3">{t("issuerSince", { count: x.count, since: label(x.first.slice(0, 7)) })}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4 md:grid-cols-[repeat(3,minmax(0,120px))]">
+                    {([["colInvoiced", x.invoiced], ["colCollected", x.collected], ["colOutstanding", x.outstanding]] as const).map(([k, v]) => (
+                      <div key={k} className="flex flex-col gap-0.5 md:items-end">
+                        <span className="text-[12px] text-ink3">{t(k)}</span>
+                        <span className={`text-[15px] tabular-nums ${k === "colInvoiced" ? "font-semibold text-ink" : k === "colOutstanding" && v > 0 ? "text-red-ink" : "text-ink2"}`}>{money(v, 0)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
         )}
         <Segmented
           items={[
@@ -114,7 +150,10 @@ export default async function EarningsPage({ searchParams }: PageProps<"/invoice
           )
         ) : (
           <>
-            {table("all", t("allTime"), people.map((p) => ({ key: p.id, head: personHead(p), data: allTime(p.id) })))}
+            {table("all", t("allTime"), [
+              ...people.map((p) => ({ key: p.id, head: personHead(p), data: allTime(p.id) })),
+              { key: "everyone", head: <><span aria-hidden className="w-[26px] flex-none" />{monthHead(t("everyone"), true)}</>, data: everyoneAllTime, strong: true },
+            ])}
             {rows.map((r) =>
               table(
                 r.month,

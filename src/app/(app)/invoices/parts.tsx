@@ -65,9 +65,9 @@ export async function PayBadge({ state, daysLate }: { state: PayState; daysLate:
   );
 }
 
-export function Stat({ label, value, tone }: { label: string; value: number; tone?: "red" }) {
+export function Stat({ label, value, tone, className = "" }: { label: string; value: number; tone?: "red"; className?: string }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1.5 rounded-lg border border-line bg-surf px-4 py-3.5">
+    <div className={`flex min-w-0 flex-col gap-1.5 rounded-lg border border-line bg-surf px-4 py-3.5 ${className}`}>
       <span className="text-[13px] font-medium text-ink3">{label}</span>
       <span className={`text-[20px] font-semibold tabular-nums leading-none lg:text-[22px] ${tone === "red" && value > 0 ? "text-red-ink" : ""}`}>
         {money(value, 0)} <span className="text-[13px] font-medium text-ink3">RSD</span>
